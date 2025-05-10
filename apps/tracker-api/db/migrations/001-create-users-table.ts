@@ -13,6 +13,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .check(sql`char_length(name) <= 256`)
         .unique(),
     )
+    .addColumn('avatar', 'text')
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .execute();
