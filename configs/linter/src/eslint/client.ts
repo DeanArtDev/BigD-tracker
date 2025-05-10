@@ -2,16 +2,6 @@ import type { Linter } from 'eslint';
 
 const getClientEslintConfig = (): Linter.LegacyConfig => {
   return {
-    root: true,
-    env: { browser: true, es2020: true },
-    extends: [
-      'eslint:recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:react-hooks/recommended',
-      'prettier',
-      'plugin:import/recommended',
-    ],
-    parser: '@typescript-eslint/parser',
     settings: {
       'import/resolver': {
         typescript: {
@@ -19,7 +9,7 @@ const getClientEslintConfig = (): Linter.LegacyConfig => {
         },
       },
     },
-    plugins: ['react-refresh'],
+
     rules: {
       '@typescript-eslint/consistent-type-definitions': ['error'],
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
