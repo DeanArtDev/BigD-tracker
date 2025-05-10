@@ -3,15 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { TestComponent } from "@/feature/test/test.tsx";
-/*TODO:
-* - pg
-* - @types/pg
-* - next
-* - kysely
-* - "kysely-codegen"
-* - "kysely-ctl"
-*
-* */
+
 function App() {
   const [count, setCount] = useState(0);
 

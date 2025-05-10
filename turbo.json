@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "ui": "stream",
+  "ui": "tui",
   "globalDependencies": ["**/.env.*local"],
 
   "tasks": {
@@ -13,7 +13,7 @@
 
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".dist/**"]
+      "outputs": ["dist/**"]
     },
 
     "test": {

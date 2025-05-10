@@ -1,5 +1,5 @@
 {
-  "name": "big-d",
+  "name": "@big-d/tacker-client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -44,7 +44,7 @@
   },
   "packageManager": "pnpm@10.10.0",
   "engines": {
-    "node": "22.15.0",
+    "node": "^22.15.0",
     "pnpm": "10.10.0"
   }
 }

@@ -1,14 +1,18 @@
 import { defineConfig } from "vite";
-import path from "node:path";
 import react from "@vitejs/plugin-react";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
     extensions: [".js", ".ts", ".tsx", ".jsx"],
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+      },
+    },
   },
 });
