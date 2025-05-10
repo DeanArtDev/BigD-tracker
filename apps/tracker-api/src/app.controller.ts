@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Post } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { KyselyService } from "@shared/modules/db";
 
@@ -8,6 +8,20 @@ export class AppController {
     private readonly appService: AppService,
     private readonly kyselyService: KyselyService,
   ) {}
+
+  @Post("/users")
+  async create() {
+    const user = await this.kyselyService.db
+      .insertInto("users")
+      .values({
+        name: "Alice",
+        email: "alice@example.com",
+      })
+      .returning(["id", "created_at"])
+      .executeTakeFirst();
+
+    return { data: user };
+  }
 
   @Get("/health-check")
   async healthCheck() {

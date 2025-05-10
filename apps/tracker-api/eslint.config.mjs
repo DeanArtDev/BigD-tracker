@@ -3,7 +3,7 @@ import { getServiceApiEslintConfig } from '@big-d/linter';
 
 export default getServiceApiEslintConfig(
   {
-    ignores: ['eslint.config.mjs', './db/types.d.ts'],
+    ignores: ['eslint.config.mjs', './db/types.d.ts', './src/shared/modules/db/types.d.ts'],
   },
 
   {
