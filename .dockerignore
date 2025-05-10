@@ -9,7 +9,6 @@ deploy-dists
 .gitignore
 .gitlab-ci.yml
 docker-compose.yml
-scripts
 *.md
 dist
 .next

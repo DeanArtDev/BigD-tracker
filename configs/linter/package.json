@@ -1,5 +1,5 @@
 {
-  "name": "@big-D/linter",
+  "name": "@big-d/linter",
   "version": "0.0.1",
   "description": "linter configs",
   "private": true,
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "typescript-eslint": "^8.20.0",
-    "@big-D/tsconfig": "workspace:*",
+    "@big-d/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "prettier": "catalog:"

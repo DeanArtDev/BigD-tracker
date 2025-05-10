@@ -21,8 +21,8 @@
     "configs/**"
   ],
   "devDependencies": {
-    "@big-D/linter": "workspace:*",
-    "@big-D/tsconfig": "workspace:*",
+    "@big-d/linter": "workspace:*",
+    "@big-d/tsconfig": "workspace:*",
     "turbo": "^2.5.3",
     "typescript": "catalog:"
   },

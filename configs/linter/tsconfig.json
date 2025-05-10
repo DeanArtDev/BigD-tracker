@@ -1,5 +1,5 @@
 {
-  "extends": "@big-D/tsconfig/lib-bundler.json",
+  "extends": "@big-d/tsconfig/lib-bundler.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./"
