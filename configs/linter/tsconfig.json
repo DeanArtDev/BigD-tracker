@@ -1,0 +1,7 @@
+{
+  "extends": "@big-D/tsconfig/lib-bundler.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./"
+  }
+}
