@@ -1,0 +1,38 @@
+{
+  "name": "@big-D/linter",
+  "version": "0.0.1",
+  "description": "linter configs",
+  "private": true,
+  "author": "deankorobchenk@gmail.com",
+  "license": "ISC",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "scripts": {
+    "=== BUILD ===": "",
+    "build": "tsc --project tsconfig.build.json",
+    "=== LINT ===": "",
+    "test": "echo \"Error: no test specified , just skip\" && exit 0",
+    "lint": "npx prettier . --check",
+    "lint:fix": "npx prettier . --write"
+  },
+  "dependencies": {
+    "eslint": "catalog:",
+    "@eslint/js": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:"
+  },
+  "devDependencies": {
+    "typescript-eslint": "^8.20.0",
+    "@big-D/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "prettier": "catalog:"
+  },
+  "sideEffects": false,
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
+  }
+}

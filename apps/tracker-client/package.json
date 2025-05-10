@@ -1,0 +1,49 @@
+{
+  "name": "big-d",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "=== DEV ===": "",
+    "dev": "vite",
+    "preview": "vite preview",
+    "=== RUN ===": "",
+    "build": "tsc -b && vite build",
+    "=== CI ===": "",
+    "format": "prettier \"src/**/*.ts\" --check",
+    "format:fix": "prettier --write \"src/**/*.ts\" --check",
+    "lint": "pnpm format && eslint \"src/**/*.ts\"",
+    "lint:fix": "pnpm format:fix && eslint \"src/**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.75.7",
+    "qs": "catalog:",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tanstack/eslint-plugin-query": "^5.74.7",
+    "@types/node": "catalog:",
+    "@types/qs": "catalog:",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vite": "^6.3.5"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
+  }
+}

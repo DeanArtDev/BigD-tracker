@@ -1,13 +1,43 @@
 {
   "name": "big-D",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "--DEPLOY--": "",
+    "format:all": "turbo format",
+    "format:all:fix": "turbo format:fix",
+    "lint:all": "turbo lint -F=\"./apps/**\"",
+    "lint:all:fix": "turbo lint:fix -F=\"./apps/**\"",
+    "--DEV--": "",
+    "--BUILD--": "",
+    "build:all": "turbo build -F=\"./apps/**\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.4.1"
+  "workspaces": [
+    "libs/*",
+    "apps/*",
+    "configs/**"
+  ],
+  "devDependencies": {
+    "@big-D/linter": "workspace:*",
+    "@big-D/tsconfig": "workspace:*",
+    "turbo": "^2.5.3",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@scarf/scarf",
+      "@swc/core",
+      "esbuild",
+      "sharp"
+    ]
+  }
 }
