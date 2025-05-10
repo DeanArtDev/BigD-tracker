@@ -28,6 +28,7 @@ export default tseslint.config(
       'react-query': reactQuery,
       '@typescript-eslint': tseslint.plugin,
       import: importPlugin,
+      prettier: prettierPlugin,
     },
 
     rules: {
