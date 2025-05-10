@@ -1,5 +1,5 @@
-import { ConfigFactory } from "@nestjs/config";
-import * as process from "node:process";
+import { ConfigFactory } from '@nestjs/config';
+import * as process from 'node:process';
 
 interface DB_ENV {
   readonly DB_HOST: string;
@@ -12,12 +12,12 @@ interface DB_ENV {
 
 const getDBEnv = (): DB_ENV => {
   return {
-    DB_HOST: process.env.DB_HOST ?? "localhost",
-    DB_DATABASE: process.env.DB_DATABASE ?? "",
-    DB_USERNAME: process.env.DB_USERNAME ?? "",
-    DB_PASSWORD: process.env.DB_PASSWORD ?? "",
-    DATABASE_URL: process.env.DATABASE_URL ?? "",
-    DB_PORT: parseInt(process.env.DB_PORT ?? "", 10) || 5432,
+    DB_HOST: process.env.DB_HOST ?? 'localhost',
+    DB_DATABASE: process.env.DB_DATABASE ?? '',
+    DB_USERNAME: process.env.DB_USERNAME ?? '',
+    DB_PASSWORD: process.env.DB_PASSWORD ?? '',
+    DATABASE_URL: process.env.DATABASE_URL ?? '',
+    DB_PORT: parseInt(process.env.DB_PORT ?? '', 10) || 5432,
   };
 };
 

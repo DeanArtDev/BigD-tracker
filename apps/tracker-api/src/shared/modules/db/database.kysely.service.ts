@@ -1,8 +1,8 @@
-import { Injectable, OnApplicationShutdown, Inject } from "@nestjs/common";
+import { Injectable, OnApplicationShutdown, Inject } from '@nestjs/common';
 import {
   KYSELY_DATABASE_PROVIDER,
   KyselyDatabaseProvider,
-} from "./database.kysely.provider";
+} from './database.kysely.provider';
 
 @Injectable()
 export class KyselyService implements OnApplicationShutdown {
@@ -11,7 +11,7 @@ export class KyselyService implements OnApplicationShutdown {
     private readonly kyselyInstance: KyselyDatabaseProvider,
   ) {}
 
-  get db(): KyselyDatabaseProvider["db"] {
+  get db(): KyselyDatabaseProvider['db'] {
     return this.kyselyInstance.db;
   }
 
