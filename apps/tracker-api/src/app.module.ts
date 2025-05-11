@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { appConfigFactory } from '@shared/configs/app-config-factory';
 import { DatabaseModule } from '@shared/modules/db';
+import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { DatabaseModule } from '@shared/modules/db';
       envFilePath: ['.env.production', '.env.development'],
     }),
     DatabaseModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

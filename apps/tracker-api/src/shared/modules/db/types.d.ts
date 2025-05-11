@@ -3,16 +3,61 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType } from "kysely";
 
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
+
+export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface Exercises {
+  created_at: Generated<Timestamp>;
+  description: string | null;
+  example_url: string | null;
+  id: Generated<number>;
+  name: string;
+  training_id: number;
+  type: string;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface ExerciseTypes {
+  value: string;
+}
+
+export interface Repetitions {
+  break_actual_duration: Timestamp | null;
+  break_expected_duration: Timestamp | null;
+  count: number;
+  created_at: Generated<Timestamp>;
+  end_date: Timestamp | null;
+  exercises_id: number;
+  finish_type: string;
+  id: Generated<number>;
+  start_date: Timestamp | null;
+  target_count: number | null;
+  target_weight: Numeric | null;
+  updated_at: Generated<Timestamp>;
+  weight: Numeric;
+}
+
+export interface Trainings {
+  created_at: Generated<Timestamp>;
+  description: string | null;
+  end_date: Timestamp | null;
+  id: Generated<number>;
+  name: string;
+  post_training_duration: Timestamp | null;
+  start_date: Timestamp | null;
+  updated_at: Generated<Timestamp>;
+  worm_up_duration: Timestamp | null;
+}
+
 export interface Users {
+  avatar: string | null;
   created_at: Generated<Timestamp>;
   email: string;
   id: Generated<number>;
@@ -21,5 +66,9 @@ export interface Users {
 }
 
 export interface DB {
+  exercise_types: ExerciseTypes;
+  exercises: Exercises;
+  repetitions: Repetitions;
+  trainings: Trainings;
   users: Users;
 }
