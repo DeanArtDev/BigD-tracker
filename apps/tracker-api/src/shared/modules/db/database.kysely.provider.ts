@@ -19,13 +19,6 @@ const KyselyDatabaseProvider: Provider = {
   useFactory: (
     configService: ConfigService<DB_ENV & APP_ENV>,
   ): KyselyDatabaseProvider => {
-    console.log({
-      host: configService.get('DB_HOST'),
-      port: configService.get('DB_PORT'),
-      user: configService.get('DB_USERNAME'),
-      password: configService.get('DB_PASSWORD'),
-      database: configService.get('DB_DATABASE'),
-    });
     const pool = new Pool({
       host: configService.get('DB_HOST'),
       port: configService.get('DB_PORT'),
