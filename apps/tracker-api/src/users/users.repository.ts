@@ -1,7 +1,5 @@
-// users.repository.ts
-import { ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { KyselyService } from '@shared/modules/db';
-import { CreateUserDto } from './schemas/create-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -11,7 +9,7 @@ export class UsersRepository {
     return await this.kyselyService.db.selectFrom('users').selectAll().execute();
   }
 
-  async create({ name, email }: CreateUserDto) {
+  async create({ passwordHash, email }: { passwordHash: string; email: string }) {
     const existedUser = await this.kyselyService.db
       .selectFrom('users')
       .where('email', '=', email)
@@ -21,10 +19,16 @@ export class UsersRepository {
       throw new ConflictException('User with this email already exists');
     }
 
-    return await this.kyselyService.db
+    const newUser = await this.kyselyService.db
       .insertInto('users')
-      .values({ name, email, created_at: new Date() })
+      .values({ password_hash: passwordHash, email, created_at: new Date() })
       .returning(['id', 'name', 'email', 'avatar'])
       .executeTakeFirst();
+
+    if (newUser == null) {
+      throw new BadRequestException({ email }, { cause: 'User could not be created' });
+    }
+
+    return newUser;
   }
 }

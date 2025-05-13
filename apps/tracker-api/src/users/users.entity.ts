@@ -8,7 +8,8 @@ class User {
 
   @ApiProperty({ example: 'John Doe' })
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @ApiProperty({ example: 'john@example.com' })
   @IsEmail()
