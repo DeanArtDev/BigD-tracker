@@ -36,7 +36,10 @@ async function bootstrap() {
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
   const port = configService.get('API_PORT');
 
-  app.setGlobalPrefix(`api`);
+  app.enableCors({
+    origin: ['http://localhost:3033'],
+    credentials: true,
+  });
   connectSwagger(app);
 
   await app.listen(port, '0.0.0.0', () => {

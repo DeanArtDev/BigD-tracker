@@ -7,7 +7,8 @@
     "=== DEV ===": "",
     "dev": "vite",
     "preview": "vite preview",
-    "=== RUN ===": "",
+    "=== BUILD ===": "",
+    "api:generate": "npx openapi-typescript http://localhost:4002/swagger/json -o src/shared/api/types/generated-types.ts",
     "build": "tsc -b && vite build",
     "=== CI ===": "",
     "format": "prettier \"src/**/*.{ts,tsx}\" --check",
@@ -16,15 +17,17 @@
     "lint:fix": "pnpm format:fix && eslint \"src/**/*.{ts,tsx}\" --fix"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.6",
     "@tanstack/react-query": "^5.75.7",
     "qs": "catalog:",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "zod": "catalog:"
+    "tailwindcss": "^4.1.6"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
     "@tanstack/eslint-plugin-query": "^5.74.7",
+    "@tanstack/react-query-devtools": "^5.75.7",
     "@types/node": "catalog:",
     "@types/qs": "catalog:",
     "@types/react": "^19.1.2",
@@ -38,6 +41,11 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "msw": "^2.8.2",
+    "openapi-fetch": "^0.14.0",
+    "openapi-msw": "^1.2.0",
+    "openapi-react-query": "^0.5.0",
+    "openapi-typescript": "^7.8.0",
     "prettier": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
