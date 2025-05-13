@@ -3,12 +3,11 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType } from "kysely";
 
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
 export type Numeric = ColumnType<string, number | string, number | string>;
 
@@ -62,7 +61,8 @@ export interface Users {
   created_at: Generated<Timestamp>;
   email: string;
   id: Generated<number>;
-  name: string;
+  name: string | null;
+  password_hash: string;
   updated_at: Generated<Timestamp>;
 }
 
