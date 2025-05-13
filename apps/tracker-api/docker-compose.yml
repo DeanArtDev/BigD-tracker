@@ -12,7 +12,7 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
-      - trackerdata:/var/lib/postgresql/data
+      - /Users/dean/workspaces/docker/volumes:/var/lib/postgresql/data
 
 volumes:
   trackerdata:
