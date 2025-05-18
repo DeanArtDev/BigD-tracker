@@ -9,7 +9,7 @@ class User {
   @ApiProperty({ example: 'John Doe' })
   @IsString()
   @IsOptional()
-  name?: string;
+  screenName?: string;
 
   @ApiProperty({ example: 'john@example.com' })
   @IsEmail()

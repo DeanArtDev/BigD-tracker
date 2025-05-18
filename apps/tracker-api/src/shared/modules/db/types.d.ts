@@ -44,6 +44,17 @@ export interface Repetitions {
   weight: Numeric;
 }
 
+export interface Sessions {
+  created_at: Generated<Timestamp>;
+  expires_at: Timestamp;
+  ip: string | null;
+  revoked: Generated<boolean>;
+  token: string;
+  user_agent: string | null;
+  users_id: number;
+  uuid: string;
+}
+
 export interface Trainings {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -61,8 +72,8 @@ export interface Users {
   created_at: Generated<Timestamp>;
   email: string;
   id: Generated<number>;
-  name: string | null;
   password_hash: string;
+  screen_name: string | null;
   updated_at: Generated<Timestamp>;
 }
 
@@ -70,6 +81,7 @@ export interface DB {
   exercise_types: ExerciseTypes;
   exercises: Exercises;
   repetitions: Repetitions;
+  sessions: Sessions;
   trainings: Trainings;
   users: Users;
 }

@@ -8,7 +8,7 @@ class RegisterRequest {
   @IsString()
   login: string;
 
-  @ApiProperty({ example: '123' })
+  @ApiProperty({ example: '1234567' })
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
@@ -29,4 +29,4 @@ class RegisterResponse {
   data: RegisterDto;
 }
 
-export { RegisterResponse, RegisterRequest };
+export { RegisterResponse, RegisterDto, RegisterRequest };
