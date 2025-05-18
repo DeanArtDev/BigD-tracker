@@ -1,8 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import * as bcrypt from 'bcrypt';
 import { UsersRepository } from '@/users/users.repository';
 import { User } from './users.entity';
-import { CreateUserDto } from './schemas/create-user.dto';
+import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+
+type FindUserData =
+  | {
+      id: number;
+      email?: never;
+      screenName?: never;
+    }
+  | {
+      id?: never;
+      email: string;
+      screenName?: never;
+    }
+  | {
+      id?: never;
+      email?: never;
+      screenName: string;
+    };
 
 @Injectable()
 export class UsersService {
@@ -11,13 +34,73 @@ export class UsersService {
   async getAll(): Promise<User[]> {
     const userList = await this.usersRepository.getAll();
 
-    return userList.map<User>(({ id, email, name }) =>
+    return userList.map<User>(({ id, email, screen_name: name }) =>
       plainToInstance(User, { id, email, name }),
     );
   }
 
-  async createUser({ name, email }: CreateUserDto): Promise<User> {
-    const newUser = await this.usersRepository.create({ name, email });
-    return plainToInstance(User, newUser);
+  async findUser(data: FindUserData): Promise<User> {
+    if (data.email != null) {
+      const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
+      if (rawUser == null) throw new NotFoundException('User not found');
+      return mapAndValidateEntity(User, rawUser);
+    }
+
+    if (data.screenName != null) {
+      const rawUser = await this.usersRepository.findUserByScreeName({
+        screenName: data.screenName,
+      });
+      if (rawUser == null) throw new NotFoundException('User not found');
+      return mapAndValidateEntity(User, rawUser);
+    }
+
+    if (data.id != null) {
+      const rawUser = await this.usersRepository.findUserById({ id: data.id });
+      if (rawUser == null) throw new NotFoundException('User not found');
+      return mapAndValidateEntity(User, rawUser);
+    }
+
+    return undefined as never;
+  }
+
+  async createUser(data: { password: string; email: string }) {
+    const existedUser = await this.usersRepository.findUserByEmail({ email: data.email });
+    if (existedUser != null) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    const passwordHash = await this.hashPassword(data.password);
+    const newUser = await this.usersRepository.create({
+      passwordHash,
+      email: data.email,
+    });
+
+    if (newUser == null) {
+      throw new InternalServerErrorException(
+        { email: data.email },
+        { cause: 'User could not be created' },
+      );
+    }
+
+    return newUser;
+  }
+
+  async checkUserByPassword(data: {
+    email: string;
+    password: string;
+  }): Promise<User | undefined> {
+    const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
+    if (rawUser == null) return undefined;
+    if (await this.validatePassword(data.password, rawUser.password_hash)) {
+      return mapAndValidateEntity(User, rawUser);
+    }
+  }
+
+  private async validatePassword(pass: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(pass, hash);
+  }
+
+  private async hashPassword(pass: string): Promise<string> {
+    return await bcrypt.hash(pass, 10);
   }
 }

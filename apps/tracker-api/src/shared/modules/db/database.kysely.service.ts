@@ -4,6 +4,9 @@ import {
   KyselyDatabaseProvider,
 } from './database.kysely.provider';
 
+/*TODO:
+ *  можно ли проверить коннект к базе и логнуть в консоль??
+ * */
 @Injectable()
 export class KyselyService implements OnApplicationShutdown {
   constructor(

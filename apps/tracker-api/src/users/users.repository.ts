@@ -1,7 +1,5 @@
-// users.repository.ts
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { KyselyService } from '@shared/modules/db';
-import { CreateUserDto } from './schemas/create-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -11,20 +9,35 @@ export class UsersRepository {
     return await this.kyselyService.db.selectFrom('users').selectAll().execute();
   }
 
-  async create({ name, email }: CreateUserDto) {
-    const existedUser = await this.kyselyService.db
+  async findUserByEmail({ email }: { email: string }) {
+    return await this.kyselyService.db
       .selectFrom('users')
       .where('email', '=', email)
+      .selectAll()
       .executeTakeFirst();
+  }
 
-    if (existedUser != null) {
-      throw new ConflictException('User with this email already exists');
-    }
+  async findUserById({ id }: { id: number }) {
+    return await this.kyselyService.db
+      .selectFrom('users')
+      .where('id', '=', id)
+      .selectAll()
+      .executeTakeFirst();
+  }
 
+  async findUserByScreeName({ screenName }: { screenName: string }) {
+    return await this.kyselyService.db
+      .selectFrom('users')
+      .where('screen_name', '=', screenName)
+      .selectAll()
+      .executeTakeFirst();
+  }
+
+  async create({ passwordHash, email }: { passwordHash: string; email: string }) {
     return await this.kyselyService.db
       .insertInto('users')
-      .values({ name, email, created_at: new Date() })
-      .returning(['id', 'name', 'email', 'avatar'])
+      .values({ password_hash: passwordHash, email, created_at: new Date() })
+      .returning(['id', 'screen_name', 'email', 'avatar'])
       .executeTakeFirst();
   }
 }

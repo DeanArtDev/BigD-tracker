@@ -3,12 +3,11 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType } from "kysely";
 
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
 export type Numeric = ColumnType<string, number | string, number | string>;
 
@@ -45,6 +44,17 @@ export interface Repetitions {
   weight: Numeric;
 }
 
+export interface Sessions {
+  created_at: Generated<Timestamp>;
+  expires_at: Timestamp;
+  ip: string | null;
+  revoked: Generated<boolean>;
+  token: string;
+  user_agent: string | null;
+  users_id: number;
+  uuid: string;
+}
+
 export interface Trainings {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -62,7 +72,8 @@ export interface Users {
   created_at: Generated<Timestamp>;
   email: string;
   id: Generated<number>;
-  name: string;
+  password_hash: string;
+  screen_name: string | null;
   updated_at: Generated<Timestamp>;
 }
 
@@ -70,6 +81,7 @@ export interface DB {
   exercise_types: ExerciseTypes;
   exercises: Exercises;
   repetitions: Repetitions;
+  sessions: Sessions;
   trainings: Trainings;
   users: Users;
 }
