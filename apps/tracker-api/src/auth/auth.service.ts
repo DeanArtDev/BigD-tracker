@@ -7,6 +7,7 @@ import { UsersService } from '@/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterRequest } from './dto/register.dto';
 import { AuthRepository } from './auth.repository';
+import { User } from '@/users/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -29,11 +30,32 @@ export class AuthService {
       userId: newUser.id,
       userAgent: data.userAgent,
     });
-    console.log({ sessionToken: session.token });
+
     return {
       accessToken,
       sessionToken: session.token,
     };
+  }
+
+  async checkUserAuth(data: { email: string; password: string }): Promise<User> {
+    const user = await this.userService.checkUserByPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (user == null) throw new UnauthorizedException('Invalid credentials');
+    return user;
+  }
+
+  async logout(data: { userId: number; sessionUuid: string }): Promise<boolean> {
+    if (!(await this.userService.findUser({ id: data.userId }))) {
+      throw new UnauthorizedException('Session owner is not existed');
+    }
+
+    return await this.authRepository.deleteSession({
+      uuid: data.sessionUuid,
+      userId: data.userId,
+    });
   }
 
   async refreshToken(data: {
@@ -42,12 +64,11 @@ export class AuthService {
     ip?: string;
   }): Promise<{ sessionToken: string; accessToken: string }> {
     const userSession = await this.authRepository.findSessionByToken(data.sessionToken);
-    console.log({ userSession });
     if (userSession == null || new Date() > userSession.expires_at) {
       throw new UnauthorizedException('Refresh token invalid');
     }
 
-    if (!(await this.userService.checkUser({ id: userSession.users_id }))) {
+    if (!(await this.userService.findUser({ id: userSession.users_id }))) {
       throw new UnauthorizedException('Session owner is not existed');
     }
 

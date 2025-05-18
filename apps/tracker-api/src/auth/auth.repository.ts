@@ -22,14 +22,26 @@ export class AuthRepository {
       .executeTakeFirst();
   }
 
-  async deleteSession(data: { token: string; userId: number }) {
+  async deleteSession(
+    data: { token: string; userId: number } | { uuid: string; userId: number },
+  ) {
+    if ('uuid' in data) {
+      const result = await this.kyselyService.db
+        .deleteFrom('sessions')
+        .where('uuid', '=', data.uuid)
+        .where('users_id', '=', data.userId)
+        .executeTakeFirst();
+
+      return result.numDeletedRows > 0;
+    }
+
     const result = await this.kyselyService.db
       .deleteFrom('sessions')
       .where('token', '=', data.token)
       .where('users_id', '=', data.userId)
-      .execute();
-    console.log({ result });
-    return result.length > 0;
+      .executeTakeFirst();
+
+    return result.numDeletedRows > 0;
   }
 
   async createSession(data: { ip?: string; userId: number; userAgent?: string }) {

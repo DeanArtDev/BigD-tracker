@@ -2,11 +2,30 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 import { UsersRepository } from '@/users/users.repository';
 import { User } from './users.entity';
+import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+
+type FindUserData =
+  | {
+      id: number;
+      email?: never;
+      screenName?: never;
+    }
+  | {
+      id?: never;
+      email: string;
+      screenName?: never;
+    }
+  | {
+      id?: never;
+      email?: never;
+      screenName: string;
+    };
 
 @Injectable()
 export class UsersService {
@@ -20,26 +39,28 @@ export class UsersService {
     );
   }
 
-  async checkUser(data: {
-    id?: number;
-    email?: string;
-    screenName?: string;
-  }): Promise<boolean> {
+  async findUser(data: FindUserData): Promise<User> {
     if (data.email != null) {
-      return !!(await this.usersRepository.findUserByEmail({ email: data.email }));
+      const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
+      if (rawUser == null) throw new NotFoundException('User not found');
+      return mapAndValidateEntity(User, rawUser);
     }
 
     if (data.screenName != null) {
-      return !!(await this.usersRepository.findUserByScreeName({
+      const rawUser = await this.usersRepository.findUserByScreeName({
         screenName: data.screenName,
-      }));
+      });
+      if (rawUser == null) throw new NotFoundException('User not found');
+      return mapAndValidateEntity(User, rawUser);
     }
 
     if (data.id != null) {
-      return !!(await this.usersRepository.findUserById({ id: data.id }));
+      const rawUser = await this.usersRepository.findUserById({ id: data.id });
+      if (rawUser == null) throw new NotFoundException('User not found');
+      return mapAndValidateEntity(User, rawUser);
     }
 
-    return false;
+    return undefined as never;
   }
 
   async createUser(data: { password: string; email: string }) {
@@ -62,6 +83,17 @@ export class UsersService {
     }
 
     return newUser;
+  }
+
+  async checkUserByPassword(data: {
+    email: string;
+    password: string;
+  }): Promise<User | undefined> {
+    const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
+    if (rawUser == null) return undefined;
+    if (await this.validatePassword(data.password, rawUser.password_hash)) {
+      return mapAndValidateEntity(User, rawUser);
+    }
   }
 
   private async validatePassword(pass: string, hash: string): Promise<boolean> {

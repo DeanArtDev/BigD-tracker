@@ -13,6 +13,7 @@ export class UsersRepository {
     return await this.kyselyService.db
       .selectFrom('users')
       .where('email', '=', email)
+      .selectAll()
       .executeTakeFirst();
   }
 
@@ -20,6 +21,7 @@ export class UsersRepository {
     return await this.kyselyService.db
       .selectFrom('users')
       .where('id', '=', id)
+      .selectAll()
       .executeTakeFirst();
   }
 
@@ -27,6 +29,7 @@ export class UsersRepository {
     return await this.kyselyService.db
       .selectFrom('users')
       .where('screen_name', '=', screenName)
+      .selectAll()
       .executeTakeFirst();
   }
 
