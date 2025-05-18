@@ -3,8 +3,6 @@ import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterRequest, RegisterResponse } from './dto/register.dto';
 import { Request, Response } from 'express';
-import { ConfigService } from '@nestjs/config';
-import { APP_ENV } from '@shared/configs';
 import { Public } from './decorators';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
@@ -17,16 +15,9 @@ export class AuthController {
   constructor(
     private readonly cookieService: CookieService,
     private readonly authService: AuthService,
-    private readonly configService: ConfigService<APP_ENV>,
   ) {}
   /* TODO:
-   *   [x] короткий токен отдаем на клиент в ответе
-   *   [x] соль пока хранится в переменной окружения
-   *   [] рефреш отдаем в cookie
-   *   [] рефреш токен храним в базе
-   *   [] на каждую регистрацию создаем новую пару токенов
    *   [] кроном удаляем каждый день просроченые
-   *   [] гвард на приватные роуты (проверка по access-token) клиент сам осуществляет рефреш
    * */
   @Post('register')
   @Public()
