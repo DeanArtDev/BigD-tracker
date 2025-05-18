@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { User } from './users.entity';
 import { UsersService } from '@/users/users.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import {Public} from "@/auth/decorators";
+import { Public } from '@/auth/decorators';
 
 @Controller('users')
 export class UsersController {

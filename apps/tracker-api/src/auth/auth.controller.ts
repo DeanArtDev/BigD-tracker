@@ -28,7 +28,6 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
   /* TODO:
-   *   [] login
    *   [] кроном удаляем каждый день просроченные
    * */
   @Post('register')
