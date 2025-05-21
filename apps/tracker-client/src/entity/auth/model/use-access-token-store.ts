@@ -70,7 +70,6 @@ const useAccessTokenStore = create<AccessTokenStore>()(
         }
 
         const result = await awaiter;
-        console.log('delete access_token', result);
         set((state) => ({ ...state, accessToken: result ?? undefined }));
         return result;
       },

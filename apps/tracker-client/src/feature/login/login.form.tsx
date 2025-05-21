@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/shared/ui-kit/ui/card';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { routes } from '@/shared/lib/routes';
 import {
   Form,
@@ -19,8 +19,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { Input } from '@/shared/ui-kit/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useLogin } from '@/entity/auth';
 import { loginValidationSchema } from './login-validation';
-import { useAccessTokenStore, useLogin } from '@/entity/auth';
 
 interface LoginFormData {
   readonly email: string;
@@ -28,12 +28,8 @@ interface LoginFormData {
 }
 
 function LoginForm() {
-  const navigate = useNavigate();
   const { login, isWrongPassOrLogin, isPending } = useLogin();
 
-  const accessToken = useAccessTokenStore((state) => state.accessToken);
-
-  console.log('login', accessToken);
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginValidationSchema),
     reValidateMode: 'onSubmit',
@@ -45,19 +41,12 @@ function LoginForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => {
-            login(
-              {
-                body: {
-                  login: data.email,
-                  password: data.password,
-                },
+            login({
+              body: {
+                login: data.email,
+                password: data.password,
               },
-              {
-                onSuccess: () => {
-                  navigate(routes.home.path);
-                },
-              },
-            );
+            });
           })}
           className="space-y-8"
         >

@@ -7,6 +7,21 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/'),
 
+  gym: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/gym'),
+
+  gymHome: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/gym/home'),
+
+  gymDashboard: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/gym/dashboard'),
+
   signUp: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),

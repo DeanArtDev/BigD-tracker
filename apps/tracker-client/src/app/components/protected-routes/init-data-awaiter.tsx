@@ -1,10 +1,13 @@
-import { useAccessTokenStore, useMeSuspense } from '@/entity/auth';
-import { Outlet } from 'react-router-dom';
+import { useAccessTokenStore, useAuthStore, useMeSuspense } from '@/entity/auth';
 
-function InitDataAwaiter() {
+function InitDataAwaiter({ children }: { children: React.ReactNode }) {
   const accessToken = useAccessTokenStore((state) => state.accessToken);
+  const setIsAuth = useAuthStore((state) => state.setIsAuth);
   useMeSuspense({ enabled: accessToken == null });
-  return <Outlet />;
+  if (accessToken != null) {
+    setIsAuth(true);
+  }
+  return children;
 }
 
 export { InitDataAwaiter };

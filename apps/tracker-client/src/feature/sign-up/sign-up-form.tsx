@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/shared/ui-kit/ui/card';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { routes } from '@/shared/lib/routes';
 import {
   Form,
@@ -29,7 +29,6 @@ interface SignUpFormData {
 }
 
 function SignUpForm() {
-  const navigate = useNavigate();
   const { signUp, isPending } = useSignUp();
 
   const form = useForm<SignUpFormData>({
@@ -39,19 +38,12 @@ function SignUpForm() {
   });
 
   const onSubmit = (data: SignUpFormData) => {
-    signUp(
-      {
-        body: {
-          login: data.email,
-          password: data.password,
-        },
+    signUp({
+      body: {
+        login: data.email,
+        password: data.password,
       },
-      {
-        onSuccess: () => {
-          navigate(routes.home.path);
-        },
-      },
-    );
+    });
   };
 
   return (

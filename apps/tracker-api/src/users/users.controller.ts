@@ -2,7 +2,7 @@ import { Controller, Get, HttpStatus, NotFoundException } from '@nestjs/common';
 import { User } from './users.entity';
 import { UsersService } from '@/users/users.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { TokenPayload } from '@/auth/decorators';
+import { Public, TokenPayload } from '@/auth/decorators';
 import { MeDto, MeDtoResponse } from './dtos/me.dto';
 import { AccessTokenPayload } from '@/auth/entities/access-token.entity';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
@@ -12,7 +12,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  // @Public()
+  @Public()
   @ApiBearerAuth('access-token')
   async getUsers(): Promise<{ data: User[] }> {
     const data = await this.usersService.getAll();
