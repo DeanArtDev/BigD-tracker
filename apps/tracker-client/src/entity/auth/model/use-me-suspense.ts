@@ -1,10 +1,10 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 
-function useMeSuspense({ enabled = false }: { enabled: boolean }) {
+function useMeSuspense({ enabled }: { enabled: boolean } = { enabled: false }) {
   const { data, ...others } = $privetQueryClient.useSuspenseQuery('get', '/users/me', {
     enabled,
   });
-  return { data, ...others };
+  return { data: data.data, ...others };
 }
 
 export { useMeSuspense };

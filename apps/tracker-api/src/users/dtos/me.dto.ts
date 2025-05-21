@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsEmail,
   IsInt,
@@ -13,18 +14,18 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 class MeDto {
   @IsInt()
   @Expose()
-  @ApiPropertyOptional()
+  @ApiProperty()
   id: number;
 
   @IsString()
   @Expose()
   @IsOptional()
   @ApiPropertyOptional()
-  screenName: string;
+  screenName?: string;
 
   @IsEmail()
   @Expose()
-  @ApiPropertyOptional()
+  @ApiProperty()
   email: string;
 
   @IsUrl()
@@ -37,7 +38,7 @@ class MeDto {
   @IsArray()
   @IsString({ each: true })
   @Expose()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: ['admin', 'user', 'moderator'] })
   roles: string[];
 
   @ApiProperty({
@@ -49,11 +50,10 @@ class MeDto {
   @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
   createdAt: Date;
 
-  @IsOptional()
-  @Type(() => Boolean)
   @Expose()
-  @ApiPropertyOptional()
-  isVerified?: boolean;
+  @ApiProperty()
+  @IsBoolean()
+  isVerified: boolean;
 }
 
 class MeDtoResponse {

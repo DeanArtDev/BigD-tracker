@@ -116,18 +116,23 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     MeDto: {
-      id?: number;
+      id: number;
       screenName?: string;
-      email?: string;
+      email: string;
       /** @example /some-hash.png */
       avatar?: string;
+      /** @example [
+       *       "admin",
+       *       "user",
+       *       "moderator"
+       *     ] */
       roles?: string[];
       /**
        * Format: date-time
        * @example Thu May 15 2025 18:59:22 GMT+0000
        */
       createdAt: string;
-      isVerified?: boolean;
+      isVerified: boolean;
     };
     MeDtoResponse: {
       /** @description Ответ сервера */
