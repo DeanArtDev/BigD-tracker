@@ -4,10 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
+import { User } from '@/users/users.entity';
+import { ExceptionWrongLoginOrPassword } from '@big-d/api-exception';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterRequest } from './dto/register.dto';
 import { AuthRepository } from './auth.repository';
-import { User } from '@/users/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +44,9 @@ export class AuthService {
       password: data.password,
     });
 
-    if (user == null) throw new UnauthorizedException('Invalid credentials');
+    if (user == null) {
+      throw new ExceptionWrongLoginOrPassword({ message: 'Invalid credentials' });
+    }
     return user;
   }
 

@@ -1,6 +1,6 @@
-import { IsInt, IsString, IsEmail, IsOptional } from 'class-validator';
+import { IsDate, IsEmail, IsInt, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 
 class User {
   @ApiProperty({ example: 1 })
@@ -24,6 +24,15 @@ class User {
   @IsOptional()
   @IsString()
   avatar?: string;
+
+  @ApiProperty({
+    example: 'Thu May 15 2025 18:59:22 GMT+0000',
+  })
+  @Expose()
+  @IsDate()
+  @Type(() => Date)
+  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
+  createdAt: Date;
 }
 
 export { User };

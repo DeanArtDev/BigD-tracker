@@ -70,6 +70,7 @@ export class AuthController {
     description: 'Токен успешно продлен',
     type: RefreshResponse,
   })
+  @ApiBearerAuth('access-token')
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
