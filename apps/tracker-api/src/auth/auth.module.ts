@@ -18,7 +18,7 @@ import { CookieService } from '@shared/services/cookies.service';
         return {
           global: true,
           secret: configService.get<string>('AUTH_SECRET_KEY'),
-          signOptions: { expiresIn: '1h' },
+          signOptions: { expiresIn: '5s' },
         };
       },
     }),

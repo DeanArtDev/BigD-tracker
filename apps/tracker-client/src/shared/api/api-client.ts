@@ -1,27 +1,18 @@
-import createClient, { type Middleware } from 'openapi-fetch';
-import { APP_CONFIG } from '@/shared/lib/app-config';
+import createClient from 'openapi-fetch';
 import { default as createOpenapiReactQueryClient } from 'openapi-react-query';
+import { APP_CONFIG } from '@/shared/lib/app-config';
 import type { ApiEndpoints } from './types';
 
 const apiPublicClient = createClient<ApiEndpoints>({
   baseUrl: APP_CONFIG.API_BASE_URL,
   credentials: 'include',
 });
+const apiPrivateClient = createClient<ApiEndpoints>({
+  baseUrl: APP_CONFIG.API_BASE_URL,
+  credentials: 'include',
+});
 
-const rcClient = createOpenapiReactQueryClient(apiPublicClient);
+const $publicQueryClient = createOpenapiReactQueryClient(apiPublicClient);
+const $privetQueryClient = createOpenapiReactQueryClient(apiPrivateClient);
 
-const myMiddleware: Middleware = {
-  async onRequest() {
-    return undefined;
-  },
-  async onResponse() {
-    return undefined;
-  },
-  async onError() {
-    return undefined;
-  },
-};
-
-apiPublicClient.use(myMiddleware);
-
-export { apiPublicClient, rcClient };
+export { apiPublicClient, apiPrivateClient, $publicQueryClient, $privetQueryClient };

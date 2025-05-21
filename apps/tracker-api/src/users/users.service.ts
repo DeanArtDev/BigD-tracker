@@ -4,11 +4,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 import { UsersRepository } from '@/users/users.repository';
 import { User } from './users.entity';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { shapeUser } from '@/users/utils';
 
 type FindUserData =
   | {
@@ -34,8 +34,8 @@ export class UsersService {
   async getAll(): Promise<User[]> {
     const userList = await this.usersRepository.getAll();
 
-    return userList.map<User>(({ id, email, screen_name: name }) =>
-      plainToInstance(User, { id, email, name }),
+    return userList.map<User>((rawUser) =>
+      mapAndValidateEntity(User, shapeUser(rawUser)),
     );
   }
 
@@ -43,7 +43,7 @@ export class UsersService {
     if (data.email != null) {
       const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
       if (rawUser == null) throw new NotFoundException('User not found');
-      return mapAndValidateEntity(User, rawUser);
+      return mapAndValidateEntity(User, shapeUser(rawUser));
     }
 
     if (data.screenName != null) {
@@ -51,13 +51,13 @@ export class UsersService {
         screenName: data.screenName,
       });
       if (rawUser == null) throw new NotFoundException('User not found');
-      return mapAndValidateEntity(User, rawUser);
+      return mapAndValidateEntity(User, shapeUser(rawUser));
     }
 
     if (data.id != null) {
       const rawUser = await this.usersRepository.findUserById({ id: data.id });
       if (rawUser == null) throw new NotFoundException('User not found');
-      return mapAndValidateEntity(User, rawUser);
+      return mapAndValidateEntity(User, shapeUser(rawUser));
     }
 
     return undefined as never;
@@ -92,8 +92,9 @@ export class UsersService {
     const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
     if (rawUser == null) return undefined;
     if (await this.validatePassword(data.password, rawUser.password_hash)) {
-      return mapAndValidateEntity(User, rawUser);
+      return mapAndValidateEntity(User, shapeUser(rawUser));
     }
+    return undefined;
   }
 
   private async validatePassword(pass: string, hash: string): Promise<boolean> {

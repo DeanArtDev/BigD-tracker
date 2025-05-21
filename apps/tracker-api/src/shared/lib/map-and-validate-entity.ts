@@ -18,9 +18,9 @@ export function mapAndValidateEntity<T extends Record<string, any>, V>(
   });
 
   if (errors.length > 0) {
-    throw new InternalServerErrorException(
-      'Invalid entity structure returned from repository',
-    );
+    throw new InternalServerErrorException(errors, {
+      cause: 'Invalid entity structure returned from repository',
+    });
   }
 
   return instance;
