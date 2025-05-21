@@ -1,7 +1,6 @@
 import {
   IsArray,
   IsDate,
-  IsDateString,
   IsEmail,
   IsInt,
   IsOptional,
@@ -10,7 +9,6 @@ import {
 } from 'class-validator';
 import { Expose, Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {RegisterDto} from "@/auth/dto/register.dto";
 
 class MeDto {
   @IsInt()

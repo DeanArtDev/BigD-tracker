@@ -1,16 +1,10 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { APP_ENV } from '@shared/configs';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../decorators';
-import { PAYLOAD_KEY } from '../decorators';
+import { IS_PUBLIC_KEY, PAYLOAD_KEY } from '../decorators';
 import { ExceptionUnauthorized } from '@big-d/api-exception';
 
 @Injectable()
