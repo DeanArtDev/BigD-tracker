@@ -111,6 +111,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/trainings': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Получение тренировок */
+    get: operations['TrainingsController_getTrainings'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -138,19 +155,23 @@ export interface components {
       /** @description Ответ сервера */
       data: components['schemas']['MeDto'];
     };
-    RegisterRequest: {
+    Request: {
       /** @example example@example.com */
       login: string;
       /** @example 1234567 */
       password: string;
     };
-    RegisterDto: {
+    RegisterRequest: {
+      /** @description Данные для запроса */
+      data: components['schemas']['Request'];
+    };
+    Response: {
       /** @example jwt token is here */
       token: string;
     };
     RegisterResponse: {
       /** @description Ответ сервера */
-      data: components['schemas']['RegisterDto'];
+      data: components['schemas']['Response'];
     };
     RefreshDto: {
       /** @example jwt token is here */
@@ -165,18 +186,48 @@ export interface components {
       data: boolean;
     };
     LoginRequest: {
-      /** @example example@example.com */
-      login: string;
-      /** @example 1234567 */
-      password: string;
-    };
-    LoginDto: {
-      /** @example jwt token is here */
-      token: string;
+      /** @description Данные для запроса */
+      data: components['schemas']['Request'];
     };
     LoginResponse: {
       /** @description Ответ сервера */
-      data: components['schemas']['LoginDto'];
+      data: components['schemas']['Response'];
+    };
+    TrainingDto: {
+      id: number;
+      /** @example Понедельничная */
+      name: string;
+      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+      description?: string;
+      /**
+       * Format: date-time
+       * @example Thu May 15 2025 18:59:22 GMT+0000
+       */
+      startDate: string;
+      /**
+       * Format: date-time
+       * @example Thu May 15 2025 18:59:22 GMT+0000
+       */
+      endDate?: string;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      wormUpDuration?: number;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      postTrainingDuration?: number;
+      /**
+       * Format: date-time
+       * @example Thu May 15 2025 18:59:22 GMT+0000
+       */
+      createdAt: string;
+    };
+    GetTrainingsDto: {
+      /** @description Ответ сервера */
+      data: components['schemas']['TrainingDto'][];
     };
   };
   responses: never;
@@ -307,6 +358,25 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['LoginResponse'];
+        };
+      };
+    };
+  };
+  TrainingsController_getTrainings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GetTrainingsDto'];
         };
       };
     };

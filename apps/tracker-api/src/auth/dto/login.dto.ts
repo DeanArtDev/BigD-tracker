@@ -1,21 +1,38 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-class LoginRequest {
+class RequestDto {
   @ApiProperty({ example: 'example@example.com' })
   @IsEmail()
   @IsNotEmpty()
   @IsString()
   login: string;
 
-  @ApiProperty({ example: '1234567' })
+  @ApiProperty({ example: '1234567A' })
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
   password: string;
 }
 
-class LoginDto {
+class LoginRequest {
+  @ApiProperty({
+    description: 'Данные для запроса',
+    type: RequestDto,
+  })
+  @ValidateNested()
+  @Type(() => RequestDto)
+  data: RequestDto;
+}
+
+class ResponseDto {
   @ApiProperty({ example: 'jwt token is here' })
   @IsString()
   token: string;
@@ -24,9 +41,11 @@ class LoginDto {
 class LoginResponse {
   @ApiProperty({
     description: 'Ответ сервера',
-    type: LoginDto,
+    type: ResponseDto,
   })
-  data: LoginDto;
+  @ValidateNested()
+  @Type(() => ResponseDto)
+  data: ResponseDto;
 }
 
-export { LoginResponse, LoginDto, LoginRequest };
+export { LoginResponse, LoginRequest };

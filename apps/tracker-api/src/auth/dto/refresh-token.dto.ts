@@ -2,7 +2,7 @@ import { IsBoolean, IsDate, IsInt, IsOptional, IsString } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
-export class RefreshToken {
+class RefreshTokenDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   userId: number;
@@ -37,3 +37,5 @@ export class RefreshToken {
   @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
   createdAt: string;
 }
+
+export { RefreshTokenDto };

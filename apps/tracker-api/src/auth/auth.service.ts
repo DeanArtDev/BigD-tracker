@@ -19,7 +19,7 @@ export class AuthService {
   ) {}
 
   async register(
-    data: RegisterRequest & { ip: string; userAgent: string },
+    data: RegisterRequest['data'] & { ip: string; userAgent: string },
   ): Promise<{ sessionToken: string; accessToken: string }> {
     const newUser = await this.userService.createUser({
       email: data.login,
@@ -109,5 +109,45 @@ export class AuthService {
     });
 
     return { session, accessToken };
+  }
+
+  /* Сессия для тестового пользователя в поле token хранит JSW, 
+  в отличие от классического поведения */
+  async createTestUserSession({
+    userId,
+    exp = 8.64e7,
+  }: {
+    userId: number;
+    exp?: number;
+  }) {
+    const existedSession = await this.authRepository.findSessionByUserId(userId);
+    if (existedSession != null) return { accessToken: existedSession.token };
+
+    const { session } = await this.authRepository.createTestUserSession({ userId, exp });
+    if (session == null) {
+      throw new InternalServerErrorException({
+        cause: 'Failed to create test user session',
+      });
+    }
+
+    const accessToken = await this.jwtService.signAsync(
+      {
+        uid: userId,
+        sid: session.uuid,
+      },
+      { expiresIn: exp },
+    );
+    const updatedSession = await this.authRepository.updateTestUserSession({
+      uuid: session.uuid,
+      token: accessToken,
+    });
+
+    if (updatedSession == null) {
+      throw new InternalServerErrorException({
+        cause: 'Failed to update test user session',
+      });
+    }
+
+    return { accessToken: updatedSession.token };
   }
 }

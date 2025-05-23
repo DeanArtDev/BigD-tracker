@@ -1,28 +1,10 @@
 import { join } from 'node:path';
-import * as dotenv from 'dotenv';
-import { Migrator, FileMigrationProvider, Kysely, PostgresDialect } from 'kysely';
+import { FileMigrationProvider, Migrator } from 'kysely';
 import { promises as fs } from 'fs';
-import { Pool } from 'pg';
-import { getDBEnv } from '../src/shared/modules/db/config';
-
-dotenv.config({
-  path: [join(process.cwd(), '.env.production'), join(process.cwd(), '.env.development')],
-});
-
-const dbConfig = getDBEnv();
-const pool = new Pool({
-  host: dbConfig['DB_HOST'],
-  port: dbConfig['DB_PORT'],
-  user: dbConfig['DB_USERNAME'],
-  password: dbConfig['DB_PASSWORD'],
-  database: dbConfig['DB_DATABASE'],
-});
-
-const db = new Kysely<any>({
-  dialect: new PostgresDialect({ pool }),
-});
+import { getDb } from './get-db';
 
 async function migrate() {
+  const db = getDb();
   const migrator = new Migrator({
     db,
     provider: new FileMigrationProvider({

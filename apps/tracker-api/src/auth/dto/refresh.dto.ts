@@ -15,4 +15,4 @@ class RefreshResponse {
   data: RefreshDto;
 }
 
-export { RefreshResponse, RefreshDto };
+export { RefreshResponse };

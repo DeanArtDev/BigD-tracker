@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { AccessTokenPayload } from '../entities/access-token.entity';
 import { validateSync } from 'class-validator';
+import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 
 const PAYLOAD_KEY = 'tokenPayload';
 

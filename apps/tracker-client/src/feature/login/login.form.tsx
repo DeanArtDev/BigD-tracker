@@ -43,8 +43,10 @@ function LoginForm() {
           onSubmit={form.handleSubmit((data) => {
             login({
               body: {
-                login: data.email,
-                password: data.password,
+                data: {
+                  login: data.email,
+                  password: data.password,
+                },
               },
             });
           })}

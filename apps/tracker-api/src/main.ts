@@ -6,9 +6,30 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
+import { AuthService } from '@/auth/auth.service';
+import { UsersService } from '@/users/users.service';
+import * as path from 'node:path';
+import * as express from 'express';
+import { ACCESS_TOKEN_KEY } from '@/auth/lib';
+import { testUserConfig } from '@db/seeds/test-user';
 
 const DOCUMENTATION_URL = 'documentation';
 const SWAGGER_URL = 'swagger/json';
+
+const getTestUserToken = async (app: INestApplication, login: string) => {
+  const authService = app.get<AuthService>(AuthService);
+  const userService = app.get<UsersService>(UsersService);
+  const testUser = await userService.findUser({ email: login });
+  try {
+    const { accessToken = 'there is no any test users' } =
+      await authService.createTestUserSession({
+        userId: testUser.id,
+      });
+    return accessToken;
+  } catch (err) {
+    console.log(`При создании токена для тестового пользователя что то отъебнуло`, err);
+  }
+};
 
 const connectSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -23,12 +44,17 @@ const connectSwagger = (app: INestApplication) => {
         name: 'Authorization',
         in: 'header',
       },
-      'access-token',
+      ACCESS_TOKEN_KEY,
     )
     .build();
 
+  app.use('/swagger-custom', express.static(path.join(__dirname, '../../swagger')));
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(DOCUMENTATION_URL, app, documentFactory, {
+    customJs: `/swagger-custom/swagger-init.js`,
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
     jsonDocumentUrl: SWAGGER_URL,
   });
 };
@@ -55,13 +81,17 @@ async function bootstrap() {
     origin: ['http://localhost:3033'],
     credentials: true,
   });
+
+  const testUserToken = await getTestUserToken(app, testUserConfig.TEST_USER_LOGIN);
   connectSwagger(app);
 
   await app.listen(port, '0.0.0.0', () => {
     console.log(`
     🚀 Application is running at port http://localhost:${port};
-       Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL};
-       To get open api string schema at http://localhost:${port}/${SWAGGER_URL};
+    ----------------------------------------------------------------
+    📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}?token=${testUserToken};
+    ----------------------------------------------------------------
+    📜 To get open api string schema at http://localhost:${port}/${SWAGGER_URL};
     `);
   });
 }
