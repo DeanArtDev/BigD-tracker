@@ -1,5 +1,6 @@
 import { Kysely } from 'kysely';
 import seeds from '../db/seeds';
+import { DB } from '../src/shared/modules/db';
 import { getDb } from './get-db';
 
 export async function runSeeds() {
@@ -51,7 +52,7 @@ export async function runSeeds() {
   await db.destroy();
 }
 
-async function runSeed(script: (typeof seeds)[number], db: Kysely<any>) {
+async function runSeed(script: (typeof seeds)[number], db: Kysely<DB>) {
   const { target, seed } = script;
 
   try {

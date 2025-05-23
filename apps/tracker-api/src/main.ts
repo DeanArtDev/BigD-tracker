@@ -31,7 +31,7 @@ const getTestUserToken = async (app: INestApplication, login: string) => {
   }
 };
 
-const connectSwagger = async (app: INestApplication) => {
+const connectSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
     .setTitle('Big-D Tracker API')
     .setVersion('0.0.1')
@@ -83,7 +83,7 @@ async function bootstrap() {
   });
 
   const testUserToken = await getTestUserToken(app, testUserConfig.TEST_USER_LOGIN);
-  await connectSwagger(app);
+  connectSwagger(app);
 
   await app.listen(port, '0.0.0.0', () => {
     console.log(`

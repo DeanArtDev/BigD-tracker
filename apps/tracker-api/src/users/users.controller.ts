@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { User } from './users.entity';
 import { UsersService } from '@/users/users.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';

@@ -16,7 +16,7 @@ import { TrainingsModule } from '@/tranings/trainings.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
-    TrainingsModule
+    TrainingsModule,
   ],
 })
 export class AppModule {}
