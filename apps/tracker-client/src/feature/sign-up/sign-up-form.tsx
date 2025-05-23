@@ -40,8 +40,10 @@ function SignUpForm() {
   const onSubmit = (data: SignUpFormData) => {
     signUp({
       body: {
-        login: data.email,
-        password: data.password,
+        data: {
+          login: data.email,
+          password: data.password,
+        },
       },
     });
   };

@@ -2,6 +2,7 @@ import { $publicQueryClient } from '@/shared/api/api-client';
 import { useAccessTokenStore, useAuthStore } from '@/entity/auth';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 function useSignUp() {
   const navigate = useNavigate();
@@ -12,6 +13,14 @@ function useSignUp() {
     'post',
     '/auth/register',
     {
+      onError: (error: Error) => {
+        /*Забабахать тайп гард для 409*/
+        if (typeof error === 'object' && error != null && 'statusCode' in error) {
+          if (error.statusCode === 409) {
+            toast.error('Пользователь с таким именем или паролем уже существует');
+          }
+        }
+      },
       onSuccess: (data) => {
         if (data.data != null) {
           navigate(routes.gymHome.path);
