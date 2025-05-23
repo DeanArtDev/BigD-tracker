@@ -2,6 +2,7 @@ import { IsDate, IsEmail, IsInt, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
 
+/* Это блэт DTO а не entity!*/
 class User {
   @ApiProperty({ example: 1 })
   @Expose()

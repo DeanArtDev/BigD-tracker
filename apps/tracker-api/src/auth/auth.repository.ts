@@ -22,6 +22,14 @@ export class AuthRepository {
       .executeTakeFirst();
   }
 
+  async findSessionByUserId(id: number) {
+    return await this.kyselyService.db
+      .selectFrom('sessions')
+      .where('users_id', '=', id)
+      .select(['ip', 'uuid', 'users_id', 'user_agent', 'token', 'revoked', 'expires_at'])
+      .executeTakeFirst();
+  }
+
   async deleteSession(
     data: { token: string; userId: number } | { uuid: string; userId: number },
   ) {
@@ -75,5 +83,34 @@ export class AuthRepository {
       .executeTakeFirst();
 
     return { session };
+  }
+
+  async createTestUserSession(data: { userId: number; exp: number }) {
+    const uuid = randomUUID();
+    const refreshToken = randomBytes(40).toString('hex');
+    const expiresDate = Date.now() + data.exp;
+
+    const session = await this.kyselyService.db
+      .insertInto('sessions')
+      .values({
+        uuid,
+        token: refreshToken,
+        revoked: false,
+        users_id: data.userId,
+        expires_at: new Date(expiresDate),
+      })
+      .returning(['token', 'uuid'])
+      .executeTakeFirst();
+
+    return { session };
+  }
+
+  async updateTestUserSession(data: { token: string; uuid: string }) {
+    return await this.kyselyService.db
+      .updateTable('sessions')
+      .where('uuid', '=', data.uuid)
+      .set({ token: data.token })
+      .returning(['token', 'uuid'])
+      .executeTakeFirst();
   }
 }

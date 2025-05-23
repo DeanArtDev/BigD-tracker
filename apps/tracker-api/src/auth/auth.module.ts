@@ -8,17 +8,18 @@ import { AuthService } from './auth.service';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '@/auth/guards/auth.guard';
 import { CookieService } from '@shared/services/cookies.service';
+import { APP_ENV } from '@shared/configs';
 
 @Module({
   imports: [
     UsersModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService<APP_ENV>) => {
         return {
           global: true,
-          secret: configService.get<string>('AUTH_SECRET_KEY'),
-          signOptions: { expiresIn: '5s' },
+          secret: configService.get('AUTH_SECRET_KEY'),
+          signOptions: { expiresIn: configService.get('ACCESS_TOKEN_TIME') },
         };
       },
     }),

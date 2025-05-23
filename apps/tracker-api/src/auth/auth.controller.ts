@@ -11,14 +11,15 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterRequest, RegisterResponse } from './dto/register.dto';
 import { Request, Response } from 'express';
-import { Public, TokenPayload } from './decorators';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
 import { CookieService, REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
-import { RefreshResponse } from '@/auth/dto/refresh.dto';
-import { AccessTokenPayload } from '@/auth/entities/access-token.entity';
-import { LogoutResponse } from '@/auth/dto/logout.dto';
-import { LoginRequest, LoginResponse } from '@/auth/dto/login.dto';
+import { Public, TokenPayload } from './decorators';
+import { RefreshResponse } from './dto/refresh.dto';
+import { LogoutResponse } from './dto/logout.dto';
+import { LoginRequest, LoginResponse } from './dto/login.dto';
+import { AccessTokenPayload } from './dto/access-token.dto';
+import { ACCESS_TOKEN_KEY } from './lib';
 
 @ApiTags('Auth.')
 @Controller('auth')
@@ -43,13 +44,13 @@ export class AuthController {
     type: RegisterResponse,
   })
   async register(
-    @Body() body: RegisterRequest,
+    @Body() { data }: RegisterRequest,
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
   ): Promise<RegisterResponse> {
     const { accessToken, sessionToken } = await this.authService.register({
-      ...body,
+      ...data,
       ip,
       userAgent,
     });
@@ -70,7 +71,7 @@ export class AuthController {
     description: 'Токен успешно продлен',
     type: RefreshResponse,
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -79,14 +80,18 @@ export class AuthController {
   ) {
     const refreshToken = req.cookies[REFRESH_TOKEN_FIELD];
 
-    const { accessToken, sessionToken } = await this.authService.refreshToken({
-      ip,
-      userAgent,
-      sessionToken: refreshToken,
-    });
-
-    this.cookieService.setRefreshToken(res, sessionToken);
-    return { data: { token: accessToken } };
+    try {
+      const { accessToken, sessionToken } = await this.authService.refreshToken({
+        ip,
+        userAgent,
+        sessionToken: refreshToken,
+      });
+      this.cookieService.setRefreshToken(res, sessionToken);
+      return { data: { token: accessToken } };
+    } catch (e) {
+      this.cookieService.setRefreshToken(res, undefined);
+      throw e;
+    }
   }
 
   @Post('logout')
@@ -98,7 +103,7 @@ export class AuthController {
     description: 'Выход совершен успешно',
     type: LogoutResponse,
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async logout(
     @Res({ passthrough: true }) res: Response,
     @TokenPayload() tokenPayload: AccessTokenPayload,
@@ -129,13 +134,13 @@ export class AuthController {
   })
   async login(
     @Res({ passthrough: true }) res: Response,
-    @Body() body: LoginRequest,
+    @Body() { data }: LoginRequest,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
   ): Promise<LoginResponse> {
     const user = await this.authService.checkUserAuth({
-      email: body.login,
-      password: body.password,
+      email: data.login,
+      password: data.password,
     });
 
     const { accessToken, session } = await this.authService.createSession({

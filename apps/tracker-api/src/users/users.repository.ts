@@ -36,7 +36,7 @@ export class UsersRepository {
   async create({ passwordHash, email }: { passwordHash: string; email: string }) {
     return await this.kyselyService.db
       .insertInto('users')
-      .values({ password_hash: passwordHash, email, created_at: new Date() })
+      .values({ password_hash: passwordHash, email })
       .returning(['id', 'screen_name', 'email', 'avatar'])
       .executeTakeFirst();
   }

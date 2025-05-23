@@ -61,10 +61,16 @@ export interface Trainings {
   end_date: Timestamp | null;
   id: Generated<number>;
   name: string;
-  post_training_duration: Timestamp | null;
+  post_training_duration: number | null;
   start_date: Timestamp | null;
+  type: string;
   updated_at: Generated<Timestamp>;
-  worm_up_duration: Timestamp | null;
+  user_id: number;
+  worm_up_duration: number | null;
+}
+
+export interface TrainingsTypes {
+  value: string;
 }
 
 export interface Users {
@@ -83,5 +89,6 @@ export interface DB {
   repetitions: Repetitions;
   sessions: Sessions;
   trainings: Trainings;
+  trainings_types: TrainingsTypes;
   users: Users;
 }

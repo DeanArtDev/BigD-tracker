@@ -4,6 +4,7 @@ import { appConfigFactory } from '@shared/configs/app-config-factory';
 import { DatabaseModule } from '@shared/modules/db';
 import { UsersModule } from '@/users/users.module';
 import { AuthModule } from '@/auth/auth.module';
+import { TrainingsModule } from '@/tranings/trainings.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from '@/auth/auth.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    TrainingsModule
   ],
 })
 export class AppModule {}
