@@ -33,7 +33,7 @@ function NavMenu() {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Приложения</SidebarGroupLabel>
       <SidebarMenu>
         {navMenuItems.map((item) => {
           const isCurrentItem = pathname.includes(item.to.toString());

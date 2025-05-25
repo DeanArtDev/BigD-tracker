@@ -2,6 +2,7 @@ import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
 import { OutOfAuthRoutes } from '@/app/components/out-of-auth-routes';
 import { routes } from '@/shared/lib/routes';
 import { AppSidebar } from '@/feature/sidebar';
+import { AppHeader } from './components/app-header';
 import { GlobalErrorBoundary } from './components/global-error-boundary';
 import { ProtectedRoutes } from './components/protected-routes';
 import { App } from './app';
@@ -15,14 +16,20 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <AppSidebar>
-              <Outlet />
+              <AppHeader>
+                <Outlet />
+              </AppHeader>
             </AppSidebar>
           </ProtectedRoutes>
         ),
         children: [
           {
             path: routes.home.path,
-            lazy: () => import('@/page/home.page'),
+            loader: () => redirect(routes.gymHome.path),
+          },
+          {
+            path: routes.gymTrainings.path,
+            lazy: () => import('@/page/gym-training'),
           },
           {
             path: routes.gymDashboard.path,

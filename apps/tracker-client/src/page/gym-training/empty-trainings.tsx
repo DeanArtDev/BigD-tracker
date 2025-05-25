@@ -1,0 +1,32 @@
+import { useBoolean } from 'usehooks-ts';
+import { Button } from '@/shared/ui-kit/ui/button';
+import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { TrainingCreateForm } from '@/feature/training/training-create-form';
+
+function EmptyTrainings() {
+  const { value, setValue, setTrue, setFalse } = useBoolean(false);
+
+  return (
+    <div className="border-2 border-dotted rounded-lg grow p-2 m-4 flex flex-col justify-center items-center">
+      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight text-center mb-4">
+        У тебя нет ни одной тренировки, добавим?
+      </h3>
+      <Button size="lg" onClick={setTrue}>
+        Добавить
+      </Button>
+
+      <AdoptedDialog
+        open={value}
+        onOpenChange={setValue}
+        slotsProps={{
+          header: { element: 'Создание тренировки' },
+          content: { className: 'sm:max-w-[900px] pb-10 md:pb-6' },
+        }}
+      >
+        <TrainingCreateForm onSuccess={setFalse} />
+      </AdoptedDialog>
+    </div>
+  );
+}
+
+export { EmptyTrainings };

@@ -12,7 +12,7 @@ import { NavMenu } from './nav-menu';
 import { NavUser } from './nav-user';
 
 export function AppSidebar({ children, ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: me } = useMeSuspense();
+  const { me } = useMeSuspense();
   const { email, avatar, screenName } = me;
 
   return (

@@ -3,6 +3,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Toaster } from '@/shared/ui-kit/ui/sonner';
+import { setDefaultOptions } from 'date-fns';
+import { ru } from 'date-fns/locale';
+
+setDefaultOptions({ locale: ru });
 
 export function Providers({ children }: { children: ReactNode }) {
   return (

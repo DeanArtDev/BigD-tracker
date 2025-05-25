@@ -17,6 +17,14 @@ const navMenuItems: NavMenuItem[] = [
         title: 'Дашборд',
         to: routes.gymDashboard.path,
       },
+      {
+        title: 'Тренировки',
+        to: routes.gymTrainings.path,
+      },
+      {
+        title: 'Программы',
+        to: routes.gymPrograms.path,
+      },
     ],
   },
 ];

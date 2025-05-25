@@ -121,11 +121,30 @@ export interface paths {
     /** Получение тренировок */
     get: operations['TrainingsController_getTrainings'];
     put?: never;
-    post?: never;
+    /** Создание тренировки */
+    post: operations['TrainingsController_createTraining'];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
+    trace?: never;
+  };
+  '/trainings/{trainingId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Удаление тренировки */
+    delete: operations['TrainingsController_deleteTraining'];
+    options?: never;
+    head?: never;
+    /** Частичное обновление тренировки */
+    patch: operations['TrainingsController_patchTraining'];
     trace?: never;
   };
 }
@@ -146,7 +165,7 @@ export interface components {
       roles?: string[];
       /**
        * Format: date-time
-       * @example Thu May 15 2025 18:59:22 GMT+0000
+       * @example 2025-05-24T13:01:02.471Z
        */
       createdAt: string;
       isVerified: boolean;
@@ -155,23 +174,23 @@ export interface components {
       /** @description Ответ сервера */
       data: components['schemas']['MeDto'];
     };
-    Request: {
+    RequestDto: {
       /** @example example@example.com */
       login: string;
-      /** @example 1234567 */
+      /** @example 12345678 */
       password: string;
     };
     RegisterRequest: {
       /** @description Данные для запроса */
-      data: components['schemas']['Request'];
+      data: components['schemas']['RequestDto'];
     };
-    Response: {
+    ResponseDto: {
       /** @example jwt token is here */
       token: string;
     };
     RegisterResponse: {
       /** @description Ответ сервера */
-      data: components['schemas']['Response'];
+      data: components['schemas']['ResponseDto'];
     };
     RefreshDto: {
       /** @example jwt token is here */
@@ -187,26 +206,32 @@ export interface components {
     };
     LoginRequest: {
       /** @description Данные для запроса */
-      data: components['schemas']['Request'];
+      data: components['schemas']['RequestDto'];
     };
     LoginResponse: {
       /** @description Ответ сервера */
-      data: components['schemas']['Response'];
+      data: components['schemas']['ResponseDto'];
     };
     TrainingDto: {
       id: number;
+      userId: number;
+      /**
+       * @example MEDIUM
+       * @enum {string}
+       */
+      type: 'LIGHT' | 'MEDIUM' | 'HARD';
       /** @example Понедельничная */
       name: string;
       /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
       description?: string;
       /**
        * Format: date-time
-       * @example Thu May 15 2025 18:59:22 GMT+0000
+       * @example 2025-05-24T13:01:02.471Z
        */
-      startDate: string;
+      startDate?: string;
       /**
        * Format: date-time
-       * @example Thu May 15 2025 18:59:22 GMT+0000
+       * @example 2025-05-24T13:01:02.471Z
        */
       endDate?: string;
       /**
@@ -221,13 +246,97 @@ export interface components {
       postTrainingDuration?: number;
       /**
        * Format: date-time
-       * @example Thu May 15 2025 18:59:22 GMT+0000
+       * @example 2025-05-24T13:01:02.471Z
        */
       createdAt: string;
     };
     GetTrainingsDto: {
       /** @description Ответ сервера */
       data: components['schemas']['TrainingDto'][];
+    };
+    Request: {
+      userId: number;
+      /**
+       * @example MEDIUM
+       * @enum {string}
+       */
+      type: 'LIGHT' | 'MEDIUM' | 'HARD';
+      /** @example Понедельничная */
+      name: string;
+      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+      description?: string;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      startDate?: string;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      endDate?: string;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      wormUpDuration?: number;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      postTrainingDuration?: number;
+    };
+    CreateTrainingRequest: {
+      /** @description Данные для запроса */
+      data: components['schemas']['Request'];
+    };
+    CreateTrainingResponse: {
+      /** @description Ответ сервера */
+      data: components['schemas']['TrainingDto'];
+    };
+    PatchTrainingDto: {
+      /**
+       * @example MEDIUM
+       * @enum {string}
+       */
+      type?: 'LIGHT' | 'MEDIUM' | 'HARD';
+      /** @example Понедельничная */
+      name?: string;
+      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+      description?: string;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      startDate?: string;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      endDate?: string;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      wormUpDuration?: number;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      postTrainingDuration?: number;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      createdAt?: string;
+    };
+    PatchTrainingRequest: {
+      /** @description Запрос к серверу */
+      data: components['schemas']['PatchTrainingDto'];
+    };
+    PatchTrainingResponse: {
+      /** @description Ответ сервера */
+      data: components['schemas']['TrainingDto'];
     };
   };
   responses: never;
@@ -377,6 +486,76 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['GetTrainingsDto'];
+        };
+      };
+    };
+  };
+  TrainingsController_createTraining: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateTrainingRequest'];
+      };
+    };
+    responses: {
+      /** @description Тренировка создана */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CreateTrainingResponse'];
+        };
+      };
+    };
+  };
+  TrainingsController_deleteTraining: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        trainingId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Тренировка удалена */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  TrainingsController_patchTraining: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        trainingId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PatchTrainingRequest'];
+      };
+    };
+    responses: {
+      /** @description Тренировка обновлена */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PatchTrainingResponse'];
         };
       };
     };
