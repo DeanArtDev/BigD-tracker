@@ -27,7 +27,7 @@ class User {
   avatar?: string;
 
   @ApiProperty({
-    example: 'Thu May 15 2025 18:59:22 GMT+0000',
+    example: '2025-05-24T13:01:02.471Z',
   })
   @Expose()
   @IsDate()
