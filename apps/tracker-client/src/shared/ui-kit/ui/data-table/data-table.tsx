@@ -34,7 +34,7 @@ function DataTable<T extends Record<string, any>>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
   });
 
   if (pagination.pageIndex === data.length / pagination.pageSize) {
@@ -66,7 +66,7 @@ function DataTable<T extends Record<string, any>>({
   });
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-auto pb-4 lg:pb-8">
+    <div className="relative flex flex-col grow gap-4 overflow-auto pb-4 lg:pb-8">
       <div className="overflow-hidden rounded-lg border">
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">
