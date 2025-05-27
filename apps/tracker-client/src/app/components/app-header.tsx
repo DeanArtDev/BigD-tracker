@@ -1,14 +1,7 @@
-import { SidebarInset, SidebarTrigger } from '@/shared/ui-kit/ui/sidebar';
-import { Separator } from '@/shared/ui-kit/ui/separator';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-} from '@/shared/ui-kit/ui/breadcrumb';
-import type { PropsWithChildren } from 'react';
-import { routes } from '@/shared/lib/routes';
 import { type NavMenuItem, navMenuItems } from '@/feature/sidebar';
+import { routes } from '@/shared/lib/routes';
+import { Separator } from '@/shared/ui-kit/ui/separator';
+import { SidebarTrigger } from '@/shared/ui-kit/ui/sidebar';
 import { useLocation } from 'react-router-dom';
 
 type RoutePaths = (typeof routes)[keyof typeof routes]['path'];
@@ -29,37 +22,22 @@ const findBreadcrumb = (target: RoutePaths | string): NavMenuItem | null => {
   return null;
 };
 
-function AppHeader({ children }: PropsWithChildren) {
+function AppHeader() {
   const location = useLocation();
   const item = findBreadcrumb(location.pathname);
 
   return (
-    <div className="h-dvh flex grow flex-col">
-      <header
-        className="
-        border-b border-gray-300
-        flex h-16 shrink-0 items-center gap-2
-        transition-[width,height] ease-linear
+    <header className="bg-background group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
+      <div className="flex items-center gap-2 px-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mx-2 data-[orientation=vertical]:h-4"
+        />
 
-        group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
-      >
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            {item != null && (
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink className="text-lg">{item.title}</BreadcrumbLink>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            )}
-          </Breadcrumb>
-        </div>
-      </header>
-
-      <SidebarInset>{children}</SidebarInset>
-    </div>
+        <h1 className="text-base font-medium">{item?.title}</h1>
+      </div>
+    </header>
   );
 }
 
