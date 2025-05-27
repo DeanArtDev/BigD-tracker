@@ -129,6 +129,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/trainings/templates': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Получение шаблонов тренировок */
+    get: operations['TrainingsController_getTrainingsTemplates'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/trainings/{trainingId}': {
     parameters: {
       query?: never;
@@ -137,7 +154,8 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    put?: never;
+    /** Полное обновление тренировки */
+    put: operations['TrainingsController_putTraining'];
     post?: never;
     /** Удаление тренировки */
     delete: operations['TrainingsController_deleteTraining'];
@@ -254,6 +272,38 @@ export interface components {
       /** @description Ответ сервера */
       data: components['schemas']['TrainingDto'][];
     };
+    TrainingTemplateDto: {
+      id: number;
+      userId: number;
+      /**
+       * @example MEDIUM
+       * @enum {string}
+       */
+      type: 'LIGHT' | 'MEDIUM' | 'HARD';
+      /** @example Понедельничная */
+      name: string;
+      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+      description?: string;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      wormUpDuration?: number;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      postTrainingDuration?: number;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      createdAt: string;
+    };
+    GetTrainingsTemplatesResponse: {
+      /** @description Ответ сервера */
+      data: components['schemas']['TrainingTemplateDto'][];
+    };
     Request: {
       userId: number;
       /**
@@ -335,6 +385,50 @@ export interface components {
       data: components['schemas']['PatchTrainingDto'];
     };
     PatchTrainingResponse: {
+      /** @description Ответ сервера */
+      data: components['schemas']['TrainingDto'];
+    };
+    PutTrainingDto: {
+      /**
+       * @example MEDIUM
+       * @enum {string}
+       */
+      type: 'LIGHT' | 'MEDIUM' | 'HARD';
+      /** @example Понедельничная */
+      name: string;
+      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+      description?: string;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      startDate?: string;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      endDate?: string;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      wormUpDuration?: number;
+      /**
+       * @description измеряется в миллисекундах
+       * @example 30000
+       */
+      postTrainingDuration?: number;
+      /**
+       * Format: date-time
+       * @example 2025-05-24T13:01:02.471Z
+       */
+      createdAt: string;
+    };
+    PutTrainingRequest: {
+      /** @description Запрос к серверу */
+      data: components['schemas']['PutTrainingDto'];
+    };
+    PutTrainingResponse: {
       /** @description Ответ сервера */
       data: components['schemas']['TrainingDto'];
     };
@@ -510,6 +604,51 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['CreateTrainingResponse'];
+        };
+      };
+    };
+  };
+  TrainingsController_getTrainingsTemplates: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GetTrainingsTemplatesResponse'];
+        };
+      };
+    };
+  };
+  TrainingsController_putTraining: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        trainingId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PutTrainingRequest'];
+      };
+    };
+    responses: {
+      /** @description Тренировка обновлена */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PutTrainingResponse'];
         };
       };
     };

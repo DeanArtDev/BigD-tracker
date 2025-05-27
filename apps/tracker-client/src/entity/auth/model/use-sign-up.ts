@@ -1,5 +1,5 @@
-import { $publicQueryClient } from '@/shared/api/api-client';
 import { useAccessTokenStore, useAuthStore } from '@/entity/auth';
+import { $publicQueryClient } from '@/shared/api/api-client';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -23,9 +23,9 @@ function useSignUp() {
       },
       onSuccess: (data) => {
         if (data.data != null) {
-          navigate(routes.gymHome.path);
           setAccessToken(data.data.token);
           setIsAuth(true);
+          navigate(routes.gymHome.path);
         }
       },
     },

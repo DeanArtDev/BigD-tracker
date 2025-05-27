@@ -1,23 +1,26 @@
+import { useTrainingsTemplatesQuery } from '@/entity/trainings';
+import { PageWrapper } from '@/page/ui/page-wrapper';
+import { withLazy } from '@/shared/lib/react/with-lazy';
+import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
-import { useTrainingsQuery } from '@/entity/trainings';
-import { LoaderCircle } from 'lucide-react';
-import { PageWrapper } from '../ui/page-wrapper';
 import { EmptyTrainings } from './empty-trainings';
 
+const TrainingsTableLazy = withLazy(() =>
+  import('./trainings-table').then((m) => ({ default: m.TrainingsTable })),
+);
+
 function GymTrainingPage() {
-  const { data, isEmpty, isLoading } = useTrainingsQuery();
+  const { isEmpty, isLoading } = useTrainingsTemplatesQuery();
 
   return (
-    <PageWrapper className="grow">
+    <PageWrapper className="grow  gap-4 lg:gap-8">
       <DataLoader
         isEmpty={isEmpty}
         isLoading={isLoading}
-        loadingElement={
-          <LoaderCircle color="#8e51ff" className="animate-spin m-auto" size={70} />
-        }
+        loadingElement={<AppLoader />}
         emptyElement={<EmptyTrainings />}
       >
-        <div>{JSON.stringify(data, null, 2)}</div>
+        <TrainingsTableLazy />
       </DataLoader>
     </PageWrapper>
   );

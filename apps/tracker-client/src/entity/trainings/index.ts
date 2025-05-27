@@ -1,3 +1,7 @@
-export * from './model/use-trainings-query';
-export * from './ui/training-type-select-form';
-export * from './model/use-training-create';
+export { useTrainingsTemplatesQuery } from './model/use-trainings-templates-query';
+export { TrainingTypeSelectForm } from './ui/training-type-select-form';
+export { useTrainingCreate } from './model/use-training-create';
+export { useTrainingDelete } from './model/use-training-delete';
+export { useTrainingUpdate } from './model/use-training-update';
+export { useTrainingUpdateFully } from './model/use-training-update-fully';
+export { mapTrainingType } from './lib';

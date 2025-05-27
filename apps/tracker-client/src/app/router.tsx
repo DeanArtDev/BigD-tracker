@@ -1,3 +1,4 @@
+import { AuthErrorBoundary } from './components/auth-error-boundary';
 import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
 import { OutOfAuthRoutes } from '@/app/components/out-of-auth-routes';
 import { routes } from '@/shared/lib/routes';
@@ -15,13 +16,13 @@ export const router = createBrowserRouter([
       {
         element: (
           <ProtectedRoutes>
-            <AppSidebar>
-              <AppHeader>
-                <Outlet />
-              </AppHeader>
-            </AppSidebar>
+            <AppSidebar />
+            <AppHeader>
+              <Outlet />
+            </AppHeader>
           </ProtectedRoutes>
         ),
+        errorElement: <AuthErrorBoundary />,
         children: [
           {
             path: routes.home.path,

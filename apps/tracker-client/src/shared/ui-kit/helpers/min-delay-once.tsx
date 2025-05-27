@@ -1,5 +1,5 @@
 let resolved = false;
-const minDelayOnce = (ms: number) =>
+const minDelayOnce = (ms: number): Promise<null> =>
   new Promise((res) =>
     setTimeout(() => {
       resolved = true;

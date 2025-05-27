@@ -1,7 +1,7 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { trainingsQueryKeys } from './query';
 
-function useTrainingsQuery() {
+function useTrainingsTemplatesQuery() {
   const { data, ...others } = $privetQueryClient.useQuery(
     ...trainingsQueryKeys.getTrainings(),
   );
@@ -13,4 +13,4 @@ function useTrainingsQuery() {
   };
 }
 
-export { useTrainingsQuery };
+export { useTrainingsTemplatesQuery };

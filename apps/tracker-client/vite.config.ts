@@ -8,11 +8,21 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react({
+        jsxRuntime: 'automatic',
+      }),
+      tailwindcss(),
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
+    },
+    preview: {
+      open: true,
+      host: true,
+      port: parseInt(env.VITE_CLIENT_PORT ?? '', 10) || 5173,
     },
     server: {
       watch: {

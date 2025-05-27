@@ -29,19 +29,18 @@ const findBreadcrumb = (target: RoutePaths | string): NavMenuItem | null => {
   return null;
 };
 
-/*TODO
- *  добавить соответствующий путь сейчас моки
- * */
 function AppHeader({ children }: PropsWithChildren) {
   const location = useLocation();
   const item = findBreadcrumb(location.pathname);
 
   return (
-    <SidebarInset>
+    <div className="h-dvh flex grow flex-col">
       <header
         className="
+        border-b border-gray-300
         flex h-16 shrink-0 items-center gap-2
         transition-[width,height] ease-linear
+
         group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
       >
         <div className="flex items-center gap-2 px-4">
@@ -59,8 +58,8 @@ function AppHeader({ children }: PropsWithChildren) {
         </div>
       </header>
 
-      {children}
-    </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
+    </div>
   );
 }
 
