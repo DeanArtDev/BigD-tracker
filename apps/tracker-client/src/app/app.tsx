@@ -10,9 +10,5 @@ import { Outlet } from 'react-router-dom';
  *  [] добавить общение для токена между вкладками BroadcastEvents
  * */
 export function App() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 }

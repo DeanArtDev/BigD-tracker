@@ -1,6 +1,6 @@
 import { type PropsWithChildren, type ReactNode } from 'react';
 import { clsx } from 'clsx';
-import { LoaderCircle } from 'lucide-react';
+import { AppLoader } from './app-loader';
 
 interface DataLoaderProps extends PropsWithChildren {
   readonly isLoading?: boolean;
@@ -25,9 +25,7 @@ function DataLoader(props: DataLoaderProps) {
 
     emptyElement = 'Пусто',
     errorElement = 'Ошибка',
-    loadingElement = (
-      <LoaderCircle color="#8e51ff" className="animate-spin m-auto" size={70} />
-    ),
+    loadingElement = <AppLoader />,
 
     children,
   } = props;
@@ -47,7 +45,7 @@ function DataLoader(props: DataLoaderProps) {
       {parallelMount ? (
         <div className={clsx({ contents: readyToShow })}>{children}</div>
       ) : (
-        children
+        readyToShow && children
       )}
     </>
   );

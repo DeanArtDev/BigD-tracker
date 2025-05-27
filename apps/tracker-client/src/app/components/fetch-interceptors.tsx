@@ -14,8 +14,6 @@ function FetchInterceptors({ children }: React.PropsWithChildren) {
         const { accessToken } = useAccessTokenStore.getState();
         if (accessToken != null) {
           request.headers.set('Authorization', `Bearer ${accessToken}`);
-        } else {
-          setIsAuth(false);
         }
       },
 

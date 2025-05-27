@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { Nullable } from 'kysely';
 import { TrainingsRepository } from './trainings.repository';
 import { TrainingType } from './dtos/training.dto';
 import { UsersService } from '@/users/users.service';
@@ -14,8 +15,13 @@ export class TrainingsService {
     readonly trainingsRepository: TrainingsRepository,
   ) {}
 
-  async getTrainingsByUserId(data: { userId: number }) {
-    return await this.trainingsRepository.getAllByUserId(data);
+  async getTrainingsByUserId(
+    data: { userId: number },
+    filters?: { onlyTemplate?: boolean },
+  ) {
+    return await this.trainingsRepository.getAllByUserId(data, {
+      filters: { templates: filters?.onlyTemplate },
+    });
   }
 
   async deleteTraining(data: { id: number }) {
@@ -42,6 +48,31 @@ export class TrainingsService {
     }
 
     const updatedTraining = await this.trainingsRepository.update(data);
+    if (updatedTraining == null) {
+      throw new InternalServerErrorException(
+        { id: data.id },
+        { cause: 'Failed to update' },
+      );
+    }
+
+    return updatedTraining;
+  }
+
+  async updateTrainingFully(
+    data: { id: number; type: TrainingType; name: string } & Nullable<{
+      description: string;
+      startDate: Date;
+      endDate: Date;
+      wormUpDuration: number;
+      postTrainingDuration: number;
+    }>,
+  ) {
+    const training = await this.trainingsRepository.findOneById({ id: data.id });
+    if (training == null) {
+      throw new NotFoundException(`training with id ${data.id} not found`);
+    }
+
+    const updatedTraining = await this.trainingsRepository.updateFully(data);
     if (updatedTraining == null) {
       throw new InternalServerErrorException(
         { id: data.id },

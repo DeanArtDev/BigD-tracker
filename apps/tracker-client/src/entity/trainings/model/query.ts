@@ -1,5 +1,5 @@
 const trainingsQueryKeys = {
-  getTrainings: () => ['get', '/trainings'] as const,
+  getTrainings: () => ['get', '/trainings/templates'] as const,
 };
 
 export { trainingsQueryKeys };

@@ -1,7 +1,6 @@
+import { TrainingManageDialog } from '@/feature/training/training-manage-form';
 import { useBoolean } from 'usehooks-ts';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
-import { TrainingCreateForm } from '@/feature/training/training-create-form';
 
 function EmptyTrainings() {
   const { value, setValue, setTrue, setFalse } = useBoolean(false);
@@ -15,16 +14,7 @@ function EmptyTrainings() {
         Добавить
       </Button>
 
-      <AdoptedDialog
-        open={value}
-        onOpenChange={setValue}
-        slotsProps={{
-          header: { element: 'Создание тренировки' },
-          content: { className: 'sm:max-w-[900px] pb-10 md:pb-6' },
-        }}
-      >
-        <TrainingCreateForm onSuccess={setFalse} />
-      </AdoptedDialog>
+      <TrainingManageDialog open={value} onOpenChange={setValue} onSuccess={setFalse} />
     </div>
   );
 }

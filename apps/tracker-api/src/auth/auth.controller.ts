@@ -79,7 +79,6 @@ export class AuthController {
     @UserAgent() userAgent: string,
   ) {
     const refreshToken = req.cookies[REFRESH_TOKEN_FIELD];
-
     try {
       const { accessToken, sessionToken } = await this.authService.refreshToken({
         ip,

@@ -6,5 +6,10 @@ function useInvalidateMe() {
     return queryClient.invalidateQueries({ queryKey: authQueryKeys.me() });
   };
 }
+function useDropEverything() {
+  return () => {
+    return queryClient.clear();
+  };
+}
 
-export { useInvalidateMe };
+export { useInvalidateMe, useDropEverything };

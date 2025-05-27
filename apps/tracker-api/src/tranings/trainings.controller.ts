@@ -1,4 +1,8 @@
 import {
+  PutTrainingRequest,
+  PutTrainingResponse,
+} from '@/tranings/dtos/put-training.dto';
+import {
   Body,
   Controller,
   Delete,
@@ -8,6 +12,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GetTrainingsDto } from './dtos/get-trainings.dto';
@@ -20,10 +25,14 @@ import {
   CreateTrainingResponse,
 } from './dtos/create-training.dto';
 import { TrainingDto } from './dtos/training.dto';
-import { mapRowTrainingToDto } from '@/tranings/utils';
+import { mapRowTrainingTemplateToDto, mapRowTrainingToDto } from '@/tranings/utils';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import { PatchTrainingRequest, PatchTrainingResponse } from './dtos/patch-training.dto';
+import {
+  GetTrainingsTemplatesResponse,
+  TrainingTemplateDto,
+} from './dtos/get-trainings-templates.dto';
 
 @Controller('trainings')
 export class TrainingsController {
@@ -47,6 +56,31 @@ export class TrainingsController {
 
     return {
       data: mapAndValidateEntityList(TrainingDto, rawTrainings.map(mapRowTrainingToDto)),
+    };
+  }
+
+  @Get('/templates')
+  @ApiOperation({
+    summary: 'Получение шаблонов тренировок',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetTrainingsTemplatesResponse,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async getTrainingsTemplates(
+    @TokenPayload() tokenPayload: AccessTokenPayload,
+  ): Promise<GetTrainingsTemplatesResponse> {
+    const rawTrainings = await this.trainingService.getTrainingsByUserId(
+      { userId: tokenPayload.uid },
+      { onlyTemplate: true },
+    );
+
+    return {
+      data: mapAndValidateEntityList(
+        TrainingTemplateDto,
+        rawTrainings.map(mapRowTrainingTemplateToDto),
+      ),
     };
   }
 
@@ -109,6 +143,33 @@ export class TrainingsController {
     const rawTraining = await this.trainingService.updateTraining({
       id: trainingId,
       ...data,
+    });
+    return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
+  }
+
+  @Put('/:trainingId')
+  @ApiOperation({
+    summary: 'Полное обновление тренировки',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Тренировка обновлена',
+    type: PutTrainingResponse,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async putTraining(
+    @Param('trainingId', ParseIntPipe) trainingId: number,
+    @Body() { data }: PutTrainingRequest,
+  ): Promise<PutTrainingResponse> {
+    const rawTraining = await this.trainingService.updateTrainingFully({
+      id: trainingId,
+      type: data.type,
+      name: data.name,
+      endDate: data.endDate ?? null,
+      startDate: data.startDate ?? null,
+      description: data.description ?? null,
+      wormUpDuration: data.wormUpDuration ?? null,
+      postTrainingDuration: data.postTrainingDuration ?? null,
     });
     return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
   }

@@ -1,9 +1,9 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
-import { useInvalidateGetTrainings } from './invalidators';
+import { useInvalidateTrainingsTemplates } from './invalidators';
 
 function useTrainingCreate() {
-  const invalidate = useInvalidateGetTrainings();
+  const invalidate = useInvalidateTrainingsTemplates();
   const options = getDefaultQueryNotifications();
   const { mutate: create, ...others } = $privetQueryClient.useMutation(
     'post',

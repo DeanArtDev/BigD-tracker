@@ -5,8 +5,10 @@ import { useAuthStore } from './use-auth-store';
 import { useAccessTokenStore } from './use-access-token-store';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
+import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
 
 function useLogin() {
+  const { onError } = getDefaultQueryNotifications();
   const navigate = useNavigate();
   const setIsAuth = useAuthStore((state) => state.setIsAuth);
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
@@ -16,11 +18,14 @@ function useLogin() {
     error,
     ...states
   } = $privetQueryClient.useMutation('post', '/auth/login', {
+    onError: () => {
+      onError();
+    },
     onSuccess: (data) => {
       if (data.data != null) {
-        navigate(routes.gymHome.path);
         setAccessToken(data.data.token);
         setIsAuth(true);
+        navigate(routes.gymHome.path);
       }
     },
   });
@@ -30,7 +35,7 @@ function useLogin() {
     [error],
   );
 
-  return { login, isWrongPassOrLogin, ...states };
+  return { login, isWrongPassOrLogin, error, ...states };
 }
 
 export { useLogin };
