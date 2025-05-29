@@ -3,16 +3,16 @@ import { Type } from 'class-transformer';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { TrainingDto } from './training.dto';
 
-class Request extends OmitType(TrainingDto, ['id', 'createdAt'] as const) {}
+class TrainingRequest extends OmitType(TrainingDto, ['id', 'createdAt'] as const) {}
 
 class CreateTrainingRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: Request,
+    type: TrainingRequest,
   })
   @ValidateNested()
-  @Type(() => Request)
-  data: Request;
+  @Type(() => TrainingRequest)
+  data: TrainingRequest;
 }
 
 class CreateTrainingResponse {

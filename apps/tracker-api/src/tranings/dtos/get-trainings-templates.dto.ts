@@ -1,12 +1,16 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArray, ValidateNested } from 'class-validator';
-import { TrainingDto } from './training.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBooleanString } from '@shared/decorators/is-boolean-string';
+import { Expose, Type } from 'class-transformer';
+import { IsArray, IsOptional, ValidateNested } from 'class-validator';
+import { TrainingTemplateDto } from './training-template.dto';
 
-class TrainingTemplateDto extends OmitType(TrainingDto, [
-  'startDate',
-  'endDate',
-] as const) {}
+class GetTrainingsTemplatesQuery {
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @Expose()
+  @IsBooleanString()
+  my?: boolean;
+}
 
 class GetTrainingsTemplatesResponse {
   @ApiProperty({
@@ -20,4 +24,4 @@ class GetTrainingsTemplatesResponse {
   data: TrainingTemplateDto[];
 }
 
-export { GetTrainingsTemplatesResponse, TrainingTemplateDto };
+export { GetTrainingsTemplatesResponse, GetTrainingsTemplatesQuery };
