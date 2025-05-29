@@ -1,19 +1,18 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
-import { useInvalidateTrainingsTemplates } from './invalidators';
 
-function useTrainingUpdate() {
-  const invalidate = useInvalidateTrainingsTemplates();
-  const options = getDefaultQueryNotifications();
+function useTrainingUpdate(
+  options: {
+    onSuccess?: () => Promise<void>;
+  } = {},
+) {
+  const notifications = getDefaultQueryNotifications();
   const { mutate: update, ...others } = $privetQueryClient.useMutation(
     'patch',
     '/trainings/{trainingId}',
     {
-      ...options,
-      onSuccess: async () => {
-        await invalidate();
-        options.onSuccess();
-      },
+      ...notifications,
+      onSuccess: options.onSuccess,
     },
   );
 

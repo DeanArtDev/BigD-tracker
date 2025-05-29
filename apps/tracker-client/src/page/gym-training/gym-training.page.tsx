@@ -1,27 +1,30 @@
-import { useTrainingsTemplatesQuery } from '@/entity/trainings';
-import { PageWrapper } from '@/page/ui/page-wrapper';
 import { withLazy } from '@/shared/lib/react/with-lazy';
-import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
-import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
-import { EmptyTrainings } from './empty-trainings';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui-kit/ui/tabs';
+import { PageWrapper } from '../ui/page-wrapper';
 
 const TrainingsTableLazy = withLazy(() =>
   import('./trainings-table').then((m) => ({ default: m.TrainingsTable })),
 );
+const TrainingsCalendarLazy = withLazy(() =>
+  import('./trainings-calendar').then((m) => ({ default: m.TrainingsCalendar })),
+);
 
 function GymTrainingPage() {
-  const { isEmpty, isLoading } = useTrainingsTemplatesQuery();
-
   return (
-    <PageWrapper className="grow  gap-4 lg:gap-8">
-      <DataLoader
-        isEmpty={isEmpty}
-        isLoading={isLoading}
-        loadingElement={<AppLoader />}
-        emptyElement={<EmptyTrainings />}
-      >
-        <TrainingsTableLazy />
-      </DataLoader>
+    <PageWrapper className="grow gap-4 lg:gap-8">
+      <Tabs className="grow" defaultValue="next">
+        <TabsList className="grid mx-auto lg:w-[400px] grid-cols-2">
+          <TabsTrigger value="templates">Шаблоны</TabsTrigger>
+          <TabsTrigger value="next">Предстоящие</TabsTrigger>
+        </TabsList>
+
+        <TabsContent className="flex flex-col grow" value="templates">
+          <TrainingsTableLazy />
+        </TabsContent>
+        <TabsContent className="flex flex-col grow" value="next">
+          <TrainingsCalendarLazy />
+        </TabsContent>
+      </Tabs>
     </PageWrapper>
   );
 }

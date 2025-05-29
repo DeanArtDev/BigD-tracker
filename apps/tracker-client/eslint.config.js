@@ -27,14 +27,15 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
       'react-query': reactQuery,
       '@typescript-eslint': tseslint.plugin,
-      import: importPlugin,
-      prettier: prettierPlugin,
+      'import': importPlugin,
+      'prettier': prettierPlugin,
     },
 
     rules: {
       ...reactHooks.configs.recommended.rules,
       ...prettierConfig.rules,
       ...getClientEslintConfig().rules,
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 );

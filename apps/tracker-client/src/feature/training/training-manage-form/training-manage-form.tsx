@@ -180,7 +180,13 @@ function TrainingManageForm({
           type="submit"
           disabled={isLoading || !form.formState.isDirty}
         >
-          {isLoading ? <AppLoader size={20} /> : 'Создать'}
+          {isLoading ? (
+            <AppLoader size={20} />
+          ) : training == null ? (
+            'Создать'
+          ) : (
+            'Редактировать'
+          )}
         </Button>
       </form>
     </Form>

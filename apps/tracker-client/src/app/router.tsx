@@ -1,3 +1,5 @@
+import { AppMain } from '@/app/components/app-main';
+import { ContentWrapper } from '@/app/components/content-wrapper';
 import { AuthErrorBoundary } from './components/auth-error-boundary';
 import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
 import { OutOfAuthRoutes } from '@/app/components/out-of-auth-routes';
@@ -17,9 +19,12 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <AppSidebar />
-            <AppHeader>
-              <Outlet />
-            </AppHeader>
+            <ContentWrapper className="md:pl-0">
+              <AppHeader />
+              <AppMain>
+                <Outlet />
+              </AppMain>
+            </ContentWrapper>
           </ProtectedRoutes>
         ),
         errorElement: <AuthErrorBoundary />,
@@ -48,7 +53,11 @@ export const router = createBrowserRouter([
       },
 
       {
-        Component: OutOfAuthRoutes,
+        element: (
+          <ContentWrapper>
+            <OutOfAuthRoutes />
+          </ContentWrapper>
+        ),
         children: [
           {
             path: routes.signUp.path,

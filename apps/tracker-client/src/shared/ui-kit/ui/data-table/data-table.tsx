@@ -21,13 +21,14 @@ import { useState } from 'react';
 import { Button } from '../button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../table';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function DataTable<T extends Record<string, any>>({
   data,
   columns,
+  onRowClick,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
+  onRowClick?: (row: T) => void;
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -52,7 +53,7 @@ function DataTable<T extends Record<string, any>>({
       pagination,
     },
     getRowId: (row) => row.id.toString(),
-    enableRowSelection: false,
+    enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -66,7 +67,7 @@ function DataTable<T extends Record<string, any>>({
   });
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-auto pb-4 lg:pb-8">
+    <div className="relative flex flex-col grow gap-4 overflow-auto pb-4 lg:pb-8">
       <div className="overflow-hidden rounded-lg border">
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">
@@ -97,6 +98,10 @@ function DataTable<T extends Record<string, any>>({
                   <TableRow
                     key={row.id}
                     className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+                    onClick={(evt) => {
+                      evt.stopPropagation();
+                      onRowClick?.(row.original);
+                    }}
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (

@@ -1,3 +1,6 @@
+import { useLogout } from '@/feature/logout';
+import { useDevNotifications } from '@/shared/ui-kit/helpers';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 import {
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -5,11 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/shared/ui-kit/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
-import { BadgeCheck, Bell, LogOut, Sparkles } from 'lucide-react';
 import { useSidebar } from '@/shared/ui-kit/ui/sidebar';
-import { useDevNotifications } from '@/shared/ui-kit/helpers';
-import { useLogout } from '@/feature/logout';
+import { BadgeCheck, Bell, LogOut, Sparkles } from 'lucide-react';
 
 function UserDropdownMenu(props: { name?: string; email: string; avatar?: string }) {
   const { name, email, avatar } = props;

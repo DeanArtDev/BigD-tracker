@@ -15,12 +15,15 @@ export class TrainingsService {
     readonly trainingsRepository: TrainingsRepository,
   ) {}
 
-  async getTrainingsByUserId(
+  async getTrainingsByFilters(
     data: { userId: number },
-    filters?: { onlyTemplate?: boolean },
+    filters?: { onlyTemplate?: boolean; to?: string; from?: string },
   ) {
-    return await this.trainingsRepository.getAllByUserId(data, {
-      filters: { templates: filters?.onlyTemplate },
+    return await this.trainingsRepository.getAllByFilters({
+      userId: data.userId,
+      templates: filters?.onlyTemplate,
+      to: filters?.to,
+      from: filters?.from,
     });
   }
 
@@ -37,8 +40,8 @@ export class TrainingsService {
     name?: string;
     type?: TrainingType;
     description?: string;
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
     wormUpDuration?: number;
     postTrainingDuration?: number;
   }) {
@@ -61,8 +64,8 @@ export class TrainingsService {
   async updateTrainingFully(
     data: { id: number; type: TrainingType; name: string } & Nullable<{
       description: string;
-      startDate: Date;
-      endDate: Date;
+      startDate: string;
+      endDate: string;
       wormUpDuration: number;
       postTrainingDuration: number;
     }>,
@@ -88,8 +91,8 @@ export class TrainingsService {
     name: string;
     type: TrainingType;
     description?: string;
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
     wormUpDuration?: number;
     postTrainingDuration?: number;
   }) {

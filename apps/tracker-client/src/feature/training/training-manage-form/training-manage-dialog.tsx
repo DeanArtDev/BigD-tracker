@@ -29,7 +29,7 @@ function TrainingManageDialog({
         header: {
           element: training == null ? 'Создание тренировки' : 'Редактирование тренировки',
         },
-        content: { className: 'sm:max-w-[900px] pb-10 md:pb-6' },
+        content: { className: 'max-w-auto md:max-w-[900px] pb-4 md:pb-10' },
       }}
     >
       <TrainingManageFormLazy training={training} onSuccess={onSuccess} />

@@ -35,14 +35,33 @@ function TrainingsTableActions({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem disabled={disable} onClick={onEdit}>
+        <DropdownMenuItem
+          disabled={disable}
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onEdit();
+          }}
+        >
           Изменить
         </DropdownMenuItem>
-        <DropdownMenuItem disabled={disable} onClick={onAssign}>
+        <DropdownMenuItem
+          disabled={disable}
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onAssign();
+          }}
+        >
           Назначить
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem disabled={disable} variant="destructive" onClick={onDelete}>
+        <DropdownMenuItem
+          disabled={disable}
+          variant="destructive"
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onDelete();
+          }}
+        >
           Удалить
         </DropdownMenuItem>
       </DropdownMenuContent>

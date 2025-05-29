@@ -19,6 +19,7 @@ function useLogout() {
           setIsAuth(false);
           setAccessToken(undefined);
           navigate(routes.login.path);
+          document.body.style = '';
         },
       },
     );
