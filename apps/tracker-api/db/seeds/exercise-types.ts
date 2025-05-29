@@ -2,16 +2,16 @@ import { Kysely } from 'kysely';
 import { DB } from '../../src/shared/modules/db/types';
 
 export default {
-  key: 'training-types',
-  target: 'Типы для тренировок',
+  key: 'exercise-types',
+  target: 'Типы для упражнений',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
-      await trx.deleteFrom('trainings_types').execute();
+      await trx.deleteFrom('exercise_types').execute();
 
       const buffer: { value: string }[] = [];
-      for (const value of ['LIGHT', 'MEDIUM', 'HARD', 'MIXED']) {
+      for (const value of ['WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC']) {
         const result = await trx
-          .insertInto('trainings_types')
+          .insertInto('exercise_types')
           .values({ value })
           .returning(['value'])
           .executeTakeFirst();
@@ -19,7 +19,7 @@ export default {
       }
 
       for (const b of buffer) {
-        console.log(`✅ ${b.value} тип тренировки залит успешно`);
+        console.log(`✅ ${b.value} тип упражнения залит успешно`);
       }
     });
   },
