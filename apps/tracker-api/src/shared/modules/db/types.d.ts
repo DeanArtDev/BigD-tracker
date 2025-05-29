@@ -22,6 +22,18 @@ export interface Exercises {
   training_id: number;
   type: string;
   updated_at: Generated<Timestamp>;
+  user_id: number;
+}
+
+export interface ExercisesTemplates {
+  created_at: Generated<Timestamp>;
+  description: string | null;
+  example_url: string | null;
+  id: Generated<number>;
+  name: string;
+  type: string;
+  updated_at: Generated<Timestamp>;
+  user_id: number | null;
 }
 
 export interface ExerciseTypes {
@@ -62,10 +74,22 @@ export interface Trainings {
   id: Generated<number>;
   name: string;
   post_training_duration: number | null;
-  start_date: Timestamp | null;
+  start_date: Generated<Timestamp>;
   type: string;
   updated_at: Generated<Timestamp>;
   user_id: number;
+  worm_up_duration: number | null;
+}
+
+export interface TrainingsTemplates {
+  created_at: Generated<Timestamp>;
+  description: string | null;
+  id: Generated<number>;
+  name: string;
+  post_training_duration: number | null;
+  type: string;
+  updated_at: Generated<Timestamp>;
+  user_id: number | null;
   worm_up_duration: number | null;
 }
 
@@ -86,9 +110,11 @@ export interface Users {
 export interface DB {
   exercise_types: ExerciseTypes;
   exercises: Exercises;
+  exercises_templates: ExercisesTemplates;
   repetitions: Repetitions;
   sessions: Sessions;
   trainings: Trainings;
+  trainings_templates: TrainingsTemplates;
   trainings_types: TrainingsTypes;
   users: Users;
 }

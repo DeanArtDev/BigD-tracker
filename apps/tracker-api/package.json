@@ -17,7 +17,7 @@
     "start:prod": "node dist/main",
     "=== TOOLS ===": "",
     "migrate": "ts-node tools/migrator.ts",
-    "seed": "ts-node tools/run-seeds.ts test-user",
+    "seed": "ts-node tools/run-seeds.ts",
     "typegen": "kysely-codegen --out-file ./src/shared/modules/db/types.d.ts --env-file .env.development --dialect postgres",
     "catch-up-with:db": "pnpm migrate && pnpm seed && pnpm typegen",
     "=== CI ===": "",
