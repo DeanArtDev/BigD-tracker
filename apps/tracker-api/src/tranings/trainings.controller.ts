@@ -23,15 +23,20 @@ import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
 import {
+  CreateTrainingTemplateRequest,
+  CreateTrainingTemplateResponse,
+} from './dtos/create-training-templates.dto';
+import {
   CreateTrainingRequest,
   CreateTrainingResponse,
 } from './dtos/create-training.dto';
 import {
+  GetTrainingsTemplatesQuery,
   GetTrainingsTemplatesResponse,
-  TrainingTemplateDto,
 } from './dtos/get-trainings-templates.dto';
 import { GetTrainingsFilters, GetTrainingsResponse } from './dtos/get-trainings.dto';
 import { PatchTrainingRequest, PatchTrainingResponse } from './dtos/patch-training.dto';
+import { TrainingTemplateDto } from './dtos/training-template.dto';
 import { TrainingDto } from './dtos/training.dto';
 import { TrainingsService } from './trainings.service';
 
@@ -52,40 +57,13 @@ export class TrainingsController {
     @Query() filters: GetTrainingsFilters,
     @TokenPayload() tokenPayload: AccessTokenPayload,
   ): Promise<GetTrainingsResponse> {
-    const rawTrainings = await this.trainingService.getTrainingsByFilters(
-      {
-        userId: tokenPayload.uid,
-      },
-      filters,
-    );
+    const rawTrainings = await this.trainingService.filterByRangeForUser({
+      userId: tokenPayload.uid,
+      ...filters,
+    });
 
     return {
       data: mapAndValidateEntityList(TrainingDto, rawTrainings.map(mapRowTrainingToDto)),
-    };
-  }
-
-  @Get('/templates')
-  @ApiOperation({
-    summary: 'Получение шаблонов тренировок',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: GetTrainingsTemplatesResponse,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getTrainingsTemplates(
-    @TokenPayload() tokenPayload: AccessTokenPayload,
-  ): Promise<GetTrainingsTemplatesResponse> {
-    const rawTrainings = await this.trainingService.getTrainingsByFilters(
-      { userId: tokenPayload.uid },
-      { onlyTemplate: true },
-    );
-
-    return {
-      data: mapAndValidateEntityList(
-        TrainingTemplateDto,
-        rawTrainings.map(mapRowTrainingTemplateToDto),
-      ),
     };
   }
 
@@ -145,10 +123,7 @@ export class TrainingsController {
     @Param('trainingId', ParseIntPipe) trainingId: number,
     @Body() { data }: PatchTrainingRequest,
   ): Promise<PatchTrainingResponse> {
-    const rawTraining = await this.trainingService.updateTraining({
-      id: trainingId,
-      ...data,
-    });
+    const rawTraining = await this.trainingService.updateTrainingPartly(trainingId, data);
     return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
   }
 
@@ -166,8 +141,7 @@ export class TrainingsController {
     @Param('trainingId', ParseIntPipe) trainingId: number,
     @Body() { data }: PutTrainingRequest,
   ): Promise<PutTrainingResponse> {
-    const rawTraining = await this.trainingService.updateTrainingFully({
-      id: trainingId,
+    const rawTraining = await this.trainingService.updateTrainingAndReplace(trainingId, {
       type: data.type,
       name: data.name,
       endDate: data.endDate ?? null,
@@ -177,5 +151,85 @@ export class TrainingsController {
       postTrainingDuration: data.postTrainingDuration ?? null,
     });
     return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
+  }
+
+  @Get('/templates')
+  @ApiOperation({
+    summary: 'Получение шаблонов тренировок',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetTrainingsTemplatesResponse,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async geTrainingsTemplates(
+    @Query() query: GetTrainingsTemplatesQuery,
+    @TokenPayload() tokenPayload: AccessTokenPayload,
+  ): Promise<GetTrainingsTemplatesResponse> {
+    if (query?.my) {
+      const rawTrainings = await this.trainingService.getTemplatesByUserId(
+        tokenPayload.uid,
+      );
+      return {
+        data: mapAndValidateEntityList(
+          TrainingTemplateDto,
+          rawTrainings.map(mapRowTrainingTemplateToDto),
+        ),
+      };
+    }
+
+    const rawTrainings = await this.trainingService.getCommonTemplates();
+    return {
+      data: mapAndValidateEntityList(
+        TrainingTemplateDto,
+        rawTrainings.map(mapRowTrainingTemplateToDto),
+      ),
+    };
+  }
+
+  @Post('/templates')
+  @ApiOperation({
+    summary: 'Создание шаблона тренировки',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: CreateTrainingTemplateResponse,
+    description: 'Шаблон тренировка создана',
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async createTrainingTemplate(
+    @Body() { data }: CreateTrainingTemplateRequest,
+  ): Promise<CreateTrainingTemplateResponse> {
+    const rawTraining = await this.trainingService.createTrainingTemplate({
+      userId: data.userId,
+      type: data.type,
+      description: data.description,
+      name: data.name,
+      postTrainingDuration: data.postTrainingDuration,
+      wormUpDuration: data.wormUpDuration,
+    });
+    return {
+      data: mapAndValidateEntity(
+        TrainingTemplateDto,
+        mapRowTrainingTemplateToDto(rawTraining),
+      ),
+    };
+  }
+
+  @Delete('/templates/:trainingId')
+  @ApiOperation({
+    summary: 'Удаление шаблона тренировки',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Шаблон тренировки удален',
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async deleteTemplateTraining(
+    @Param('trainingId', ParseIntPipe) trainingId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<void> {
+    await this.trainingService.deleteTrainingTemplate({ id: trainingId, userId: uid });
+    return undefined;
   }
 }

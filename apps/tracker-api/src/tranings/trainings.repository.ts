@@ -12,24 +12,20 @@ export class TrainingsRepository {
       .selectFrom('trainings')
       .where('id', '=', id)
       .selectAll()
+      .executeTakeFirst();
+  }
+
+  async findByUserId({ userId }: { userId: number }) {
+    return await this.kyselyService.db
+      .selectFrom('trainings')
+      .where('user_id', '=', userId)
+      .orderBy('created_at', 'desc')
+      .selectAll()
       .execute();
   }
 
-  async delete({ id }: { id: number }) {
-    const result = await this.kyselyService.db
-      .deleteFrom('trainings')
-      .where('id', '=', id)
-      .executeTakeFirst();
-    return result.numDeletedRows > 0;
-  }
-
-  async getAllByFilters(filters: {
-    to?: string;
-    from?: string;
-    userId: number;
-    templates?: boolean;
-  }) {
-    const { from, to, templates = false, userId } = filters;
+  async filterByRangeForUser(filters: { userId: number; to?: string; from?: string }) {
+    const { userId, from, to } = filters;
 
     let query = this.kyselyService.db
       .selectFrom('trainings')
@@ -39,33 +35,30 @@ export class TrainingsRepository {
     if (from != null && to != null) {
       query = query.where((eb) => {
         return eb.and([
-          eb('start_date', 'is not', null),
           eb('start_date', '>=', new Date(from)),
           eb('start_date', '<=', new Date(to)),
         ]);
       });
     }
 
-    if (templates) {
-      query = query.where('start_date', 'is', null);
-    }
-
     return await query.orderBy('created_at', 'desc').execute();
   }
 
-  async update(data: {
-    id: number;
-    name?: string;
-    type?: TrainingType;
-    description?: string;
-    startDate?: string;
-    endDate?: string;
-    wormUpDuration?: number;
-    postTrainingDuration?: number;
-  }) {
+  async updatePartly(
+    id: number,
+    data: {
+      name?: string;
+      type?: TrainingType;
+      startDate?: string;
+      description?: string;
+      endDate?: string;
+      wormUpDuration?: number;
+      postTrainingDuration?: number;
+    },
+  ) {
     return await this.kyselyService.db
       .updateTable('trainings')
-      .where('id', '=', data.id)
+      .where('id', '=', id)
       .set({
         name: data.name,
         type: data.type,
@@ -79,10 +72,14 @@ export class TrainingsRepository {
       .executeTakeFirst();
   }
 
-  async updateFully(
-    data: { id: number; type: TrainingType; name: string } & Nullable<{
-      description: string;
+  async updateAndReplace(
+    id: number,
+    data: {
+      name: string;
+      type: TrainingType;
       startDate: string;
+    } & Nullable<{
+      description: string;
       endDate: string;
       wormUpDuration: number;
       postTrainingDuration: number;
@@ -90,7 +87,7 @@ export class TrainingsRepository {
   ) {
     return await this.kyselyService.db
       .updateTable('trainings')
-      .where('id', '=', data.id)
+      .where('id', '=', id)
       .set({
         name: data.name,
         type: data.type,
@@ -128,5 +125,13 @@ export class TrainingsRepository {
       })
       .returningAll()
       .executeTakeFirst();
+  }
+
+  async delete({ id }: { id: number }) {
+    const result = await this.kyselyService.db
+      .deleteFrom('trainings')
+      .where('id', '=', id)
+      .executeTakeFirst();
+    return result.numDeletedRows > 0;
   }
 }

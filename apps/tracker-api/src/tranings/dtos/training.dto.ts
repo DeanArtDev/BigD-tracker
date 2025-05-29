@@ -6,15 +6,16 @@ enum TrainingType {
   LIGHT = 'LIGHT',
   MEDIUM = 'MEDIUM',
   HARD = 'HARD',
+  MIXED = 'MIXED',
 }
 
 class TrainingDto {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsInt()
   @Expose()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsInt()
   @Expose()
   userId: number;
@@ -40,13 +41,12 @@ class TrainingDto {
   @IsOptional()
   description?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '2025-05-24T13:01:02.471Z',
   })
   @Expose()
   @IsISO8601()
-  @IsOptional()
-  startDate?: string;
+  startDate: string;
 
   @ApiPropertyOptional({
     example: '2025-05-24T13:01:02.471Z',
