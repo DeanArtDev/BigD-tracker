@@ -1,3 +1,4 @@
+import { ExercisesModule } from '@/exercises/exercises.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { appConfigFactory } from '@shared/configs/app-config-factory';
@@ -17,6 +18,7 @@ import { TrainingsModule } from '@/tranings/trainings.module';
     UsersModule,
     AuthModule,
     TrainingsModule,
+    ExercisesModule,
   ],
 })
 export class AppModule {}
