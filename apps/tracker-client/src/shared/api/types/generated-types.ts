@@ -268,7 +268,7 @@ export interface components {
        */
       createdAt: string;
     };
-    GetTrainingsDto: {
+    GetTrainingsResponse: {
       /** @description Ответ сервера */
       data: components['schemas']['TrainingDto'][];
     };
@@ -567,7 +567,12 @@ export interface operations {
   };
   TrainingsController_getTrainings: {
     parameters: {
-      query?: never;
+      query?: {
+        /** @description ISO String */
+        from?: string;
+        /** @description ISO String */
+        to?: string;
+      };
       header?: never;
       path?: never;
       cookie?: never;
@@ -579,7 +584,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['GetTrainingsDto'];
+          'application/json': components['schemas']['GetTrainingsResponse'];
         };
       };
     };

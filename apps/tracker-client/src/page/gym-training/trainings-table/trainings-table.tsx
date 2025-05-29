@@ -1,6 +1,5 @@
 import { useTrainingDelete, useTrainingsTemplatesQuery } from '@/entity/trainings';
 import { TrainingManageDialog } from '@/feature/training/training-manage-form';
-import { EmptyTrainings } from './empty-trainings';
 import type { ApiDto } from '@/shared/api/types';
 import { useDevNotifications } from '@/shared/ui-kit/helpers';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
@@ -10,6 +9,7 @@ import { DataTable } from '@/shared/ui-kit/ui/data-table';
 import { IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useBoolean } from 'usehooks-ts';
+import { EmptyTrainings } from './empty-trainings';
 import { useTrainingsTable } from './use-trainings-table';
 
 function TrainingsTable() {
@@ -52,7 +52,13 @@ function TrainingsTable() {
           <span className="hidden lg:inline">Добавить тренировку</span>
         </Button>
 
-        <DataTable<ApiDto['TrainingDto']> data={data} columns={columns} />
+        <DataTable<ApiDto['TrainingDto']>
+          data={data}
+          columns={columns}
+          onRowClick={() => {
+            console.log('click on row');
+          }}
+        />
       </div>
     </DataLoader>
   );

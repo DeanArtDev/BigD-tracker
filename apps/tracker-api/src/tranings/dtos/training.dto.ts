@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
 import { Expose, Transform, Type } from 'class-transformer';
 
 enum TrainingType {
@@ -44,21 +44,17 @@ class TrainingDto {
     example: '2025-05-24T13:01:02.471Z',
   })
   @Expose()
-  @IsDate()
+  @IsISO8601()
   @IsOptional()
-  @Type(() => Date)
-  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
-  startDate?: Date;
+  startDate?: string;
 
   @ApiPropertyOptional({
     example: '2025-05-24T13:01:02.471Z',
   })
   @Expose()
-  @IsDate()
+  @IsISO8601()
   @IsOptional()
-  @Type(() => Date)
-  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
-  endDate?: Date;
+  endDate?: string;
 
   @ApiPropertyOptional({ example: 30000, description: 'измеряется в миллисекундах' })
   @IsInt()

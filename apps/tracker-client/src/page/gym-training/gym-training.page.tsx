@@ -1,24 +1,29 @@
-import { PageWrapper } from '@/page/ui/page-wrapper';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui-kit/ui/tabs';
+import { PageWrapper } from '../ui/page-wrapper';
 
 const TrainingsTableLazy = withLazy(() =>
   import('./trainings-table').then((m) => ({ default: m.TrainingsTable })),
+);
+const TrainingsCalendarLazy = withLazy(() =>
+  import('./trainings-calendar').then((m) => ({ default: m.TrainingsCalendar })),
 );
 
 function GymTrainingPage() {
   return (
     <PageWrapper className="grow gap-4 lg:gap-8">
-      <Tabs defaultValue="templates">
-        <TabsList className="grid w-full lg:w-[400px] grid-cols-2">
+      <Tabs className="grow" defaultValue="next">
+        <TabsList className="grid mx-auto lg:w-[400px] grid-cols-2">
           <TabsTrigger value="templates">Шаблоны</TabsTrigger>
           <TabsTrigger value="next">Предстоящие</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="templates">
+        <TabsContent className="flex flex-col grow" value="templates">
           <TrainingsTableLazy />
         </TabsContent>
-        <TabsContent value="next">next</TabsContent>
+        <TabsContent className="flex flex-col grow" value="next">
+          <TrainingsCalendarLazy />
+        </TabsContent>
       </Tabs>
     </PageWrapper>
   );

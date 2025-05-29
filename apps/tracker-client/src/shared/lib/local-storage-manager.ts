@@ -1,8 +1,6 @@
-import z, { ZodType, ZodObject } from 'zod';
+import z, { ZodType, ZodObject, ZodBoolean } from 'zod';
+import type { ValueOf } from './type-helpers';
 
-export type ValueOf<Type> = Type[keyof Type];
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 class LocalStorageManager<TSchema extends ZodObject<any>> {
   private readonly schema: TSchema;
   private readonly storage: Storage;
@@ -32,8 +30,11 @@ class LocalStorageManager<TSchema extends ZodObject<any>> {
     stringParseSchema?: ParseSchema,
   ): undefined | ParseSchema extends undefined
     ? z.infer<TSchema>[TKey] | undefined
-    : z.infer<ParseSchema> | undefined {
+    : z.infer<ParseSchema> {
     const value = this.storage.getItem(key);
+    if (this.schema.shape[key] instanceof ZodBoolean && value === 'false') {
+      return false as z.infer<TSchema>[TKey];
+    }
     const result = this.schema.shape[key].safeParse(value);
     if (result.success) {
       if (stringParseSchema != null) {

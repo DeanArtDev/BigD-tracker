@@ -1,3 +1,4 @@
+import { UserDropdownMenu } from '@/feature/sidebar/user-dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 import { DropdownMenu, DropdownMenuTrigger } from '@/shared/ui-kit/ui/dropdown-menu';
 import {
@@ -6,7 +7,6 @@ import {
   SidebarMenuItem,
 } from '@/shared/ui-kit/ui/sidebar';
 import { ChevronsUpDown } from 'lucide-react';
-import { UserDropdownMenu } from '@/feature/sidebar/user-dropdown-menu';
 
 export function NavUser({
   user,
@@ -20,7 +20,7 @@ export function NavUser({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu modal>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"

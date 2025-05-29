@@ -1,0 +1,8 @@
+.spinner-container:after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.8;
+  z-index: 3;
+  background-color: var(--color-gray-50);
+}

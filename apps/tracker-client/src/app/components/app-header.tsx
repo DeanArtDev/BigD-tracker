@@ -1,5 +1,7 @@
 import { type NavMenuItem, navMenuItems } from '@/feature/sidebar';
 import { routes } from '@/shared/lib/routes';
+import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
+import { useSidebarStore } from '@/shared/ui-kit/hooks/use-sidebar-storage';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { SidebarTrigger } from '@/shared/ui-kit/ui/sidebar';
 import { useLocation } from 'react-router-dom';
@@ -25,11 +27,16 @@ const findBreadcrumb = (target: RoutePaths | string): NavMenuItem | null => {
 function AppHeader() {
   const location = useLocation();
   const item = findBreadcrumb(location.pathname);
+  const { toggleSidebarState } = useSidebarStore();
+  const isMobile = useIsMobile();
 
   return (
     <header className="bg-background group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
       <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
+        <SidebarTrigger
+          className="-ml-1"
+          onClick={() => void (isMobile ? undefined : toggleSidebarState())}
+        />
         <Separator
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"

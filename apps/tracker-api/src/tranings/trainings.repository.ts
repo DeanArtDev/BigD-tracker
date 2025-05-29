@@ -23,20 +23,31 @@ export class TrainingsRepository {
     return result.numDeletedRows > 0;
   }
 
-  async getAllByUserId(
-    { userId }: { userId: number },
-    options?: { filters: { templates?: boolean } },
-  ) {
-    const { filters } = options ?? {};
-    const { templates = false } = filters ?? {};
+  async getAllByFilters(filters: {
+    to?: string;
+    from?: string;
+    userId: number;
+    templates?: boolean;
+  }) {
+    const { from, to, templates = false, userId } = filters;
 
-    const query = this.kyselyService.db
+    let query = this.kyselyService.db
       .selectFrom('trainings')
-      .selectAll()
-      .where('user_id', '=', userId);
+      .where('user_id', '=', userId)
+      .selectAll();
+
+    if (from != null && to != null) {
+      query = query.where((eb) => {
+        return eb.and([
+          eb('start_date', 'is not', null),
+          eb('start_date', '>=', new Date(from)),
+          eb('start_date', '<=', new Date(to)),
+        ]);
+      });
+    }
 
     if (templates) {
-      query.where('start_date', 'is', null);
+      query = query.where('start_date', 'is', null);
     }
 
     return await query.orderBy('created_at', 'desc').execute();
@@ -47,8 +58,8 @@ export class TrainingsRepository {
     name?: string;
     type?: TrainingType;
     description?: string;
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
     wormUpDuration?: number;
     postTrainingDuration?: number;
   }) {
@@ -71,8 +82,8 @@ export class TrainingsRepository {
   async updateFully(
     data: { id: number; type: TrainingType; name: string } & Nullable<{
       description: string;
-      startDate: Date;
-      endDate: Date;
+      startDate: string;
+      endDate: string;
       wormUpDuration: number;
       postTrainingDuration: number;
     }>,
@@ -98,8 +109,8 @@ export class TrainingsRepository {
     name: string;
     type: TrainingType;
     description?: string;
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
     wormUpDuration?: number;
     postTrainingDuration?: number;
   }) {

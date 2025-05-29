@@ -88,6 +88,7 @@ export class AuthController {
       this.cookieService.setRefreshToken(res, sessionToken);
       return { data: { token: accessToken } };
     } catch (e) {
+      console.log(e, 'refres cookie');
       this.cookieService.setRefreshToken(res, undefined);
       throw e;
     }

@@ -1,7 +1,11 @@
+import { TokenPayload } from '@/auth/decorators';
+import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
+import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import {
   PutTrainingRequest,
   PutTrainingResponse,
 } from '@/tranings/dtos/put-training.dto';
+import { mapRowTrainingTemplateToDto, mapRowTrainingToDto } from '@/tranings/utils';
 import {
   Body,
   Controller,
@@ -13,26 +17,23 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { GetTrainingsDto } from './dtos/get-trainings.dto';
-import { TrainingsService } from './trainings.service';
-import { TokenPayload } from '@/auth/decorators';
-import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
+import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
 import {
   CreateTrainingRequest,
   CreateTrainingResponse,
 } from './dtos/create-training.dto';
-import { TrainingDto } from './dtos/training.dto';
-import { mapRowTrainingTemplateToDto, mapRowTrainingToDto } from '@/tranings/utils';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
-import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import { PatchTrainingRequest, PatchTrainingResponse } from './dtos/patch-training.dto';
 import {
   GetTrainingsTemplatesResponse,
   TrainingTemplateDto,
 } from './dtos/get-trainings-templates.dto';
+import { GetTrainingsFilters, GetTrainingsResponse } from './dtos/get-trainings.dto';
+import { PatchTrainingRequest, PatchTrainingResponse } from './dtos/patch-training.dto';
+import { TrainingDto } from './dtos/training.dto';
+import { TrainingsService } from './trainings.service';
 
 @Controller('trainings')
 export class TrainingsController {
@@ -44,15 +45,19 @@ export class TrainingsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: GetTrainingsDto,
+    type: GetTrainingsResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getTrainings(
+    @Query() filters: GetTrainingsFilters,
     @TokenPayload() tokenPayload: AccessTokenPayload,
-  ): Promise<GetTrainingsDto> {
-    const rawTrainings = await this.trainingService.getTrainingsByUserId({
-      userId: tokenPayload.uid,
-    });
+  ): Promise<GetTrainingsResponse> {
+    const rawTrainings = await this.trainingService.getTrainingsByFilters(
+      {
+        userId: tokenPayload.uid,
+      },
+      filters,
+    );
 
     return {
       data: mapAndValidateEntityList(TrainingDto, rawTrainings.map(mapRowTrainingToDto)),
@@ -71,7 +76,7 @@ export class TrainingsController {
   async getTrainingsTemplates(
     @TokenPayload() tokenPayload: AccessTokenPayload,
   ): Promise<GetTrainingsTemplatesResponse> {
-    const rawTrainings = await this.trainingService.getTrainingsByUserId(
+    const rawTrainings = await this.trainingService.getTrainingsByFilters(
       { userId: tokenPayload.uid },
       { onlyTemplate: true },
     );

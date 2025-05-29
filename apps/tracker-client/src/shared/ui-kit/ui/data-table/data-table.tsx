@@ -21,20 +21,21 @@ import { useState } from 'react';
 import { Button } from '../button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../table';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function DataTable<T extends Record<string, any>>({
   data,
   columns,
+  onRowClick,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
+  onRowClick?: (row: T) => void;
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 20,
+    pageSize: 10,
   });
 
   if (pagination.pageIndex === data.length / pagination.pageSize) {
@@ -52,7 +53,7 @@ function DataTable<T extends Record<string, any>>({
       pagination,
     },
     getRowId: (row) => row.id.toString(),
-    enableRowSelection: false,
+    enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -97,6 +98,10 @@ function DataTable<T extends Record<string, any>>({
                   <TableRow
                     key={row.id}
                     className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+                    onClick={(evt) => {
+                      evt.stopPropagation();
+                      onRowClick?.(row.original);
+                    }}
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (

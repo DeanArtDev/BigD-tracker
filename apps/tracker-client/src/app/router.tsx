@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <AppSidebar />
-            <ContentWrapper>
+            <ContentWrapper className="md:pl-0">
               <AppHeader />
               <AppMain>
                 <Outlet />
@@ -53,7 +53,11 @@ export const router = createBrowserRouter([
       },
 
       {
-        Component: OutOfAuthRoutes,
+        element: (
+          <ContentWrapper>
+            <OutOfAuthRoutes />
+          </ContentWrapper>
+        ),
         children: [
           {
             path: routes.signUp.path,

@@ -8,6 +8,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '@/shared/ui-kit/ui/sidebar';
 import {
   Collapsible,
@@ -30,6 +31,7 @@ interface NavMenuItem {
  * */
 function NavMenu() {
   const { pathname } = useLocation();
+  const { isMobile, toggleSidebar } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -61,7 +63,13 @@ function NavMenu() {
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild isActive={pathname === subItem.to}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname === subItem.to}
+                          onClick={() => {
+                            isMobile && toggleSidebar();
+                          }}
+                        >
                           <Link to={subItem.to}>
                             <span>{subItem.title}</span>
                           </Link>

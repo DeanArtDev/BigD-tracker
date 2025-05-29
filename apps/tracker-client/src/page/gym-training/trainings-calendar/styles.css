@@ -1,0 +1,28 @@
+.fc {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: var(--radius);
+  border-color: var(--border);
+  overflow: hidden;
+}
+
+.fc .fc-scrollgrid {
+    border: 0;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 0;
+}
+
+.fc .fc-h-event {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.fc .fc-daygrid-event-harness {
+  margin-bottom: var(--spacing);
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: var(--color-purple-100);
+}
