@@ -14,7 +14,11 @@ function EmptyTrainings() {
         Добавить
       </Button>
 
-      <TrainingTemplateManageDialog open={value} onOpenChange={setValue} onSuccess={setFalse} />
+      <TrainingTemplateManageDialog
+        open={value}
+        onOpenChange={setValue}
+        onSuccess={setFalse}
+      />
     </div>
   );
 }

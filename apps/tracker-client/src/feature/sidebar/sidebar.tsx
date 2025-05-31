@@ -1,10 +1,5 @@
 import { useMeSuspense } from '@/entity/auth';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-} from '@/shared/ui-kit/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader } from '@/shared/ui-kit/ui/sidebar';
 import { NavMenu } from './nav-menu';
 import { NavUser } from './nav-user';
 

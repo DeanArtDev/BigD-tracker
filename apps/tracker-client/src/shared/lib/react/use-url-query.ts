@@ -25,7 +25,7 @@ type UseUrlQueryResponse<TSchema extends UrlQueryMap> = readonly [
 function useUrlQuery<TSchema extends UrlQueryMap = UrlQueryMap>(
   schema: ZodType,
 ): UseUrlQueryResponse<TSchema> {
-  const [search, setSearchParams] = useSearchParams();
+  const { 1: setSearchParams } = useSearchParams();
   const currentQuery = useLocation().search;
 
   const searchQuery = useMemo(() => {
@@ -33,7 +33,7 @@ function useUrlQuery<TSchema extends UrlQueryMap = UrlQueryMap>(
       qs.parse(currentQuery, { ignoreQueryPrefix: true, interpretNumericEntities: true }),
     );
     return parsed.success && !isEmpty(parsed.data) ? parsed.data : undefined;
-  }, [search, schema]);
+  }, [currentQuery]);
 
   const setSearchQuery = useCallback<UseUrlQueryResponse<TSchema>[1]>(
     (value) => {

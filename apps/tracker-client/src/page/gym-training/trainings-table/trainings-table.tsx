@@ -16,7 +16,9 @@ function TrainingsTable() {
   const { inDev } = useDevNotifications();
   const { deleteTrigger, isPending } = useTrainingDelete();
   const { value, setTrue, setFalse } = useBoolean(false);
-  const [training, setTraining] = useState<ApiDto['TrainingTemplateDto'] | undefined>(undefined);
+  const [training, setTraining] = useState<ApiDto['TrainingTemplateDto'] | undefined>(
+    undefined,
+  );
 
   const columns = useTrainingsTable({
     loading: isPending,
