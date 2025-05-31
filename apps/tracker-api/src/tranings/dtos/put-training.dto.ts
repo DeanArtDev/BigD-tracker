@@ -3,7 +3,11 @@ import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { TrainingDto } from './training.dto';
 
-class PutTrainingDto extends OmitType(TrainingDto, ['id', 'userId'] as const) {}
+class PutTrainingDto extends OmitType(TrainingDto, [
+  'id',
+  'userId',
+  'createdAt',
+] as const) {}
 
 class PutTrainingRequest {
   @ApiProperty({

@@ -19,7 +19,7 @@ export default {
       }
 
       for (const b of buffer) {
-        console.log(`✅ ${b.value} тип залит успешно`);
+        console.log(`✅ ${b.value} тип тренировки залит успешно`);
       }
     });
   },

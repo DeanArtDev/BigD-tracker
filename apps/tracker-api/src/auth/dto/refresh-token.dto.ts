@@ -1,6 +1,6 @@
-import { IsBoolean, IsDate, IsInt, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Expose } from 'class-transformer';
+import { IsBoolean, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
 
 class RefreshTokenDto {
   @ApiProperty({ example: 1 })
@@ -23,18 +23,18 @@ class RefreshTokenDto {
 
   @ApiProperty({
     example: '2025-05-24T13:01:02.471Z',
+    description: 'ISO String',
   })
-  @IsDate()
-  @Type(() => Date)
-  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
-  expiresAt: Date;
+  @Expose()
+  @IsISO8601()
+  expiresAt: string;
 
   @ApiProperty({
     example: '2025-05-24T13:01:02.471Z',
+    description: 'ISO String',
   })
-  @IsDate()
-  @Type(() => Date)
-  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
+  @Expose()
+  @IsISO8601()
   createdAt: string;
 }
 

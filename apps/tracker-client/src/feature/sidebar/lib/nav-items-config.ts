@@ -22,6 +22,10 @@ const navMenuItems: NavMenuItem[] = [
         to: routes.gymTrainings.path,
       },
       {
+        title: 'Упражнения',
+        to: routes.gymExercises.path,
+      },
+      {
         title: 'Программы',
         to: routes.gymPrograms.path,
       },

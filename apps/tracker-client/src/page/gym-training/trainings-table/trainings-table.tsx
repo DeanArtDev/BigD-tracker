@@ -1,5 +1,5 @@
 import { useTrainingDelete, useTrainingsTemplatesQuery } from '@/entity/trainings';
-import { TrainingManageDialog } from '@/feature/training/training-manage-form';
+import { TrainingTemplateManageDialog } from '@/feature/training/training-manage-form';
 import type { ApiDto } from '@/shared/api/types';
 import { useDevNotifications } from '@/shared/ui-kit/helpers';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
@@ -16,7 +16,9 @@ function TrainingsTable() {
   const { inDev } = useDevNotifications();
   const { deleteTrigger, isPending } = useTrainingDelete();
   const { value, setTrue, setFalse } = useBoolean(false);
-  const [training, setTraining] = useState<ApiDto['TrainingDto'] | undefined>(undefined);
+  const [training, setTraining] = useState<ApiDto['TrainingTemplateDto'] | undefined>(
+    undefined,
+  );
 
   const columns = useTrainingsTable({
     loading: isPending,
@@ -33,7 +35,7 @@ function TrainingsTable() {
       loadingElement={<AppLoader />}
       emptyElement={<EmptyTrainings />}
     >
-      <TrainingManageDialog
+      <TrainingTemplateManageDialog
         open={value || Boolean(training)}
         training={training}
         onOpenChange={() => {
@@ -52,7 +54,7 @@ function TrainingsTable() {
           <span className="hidden lg:inline">Добавить тренировку</span>
         </Button>
 
-        <DataTable<ApiDto['TrainingDto']>
+        <DataTable<ApiDto['TrainingTemplateDto']>
           data={data}
           columns={columns}
           onRowClick={() => {

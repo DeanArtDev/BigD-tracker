@@ -1,7 +1,7 @@
 import { TrainingTemplateDto } from './dtos/training-template.dto';
 import { TrainingDto, TrainingType } from './dtos/training.dto';
 
-const mapRowTrainingToDto = (data: {
+const mapRawTrainingToDto = (data: {
   id: number;
   user_id: number;
   description: string | null;
@@ -24,11 +24,11 @@ const mapRowTrainingToDto = (data: {
     endDate: data.end_date?.toISOString() ?? undefined,
     wormUpDuration: data.worm_up_duration ?? undefined,
     postTrainingDuration: data.post_training_duration ?? undefined,
-    createdAt: data.created_at,
+    createdAt: data.created_at.toISOString(),
   };
 };
 
-const mapRowTrainingTemplateToDto = (data: {
+const mapRawTrainingTemplateToDto = (data: {
   id: number;
   user_id: number | null;
   description: string | null;
@@ -47,8 +47,8 @@ const mapRowTrainingTemplateToDto = (data: {
     description: data.description ?? undefined,
     wormUpDuration: data.worm_up_duration ?? undefined,
     postTrainingDuration: data.post_training_duration ?? undefined,
-    createdAt: data.created_at,
+    createdAt: data.created_at.toISOString(),
   };
 };
 
-export { mapRowTrainingToDto, mapRowTrainingTemplateToDto };
+export { mapRawTrainingToDto, mapRawTrainingTemplateToDto };

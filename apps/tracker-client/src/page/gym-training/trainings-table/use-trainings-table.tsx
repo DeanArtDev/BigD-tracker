@@ -11,18 +11,19 @@ const mapTrainingTypeIcons: Record<ApiDto['TrainingDto']['type'], JSX.Element> =
   HARD: <Smile className="fill-red-400" />,
   MEDIUM: <Annoyed className="fill-yellow-400" />,
   LIGHT: <Angry className="fill-green-400" />,
+  MIXED: <Angry className="fill-green-400" />,
 };
 
 interface UseTrainingsTableParams {
   readonly loading: boolean;
-  readonly onEdit: (training: ApiDto['TrainingDto']) => void;
+  readonly onEdit: (training: ApiDto['TrainingTemplateDto']) => void;
   readonly onAssign: (trainingId: number) => void;
   readonly onDelete: (trainingId: number) => void;
 }
 
 function useTrainingsTable(
   params: UseTrainingsTableParams,
-): ColumnDef<ApiDto['TrainingDto']>[] {
+): ColumnDef<ApiDto['TrainingTemplateDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
 
   return [

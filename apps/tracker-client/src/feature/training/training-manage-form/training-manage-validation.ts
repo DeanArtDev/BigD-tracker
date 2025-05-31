@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { TrainingManageFormData } from './training-manage-form';
+import type { TrainingManageFormData } from './training-template-manage-form';
 
 const requiredMessage = 'Обязательное поле';
 

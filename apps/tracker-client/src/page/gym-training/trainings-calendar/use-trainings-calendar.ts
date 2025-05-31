@@ -32,6 +32,7 @@ const trainingTypeColorMap: Record<ApiDto['TrainingDto']['type'], string> = {
   HARD: 'bg-red-300',
   MEDIUM: 'bg-yellow-300',
   LIGHT: 'bg-green-300',
+  MIXED: 'bg-green-300',
 };
 
 function useTrainingsCalendar() {

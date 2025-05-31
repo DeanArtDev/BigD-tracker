@@ -11,7 +11,7 @@ function shapeUser(rawUser: {
     email: rawUser.email,
     screenName: rawUser.screen_name ?? undefined,
     avatar: rawUser.avatar ?? undefined,
-    createdAt: rawUser.created_at,
+    createdAt: rawUser.created_at.toISOString(),
   };
 }
 

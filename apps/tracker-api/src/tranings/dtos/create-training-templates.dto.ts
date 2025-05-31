@@ -1,10 +1,12 @@
-import { TrainingDto } from '@/tranings/dtos/training.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { TrainingTemplateDto } from './training-template.dto';
 
-class TemplateRequest extends OmitType(TrainingDto, ['startDate', 'endDate'] as const) {}
+class TemplateRequest extends OmitType(TrainingTemplateDto, [
+  'id',
+  'createdAt',
+] as const) {}
 
 class CreateTrainingTemplateRequest {
   @ApiProperty({

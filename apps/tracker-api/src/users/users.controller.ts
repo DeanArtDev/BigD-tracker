@@ -31,7 +31,7 @@ export class UsersController {
   })
   async me(@TokenPayload() tokenPayload: AccessTokenPayload): Promise<{ data: MeDto }> {
     const user = await this.usersService.findUser({ id: tokenPayload.uid });
-    if (user == null) throw new UnauthorizedException('User not found');
+    if (user == null) throw new UnauthorizedException('User is not found');
     return {
       data: mapAndValidateEntity(MeDto, {
         id: user.id,

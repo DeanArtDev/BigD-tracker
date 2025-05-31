@@ -27,6 +27,11 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/gym/trainings'),
 
+  gymExercises: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/gym/exercises'),
+
   gymPrograms: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),

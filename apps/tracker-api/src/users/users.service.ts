@@ -42,7 +42,7 @@ export class UsersService {
   async findUser(data: FindUserData): Promise<User> {
     if (data.email != null) {
       const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
-      if (rawUser == null) throw new NotFoundException('User not found');
+      if (rawUser == null) throw new NotFoundException('User is not found');
       return mapAndValidateEntity(User, shapeUser(rawUser));
     }
 
@@ -50,13 +50,13 @@ export class UsersService {
       const rawUser = await this.usersRepository.findUserByScreeName({
         screenName: data.screenName,
       });
-      if (rawUser == null) throw new NotFoundException('User not found');
+      if (rawUser == null) throw new NotFoundException('User is not found');
       return mapAndValidateEntity(User, shapeUser(rawUser));
     }
 
     if (data.id != null) {
       const rawUser = await this.usersRepository.findUserById({ id: data.id });
-      if (rawUser == null) throw new NotFoundException('User not found');
+      if (rawUser == null) throw new NotFoundException('User is not found');
       return mapAndValidateEntity(User, shapeUser(rawUser));
     }
 

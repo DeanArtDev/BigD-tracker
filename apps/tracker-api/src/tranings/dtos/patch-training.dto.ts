@@ -5,7 +5,7 @@ import { TrainingDto } from './training.dto';
 import { ValidateNested } from 'class-validator';
 
 class PatchTrainingDto extends PartialType(
-  OmitType(TrainingDto, ['id', 'userId'] as const),
+  OmitType(TrainingDto, ['id', 'userId', 'createdAt'] as const),
 ) {
   @AtLeastOneFieldExistsInDto([
     'name',

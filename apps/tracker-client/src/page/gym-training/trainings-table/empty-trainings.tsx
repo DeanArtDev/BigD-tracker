@@ -1,4 +1,4 @@
-import { TrainingManageDialog } from '@/feature/training/training-manage-form';
+import { TrainingTemplateManageDialog } from '@/feature/training/training-manage-form';
 import { useBoolean } from 'usehooks-ts';
 import { Button } from '@/shared/ui-kit/ui/button';
 
@@ -14,7 +14,11 @@ function EmptyTrainings() {
         Добавить
       </Button>
 
-      <TrainingManageDialog open={value} onOpenChange={setValue} onSuccess={setFalse} />
+      <TrainingTemplateManageDialog
+        open={value}
+        onOpenChange={setValue}
+        onSuccess={setFalse}
+      />
     </div>
   );
 }

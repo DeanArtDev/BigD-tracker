@@ -29,6 +29,8 @@
     "@fullcalendar/react": "^6.1.17",
     "@fullcalendar/timegrid": "^6.1.17",
     "@hookform/resolvers": "^5.0.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-aspect-ratio": "^1.1.7",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.2",
     "@radix-ui/react-collapsible": "^1.1.11",
@@ -52,6 +54,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
+    "lodash-es": "catalog:",
     "lucide-react": "^0.511.0",
     "next-themes": "^0.4.6",
     "qs": "catalog:",
@@ -68,14 +71,13 @@
     "usehooks-ts": "^3.1.1",
     "vaul": "^1.1.2",
     "zod": "^3.24.4",
-    "zustand": "^5.0.4",
-    "lodash-es": "catalog:"
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
-    "@types/lodash-es": "catalog:",
     "@eslint/js": "catalog:",
     "@tanstack/eslint-plugin-query": "^5.74.7",
     "@tanstack/react-query-devtools": "^5.75.7",
+    "@types/lodash-es": "catalog:",
     "@types/node": "catalog:",
     "@types/qs": "catalog:",
     "@types/react": "^19.1.2",

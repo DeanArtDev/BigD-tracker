@@ -6,4 +6,12 @@ type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type
 
 type ValueOf<Type> = Type[keyof Type];
 
-export type { Override, ValueOf };
+type Nullable<T> = {
+  [P in keyof T]: T[P] | null;
+};
+
+type Undefinedable<T> = {
+  [P in keyof T]+?: T[P] | undefined;
+};
+
+export type { Override, ValueOf, Nullable, Undefinedable };

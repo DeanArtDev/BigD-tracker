@@ -42,6 +42,10 @@ export const router = createBrowserRouter([
             lazy: () => import('@/page/gym-dashboard.page'),
           },
           {
+            path: routes.gymExercises.path,
+            lazy: () => import('@/page/gym-exercises'),
+          },
+          {
             path: routes.gymHome.path,
             lazy: () => import('@/page/gym-home.page'),
           },

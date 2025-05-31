@@ -2,10 +2,14 @@ import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import {
+  PutTrainingTemplateRequest,
+  PutTrainingTemplateResponse,
+} from '@/tranings/dtos/put-training-template.dto';
+import {
   PutTrainingRequest,
   PutTrainingResponse,
 } from '@/tranings/dtos/put-training.dto';
-import { mapRowTrainingTemplateToDto, mapRowTrainingToDto } from '@/tranings/utils';
+import { mapRawTrainingTemplateToDto, mapRawTrainingToDto } from '@/tranings/utils';
 import {
   Body,
   Controller,
@@ -63,7 +67,7 @@ export class TrainingsController {
     });
 
     return {
-      data: mapAndValidateEntityList(TrainingDto, rawTrainings.map(mapRowTrainingToDto)),
+      data: mapAndValidateEntityList(TrainingDto, rawTrainings.map(mapRawTrainingToDto)),
     };
   }
 
@@ -90,7 +94,7 @@ export class TrainingsController {
       startDate: data.startDate,
       wormUpDuration: data.wormUpDuration,
     });
-    return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
+    return { data: mapAndValidateEntity(TrainingDto, mapRawTrainingToDto(rawTraining)) };
   }
 
   @Delete('/:trainingId')
@@ -124,7 +128,7 @@ export class TrainingsController {
     @Body() { data }: PatchTrainingRequest,
   ): Promise<PatchTrainingResponse> {
     const rawTraining = await this.trainingService.updateTrainingPartly(trainingId, data);
-    return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
+    return { data: mapAndValidateEntity(TrainingDto, mapRawTrainingToDto(rawTraining)) };
   }
 
   @Put('/:trainingId')
@@ -150,7 +154,7 @@ export class TrainingsController {
       wormUpDuration: data.wormUpDuration ?? null,
       postTrainingDuration: data.postTrainingDuration ?? null,
     });
-    return { data: mapAndValidateEntity(TrainingDto, mapRowTrainingToDto(rawTraining)) };
+    return { data: mapAndValidateEntity(TrainingDto, mapRawTrainingToDto(rawTraining)) };
   }
 
   @Get('/templates')
@@ -166,23 +170,13 @@ export class TrainingsController {
     @Query() query: GetTrainingsTemplatesQuery,
     @TokenPayload() tokenPayload: AccessTokenPayload,
   ): Promise<GetTrainingsTemplatesResponse> {
-    if (query?.my) {
-      const rawTrainings = await this.trainingService.getTemplatesByUserId(
-        tokenPayload.uid,
-      );
-      return {
-        data: mapAndValidateEntityList(
-          TrainingTemplateDto,
-          rawTrainings.map(mapRowTrainingTemplateToDto),
-        ),
-      };
-    }
-
-    const rawTrainings = await this.trainingService.getCommonTemplates();
+    const rawTrainings = await this.trainingService.findTemplatesByFilters({
+      userId: query?.my === true ? tokenPayload.uid : undefined,
+    });
     return {
       data: mapAndValidateEntityList(
         TrainingTemplateDto,
-        rawTrainings.map(mapRowTrainingTemplateToDto),
+        rawTrainings.map(mapRawTrainingTemplateToDto),
       ),
     };
   }
@@ -211,7 +205,40 @@ export class TrainingsController {
     return {
       data: mapAndValidateEntity(
         TrainingTemplateDto,
-        mapRowTrainingTemplateToDto(rawTraining),
+        mapRawTrainingTemplateToDto(rawTraining),
+      ),
+    };
+  }
+
+  @Put('/templates/:templateId')
+  @ApiOperation({
+    summary: 'Полное обновление шаблона тренировки',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Шаблон тренировки обновлен',
+    type: PutTrainingTemplateResponse,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async patchTrainingTemplate(
+    @Param('trainingId', ParseIntPipe) trainingId: number,
+    @Body() { data }: PutTrainingTemplateRequest,
+  ): Promise<PutTrainingTemplateResponse> {
+    const rawTemplate = await this.trainingService.updateTrainingTemplateAndReplace(
+      trainingId,
+      {
+        name: data.name,
+        type: data.type,
+        description: data.description ?? null,
+        wormUpDuration: data.wormUpDuration ?? null,
+        postTrainingDuration: data.postTrainingDuration ?? null,
+      },
+    );
+
+    return {
+      data: mapAndValidateEntity(
+        TrainingTemplateDto,
+        mapRawTrainingTemplateToDto(rawTemplate),
       ),
     };
   }
