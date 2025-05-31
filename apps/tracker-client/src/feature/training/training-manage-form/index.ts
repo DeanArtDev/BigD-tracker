@@ -1,1 +1,1 @@
-export { TrainingManageDialog } from './training-manage-dialog';
+export { TrainingTemplateManageDialog } from './training-template-manage-dialog';

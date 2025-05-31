@@ -1,8 +1,8 @@
 import { useMeSuspense } from '@/entity/auth';
 import {
   TrainingTypeSelectForm,
-  useTrainingCreate,
-  useTrainingUpdateFully,
+  useTrainingTemplateCreate,
+  useTrainingTemplateUpdateAndReplace,
 } from '@/entity/trainings';
 import type { ApiDto } from '@/shared/api/types';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
@@ -29,16 +29,16 @@ interface TrainingManageFormData {
   readonly postTrainingDuration?: number;
 }
 
-function TrainingManageForm({
+function TrainingTemplateManageForm({
   training,
   onSuccess,
 }: {
-  training?: ApiDto['TrainingDto'];
+  training?: ApiDto['TrainingTemplateDto'];
   onSuccess: () => void;
 }) {
   const { me } = useMeSuspense();
-  const { create, isPending: isCreating } = useTrainingCreate();
-  const { update, isPending: isUpdating } = useTrainingUpdateFully();
+  const { create, isPending: isCreating } = useTrainingTemplateCreate();
+  const { update, isPending: isUpdating } = useTrainingTemplateUpdateAndReplace();
 
   const isLoading = isCreating || isUpdating;
 
@@ -75,7 +75,6 @@ function TrainingManageForm({
                   data: {
                     type: formData.type,
                     name: formData.name,
-                    createdAt: training.createdAt,
                     description: formData.description,
                     wormUpDuration:
                       formData.wormUpDuration == null
@@ -193,4 +192,4 @@ function TrainingManageForm({
   );
 }
 
-export { TrainingManageForm, type TrainingManageFormData };
+export { TrainingTemplateManageForm, type TrainingManageFormData };

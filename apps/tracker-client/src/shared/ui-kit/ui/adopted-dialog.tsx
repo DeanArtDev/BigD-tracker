@@ -20,27 +20,27 @@ export function AdoptedDialog({
     content?: { className?: string };
     footer?: { element?: ReactNode; className?: string };
   };
-  onOpenChange: (value: boolean) => void;
+  onOpenChange?: (value: boolean) => void;
 }>) {
   // const isDesktop = useMediaQuery('(min-width: 768px)');
-
-  const showHeader =
-    slotsProps?.header?.element != null || slotsProps?.header?.description != null;
 
   // if (isDesktop) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={slotsProps?.content?.className}>
-        {showHeader && (
-          <DialogHeader>
-            {slotsProps?.header?.element && (
-              <DialogTitle>{slotsProps?.header?.element}</DialogTitle>
-            )}
-            {slotsProps?.header?.description && (
-              <DialogDescription>{slotsProps?.header?.description}</DialogDescription>
-            )}
-          </DialogHeader>
-        )}
+        <DialogHeader>
+          {slotsProps?.header?.element ? (
+            <DialogTitle>{slotsProps?.header?.element}</DialogTitle>
+          ) : (
+            <DialogTitle />
+          )}
+          {slotsProps?.header?.description ? (
+            <DialogDescription>{slotsProps?.header?.description}</DialogDescription>
+          ) : (
+            <DialogDescription />
+          )}
+        </DialogHeader>
+
         {children}
 
         {slotsProps?.footer?.element && (

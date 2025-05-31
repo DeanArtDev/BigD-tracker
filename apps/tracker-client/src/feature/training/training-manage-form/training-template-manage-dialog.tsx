@@ -2,25 +2,25 @@ import type { ApiDto } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
 
-const TrainingManageFormLazy = withLazy(() =>
-  import('./training-manage-form').then((m) => ({
-    default: m.TrainingManageForm,
+const TrainingTemplateManageFormLazy = withLazy(() =>
+  import('./training-template-manage-form').then((m) => ({
+    default: m.TrainingTemplateManageForm,
   })),
 );
 
-interface TrainingCreateDialogProps {
-  readonly training?: ApiDto['TrainingDto'];
+interface TrainingTemplateCreateDialogProps {
+  readonly training?: ApiDto['TrainingTemplateDto'];
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
   readonly onSuccess: () => void;
 }
 
-function TrainingManageDialog({
+function TrainingTemplateManageDialog({
   open,
   training,
   onSuccess,
   onOpenChange,
-}: TrainingCreateDialogProps) {
+}: TrainingTemplateCreateDialogProps) {
   return (
     <AdoptedDialog
       open={open}
@@ -32,9 +32,9 @@ function TrainingManageDialog({
         content: { className: 'max-w-auto md:max-w-[900px] pb-4 md:pb-10' },
       }}
     >
-      <TrainingManageFormLazy training={training} onSuccess={onSuccess} />
+      <TrainingTemplateManageFormLazy training={training} onSuccess={onSuccess} />
     </AdoptedDialog>
   );
 }
 
-export { TrainingManageDialog, type TrainingCreateDialogProps };
+export { TrainingTemplateManageDialog, type TrainingTemplateCreateDialogProps };

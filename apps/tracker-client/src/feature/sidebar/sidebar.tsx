@@ -20,7 +20,6 @@ export function AppSidebar() {
       <SidebarContent>
         <NavMenu />
       </SidebarContent>
-      <SidebarFooter>footer</SidebarFooter>
     </Sidebar>
   );
 }

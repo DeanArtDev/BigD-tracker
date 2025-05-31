@@ -2,12 +2,12 @@ import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
 import { useInvalidateTrainingsTemplates } from './invalidators';
 
-function useTrainingCreate() {
+function useTrainingTemplateUpdateAndReplace() {
   const invalidate = useInvalidateTrainingsTemplates();
   const options = getDefaultQueryNotifications();
-  const { mutate: create, ...others } = $privetQueryClient.useMutation(
-    'post',
-    '/trainings',
+  const { mutate: update, ...others } = $privetQueryClient.useMutation(
+    'put',
+    '/trainings/templates/{templateId}',
     {
       ...options,
       onSuccess: async () => {
@@ -18,9 +18,9 @@ function useTrainingCreate() {
   );
 
   return {
-    create,
+    update,
     ...others,
   };
 }
 
-export { useTrainingCreate };
+export { useTrainingTemplateUpdateAndReplace };
