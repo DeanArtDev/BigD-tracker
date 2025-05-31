@@ -3,22 +3,23 @@ import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { TrainingTemplateDto } from './training-template.dto';
 
-class TemplateRequest extends OmitType(TrainingTemplateDto, [
+class PutTrainingTemplateDto extends OmitType(TrainingTemplateDto, [
   'id',
+  'userId',
   'createdAt',
 ] as const) {}
 
-class CreateTrainingTemplateRequest {
+class PutTrainingTemplateRequest {
   @ApiProperty({
-    description: 'Данные для запроса',
-    type: TemplateRequest,
+    description: 'Запрос к серверу',
+    type: PutTrainingTemplateDto,
   })
   @ValidateNested()
-  @Type(() => TemplateRequest)
-  data: TemplateRequest;
+  @Type(() => PutTrainingTemplateDto)
+  data: PutTrainingTemplateDto;
 }
 
-class CreateTrainingTemplateResponse {
+class PutTrainingTemplateResponse {
   @ApiProperty({
     description: 'Ответ сервера',
     type: TrainingTemplateDto,
@@ -28,4 +29,4 @@ class CreateTrainingTemplateResponse {
   data: TrainingTemplateDto;
 }
 
-export { CreateTrainingTemplateResponse, CreateTrainingTemplateRequest };
+export { PutTrainingTemplateResponse, PutTrainingTemplateRequest };

@@ -1,6 +1,6 @@
-import { IsDate, IsEmail, IsInt, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose, Transform, Type } from 'class-transformer';
+import { Expose } from 'class-transformer';
+import { IsEmail, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
 
 /* Это блэт DTO а не entity!*/
 class User {
@@ -30,10 +30,8 @@ class User {
     example: '2025-05-24T13:01:02.471Z',
   })
   @Expose()
-  @IsDate()
-  @Type(() => Date)
-  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
-  createdAt: Date;
+  @IsISO8601()
+  createdAt: string;
 }
 
 export { User };

@@ -168,7 +168,7 @@ export class ExercisesController {
     @TokenPayload() tokenPayload: AccessTokenPayload,
   ): Promise<GetExercisesTemplatesResponse> {
     const rawExercises = await this.exercisesService.getExercisesTemplates({
-      userId: my ? tokenPayload.uid : undefined,
+      userId: my === true ? tokenPayload.uid : undefined,
     });
 
     return {

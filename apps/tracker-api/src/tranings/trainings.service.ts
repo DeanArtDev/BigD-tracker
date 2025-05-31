@@ -98,15 +98,25 @@ export class TrainingsService {
     return rowTraining;
   }
 
+  async findTraining(data: { id: number }) {
+    const rowTraining = await this.trainingsRepository.findOneById({ id: data.id });
+    if (rowTraining == null) {
+      throw new NotFoundException('Training is not found');
+    }
+    return rowTraining;
+  }
+
   async createTrainingTemplate(data: {
-    userId: number;
+    userId?: number;
     name: string;
     type: TrainingType;
     description?: string;
     wormUpDuration?: number;
     postTrainingDuration?: number;
   }) {
-    await this.userService.findUser({ id: data.userId });
+    if (data.userId != null) {
+      await this.userService.findUser({ id: data.userId });
+    }
     const rowTraining = await this.trainingsTemplatesRepository.create(data);
     if (rowTraining == null) {
       throw new InternalServerErrorException('Failed to create training');
@@ -114,12 +124,32 @@ export class TrainingsService {
     return rowTraining;
   }
 
-  async getCommonTemplates() {
-    return await this.trainingsTemplatesRepository.getCommonTemplates();
+  async findTemplatesByFilters({ userId }: { userId?: number }) {
+    return await this.trainingsTemplatesRepository.findByFilters({ userId });
   }
 
-  async getTemplatesByUserId(id: number) {
-    return await this.trainingsTemplatesRepository.findByUserId({ userId: id });
+  async updateTrainingTemplateAndReplace(
+    id: number,
+    data: { name: string; type: TrainingType } & Nullable<{
+      description: string;
+      wormUpDuration: number;
+      postTrainingDuration: number;
+    }>,
+  ) {
+    const training = await this.trainingsTemplatesRepository.findOneById({ id });
+    if (training == null) {
+      throw new NotFoundException(`training with id ${id} not found`);
+    }
+
+    const updatedTemplate = await this.trainingsTemplatesRepository.updateAndReplace(
+      id,
+      data,
+    );
+    if (updatedTemplate == null) {
+      throw new InternalServerErrorException({ id }, { cause: 'Failed to update' });
+    }
+
+    return updatedTemplate;
   }
 
   async deleteTrainingTemplate(data: { id: number; userId: number }) {

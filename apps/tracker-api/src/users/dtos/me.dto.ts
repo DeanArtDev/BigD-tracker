@@ -1,15 +1,15 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsDate,
   IsEmail,
   IsInt,
+  IsISO8601,
   IsOptional,
   IsString,
   IsUrl,
 } from 'class-validator';
-import { Expose, Transform, Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 class MeDto {
   @IsInt()
@@ -41,14 +41,13 @@ class MeDto {
   @ApiPropertyOptional({ example: ['admin', 'user', 'moderator'] })
   roles: string[];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '2025-05-24T13:01:02.471Z',
+    description: 'ISO String',
   })
   @Expose()
-  @IsDate()
-  @Type(() => Date)
-  @Transform(({ value }) => value?.toISOString(), { toPlainOnly: true })
-  createdAt: Date;
+  @IsISO8601()
+  createdAt: string;
 
   @Expose()
   @ApiProperty()

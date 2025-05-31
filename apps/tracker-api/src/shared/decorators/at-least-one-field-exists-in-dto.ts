@@ -23,8 +23,8 @@ class AtLeastOneFieldExistsConstraint implements ValidatorConstraintInterface {
   }
 }
 
-function AtLeastOneFieldExistsInDto(
-  fields: string[],
+function AtLeastOneFieldExistsInDto<Entity extends Record<string, any>>(
+  fields: (keyof Entity)[],
   validationOptions?: ValidationOptions,
 ) {
   return function (object: Record<string, any>, propertyName: string) {

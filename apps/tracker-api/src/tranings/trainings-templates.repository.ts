@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { KyselyService } from '@shared/modules/db';
-import { Nullable } from 'kysely/dist/esm';
+import { DB, KyselyService } from '@shared/modules/db';
+import { ExpressionBuilder, Nullable } from 'kysely';
 import { TrainingType } from './dtos/training.dto';
 
 @Injectable()
@@ -15,13 +15,26 @@ export class TrainingsTemplatesRepository {
       .executeTakeFirst();
   }
 
-  async getCommonTemplates() {
-    return await this.kyselyService.db
+  async findByFilters(
+    filters: {
+      userId?: number;
+    } = {},
+  ) {
+    let query = this.kyselyService.db
       .selectFrom('trainings_templates')
-      .where('user_id', 'is', null)
-      .selectAll()
       .orderBy('created_at', 'desc')
-      .execute();
+      .selectAll();
+
+    const { userId } = filters;
+    query = query.where((eb) => {
+      const conditions: ReturnType<ExpressionBuilder<DB, 'trainings_templates'>>[] = [];
+      if (userId != null) {
+        conditions.push(eb('user_id', '=', userId));
+      }
+      return eb.and(conditions);
+    });
+
+    return await query.execute();
   }
 
   async findByUserId({ userId }: { userId: number }) {
@@ -41,7 +54,7 @@ export class TrainingsTemplatesRepository {
     return result.numDeletedRows > 0;
   }
 
-  async update(
+  async updateAndReplace(
     id: number,
     data: { name: string; type: TrainingType } & Nullable<{
       description: string;
@@ -64,7 +77,7 @@ export class TrainingsTemplatesRepository {
   }
 
   async create(data: {
-    userId: number;
+    userId?: number;
     name: string;
     type: TrainingType;
     description?: string;
