@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsArray, IsISO8601, IsOptional, ValidateNested } from 'class-validator';
-import { TrainingDto } from './training.dto';
+import { TrainingAggregationDto } from './training-aggregation.dto';
 
-class GetTrainingsFilters {
+class GetTrainingsAggregationFilters {
   @ApiPropertyOptional({
     example: '2025-05-24T13:01:02.471Z',
     description: 'ISO String',
@@ -23,16 +23,16 @@ class GetTrainingsFilters {
   to?: string;
 }
 
-class GetTrainingsResponse {
+class GetTrainingAggregationResponse {
   @ApiProperty({
     description: 'Ответ сервера',
-    type: TrainingDto,
+    type: TrainingAggregationDto,
     isArray: true,
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TrainingDto)
-  data: TrainingDto[];
+  @Type(() => TrainingAggregationDto)
+  data: TrainingAggregationDto[];
 }
 
-export { GetTrainingsResponse, GetTrainingsFilters };
+export { GetTrainingAggregationResponse, GetTrainingsAggregationFilters };

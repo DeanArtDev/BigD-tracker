@@ -1,7 +1,7 @@
-import { ExerciseType } from '@/exercises/dtos/exercise.dto';
 import { Injectable } from '@nestjs/common';
 import { DB, KyselyService } from '@shared/modules/db';
 import { ExpressionBuilder, Nullable } from 'kysely';
+import { ExerciseType } from './entity/exercise.entity';
 
 @Injectable()
 export class ExercisesTemplatesRepository {

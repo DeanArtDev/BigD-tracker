@@ -30,9 +30,7 @@ export class AuthRepository {
       .executeTakeFirst();
   }
 
-  async deleteSession(
-    data: { token: string; userId: number } | { uuid: string; userId: number },
-  ) {
+  async deleteSession(data: { token: string; userId: number } | { uuid: string; userId: number }) {
     if ('uuid' in data) {
       const result = await this.kyselyService.db
         .deleteFrom('sessions')
@@ -55,8 +53,7 @@ export class AuthRepository {
   async createSession(data: { ip?: string; userId: number; userAgent?: string }) {
     const uuid = randomUUID();
     const refreshToken = randomBytes(40).toString('hex');
-    const expiresDate =
-      Date.now() + (this.configService.get<number>('SESSION_REFRESH_TIME') ?? 0);
+    const expiresDate = Date.now() + (this.configService.get<number>('SESSION_REFRESH_TIME') ?? 0);
 
     const session = await this.kyselyService.db
       .insertInto('sessions')

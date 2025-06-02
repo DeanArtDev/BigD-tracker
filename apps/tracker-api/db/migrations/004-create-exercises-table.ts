@@ -20,9 +20,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('training_id', 'integer', (col) =>
       col.references('trainings.id').onDelete('cascade').notNull(),
     )
-    .addColumn('name', 'text', (col) =>
-      col.notNull().check(sql`char_length(name) <= 256`),
-    )
+    .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
     .addColumn('description', 'text')
     .addCheckConstraint('description_value', sql`char_length(description) <= 1024`)
     .addColumn('example_url', 'text', (col) => col.check(sql`char_length(name) <= 256`))

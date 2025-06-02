@@ -7,9 +7,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('users_id', 'integer', (col) =>
       col.references('users.id').onDelete('cascade').notNull(),
     )
-    .addColumn('user_agent', 'text', (col) =>
-      col.check(sql`char_length(user_agent) <= 256`),
-    )
+    .addColumn('user_agent', 'text', (col) => col.check(sql`char_length(user_agent) <= 256`))
     .addColumn('token', 'text', (col) => col.notNull())
     .addColumn('ip', 'text', (col) => col.check(sql`char_length(ip) <= 32`))
     .addColumn('revoked', 'boolean', (col) => col.notNull().defaultTo(false))

@@ -21,10 +21,9 @@ const getTestUserToken = async (app: INestApplication, login: string) => {
   const userService = app.get<UsersService>(UsersService);
   const testUser = await userService.findUser({ email: login });
   try {
-    const { accessToken = 'there is no any test users' } =
-      await authService.createTestUserSession({
-        userId: testUser.id,
-      });
+    const { accessToken = 'there is no any test users' } = await authService.createTestUserSession({
+      userId: testUser.id,
+    });
     return accessToken;
   } catch (err) {
     console.log(`При создании токена для тестового пользователя что то отъебнуло`, err);

@@ -1,5 +1,3 @@
-// validators/at-least-one-field.validator.ts
-
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,

@@ -34,9 +34,7 @@ export class UsersService {
   async getAll(): Promise<User[]> {
     const userList = await this.usersRepository.getAll();
 
-    return userList.map<User>((rawUser) =>
-      mapAndValidateEntity(User, shapeUser(rawUser)),
-    );
+    return userList.map<User>((rawUser) => mapAndValidateEntity(User, shapeUser(rawUser)));
   }
 
   async findUser(data: FindUserData): Promise<User> {
@@ -85,10 +83,7 @@ export class UsersService {
     return newUser;
   }
 
-  async checkUserByPassword(data: {
-    email: string;
-    password: string;
-  }): Promise<User | undefined> {
+  async checkUserByPassword(data: { email: string; password: string }): Promise<User | undefined> {
     const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
     if (rawUser == null) return undefined;
     if (await this.validatePassword(data.password, rawUser.password_hash)) {

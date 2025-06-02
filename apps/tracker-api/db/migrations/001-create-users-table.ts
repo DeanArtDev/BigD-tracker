@@ -4,9 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('users')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('screen_name', 'text', (col) =>
-      col.check(sql`char_length(screen_name) <= 128`),
-    )
+    .addColumn('screen_name', 'text', (col) => col.check(sql`char_length(screen_name) <= 128`))
     .addColumn('email', 'text', (col) =>
       col
         .notNull()

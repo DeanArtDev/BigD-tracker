@@ -3,10 +3,7 @@ import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { TrainingTemplateDto } from './training-template.dto';
 
-class TemplateRequest extends OmitType(TrainingTemplateDto, [
-  'id',
-  'createdAt',
-] as const) {}
+class TemplateRequest extends OmitType(TrainingTemplateDto, ['id', 'createdAt'] as const) {}
 
 class CreateTrainingTemplateRequest {
   @ApiProperty({

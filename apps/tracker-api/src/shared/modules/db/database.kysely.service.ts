@@ -1,8 +1,5 @@
 import { Injectable, OnApplicationShutdown, Inject } from '@nestjs/common';
-import {
-  KYSELY_DATABASE_PROVIDER,
-  KyselyDatabaseProvider,
-} from './database.kysely.provider';
+import { KYSELY_DATABASE_PROVIDER, KyselyDatabaseProvider } from './database.kysely.provider';
 
 /*TODO:
  *  можно ли проверить коннект к базе и логнуть в консоль??

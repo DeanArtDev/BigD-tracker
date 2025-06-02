@@ -4,10 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('trainings_types')
     .addColumn('value', 'text', (col) => col.notNull().unique())
-    .addCheckConstraint(
-      'exercise_types_values',
-      sql`value in ('LIGHT', 'MEDIUM','HARD', 'MIXED')`,
-    )
+    .addCheckConstraint('exercise_types_values', sql`value in ('LIGHT', 'MEDIUM','HARD', 'MIXED')`)
     .addPrimaryKeyConstraint('trainings_types_fkey', ['value'])
     .execute();
 
@@ -17,9 +14,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('user_id', 'integer', (col) =>
       col.references('users.id').onDelete('cascade').notNull(),
     )
-    .addColumn('name', 'text', (col) =>
-      col.notNull().check(sql`char_length(name) <= 256`),
-    )
+    .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
     .addColumn('type', 'text', (col) =>
       col.references('trainings_types.value').onDelete('restrict').notNull(),
     )

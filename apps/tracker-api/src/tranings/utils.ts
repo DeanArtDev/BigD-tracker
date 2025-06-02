@@ -25,6 +25,7 @@ const mapRawTrainingToDto = (data: {
     wormUpDuration: data.worm_up_duration ?? undefined,
     postTrainingDuration: data.post_training_duration ?? undefined,
     createdAt: data.created_at.toISOString(),
+    updatedAt: data.created_at.toISOString(),
   };
 };
 
@@ -48,6 +49,7 @@ const mapRawTrainingTemplateToDto = (data: {
     wormUpDuration: data.worm_up_duration ?? undefined,
     postTrainingDuration: data.post_training_duration ?? undefined,
     createdAt: data.created_at.toISOString(),
+    updatedAt: data.created_at.toISOString(),
   };
 };
 

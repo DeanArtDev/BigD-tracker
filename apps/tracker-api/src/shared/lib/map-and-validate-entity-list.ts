@@ -21,7 +21,8 @@ export function mapAndValidateEntityList<T extends Record<string, any>, V>(
 
   if (allErrors.length > 0) {
     throw new InternalServerErrorException(
-      `Invalid data in array returned from repository: ${JSON.stringify(allErrors)}`,
+      { items: allErrors },
+      `DTO and Entities are incomparable`,
     );
   }
 

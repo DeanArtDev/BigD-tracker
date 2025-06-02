@@ -1,15 +1,26 @@
-import { TrainingsModule } from '@/tranings/trainings.module';
-import { UsersModule } from '@/users/users.module';
+import { ExercisesTemplateMapper } from './exercise-template.mapper';
+import { ExercisesMapper } from './exercise.mapper';
 import { Module } from '@nestjs/common';
-import { ExercisesService } from './exercises.service';
+import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 import { ExercisesController } from './exercises.controller';
 import { ExercisesRepository } from './exercises.repository';
-import { ExercisesTemplatesRepository } from './exercises-templates.repository';
+import { ExercisesService } from './exercises.service';
 
 @Module({
-  imports: [UsersModule, TrainingsModule],
-  exports: [ExercisesService],
+  exports: [
+    ExercisesService,
+    ExercisesMapper,
+    ExercisesRepository,
+    ExercisesTemplateMapper,
+    ExercisesTemplatesRepository,
+  ],
   controllers: [ExercisesController],
-  providers: [ExercisesService, ExercisesRepository, ExercisesTemplatesRepository],
+  providers: [
+    ExercisesService,
+    ExercisesRepository,
+    ExercisesTemplatesRepository,
+    ExercisesMapper,
+    ExercisesTemplateMapper,
+  ],
 })
 export class ExercisesModule {}

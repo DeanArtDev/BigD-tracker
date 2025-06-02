@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
 import { User } from '@/users/users.entity';
 import { ExceptionWrongLoginOrPassword } from '@big-d/api-exception';
@@ -113,13 +109,7 @@ export class AuthService {
 
   /* Сессия для тестового пользователя в поле token хранит JSW, 
   в отличие от классического поведения */
-  async createTestUserSession({
-    userId,
-    exp = 8.64e7,
-  }: {
-    userId: number;
-    exp?: number;
-  }) {
+  async createTestUserSession({ userId, exp = 8.64e7 }: { userId: number; exp?: number }) {
     const existedSession = await this.authRepository.findSessionByUserId(userId);
     if (existedSession != null) return { accessToken: existedSession.token };
 

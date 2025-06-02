@@ -8,7 +8,7 @@ const baseConfig = {
   useTabs: false,
   tabWidth: 2,
   trailingComma: 'all',
-  printWidth: 90,
+  printWidth: 100,
   bracketSpacing: true,
   semi: true,
   endOfLine: 'lf',

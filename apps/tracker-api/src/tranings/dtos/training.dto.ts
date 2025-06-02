@@ -1,13 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
-
-enum TrainingType {
-  LIGHT = 'LIGHT',
-  MEDIUM = 'MEDIUM',
-  HARD = 'HARD',
-  MIXED = 'MIXED',
-}
+import { TrainingType } from '../entities/training.entity';
 
 class TrainingDto {
   @ApiProperty({ example: 1 })
@@ -49,20 +43,26 @@ class TrainingDto {
   startDate: string;
 
   @ApiPropertyOptional({
-    example: '2025-05-24T13:01:02.471Z',
+    example: '2025-06-24T13:01:02.471Z',
   })
   @Expose()
   @IsISO8601()
   @IsOptional()
   endDate?: string;
 
-  @ApiPropertyOptional({ example: 30000, description: 'измеряется в миллисекундах' })
+  @ApiPropertyOptional({
+    example: 300000,
+    description: 'измеряется в миллисекундах',
+  })
   @IsInt()
   @Expose()
   @IsOptional()
   wormUpDuration?: number;
 
-  @ApiPropertyOptional({ example: 30000, description: 'измеряется в миллисекундах' })
+  @ApiPropertyOptional({
+    example: 300000,
+    description: 'измеряется в миллисекундах',
+  })
   @IsInt()
   @Expose()
   @IsOptional()
@@ -75,6 +75,14 @@ class TrainingDto {
   @Expose()
   @IsISO8601()
   createdAt: string;
+
+  @ApiProperty({
+    example: '2025-05-24T13:01:02.471Z',
+    description: 'ISO String',
+  })
+  @IsISO8601()
+  @Expose()
+  updatedAt: string;
 }
 
 export { TrainingDto, TrainingType };
