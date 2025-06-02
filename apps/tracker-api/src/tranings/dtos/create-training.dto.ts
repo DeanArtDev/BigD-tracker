@@ -1,28 +1,36 @@
-import { ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 import { TrainingDto } from './training.dto';
 
-class TrainingRequest extends OmitType(TrainingDto, ['id', 'createdAt'] as const) {}
+class CreateTrainingRequestData extends OmitType(TrainingDto, [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'endDate',
+  'userId',
+] as const) {}
 
 class CreateTrainingRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: TrainingRequest,
+    type: CreateTrainingRequestData,
+    isArray: true,
   })
-  @ValidateNested()
-  @Type(() => TrainingRequest)
-  data: TrainingRequest;
+  @ValidateNested({ each: true })
+  @Type(() => CreateTrainingRequestData)
+  data: CreateTrainingRequestData[];
 }
 
 class CreateTrainingResponse {
   @ApiProperty({
     description: 'Ответ сервера',
     type: TrainingDto,
+    isArray: true,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => TrainingDto)
-  data: TrainingDto;
+  data: TrainingDto[];
 }
 
-export { CreateTrainingRequest, CreateTrainingResponse };
+export { CreateTrainingRequest, CreateTrainingResponse, CreateTrainingRequestData };

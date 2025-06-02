@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUrl } from 'class-validator';
-import { ExerciseType } from './exercise.dto';
+import { ExerciseType } from '../entity/exercise.entity';
 
 class ExerciseTemplateDto {
   @ApiProperty({ example: 1 })
@@ -44,13 +44,21 @@ class ExerciseTemplateDto {
   @IsOptional()
   exampleUrl?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '2025-05-24T13:01:02.471Z',
     description: 'ISO String',
   })
   @Expose()
   @IsISO8601()
   createdAt: string;
+
+  @ApiProperty({
+    example: '2025-05-24T13:01:02.471Z',
+    description: 'ISO String',
+  })
+  @Expose()
+  @IsISO8601()
+  updatedAt: string;
 }
 
 export { ExerciseTemplateDto };

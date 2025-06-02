@@ -1,10 +1,12 @@
 import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
-import { ExerciseDto, ExerciseType } from './dtos/exercise.dto';
+import { ExerciseType } from './entity/exercise.entity';
+import { ExerciseDto } from './dtos/exercise.dto';
 
 const mapRawExerciseToDto = (data: {
   description: string | null;
   type: string;
   created_at: Date;
+  updated_at: Date;
   example_url: string | null;
   id: number;
   name: string;
@@ -15,6 +17,7 @@ const mapRawExerciseToDto = (data: {
     description: data.description ?? undefined,
     type: data.type as ExerciseType,
     createdAt: data.created_at.toISOString(),
+    updatedAt: data.updated_at.toISOString(),
     exampleUrl: data.example_url ?? undefined,
     id: data.id,
     name: data.name,
@@ -27,6 +30,7 @@ const mapRawExerciseTemplateToDto = (data: {
   description: string | null;
   type: string;
   created_at: Date;
+  updated_at: Date;
   example_url: string | null;
   id: number;
   name: string;
@@ -36,6 +40,7 @@ const mapRawExerciseTemplateToDto = (data: {
     description: data.description ?? undefined,
     type: data.type as ExerciseType,
     createdAt: data.created_at.toISOString(),
+    updatedAt: data.updated_at.toISOString(),
     exampleUrl: data.example_url ?? undefined,
     id: data.id,
     name: data.name,

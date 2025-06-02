@@ -1,32 +1,35 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
+import { IsNullable } from '@shared/decorators/is-nullable';
+import { Expose } from 'class-transformer';
+import { IsOptional, IsString, IsUrl } from 'class-validator';
 import { ExerciseDto } from './exercise.dto';
 
-class PutExerciseDto extends OmitType(ExerciseDto, [
-  'id',
+class PutExerciseData extends OmitType(ExerciseDto, [
   'userId',
   'createdAt',
-] as const) {}
-
-class PutExerciseRequest {
-  @ApiProperty({
-    description: 'Запрос к серверу',
-    type: PutExerciseDto,
+  'updatedAt',
+  'description',
+  'exampleUrl',
+] as const) {
+  @ApiPropertyOptional({
+    example: 'свести лопатки',
+    nullable: true,
   })
-  @ValidateNested()
-  @Type(() => PutExerciseDto)
-  data: PutExerciseDto;
+  @IsString()
+  @Expose()
+  @IsOptional()
+  @IsNullable()
+  description?: string | null;
+
+  @ApiPropertyOptional({
+    example: 'https://youtube.com',
+    nullable: true,
+  })
+  @IsUrl({ protocols: ['https'] })
+  @Expose()
+  @IsOptional()
+  @IsNullable()
+  exampleUrl?: string | null;
 }
 
-class PutExerciseResponse {
-  @ApiProperty({
-    description: 'Ответ сервера',
-    type: ExerciseDto,
-  })
-  @ValidateNested()
-  @Type(() => ExerciseDto)
-  data: ExerciseDto;
-}
-
-export { PutExerciseRequest, PutExerciseResponse };
+export { PutExerciseData };

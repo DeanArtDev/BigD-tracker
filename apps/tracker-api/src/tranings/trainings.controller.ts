@@ -5,11 +5,8 @@ import {
   PutTrainingTemplateRequest,
   PutTrainingTemplateResponse,
 } from '@/tranings/dtos/put-training-template.dto';
-import {
-  PutTrainingRequest,
-  PutTrainingResponse,
-} from '@/tranings/dtos/put-training.dto';
-import { mapRawTrainingTemplateToDto, mapRawTrainingToDto } from '@/tranings/utils';
+import { TrainingsMapper } from '@/tranings/trainings.mapper';
+import { mapRawTrainingTemplateToDto } from '@/tranings/utils';
 import {
   Body,
   Controller,
@@ -18,7 +15,6 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Put,
   Query,
@@ -31,131 +27,18 @@ import {
   CreateTrainingTemplateResponse,
 } from './dtos/create-training-templates.dto';
 import {
-  CreateTrainingRequest,
-  CreateTrainingResponse,
-} from './dtos/create-training.dto';
-import {
   GetTrainingsTemplatesQuery,
   GetTrainingsTemplatesResponse,
 } from './dtos/get-trainings-templates.dto';
-import { GetTrainingsFilters, GetTrainingsResponse } from './dtos/get-trainings.dto';
-import { PatchTrainingRequest, PatchTrainingResponse } from './dtos/patch-training.dto';
 import { TrainingTemplateDto } from './dtos/training-template.dto';
-import { TrainingDto } from './dtos/training.dto';
 import { TrainingsService } from './trainings.service';
 
 @Controller('trainings')
 export class TrainingsController {
-  constructor(readonly trainingService: TrainingsService) {}
-
-  @Get()
-  @ApiOperation({
-    summary: 'Получение тренировок',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: GetTrainingsResponse,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getTrainings(
-    @Query() filters: GetTrainingsFilters,
-    @TokenPayload() tokenPayload: AccessTokenPayload,
-  ): Promise<GetTrainingsResponse> {
-    const rawTrainings = await this.trainingService.filterByRangeForUser({
-      userId: tokenPayload.uid,
-      ...filters,
-    });
-
-    return {
-      data: mapAndValidateEntityList(TrainingDto, rawTrainings.map(mapRawTrainingToDto)),
-    };
-  }
-
-  @Post()
-  @ApiOperation({
-    summary: 'Создание тренировки',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: CreateTrainingResponse,
-    description: 'Тренировка создана',
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async createTraining(
-    @Body() { data }: CreateTrainingRequest,
-  ): Promise<CreateTrainingResponse> {
-    const rawTraining = await this.trainingService.createTraining({
-      userId: data.userId,
-      type: data.type,
-      description: data.description,
-      endDate: data.endDate,
-      name: data.name,
-      postTrainingDuration: data.postTrainingDuration,
-      startDate: data.startDate,
-      wormUpDuration: data.wormUpDuration,
-    });
-    return { data: mapAndValidateEntity(TrainingDto, mapRawTrainingToDto(rawTraining)) };
-  }
-
-  @Delete('/:trainingId')
-  @ApiOperation({
-    summary: 'Удаление тренировки',
-  })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'Тренировка удалена',
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async deleteTraining(
-    @Param('trainingId', ParseIntPipe) trainingId: number,
-  ): Promise<void> {
-    await this.trainingService.deleteTraining({ id: trainingId });
-    return undefined;
-  }
-
-  @Patch('/:trainingId')
-  @ApiOperation({
-    summary: 'Частичное обновление тренировки',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Тренировка обновлена',
-    type: PatchTrainingResponse,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async patchTraining(
-    @Param('trainingId', ParseIntPipe) trainingId: number,
-    @Body() { data }: PatchTrainingRequest,
-  ): Promise<PatchTrainingResponse> {
-    const rawTraining = await this.trainingService.updateTrainingPartly(trainingId, data);
-    return { data: mapAndValidateEntity(TrainingDto, mapRawTrainingToDto(rawTraining)) };
-  }
-
-  @Put('/:trainingId')
-  @ApiOperation({
-    summary: 'Полное обновление тренировки',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Тренировка обновлена',
-    type: PutTrainingResponse,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async putTraining(
-    @Param('trainingId', ParseIntPipe) trainingId: number,
-    @Body() { data }: PutTrainingRequest,
-  ): Promise<PutTrainingResponse> {
-    const rawTraining = await this.trainingService.updateTrainingAndReplace(trainingId, {
-      type: data.type,
-      name: data.name,
-      endDate: data.endDate ?? null,
-      startDate: data.startDate ?? null,
-      description: data.description ?? null,
-      wormUpDuration: data.wormUpDuration ?? null,
-      postTrainingDuration: data.postTrainingDuration ?? null,
-    });
-    return { data: mapAndValidateEntity(TrainingDto, mapRawTrainingToDto(rawTraining)) };
-  }
+  constructor(
+    readonly trainingService: TrainingsService,
+    readonly trainingsMapper: TrainingsMapper,
+  ) {}
 
   @Get('/templates')
   @ApiOperation({
@@ -194,7 +77,7 @@ export class TrainingsController {
   async createTrainingTemplate(
     @Body() { data }: CreateTrainingTemplateRequest,
   ): Promise<CreateTrainingTemplateResponse> {
-    const rawTraining = await this.trainingService.createTrainingTemplate({
+    const rawTemplate = await this.trainingService.createTrainingTemplate({
       userId: data.userId,
       type: data.type,
       description: data.description,
@@ -203,10 +86,7 @@ export class TrainingsController {
       wormUpDuration: data.wormUpDuration,
     });
     return {
-      data: mapAndValidateEntity(
-        TrainingTemplateDto,
-        mapRawTrainingTemplateToDto(rawTraining),
-      ),
+      data: mapAndValidateEntity(TrainingTemplateDto, mapRawTrainingTemplateToDto(rawTemplate)),
     };
   }
 
@@ -221,25 +101,19 @@ export class TrainingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async patchTrainingTemplate(
-    @Param('trainingId', ParseIntPipe) trainingId: number,
+    @Param('templateId', ParseIntPipe) templateId: number,
     @Body() { data }: PutTrainingTemplateRequest,
   ): Promise<PutTrainingTemplateResponse> {
-    const rawTemplate = await this.trainingService.updateTrainingTemplateAndReplace(
-      trainingId,
-      {
-        name: data.name,
-        type: data.type,
-        description: data.description ?? null,
-        wormUpDuration: data.wormUpDuration ?? null,
-        postTrainingDuration: data.postTrainingDuration ?? null,
-      },
-    );
+    const rawTemplate = await this.trainingService.updateTrainingTemplateAndReplace(templateId, {
+      name: data.name,
+      type: data.type,
+      description: data.description ?? null,
+      wormUpDuration: data.wormUpDuration ?? null,
+      postTrainingDuration: data.postTrainingDuration ?? null,
+    });
 
     return {
-      data: mapAndValidateEntity(
-        TrainingTemplateDto,
-        mapRawTrainingTemplateToDto(rawTemplate),
-      ),
+      data: mapAndValidateEntity(TrainingTemplateDto, mapRawTrainingTemplateToDto(rawTemplate)),
     };
   }
 

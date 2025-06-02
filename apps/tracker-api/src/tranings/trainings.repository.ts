@@ -24,7 +24,7 @@ export class TrainingsRepository {
       .execute();
   }
 
-  async filterByRangeForUser(filters: { userId: number; to?: string; from?: string }) {
+  async findByRangeForUser(filters: { userId: number; to?: string; from?: string }) {
     const { userId, from, to } = filters;
 
     let query = this.kyselyService.db
@@ -79,10 +79,10 @@ export class TrainingsRepository {
       type: TrainingType;
       startDate: string;
     } & Nullable<{
-      description: string;
-      endDate: string;
-      wormUpDuration: number;
-      postTrainingDuration: number;
+      description?: string;
+      endDate?: string;
+      wormUpDuration?: number;
+      postTrainingDuration?: number;
     }>,
   ) {
     return await this.kyselyService.db

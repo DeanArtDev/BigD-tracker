@@ -1,3 +1,4 @@
+import { TrainingsMapper } from './trainings.mapper';
 import { Module } from '@nestjs/common';
 import { TrainingsService } from './trainings.service';
 import { TrainingsController } from './trainings.controller';
@@ -7,8 +8,8 @@ import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [UsersModule],
-  exports: [TrainingsService],
+  exports: [TrainingsService, TrainingsRepository, TrainingsMapper],
   controllers: [TrainingsController],
-  providers: [TrainingsService, TrainingsRepository, TrainingsTemplatesRepository],
+  providers: [TrainingsService, TrainingsRepository, TrainingsTemplatesRepository, TrainingsMapper],
 })
 export class TrainingsModule {}

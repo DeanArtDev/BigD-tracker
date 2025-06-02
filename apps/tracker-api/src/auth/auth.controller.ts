@@ -35,8 +35,7 @@ export class AuthController {
   @Public()
   @ApiOperation({
     summary: 'Регистрация пользователя',
-    description:
-      'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
+    description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -63,8 +62,7 @@ export class AuthController {
   @Public()
   @ApiOperation({
     summary: 'Обновление токена пользователя',
-    description:
-      'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
+    description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,

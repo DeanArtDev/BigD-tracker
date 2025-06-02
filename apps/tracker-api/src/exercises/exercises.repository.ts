@@ -1,7 +1,7 @@
-import { ExerciseType } from '@/exercises/dtos/exercise.dto';
 import { Injectable } from '@nestjs/common';
 import { DB, KyselyService } from '@shared/modules/db';
 import { ExpressionBuilder, Nullable } from 'kysely';
+import { ExerciseType } from './entity/exercise.entity';
 
 @Injectable()
 export class ExercisesRepository {
@@ -71,20 +71,18 @@ export class ExercisesRepository {
     return result.numDeletedRows > 0;
   }
 
-  async updatePartly(
-    id: number,
-    data: {
-      name?: string;
-      type?: ExerciseType;
-      userId?: number;
-      trainingId?: number;
-      exampleUrl?: string;
-      description?: string;
-    },
-  ) {
+  async updatePartly(data: {
+    id: number;
+    name?: string;
+    type?: ExerciseType;
+    userId?: number;
+    trainingId?: number;
+    exampleUrl?: string;
+    description?: string;
+  }) {
     return await this.kyselyService.db
       .updateTable('exercises')
-      .where('id', '=', id)
+      .where('id', '=', data.id)
       .set({
         type: data.type,
         name: data.name,
@@ -104,8 +102,8 @@ export class ExercisesRepository {
       type: ExerciseType;
       trainingId: number;
     } & Nullable<{
-      exampleUrl: string;
-      description: string;
+      exampleUrl?: string;
+      description?: string;
     }>,
   ) {
     return await this.kyselyService.db

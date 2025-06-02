@@ -37,8 +37,4 @@ class CreateExerciseTemplateResponse {
   data: ExerciseTemplateDto;
 }
 
-export {
-  CreateExerciseTemplateRequest,
-  CreateExerciseTemplateResponse,
-  GetExerciseTemplatesQuery,
-};
+export { CreateExerciseTemplateRequest, CreateExerciseTemplateResponse, GetExerciseTemplatesQuery };

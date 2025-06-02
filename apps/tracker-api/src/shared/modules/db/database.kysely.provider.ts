@@ -16,9 +16,7 @@ interface KyselyDatabaseProvider {
 const KyselyDatabaseProvider: Provider = {
   provide: KYSELY_DATABASE_PROVIDER,
   inject: [ConfigService],
-  useFactory: (
-    configService: ConfigService<DB_ENV & APP_ENV>,
-  ): KyselyDatabaseProvider => {
+  useFactory: (configService: ConfigService<DB_ENV & APP_ENV>): KyselyDatabaseProvider => {
     const pool = new Pool({
       host: configService.get('DB_HOST'),
       port: configService.get('DB_PORT'),
