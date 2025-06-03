@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 import { ExerciseTemplateDto } from './exercise-template.dto';
 
-class GetExercisesTemplatesResponse {
+class ExercisesTemplatesResponse {
   @ApiProperty({
     description: 'Ответ сервера',
     type: ExerciseTemplateDto,
@@ -15,4 +15,4 @@ class GetExercisesTemplatesResponse {
   data: ExerciseTemplateDto[];
 }
 
-export { GetExercisesTemplatesResponse };
+export { ExercisesTemplatesResponse };

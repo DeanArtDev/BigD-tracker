@@ -3,8 +3,19 @@ import { ExerciseType } from './exercise.entity';
 
 const validator = new Validator('exercises-templates');
 
+interface ExerciseTemplateData {
+  readonly id: number;
+  readonly userId?: number;
+  readonly name: string;
+  readonly type: ExerciseType;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly description?: string;
+  readonly exampleUrl?: string;
+}
+
 class ExerciseTemplateEntity {
-  constructor(data: ExerciseTemplateEntity) {
+  constructor(data: ExerciseTemplateData) {
     const { id, userId, description, name, type, exampleUrl, createdAt, updatedAt } = data;
 
     if (exampleUrl != null) {
@@ -25,24 +36,17 @@ class ExerciseTemplateEntity {
     validator.isDateISO(createdAt, 'createdAt');
     validator.isDateISO(updatedAt, 'updatedAt');
 
-    this.id = id;
-    this.userId = userId;
-    this.name = name;
-    this.type = type;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.description = description;
-    this.exampleUrl = exampleUrl;
+    Object.assign(this, { id, userId, description, name, type, exampleUrl, createdAt, updatedAt });
   }
 
-  public id: number;
-  public userId?: number;
-  public name: string;
-  public type: ExerciseType;
-  public createdAt: string;
-  public updatedAt: string;
-  public description?: string;
-  public exampleUrl?: string;
+  public readonly id: number;
+  public readonly userId?: number;
+  public readonly name: string;
+  public readonly type: ExerciseType;
+  public readonly createdAt: string;
+  public readonly updatedAt: string;
+  public readonly description?: string;
+  public readonly exampleUrl?: string;
 }
 
 export { ExerciseTemplateEntity };

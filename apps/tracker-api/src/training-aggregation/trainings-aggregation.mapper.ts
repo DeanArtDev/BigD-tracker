@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ExerciseDto } from '@/exercises/dtos/exercise.dto';
+import { ExerciseType } from '@/exercises/entity/exercise.entity';
 import { ExerciseRawData, ExercisesMapper } from '@/exercises/exercise.mapper';
+import { TrainingType } from '@/tranings/entities/training.entity';
 import { TrainingRawData, TrainingsMapper } from '@/tranings/trainings.mapper';
+import { Injectable } from '@nestjs/common';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { TrainingAggregationDto } from './dto/training-aggregation.dto';
 import { TrainingAggregationEntity } from './entities/training-aggregation.entity';
@@ -12,24 +15,76 @@ export class TrainingsAggregationMapper {
     private readonly exercisesMapper: ExercisesMapper,
   ) {}
 
-  fromRaw = (raw: {
-    rawTraining: TrainingRawData;
-    rawExercises?: ExerciseRawData[];
+  fromPersistenceToDto = (raw: {
+    rawTraining: TrainingRawData['selectable'];
+    rawExercises?: ExerciseRawData['selectable'][];
+  }): TrainingAggregationDto => {
+    const { rawTraining, rawExercises = [] } = raw;
+
+    const exercisesDto: ExerciseDto[] = rawExercises.map((ex) => {
+      return {
+        id: ex.id,
+        name: ex.name,
+        trainingId: ex.training_id,
+        type: ex.type as ExerciseType,
+        userId: ex.user_id,
+        createdAt: ex.created_at.toISOString(),
+        updatedAt: ex.updated_at.toISOString(),
+        description: ex.description ?? undefined,
+        exampleUrl: ex.example_url ?? undefined,
+      };
+    });
+
+    const instance: TrainingAggregationDto = {
+      id: rawTraining.id,
+      name: rawTraining.name,
+      type: rawTraining.type as TrainingType,
+      description: rawTraining.description ?? undefined,
+      endDate: rawTraining.end_date?.toISOString(),
+      createdAt: rawTraining.created_at.toISOString(),
+      userId: rawTraining.user_id,
+      startDate: rawTraining.start_date.toISOString(),
+      updatedAt: rawTraining.updated_at.toISOString(),
+      postTrainingDuration: rawTraining.post_training_duration ?? undefined,
+      wormUpDuration: rawTraining.worm_up_duration ?? undefined,
+      exercises: exercisesDto,
+    };
+    return mapAndValidateEntity(TrainingAggregationDto, instance);
+  };
+
+  fromPersistenceToEntity = (raw: {
+    rawTraining: TrainingRawData['selectable'];
+    rawExercises?: ExerciseRawData['selectable'][];
   }): TrainingAggregationEntity => {
     const { rawTraining, rawExercises = [] } = raw;
     const trainingAggregation = new TrainingAggregationEntity(
-      this.trainingsMapper.fromRaw(rawTraining),
+      this.trainingsMapper.fromPersistenceToEntity(rawTraining),
     );
-    return trainingAggregation.addExercises(rawExercises.map(this.exercisesMapper.fromRaw));
+    return trainingAggregation.addExercises(
+      rawExercises.map(this.exercisesMapper.fromPersistenceToEntity),
+    );
   };
 
-  toEntity = (dto: TrainingAggregationDto): TrainingAggregationEntity => {
+  fromEntityToPersistence = (
+    entity: TrainingAggregationEntity,
+  ): {
+    rawTraining: TrainingRawData['selectable'];
+    rawExercises?: ExerciseRawData['selectable'][];
+  } => {
+    const { exercises } = entity;
+    return {
+      rawExercises: exercises.map(this.exercisesMapper.fromEntityToPersistence),
+      rawTraining: this.trainingsMapper.fromEntityToPersistence(entity),
+    };
+  };
+
+  fromDtoToEntity = (dto: TrainingAggregationDto): TrainingAggregationEntity => {
     return new TrainingAggregationEntity(dto).addExercises(
-      dto.exercises.map(this.exercisesMapper.toEntity),
+      dto.exercises.map(this.exercisesMapper.fromDtoToEntity),
     );
   };
 
-  toDTO = (entity: TrainingAggregationEntity): TrainingAggregationDto => {
+  fromEntityToDTO = (entity: TrainingAggregationEntity): TrainingAggregationDto => {
     return mapAndValidateEntity(TrainingAggregationDto, entity);
   };
 }

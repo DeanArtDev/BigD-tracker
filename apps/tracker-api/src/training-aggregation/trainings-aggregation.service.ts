@@ -21,7 +21,7 @@ export class TrainingsAggregationService {
         trainingId: rawTraining.id,
         userId: rawTraining.user_id,
       });
-      const trainingAggregation = this.trainingAggregationMapper.fromRaw({
+      const trainingAggregation = this.trainingAggregationMapper.fromPersistenceToEntity({
         rawTraining,
         rawExercises,
       });

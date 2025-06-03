@@ -1,16 +1,21 @@
 import { TrainingDto } from '@/tranings/dtos/training.dto';
-import { TrainingEntity, TrainingType } from '@/tranings/entities/training.entity';
 import { Injectable } from '@nestjs/common';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { BaseMapper } from '@shared/lib/mapper';
 import { DB } from '@shared/modules/db';
-import { Selectable } from 'kysely';
+import { Insertable, Selectable, Updateable } from 'kysely';
+import { TrainingEntity, TrainingType } from './entities/training.entity';
 
-type TrainingRawData = Selectable<DB['trainings']>;
+type SelectableTrainingRawData = Selectable<DB['trainings']>;
+interface TrainingRawData {
+  readonly selectable: Selectable<DB['trainings']>;
+  readonly updateable: Updateable<DB['trainings']>;
+  readonly insertable: Insertable<DB['trainings']>;
+}
 
 @Injectable()
-class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, TrainingRawData> {
-  fromRaw = (rawData: TrainingRawData): TrainingEntity => {
+class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, SelectableTrainingRawData> {
+  fromPersistenceToEntity = (rawData: SelectableTrainingRawData): TrainingEntity => {
     return new TrainingEntity({
       id: rawData.id,
       userId: rawData.user_id,
@@ -26,13 +31,29 @@ class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, TrainingRa
     });
   };
 
-  toEntity = (dto: TrainingDto): TrainingEntity => {
+  fromEntityToPersistence = (entity: TrainingEntity): TrainingRawData['selectable'] => {
+    return {
+      id: entity.id,
+      type: entity.type,
+      user_id: entity.userId,
+      name: entity.name,
+      start_date: new Date(entity.startDate),
+      created_at: new Date(entity.createdAt),
+      end_date: entity.endDate != null ? new Date(entity.endDate) : null,
+      updated_at: new Date(entity.updatedAt),
+      description: entity.description ?? null,
+      post_training_duration: entity.postTrainingDuration ?? null,
+      worm_up_duration: entity.wormUpDuration ?? null,
+    };
+  };
+
+  fromDtoToEntity = (dto: TrainingDto): TrainingEntity => {
     return new TrainingEntity(dto);
   };
 
-  toDTO = (entity: TrainingEntity): TrainingDto => {
+  fromEntityToDTO = (entity: TrainingEntity): TrainingDto => {
     return mapAndValidateEntity(TrainingDto, entity);
   };
 }
 
-export { type TrainingRawData, TrainingsMapper };
+export { type SelectableTrainingRawData, type TrainingRawData, TrainingsMapper };

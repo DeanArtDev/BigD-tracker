@@ -9,8 +9,20 @@ enum ExerciseType {
   'ANAEROBIC' = 'ANAEROBIC',
 }
 
+interface ExerciseEntityData {
+  readonly id: number;
+  readonly userId: number;
+  readonly trainingId: number;
+  readonly name: string;
+  readonly type: ExerciseType;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly description?: string;
+  readonly exampleUrl?: string;
+}
+
 class ExerciseEntity {
-  constructor(data: ExerciseEntity) {
+  constructor(data: ExerciseEntityData) {
     const { id, trainingId, userId, description, name, type, exampleUrl, createdAt, updatedAt } =
       data;
 
@@ -30,26 +42,28 @@ class ExerciseEntity {
     validator.isDateISO(createdAt, 'createdAt');
     validator.isDateISO(updatedAt, 'updatedAt');
 
-    this.id = id;
-    this.userId = userId;
-    this.trainingId = trainingId;
-    this.name = name;
-    this.type = type;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.description = description;
-    this.exampleUrl = exampleUrl;
+    Object.assign(this, {
+      id,
+      name,
+      type,
+      userId,
+      createdAt,
+      updatedAt,
+      trainingId,
+      exampleUrl,
+      description,
+    });
   }
 
-  public id: number;
-  public userId: number;
-  public trainingId: number;
-  public name: string;
-  public type: ExerciseType;
-  public createdAt: string;
-  public updatedAt: string;
-  public description?: string;
-  public exampleUrl?: string;
+  public readonly id: number;
+  public readonly userId: number;
+  public readonly trainingId: number;
+  public readonly name: string;
+  public readonly type: ExerciseType;
+  public readonly createdAt: string;
+  public readonly updatedAt: string;
+  public readonly description?: string;
+  public readonly exampleUrl?: string;
 }
 
 export { ExerciseEntity, ExerciseType };
