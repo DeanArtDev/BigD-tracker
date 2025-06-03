@@ -15,25 +15,21 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
-import {
-  GetTrainingAggregationResponse,
-  GetTrainingsAggregationFilters,
-} from './dto/get-training-aggregation.dto';
+import { GetTrainingsAggregationFilters } from './dto/get-training-aggregation.dto';
+import { TrainingAggregationResponse } from './dto/response-tarining-aggregation.dto';
 import { TrainingAggregationDto } from './dto/training-aggregation.dto';
 import { TrainingsAggregationMapper } from './trainings-aggregation.mapper';
 import { TrainingsAggregationService } from './trainings-aggregation.service';
 import {
   CreateTrainingAggregationRequest,
-  CreateTrainingAggregationResponse,
   CreateTrainingAggregationUseCase,
 } from './use-cases/create-training-aggregation';
 import {
   UpdateTrainingAggregationRequest,
-  UpdateTrainingAggregationResponse,
   UpdateTrainingAggregationUseCase,
 } from './use-cases/update-training-aggregation';
 
-@Controller('/v2/trainings')
+@Controller('/trainings')
 export class TrainingAggregationController {
   constructor(
     private readonly createTrainingAggregationUseCase: CreateTrainingAggregationUseCase,
@@ -48,20 +44,20 @@ export class TrainingAggregationController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: GetTrainingAggregationResponse,
+    type: TrainingAggregationResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getTrainings(
     @Query() filters: GetTrainingsAggregationFilters,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GetTrainingAggregationResponse> {
+  ): Promise<TrainingAggregationResponse> {
     const trainings = await this.trainingsAggregationService.getTrainings({
       userId: uid,
       ...filters,
     });
 
     return {
-      data: trainings.map(this.trainingAggregationMapper.toDTO),
+      data: trainings.map(this.trainingAggregationMapper.fromEntityToDTO),
     };
   }
 
@@ -71,14 +67,14 @@ export class TrainingAggregationController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: CreateTrainingAggregationResponse,
+    type: TrainingAggregationResponse,
     description: 'Тренировка создана',
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async createTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingAggregationRequest,
-  ): Promise<CreateTrainingAggregationResponse> {
+  ): Promise<TrainingAggregationResponse> {
     const trainings = await this.createTrainingAggregationUseCase.execute(uid, data);
 
     return {
@@ -94,17 +90,17 @@ export class TrainingAggregationController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Тренировка обновлена',
-    type: UpdateTrainingAggregationResponse,
+    type: TrainingAggregationResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async putTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: UpdateTrainingAggregationRequest,
-  ): Promise<UpdateTrainingAggregationResponse> {
+  ): Promise<TrainingAggregationResponse> {
     const trainings = await this.updateTrainingAggregationUseCase.execute(uid, data);
 
     return {
-      data: trainings.map(this.trainingAggregationMapper.toDTO),
+      data: trainings.map(this.trainingAggregationMapper.fromEntityToDTO),
     };
   }
 

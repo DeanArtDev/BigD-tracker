@@ -15,7 +15,7 @@ export class ExercisesTemplateMapper extends BaseMapper<
   ExerciseTemplateEntity,
   ExerciseRawData
 > {
-  fromRaw = (rawData: ExerciseRawData): ExerciseTemplateEntity => {
+  fromPersistenceToEntity = (rawData: ExerciseRawData): ExerciseTemplateEntity => {
     return new ExerciseTemplateEntity({
       id: rawData.id,
       name: rawData.name,
@@ -28,11 +28,11 @@ export class ExercisesTemplateMapper extends BaseMapper<
     });
   };
 
-  toEntity = (dto: ExerciseTemplateDto): ExerciseTemplateEntity => {
+  fromDtoToEntity = (dto: ExerciseTemplateDto): ExerciseTemplateEntity => {
     return new ExerciseTemplateEntity(dto);
   };
 
-  toDTO = (entity: ExerciseTemplateEntity): ExerciseTemplateDto => {
+  fromEntityToDTO = (entity: ExerciseTemplateEntity): ExerciseTemplateDto => {
     return mapAndValidateEntity(ExerciseTemplateDto, entity);
   };
 }

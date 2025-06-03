@@ -1,6 +1,8 @@
+import { ExerciseRawData } from './exercise.mapper';
 import { Injectable } from '@nestjs/common';
+import { Override } from '@shared/lib/type-helpers';
 import { DB, KyselyService } from '@shared/modules/db';
-import { ExpressionBuilder, Nullable } from 'kysely';
+import { ExpressionBuilder } from 'kysely';
 import { ExerciseType } from './entity/exercise.entity';
 
 @Injectable()
@@ -41,23 +43,16 @@ export class ExercisesRepository {
     return await query.execute();
   }
 
-  async create(data: {
-    name: string;
-    userId: number;
-    trainingId: number;
-    type: ExerciseType;
-    description?: string;
-    exampleUrl?: string;
-  }) {
+  async create(data: ExerciseRawData['insertable']) {
     return await this.kyselyService.db
       .insertInto('exercises')
       .values({
         type: data.type,
         name: data.name,
-        user_id: data.userId,
-        training_id: data.trainingId,
+        user_id: data.user_id,
+        training_id: data.training_id,
         description: data.description,
-        example_url: data.exampleUrl,
+        example_url: data.example_url,
       })
       .returningAll()
       .executeTakeFirst();
@@ -95,26 +90,21 @@ export class ExercisesRepository {
       .executeTakeFirst();
   }
 
-  async updateAndReplace(
-    id: number,
-    data: {
-      name: string;
-      type: ExerciseType;
-      trainingId: number;
-    } & Nullable<{
-      exampleUrl?: string;
-      description?: string;
-    }>,
+  async update(
+    data: Override<ExerciseRawData['updateable'], 'id', number>,
+    options: { replace: boolean } = { replace: false },
   ) {
+    const { replace } = options;
+
     return await this.kyselyService.db
       .updateTable('exercises')
-      .where('id', '=', id)
+      .where('id', '=', data.id)
       .set({
         type: data.type,
         name: data.name,
-        description: data.description,
-        training_id: data.trainingId,
-        example_url: data.exampleUrl,
+        training_id: data.training_id,
+        description: data.description ?? (replace ? null : undefined),
+        example_url: data.example_url ?? (replace ? null : undefined),
       })
       .returningAll()
       .executeTakeFirst();

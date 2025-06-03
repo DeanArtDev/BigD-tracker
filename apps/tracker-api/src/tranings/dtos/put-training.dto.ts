@@ -9,6 +9,7 @@ class PutTrainingRequestData extends OmitType(TrainingDto, [
   'createdAt',
   'updatedAt',
   'description',
+  'endDate',
   'wormUpDuration',
   'postTrainingDuration',
 ] as const) {

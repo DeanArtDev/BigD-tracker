@@ -5,9 +5,10 @@ interface IMapper<
   Entity extends DefaultType,
   RawData extends DefaultType,
 > {
-  fromRaw: (rawData: RawData) => Entity;
-  toEntity: (dto: DTO) => Entity;
-  toDTO: (entity: Entity) => DTO;
+  fromPersistenceToEntity: (rawData: RawData) => Entity;
+  fromDtoToEntity: (dto: DTO) => Entity;
+  fromEntityToDTO: (entity: Entity) => DTO;
+  fromPersistenceToDto?: (raw: RawData) => DTO;
 }
 
 abstract class BaseMapper<
@@ -16,9 +17,9 @@ abstract class BaseMapper<
   RawData extends DefaultType,
 > implements IMapper<DTO, Entity, RawData>
 {
-  abstract fromRaw(rawData: RawData): Entity;
-  abstract toEntity(dto: DTO): Entity;
-  abstract toDTO(entity: Entity): DTO;
+  abstract fromPersistenceToEntity(rawData: RawData): Entity;
+  abstract fromDtoToEntity(dto: DTO): Entity;
+  abstract fromEntityToDTO(entity: Entity): DTO;
 }
 
 export { BaseMapper };

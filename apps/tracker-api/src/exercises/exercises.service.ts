@@ -14,7 +14,7 @@ export class ExercisesService {
 
   async getExercisesTemplates(filters: { userId?: number }): Promise<ExerciseTemplateEntity[]> {
     const rawTemplates = await this.exercisesTemplatesRepository.findByFilters(filters);
-    return rawTemplates.map(this.exercisesTemplateMapper.fromRaw);
+    return rawTemplates.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
   }
 
   async createExerciseTemplate(data: {
@@ -41,7 +41,7 @@ export class ExercisesService {
     if (rawExercise == null) {
       throw new NotFoundException('Exercise template is not found');
     }
-    return this.exercisesTemplateMapper.fromRaw(rawExercise);
+    return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExercise);
   }
 
   async updateTemplatePartly(

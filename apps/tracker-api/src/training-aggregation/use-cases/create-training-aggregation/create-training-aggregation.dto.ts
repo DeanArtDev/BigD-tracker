@@ -2,7 +2,6 @@ import { CreateTrainingRequestData } from '@/tranings/dtos/create-training.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsArray, IsInt, ValidateNested } from 'class-validator';
-import { TrainingAggregationDto } from '../../dto/training-aggregation.dto';
 
 class CreateTrainingAggregationExercise {
   @ApiProperty({ example: 1 })
@@ -43,19 +42,8 @@ class CreateTrainingAggregationRequest {
   data: CreateTrainingAggregationRequestData[];
 }
 
-class CreateTrainingAggregationResponse {
-  @ApiProperty({
-    description: 'Ответ сервера',
-    type: TrainingAggregationDto,
-    isArray: true,
-  })
-  @ValidateNested({ each: true })
-  @Type(() => TrainingAggregationDto)
-  data: TrainingAggregationDto[];
-}
-
 export {
   CreateTrainingAggregationRequest,
-  CreateTrainingAggregationResponse,
   CreateTrainingAggregationRequestData,
+  CreateTrainingAggregationExercise,
 };

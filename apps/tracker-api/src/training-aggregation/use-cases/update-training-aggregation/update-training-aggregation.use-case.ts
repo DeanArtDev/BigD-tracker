@@ -1,3 +1,5 @@
+import { ExerciseDto } from '@/exercises/dtos/exercise.dto';
+import { TrainingAggregationDto } from '@/training-aggregation/dto/training-aggregation.dto';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ExerciseEntity } from '@/exercises/entity/exercise.entity';
 import { ExercisesMapper } from '@/exercises/exercise.mapper';
@@ -39,18 +41,25 @@ export class UpdateTrainingAggregationUseCase {
     return trainingAggregationList;
   }
 
-  private async updateExercise({
-    id: exerciseId,
-    ...exerciseData
-  }: UpdateTrainingAggregationExercise): Promise<ExerciseEntity> {
-    const updatedRawTraining = await this.exerciseRepository.updateAndReplace(
-      exerciseId,
-      exerciseData,
-    );
-    if (updatedRawTraining == null) {
-      throw new InternalServerErrorException({ id: exerciseId }, { cause: 'Failed to update' });
+  private async updateExercise(data: UpdateTrainingAggregationExercise): Promise<ExerciseEntity> {
+    const rawExercise = await this.exerciseRepository.findOneById({ id: data.id });
+    if (rawExercise == null) {
+      throw new NotFoundException('Exercise template is not found');
     }
-    return this.exercisesMapper.fromRaw(updatedRawTraining);
+
+    const exerciseDto = this.exercisesMapper.fromPersistenceToDto(rawExercise);
+    const entity = this.exercisesMapper.fromDtoToEntity(
+      this.mergeUpdateExerciseDtoWithDto(data, exerciseDto),
+    );
+
+    const persistenceData = this.exercisesMapper.fromEntityToPersistence(entity);
+    const updatedRawTraining = await this.exerciseRepository.update(persistenceData, {
+      replace: true,
+    });
+    if (updatedRawTraining == null) {
+      throw new InternalServerErrorException({ id: data.id }, { cause: 'Failed to update' });
+    }
+    return this.exercisesMapper.fromPersistenceToEntity(updatedRawTraining);
   }
 
   private async updateTraining(
@@ -61,12 +70,56 @@ export class UpdateTrainingAggregationUseCase {
       throw new NotFoundException(`training with id ${dto.id} not found`);
     }
 
-    const updatedRawTraining = await this.trainingsRepository.updateAndReplace(dto.id, dto);
+    const trainingDto = this.trainingsAggregationMapper.fromPersistenceToDto({ rawTraining });
+    const entity = this.trainingsAggregationMapper.fromDtoToEntity(
+      this.mergeUpdateTrainingDtoWithDto(dto, trainingDto),
+    );
+
+    const persistenceData = this.trainingsAggregationMapper.fromEntityToPersistence(entity);
+    const updatedRawTraining = await this.trainingsRepository.update(persistenceData.rawTraining, {
+      replace: true,
+    });
     if (updatedRawTraining == null) {
       throw new InternalServerErrorException({ id: dto.id }, { cause: 'Failed to update' });
     }
-    return this.trainingsAggregationMapper.fromRaw({
+    return this.trainingsAggregationMapper.fromPersistenceToEntity({
       rawTraining: updatedRawTraining,
+    });
+  }
+
+  private mergeUpdateTrainingDtoWithDto(
+    updateDto: Omit<UpdateTrainingAggregationRequestData, 'exercises'>,
+    trainingDto: TrainingAggregationDto,
+  ): TrainingAggregationEntity {
+    const { id, name, type, startDate, description, wormUpDuration, postTrainingDuration } =
+      updateDto;
+    return this.trainingsAggregationMapper
+      .fromDtoToEntity({
+        ...trainingDto,
+        id,
+        name,
+        type,
+        startDate,
+        description: description ?? undefined,
+      })
+      .updatePostTrainingDuration(postTrainingDuration ?? undefined)
+      .updateWormUpDuration(wormUpDuration ?? undefined);
+  }
+
+  private mergeUpdateExerciseDtoWithDto(
+    updateDto: UpdateTrainingAggregationExercise,
+    exerciseDto: ExerciseDto,
+  ): ExerciseEntity {
+    const { id, name, type, description, trainingId, exampleUrl } = updateDto;
+
+    return this.exercisesMapper.fromDtoToEntity({
+      ...exerciseDto,
+      id,
+      name,
+      type,
+      trainingId,
+      exampleUrl: exampleUrl ?? undefined,
+      description: description ?? undefined,
     });
   }
 }

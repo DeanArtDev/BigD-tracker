@@ -31,9 +31,9 @@ import {
   CreateExerciseTemplateResponse,
   GetExerciseTemplatesQuery,
 } from './dtos/create-exercises-template.dto';
-import { GetExercisesTemplatesResponse } from './dtos/get-exercises-templates.dto';
 import { ExercisesService } from './exercises.service';
 import { mapRawExerciseTemplateToDto } from './utils';
+import { ExercisesTemplatesResponse } from './dtos/reaponse-exercises-templates.dto';
 
 @Controller('exercises')
 export class ExercisesController {
@@ -45,13 +45,13 @@ export class ExercisesController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: GetExercisesTemplatesResponse,
+    type: ExercisesTemplatesResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getExerciseTemplates(
     @Query() { my }: GetExerciseTemplatesQuery,
     @TokenPayload() tokenPayload: AccessTokenPayload,
-  ): Promise<GetExercisesTemplatesResponse> {
+  ): Promise<ExercisesTemplatesResponse> {
     const rawExercises = await this.exercisesService.getExercisesTemplates({
       userId: my === true ? tokenPayload.uid : undefined,
     });
