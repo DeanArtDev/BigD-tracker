@@ -1,7 +1,7 @@
+import { TrainingTemplateRawData } from '@/tranings/trainings-template.mapper';
 import { Injectable } from '@nestjs/common';
-import { DB, KyselyService } from '@shared/modules/db';
-import { ExpressionBuilder, Nullable } from 'kysely';
-import { TrainingType } from './dtos/training.dto';
+import { Override } from '@shared/lib/type-helpers';
+import { KyselyService } from '@shared/modules/db';
 
 @Injectable()
 export class TrainingsTemplatesRepository {
@@ -15,37 +15,6 @@ export class TrainingsTemplatesRepository {
       .executeTakeFirst();
   }
 
-  async findByFilters(
-    filters: {
-      userId?: number;
-    } = {},
-  ) {
-    let query = this.kyselyService.db
-      .selectFrom('trainings_templates')
-      .orderBy('created_at', 'desc')
-      .selectAll();
-
-    const { userId } = filters;
-    query = query.where((eb) => {
-      const conditions: ReturnType<ExpressionBuilder<DB, 'trainings_templates'>>[] = [];
-      if (userId != null) {
-        conditions.push(eb('user_id', '=', userId));
-      }
-      return eb.and(conditions);
-    });
-
-    return await query.execute();
-  }
-
-  async findByUserId({ userId }: { userId: number }) {
-    return await this.kyselyService.db
-      .selectFrom('trainings_templates')
-      .where('user_id', '=', userId)
-      .selectAll()
-      .orderBy('created_at', 'desc')
-      .execute();
-  }
-
   async delete({ id }: { id: number }) {
     const result = await this.kyselyService.db
       .deleteFrom('trainings_templates')
@@ -54,45 +23,37 @@ export class TrainingsTemplatesRepository {
     return result.numDeletedRows > 0;
   }
 
-  async updateAndReplace(
-    id: number,
-    data: { name: string; type: TrainingType } & Nullable<{
-      description: string;
-      wormUpDuration: number;
-      postTrainingDuration: number;
-    }>,
-  ) {
+  async update(
+    data: Override<TrainingTemplateRawData['updateable'], 'id', number>,
+    options: { replace: boolean } = { replace: false },
+  ): Promise<TrainingTemplateRawData['selectable'] | undefined> {
+    const { replace } = options;
     return await this.kyselyService.db
       .updateTable('trainings_templates')
-      .where('id', '=', id)
+      .where('id', '=', data.id)
       .set({
         name: data.name,
         type: data.type,
-        description: data.description,
-        worm_up_duration: data.wormUpDuration,
-        post_training_duration: data.postTrainingDuration,
+        description: data.description ?? (replace ? null : undefined),
+        worm_up_duration: data.worm_up_duration ?? (replace ? null : undefined),
+        post_training_duration: data.post_training_duration ?? (replace ? null : undefined),
       })
       .returningAll()
       .executeTakeFirst();
   }
 
-  async create(data: {
-    userId?: number;
-    name: string;
-    type: TrainingType;
-    description?: string;
-    wormUpDuration?: number;
-    postTrainingDuration?: number;
-  }) {
+  async create(
+    data: TrainingTemplateRawData['insertable'],
+  ): Promise<TrainingTemplateRawData['selectable'] | undefined> {
     return await this.kyselyService.db
       .insertInto('trainings_templates')
       .values({
-        user_id: data.userId,
+        user_id: data.user_id,
         name: data.name,
         type: data.type,
         description: data.description,
-        worm_up_duration: data.wormUpDuration,
-        post_training_duration: data.postTrainingDuration,
+        worm_up_duration: data.worm_up_duration,
+        post_training_duration: data.post_training_duration,
       })
       .returningAll()
       .executeTakeFirst();

@@ -3,6 +3,12 @@ import { FileMigrationProvider, Migrator } from 'kysely';
 import { promises as fs } from 'fs';
 import { getDb } from './get-db';
 
+const actionMap = {
+  up: 'migrateUp',
+  down: 'migrateDown',
+  lts: 'migrateToLatest',
+};
+
 async function migrate() {
   const db = getDb();
   const migrator = new Migrator({
@@ -14,7 +20,11 @@ async function migrate() {
     }),
   });
 
-  const { error, results } = await migrator.migrateToLatest();
+  const actionKey = process.argv[2];
+  const key = actionMap[actionKey];
+  if (key == null) throw new Error('Wrong key, you can use [up, down, lts]');
+
+  const { error, results } = await migrator[key]();
 
   results?.forEach((it) => {
     if (it.status === 'Success') {

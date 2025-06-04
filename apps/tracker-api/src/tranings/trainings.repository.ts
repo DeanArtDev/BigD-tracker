@@ -2,7 +2,7 @@ import { TrainingRawData } from '@/tranings/trainings.mapper';
 import { Injectable } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
 import { KyselyService } from '@shared/modules/db';
-import { TrainingType } from './dtos/training.dto';
+import { TrainingType } from './entities/training.entity';
 
 @Injectable()
 export class TrainingsRepository {
@@ -25,7 +25,11 @@ export class TrainingsRepository {
       .execute();
   }
 
-  async findByRangeForUser(filters: { userId: number; to?: string; from?: string }) {
+  async findByRangeForUser(filters: {
+    userId: number;
+    to?: string;
+    from?: string;
+  }): Promise<TrainingRawData['selectable'][]> {
     const { userId, from, to } = filters;
 
     let query = this.kyselyService.db
@@ -76,7 +80,7 @@ export class TrainingsRepository {
   async update(
     data: Override<TrainingRawData['updateable'], 'id', number>,
     options: { replace: boolean } = { replace: false },
-  ) {
+  ): Promise<TrainingRawData['selectable'] | undefined> {
     const { replace } = options;
 
     return await this.kyselyService.db

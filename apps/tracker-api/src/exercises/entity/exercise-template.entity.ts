@@ -36,7 +36,16 @@ class ExerciseTemplateEntity {
     validator.isDateISO(createdAt, 'createdAt');
     validator.isDateISO(updatedAt, 'updatedAt');
 
-    Object.assign(this, { id, userId, description, name, type, exampleUrl, createdAt, updatedAt });
+    Object.assign(this, {
+      id,
+      userId,
+      description,
+      name,
+      type,
+      exampleUrl,
+      createdAt,
+      updatedAt,
+    });
   }
 
   public readonly id: number;

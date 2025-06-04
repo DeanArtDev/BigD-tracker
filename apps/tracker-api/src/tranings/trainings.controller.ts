@@ -1,36 +1,27 @@
 import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
+import { AssignTrainingRequest } from '@/tranings/dtos/assign-training.dto';
 import {
   PutTrainingTemplateRequest,
   PutTrainingTemplateResponse,
 } from '@/tranings/dtos/put-training-template.dto';
-import { TrainingsMapper } from '@/tranings/trainings.mapper';
 import { mapRawTrainingTemplateToDto } from '@/tranings/utils';
 import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
-import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
-import {
-  CreateTrainingTemplateRequest,
-  CreateTrainingTemplateResponse,
-} from './dtos/create-training-templates.dto';
-import {
-  GetTrainingsTemplatesQuery,
-  GetTrainingsTemplatesResponse,
-} from './dtos/get-trainings-templates.dto';
+import { AssignTrainingTemplateRequest } from './dtos/assign-training-template.dto';
 import { TrainingTemplateDto } from './dtos/training-template.dto';
+import { TrainingsMapper } from './trainings.mapper';
 import { TrainingsService } from './trainings.service';
 
 @Controller('trainings')
@@ -40,54 +31,37 @@ export class TrainingsController {
     readonly trainingsMapper: TrainingsMapper,
   ) {}
 
-  @Get('/templates')
+  @Post('/templates/assign')
   @ApiOperation({
-    summary: 'Получение шаблонов тренировок',
+    summary: 'Назначение шаблона на дату',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: GetTrainingsTemplatesResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async geTrainingsTemplates(
-    @Query() query: GetTrainingsTemplatesQuery,
-    @TokenPayload() tokenPayload: AccessTokenPayload,
-  ): Promise<GetTrainingsTemplatesResponse> {
-    const rawTrainings = await this.trainingService.findTemplatesByFilters({
-      userId: query?.my === true ? tokenPayload.uid : undefined,
-    });
-    return {
-      data: mapAndValidateEntityList(
-        TrainingTemplateDto,
-        rawTrainings.map(mapRawTrainingTemplateToDto),
-      ),
-    };
+  async assignTrainingTemplate(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: AssignTrainingTemplateRequest,
+  ) {
+    for (const item of data) {
+      await this.trainingService.setStartDataAtTemplate({ ...item, userId: uid });
+    }
+    return undefined;
   }
 
-  @Post('/templates')
+  @Post('/assign')
   @ApiOperation({
-    summary: 'Создание шаблона тренировки',
+    summary: 'Назначение тренировки на дату',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: CreateTrainingTemplateResponse,
-    description: 'Шаблон тренировка создана',
+    status: HttpStatus.OK,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async createTrainingTemplate(
-    @Body() { data }: CreateTrainingTemplateRequest,
-  ): Promise<CreateTrainingTemplateResponse> {
-    const rawTemplate = await this.trainingService.createTrainingTemplate({
-      userId: data.userId,
-      type: data.type,
-      description: data.description,
-      name: data.name,
-      postTrainingDuration: data.postTrainingDuration,
-      wormUpDuration: data.wormUpDuration,
-    });
-    return {
-      data: mapAndValidateEntity(TrainingTemplateDto, mapRawTrainingTemplateToDto(rawTemplate)),
-    };
+  async assignTraining(@Body() { data }: AssignTrainingRequest) {
+    for (const item of data) {
+      await this.trainingService.setStartDataAtTraining(item);
+    }
+    return undefined;
   }
 
   @Put('/templates/:templateId')
@@ -104,20 +78,17 @@ export class TrainingsController {
     @Param('templateId', ParseIntPipe) templateId: number,
     @Body() { data }: PutTrainingTemplateRequest,
   ): Promise<PutTrainingTemplateResponse> {
-    const rawTemplate = await this.trainingService.updateTrainingTemplateAndReplace(templateId, {
-      name: data.name,
-      type: data.type,
-      description: data.description ?? null,
-      wormUpDuration: data.wormUpDuration ?? null,
-      postTrainingDuration: data.postTrainingDuration ?? null,
-    });
+    const rawTemplate = await this.trainingService.updateTrainingTemplateAndReplace(
+      templateId,
+      data,
+    );
 
     return {
       data: mapAndValidateEntity(TrainingTemplateDto, mapRawTrainingTemplateToDto(rawTemplate)),
     };
   }
 
-  @Delete('/templates/:trainingId')
+  @Delete('/templates/:templateId')
   @ApiOperation({
     summary: 'Удаление шаблона тренировки',
   })
@@ -127,10 +98,10 @@ export class TrainingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async deleteTemplateTraining(
-    @Param('trainingId', ParseIntPipe) trainingId: number,
+    @Param('templateId', ParseIntPipe) templateId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<void> {
-    await this.trainingService.deleteTrainingTemplate({ id: trainingId, userId: uid });
+    await this.trainingService.deleteTrainingTemplate({ id: templateId, userId: uid });
     return undefined;
   }
 }
