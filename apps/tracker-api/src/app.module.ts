@@ -9,6 +9,7 @@ import { UsersModule } from '@/users/users.module';
 import { AuthModule } from '@/auth/auth.module';
 import { TrainingsModule } from '@/tranings/trainings.module';
 import { TrainingAggregationModule } from '@/training-aggregation/training-aggregation.module';
+import { TrainingTemplateAggregationModule } from '@/training-template-aggregation/training-template-aggregation.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TrainingAggregationModule } from '@/training-aggregation/training-aggre
     TrainingsModule,
     ExercisesModule,
     TrainingAggregationModule,
+    TrainingTemplateAggregationModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],
 })

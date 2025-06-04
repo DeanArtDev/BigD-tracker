@@ -85,4 +85,4 @@ class TrainingDto {
   updatedAt: string;
 }
 
-export { TrainingDto, TrainingType };
+export { TrainingDto };

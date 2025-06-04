@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { Override } from '@shared/lib/type-helpers';
 import { DB, KyselyService } from '@shared/modules/db';
 import { ExpressionBuilder, Nullable } from 'kysely';
+import { ExerciseTemplateRawData } from './exercise-template.mapper';
 import { ExerciseType } from './entity/exercise.entity';
 
 @Injectable()
 export class ExercisesTemplatesRepository {
-  constructor(private kyselyService: KyselyService) {}
+  constructor(private readonly kyselyService: KyselyService) {}
 
-  async findOneById({ id }: { id: number }) {
+  async findOneById({
+    id,
+  }: {
+    id: number;
+  }): Promise<ExerciseTemplateRawData['selectable'] | undefined> {
     return await this.kyselyService.db
       .selectFrom('exercises_templates')
       .where('id', '=', id)
@@ -37,21 +43,17 @@ export class ExercisesTemplatesRepository {
     return await query.execute();
   }
 
-  async create(data: {
-    userId?: number;
-    name: string;
-    description?: string;
-    exampleUrl?: string;
-    type: ExerciseType;
-  }) {
+  async create(
+    data: ExerciseTemplateRawData['insertable'],
+  ): Promise<ExerciseTemplateRawData['selectable'] | undefined> {
     return await this.kyselyService.db
       .insertInto('exercises_templates')
       .values({
         type: data.type,
         name: data.name,
-        user_id: data.userId,
+        user_id: data.user_id,
         description: data.description,
-        example_url: data.exampleUrl,
+        example_url: data.example_url,
       })
       .returningAll()
       .executeTakeFirst();
@@ -74,6 +76,25 @@ export class ExercisesTemplatesRepository {
         name: data.name,
         description: data.description,
         example_url: data.exampleUrl,
+      })
+      .returningAll()
+      .executeTakeFirst();
+  }
+
+  async update(
+    data: Override<ExerciseTemplateRawData['insertable'], 'id', number>,
+    options: { replace: boolean } = { replace: false },
+  ): Promise<ExerciseTemplateRawData['selectable'] | undefined> {
+    const { replace } = options;
+
+    return await this.kyselyService.db
+      .updateTable('exercises_templates')
+      .where('id', '=', data.id)
+      .set({
+        type: data.type,
+        name: data.name,
+        description: data.description ?? (replace ? null : undefined),
+        example_url: data.example_url ?? (replace ? null : undefined),
       })
       .returningAll()
       .executeTakeFirst();

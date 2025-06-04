@@ -81,6 +81,12 @@ export interface Trainings {
   worm_up_duration: number | null;
 }
 
+export interface TrainingsExercisesTemplates {
+  exercise_template_id: number;
+  order: number;
+  training_template_id: number;
+}
+
 export interface TrainingsTemplates {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -114,6 +120,7 @@ export interface DB {
   repetitions: Repetitions;
   sessions: Sessions;
   trainings: Trainings;
+  trainings_exercises_templates: TrainingsExercisesTemplates;
   trainings_templates: TrainingsTemplates;
   trainings_types: TrainingsTypes;
   users: Users;

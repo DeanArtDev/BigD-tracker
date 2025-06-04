@@ -22,7 +22,7 @@ class TrainingAggregationEntity extends TrainingEntity {
       });
     }
 
-    validator.isIntLt(exercises.length, 10, 'exercise.length');
+    validator.isIntMax(exercises.length, 10, 'exercise.length');
     this.exercises = exercises;
     return this;
   }

@@ -15,7 +15,7 @@ interface TrainingRawData {
 
 @Injectable()
 class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, SelectableTrainingRawData> {
-  fromPersistenceToEntity = (rawData: SelectableTrainingRawData): TrainingEntity => {
+  fromPersistenceToEntity = (rawData: TrainingRawData['selectable']): TrainingEntity => {
     return new TrainingEntity({
       id: rawData.id,
       userId: rawData.user_id,

@@ -46,22 +46,22 @@ class Validator {
     }
   }
 
-  isIdValId(id: number, field: string) {
-    if (id <= 0) {
+  isIdValId(value: number, field: string) {
+    if (value <= 0 && !isFinite(value) && Number.isNaN(value) && Number.isInteger(value)) {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `id must not be valid id:${id}`,
+        message: `id must not be valid id:${value}`,
       });
     }
   }
 
-  isDateAfter(str: string, date: string, field: string) {
+  isDateAfter(str: string, date: string, field: string, message?: string) {
     if (!isAfter(str, date)) {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `${field}: ${str} must be before ${date}`,
+        message: message ?? `${field}: ${str} must be before ${date}`,
       });
     }
   }
@@ -76,12 +76,12 @@ class Validator {
     }
   }
 
-  isIntLt(value: number, lt: number, field: string) {
-    if (!isInt(String(value), { lt })) {
+  isIntMax(value: number, max: number, field: string) {
+    if (!isInt(String(value), { max })) {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `${field} must not be less than ${lt}`,
+        message: `${field} must not be grater than ${max}`,
       });
     }
   }

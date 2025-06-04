@@ -16,8 +16,8 @@ export function mapAndValidateEntity<T extends Record<string, any>, V>(
     whitelist: true,
     forbidNonWhitelisted: true,
   });
-
   if (errors.length > 0) {
+    console.log(errors);
     throw new InternalServerErrorException(errors, {
       cause: 'Invalid entity structure',
     });

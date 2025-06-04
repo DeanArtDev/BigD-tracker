@@ -3,19 +3,26 @@ import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { BaseMapper } from '@shared/lib/mapper';
 import { DB } from '@shared/modules/db';
 import { Selectable } from 'kysely';
+import { Insertable, Updateable } from 'kysely/dist/esm';
 import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
 import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
 import { ExerciseType } from './entity/exercise.entity';
 
-type ExerciseRawData = Selectable<DB['exercises_templates']>;
+interface ExerciseTemplateRawData {
+  readonly selectable: Selectable<DB['exercises_templates']>;
+  readonly updateable: Updateable<DB['exercises_templates']>;
+  readonly insertable: Insertable<DB['exercises_templates']>;
+}
 
 @Injectable()
-export class ExercisesTemplateMapper extends BaseMapper<
+class ExercisesTemplateMapper extends BaseMapper<
   ExerciseTemplateDto,
   ExerciseTemplateEntity,
-  ExerciseRawData
+  ExerciseTemplateRawData['selectable']
 > {
-  fromPersistenceToEntity = (rawData: ExerciseRawData): ExerciseTemplateEntity => {
+  fromPersistenceToEntity = (
+    rawData: ExerciseTemplateRawData['selectable'],
+  ): ExerciseTemplateEntity => {
     return new ExerciseTemplateEntity({
       id: rawData.id,
       name: rawData.name,
@@ -28,6 +35,21 @@ export class ExercisesTemplateMapper extends BaseMapper<
     });
   };
 
+  fromEntityToPersistence = (
+    entity: ExerciseTemplateEntity,
+  ): ExerciseTemplateRawData['selectable'] => {
+    return {
+      id: entity.id,
+      type: entity.type,
+      name: entity.name,
+      created_at: new Date(entity.createdAt),
+      updated_at: new Date(entity.updatedAt),
+      user_id: entity.userId ?? null,
+      description: entity.description ?? null,
+      example_url: entity.exampleUrl ?? null,
+    };
+  };
+
   fromDtoToEntity = (dto: ExerciseTemplateDto): ExerciseTemplateEntity => {
     return new ExerciseTemplateEntity(dto);
   };
@@ -36,3 +58,5 @@ export class ExercisesTemplateMapper extends BaseMapper<
     return mapAndValidateEntity(ExerciseTemplateDto, entity);
   };
 }
+
+export { type ExerciseTemplateRawData, ExercisesTemplateMapper };

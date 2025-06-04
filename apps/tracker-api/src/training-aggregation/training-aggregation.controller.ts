@@ -13,7 +13,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
 import { GetTrainingsAggregationFilters } from './dto/get-training-aggregation.dto';
 import { TrainingAggregationResponse } from './dto/response-tarining-aggregation.dto';
@@ -29,6 +29,7 @@ import {
   UpdateTrainingAggregationUseCase,
 } from './use-cases/update-training-aggregation';
 
+@ApiTags('Trainings')
 @Controller('/trainings')
 export class TrainingAggregationController {
   constructor(
