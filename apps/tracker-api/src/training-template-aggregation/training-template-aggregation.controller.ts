@@ -2,7 +2,6 @@ import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import { GetTrainingTemplatesAggregationFilters } from '@/training-template-aggregation/dto/get-training-aggregation.dto';
-import { TrainingTemplatesAggregationRepository } from '@/training-template-aggregation/training-templates-aggregation.repository';
 import { Body, Controller, Get, HttpStatus, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TrainingTemplateAggregationResponse } from './dto/response-tarining-aggregation.dto';
@@ -25,7 +24,6 @@ export class TrainingTemplateAggregationController {
     private readonly updateTrainingTemplateAggregationUseCase: UpdateTrainingTemplateAggregationUseCase,
     private readonly trainingTemplateAggregationService: TrainingTemplateAggregationService,
     private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
-    private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,
   ) {}
 
   @Get('templates')

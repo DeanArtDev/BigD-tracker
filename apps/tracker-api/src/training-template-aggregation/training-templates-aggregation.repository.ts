@@ -1,7 +1,6 @@
 import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
 import { TrainingTemplateRawData } from '@/tranings/trainings-template.mapper';
-import { TrainingsTemplatesRepository } from '@/tranings/trainings-templates.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
 import { KyselyService } from '@shared/modules/db';
@@ -16,7 +15,6 @@ export class TrainingTemplatesAggregationRepository {
   constructor(
     private readonly kyselyService: KyselyService,
     private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
-    private readonly trainingsTemplatesRepository: TrainingsTemplatesRepository,
   ) {}
 
   async createTrainingTemplateAggregation(data: {
