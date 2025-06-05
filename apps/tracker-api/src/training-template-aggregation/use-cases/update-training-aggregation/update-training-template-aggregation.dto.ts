@@ -52,4 +52,3 @@ export {
   UpdateTrainingTemplatesAggregationExercise,
   UpdateTrainingTemplateAggregationRequestData,
 };
-

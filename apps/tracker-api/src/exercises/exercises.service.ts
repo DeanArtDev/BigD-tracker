@@ -1,10 +1,9 @@
 import { CreateExerciseTemplateRequest } from '@/exercises/dtos/create-exercises-template.dto';
 import { PutExerciseTemplateRequest } from '@/exercises/dtos/put-exercise-template.dto';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Override } from '@shared/lib/type-helpers';
 import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
 import { ExerciseType } from './entity/exercise.entity';
-import { ExercisesTemplateMapper, ExerciseTemplateRawData } from './exercise-template.mapper';
+import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 
 @Injectable()
