@@ -15,9 +15,7 @@ class ExceptionWrongLoginOrPassword extends ApiException<
 }
 
 class ExceptionUnauthorized extends ApiException<typeof Exception.Unauthorized.details> {
-  constructor(
-    details: typeof Exception.Unauthorized.details = Exception.Unauthorized.details,
-  ) {
+  constructor(details: typeof Exception.Unauthorized.details = Exception.Unauthorized.details) {
     super({
       key: Exception.Unauthorized.key,
       code: Exception.Unauthorized.code,
