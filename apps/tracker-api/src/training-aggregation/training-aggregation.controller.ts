@@ -30,7 +30,7 @@ import {
 } from './use-cases/update-training-aggregation';
 
 @ApiTags('Trainings')
-@Controller('/trainings')
+@Controller('trainings')
 export class TrainingAggregationController {
   constructor(
     private readonly createTrainingAggregationUseCase: CreateTrainingAggregationUseCase,
@@ -83,7 +83,7 @@ export class TrainingAggregationController {
     };
   }
 
-  @Put('/:trainingId')
+  @Put(':trainingId')
   @ApiOperation({
     summary: 'Полное обновление тренировки',
     description: 'nullable поля очищают значения',
@@ -105,7 +105,7 @@ export class TrainingAggregationController {
     };
   }
 
-  @Delete('/:trainingId')
+  @Delete(':trainingId')
   @ApiOperation({
     summary: 'Удаление тренировки',
   })

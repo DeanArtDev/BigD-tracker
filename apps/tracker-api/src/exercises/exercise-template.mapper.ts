@@ -1,6 +1,8 @@
+import { PutExerciseTemplateRequest } from '@/exercises/dtos/put-exercise-template.dto';
 import { Injectable } from '@nestjs/common';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { BaseMapper } from '@shared/lib/mapper';
+import { Override } from '@shared/lib/type-helpers';
 import { DB } from '@shared/modules/db';
 import { Selectable } from 'kysely';
 import { Insertable, Updateable } from 'kysely/dist/esm';
@@ -56,6 +58,19 @@ class ExercisesTemplateMapper extends BaseMapper<
 
   fromEntityToDTO = (entity: ExerciseTemplateEntity): ExerciseTemplateDto => {
     return mapAndValidateEntity(ExerciseTemplateDto, entity);
+  };
+
+  fromUpdateDtoToRaw = (
+    dto: PutExerciseTemplateRequest['data'][0],
+  ): Override<ExerciseTemplateRawData['updateable'], 'id', number> => {
+    return {
+      id: dto.id,
+      type: dto.type,
+      name: dto.name,
+      user_id: undefined,
+      example_url: dto.exampleUrl,
+      description: dto.description,
+    };
   };
 }
 

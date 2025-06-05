@@ -1,8 +1,7 @@
 import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
 import { TrainingTemplateRawData } from '@/tranings/trainings-template.mapper';
-import { TrainingsTemplatesRepository } from '@/tranings/trainings-templates.repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
 import { KyselyService } from '@shared/modules/db';
 
@@ -16,7 +15,6 @@ export class TrainingTemplatesAggregationRepository {
   constructor(
     private readonly kyselyService: KyselyService,
     private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
-    private readonly trainingsTemplatesRepository: TrainingsTemplatesRepository,
   ) {}
 
   async createTrainingTemplateAggregation(data: {
@@ -24,34 +22,98 @@ export class TrainingTemplatesAggregationRepository {
     exerciseTemplates: Override<ExerciseTemplateRawData['insertable'], 'id', number>[];
   }): Promise<TrainingTemplatesAggregationRaw | undefined> {
     const { exerciseTemplates, trainingTemplate } = data;
-    const rawTemplate = await this.kyselyService.db
-      .insertInto('trainings_templates')
-      .values(trainingTemplate)
-      .returningAll()
-      .executeTakeFirst();
-    if (rawTemplate == null) return undefined;
+    const raw = await this.kyselyService.db.transaction().execute(async (transaction) => {
+      const result = await transaction
+        .insertInto('trainings_templates')
+        .values(trainingTemplate)
+        .returningAll()
+        .executeTakeFirstOrThrow();
 
-    await this.kyselyService.db
-      .insertInto('trainings_exercises_templates')
-      .values(
-        exerciseTemplates.map((i, index) => ({
-          exercise_template_id: i.id,
-          training_template_id: rawTemplate.id,
-          order: index,
-        })),
-      )
-      .executeTakeFirst();
+      await transaction
+        .insertInto('trainings_exercises_templates')
+        .values(
+          exerciseTemplates.map((i, index) => ({
+            exercise_template_id: i.id,
+            training_template_id: result.id,
+            order: index,
+          })),
+        )
+        .executeTakeFirst();
+      return result;
+    });
 
-    return await this.findTrainingTemplateAggregation({ templateId: rawTemplate.id });
+    return await this.findTrainingTemplateAggregation({ templateId: raw.id });
   }
 
-  async getAllTrainingTemplateAggregation(filters: {
-    userId: number;
-  }): Promise<TrainingTemplatesAggregationRaw[] | undefined> {
-    const result = await this.getAllTemplatesQuery()
-      .where('trainings_templates.user_id', '=', filters.userId)
-      .orderBy('many_to_many_table.order')
-      .execute();
+  async updateTrainingTemplateAggregation(
+    data: {
+      trainingTemplate: Override<TrainingTemplateRawData['insertable'], 'id', number>;
+      exerciseTemplates: Override<ExerciseTemplateRawData['insertable'], 'id', number>[];
+    },
+    options: { replace: boolean } = { replace: false },
+  ): Promise<TrainingTemplatesAggregationRaw | undefined> {
+    const { replace } = options;
+    const { exerciseTemplates, trainingTemplate } = data;
+
+    const raw = await this.kyselyService.db.transaction().execute(async (transaction) => {
+      const { id, name, user_id, type, description, worm_up_duration, post_training_duration } =
+        trainingTemplate;
+
+      const result = await transaction
+        .updateTable('trainings_templates')
+        .where('trainings_templates.id', '=', trainingTemplate.id)
+        .set({
+          id,
+          name,
+          type,
+          user_id,
+          description: description ?? (replace ? null : undefined),
+          worm_up_duration: worm_up_duration ?? (replace ? null : undefined),
+          post_training_duration: post_training_duration ?? (replace ? null : undefined),
+        })
+        .returningAll()
+        .executeTakeFirst();
+      if (result == null) return undefined;
+
+      await this.deleteExerciseTemplatesRelations(trainingTemplate.id);
+      await transaction
+        .insertInto('trainings_exercises_templates')
+        .values(
+          exerciseTemplates.map((i, index) => ({
+            exercise_template_id: i.id,
+            training_template_id: result.id,
+            order: index,
+          })),
+        )
+        .execute();
+
+      return result;
+    });
+
+    if (raw == null) return undefined;
+    return await this.findTrainingTemplateAggregation(
+      { templateId: raw.id },
+      { exerciseOrder: 'asc' },
+    );
+  }
+
+  async getAllTrainingTemplateAggregation(
+    filters: {
+      userId?: number;
+    },
+    options?: { order: 'asc' | 'desc'; exerciseOrder: 'asc' | 'desc' },
+  ): Promise<TrainingTemplatesAggregationRaw[] | undefined> {
+    const { order = 'desc', exerciseOrder = 'desc' } = options ?? {};
+
+    let query = this.getAllTemplatesQuery()
+      .orderBy('trainings_templates.updated_at', order)
+      .orderBy('many_to_many_table.order', exerciseOrder);
+
+    if (filters.userId != null) {
+      query = query.where('trainings_templates.user_id', '=', filters.userId);
+    }
+
+    const result = await query.execute();
     if (result.length == 0) return undefined;
 
     const hashMap = new Map<number, Awaited<typeof result>>();
@@ -74,12 +136,18 @@ export class TrainingTemplatesAggregationRepository {
     }, []);
   }
 
-  async findTrainingTemplateAggregation(filters: {
-    templateId: number;
-  }): Promise<TrainingTemplatesAggregationRaw | undefined> {
+  async findTrainingTemplateAggregation(
+    filters: {
+      templateId: number;
+    },
+    options?: { order?: 'asc' | 'desc'; exerciseOrder?: 'asc' | 'desc' },
+  ): Promise<TrainingTemplatesAggregationRaw | undefined> {
+    const { order = 'desc', exerciseOrder = 'desc' } = options ?? {};
+
     const result = await this.getAllTemplatesQuery()
       .where('trainings_templates.id', '=', filters?.templateId)
-      .orderBy('many_to_many_table.order')
+      .orderBy('trainings_templates.updated_at', order)
+      .orderBy('many_to_many_table.order', exerciseOrder)
       .execute();
     if (result.length == 0) return undefined;
 
@@ -94,19 +162,16 @@ export class TrainingTemplatesAggregationRepository {
     return result.numDeletedRows > 0;
   }
 
-  async findExerciseTemplateRelations(
-    trainingTemplateId: number,
-    options?: { order: 'asc' | 'desc' },
-  ) {
-    const { order = 'asc' } = options ?? {};
-
-    return await this.kyselyService.db
-      .selectFrom('trainings_exercises_templates as tet')
-      .innerJoin('exercises_templates as et', 'et.id', 'tet.exercise_template_id')
-      .selectAll()
-      .where('tet.training_template_id', '=', trainingTemplateId)
-      .orderBy('tet.order', order)
-      .execute();
+  async findRawExerciseTemplates(
+    exerciseId: number,
+  ): Promise<ExerciseTemplateRawData['selectable']> {
+    const rawExerciseTemplate = await this.exercisesTemplatesRepository.findOneById({
+      id: exerciseId,
+    });
+    if (rawExerciseTemplate == null) {
+      throw new NotFoundException(`Exercise template with id: ${exerciseId} is not found`);
+    }
+    return rawExerciseTemplate;
   }
 
   private getAllTemplatesQuery() {

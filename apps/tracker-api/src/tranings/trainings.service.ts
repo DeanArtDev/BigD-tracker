@@ -1,4 +1,3 @@
-import { PutTrainingTemplateRequest } from '@/tranings/dtos/put-training-template.dto';
 import { TrainingEntity } from '@/tranings/entities/training.entity';
 import { TrainingsTemplatesRepository } from '@/tranings/trainings-templates.repository';
 import {
@@ -68,23 +67,6 @@ export class TrainingsService {
       throw new NotFoundException('Template is not found');
     }
     return rawTemplate;
-  }
-
-  async updateTrainingTemplateAndReplace(id: number, data: PutTrainingTemplateRequest['data']) {
-    const training = await this.trainingsTemplatesRepository.findOneById({ id });
-    if (training == null) {
-      throw new NotFoundException(`training with id ${id} not found`);
-    }
-
-    const updatedTemplate = await this.trainingsTemplatesRepository.update(
-      { ...data, id },
-      { replace: true },
-    );
-    if (updatedTemplate == null) {
-      throw new InternalServerErrorException({ id }, { cause: 'Failed to update' });
-    }
-
-    return updatedTemplate;
   }
 
   async deleteTrainingTemplate(data: { id: number; userId: number }) {
