@@ -1,8 +1,4 @@
-import {
-  useInvalidateTrainings,
-  useTrainingsQuery,
-  useTrainingUpdate,
-} from '@/entity/trainings';
+import { useInvalidateTrainings, useTrainingAssign, useTrainingsQuery } from '@/entity/trainings';
 import type { ApiDto } from '@/shared/api/types';
 import type { Override } from '@/shared/lib/type-helpers';
 import type { EventInput } from '@fullcalendar/core';
@@ -28,7 +24,7 @@ class CalendarEvent<T extends Record<string, any>>
   }
 }
 
-const trainingTypeColorMap: Record<ApiDto['TrainingDto']['type'], string> = {
+const trainingTypeColorMap: Record<ApiDto['TrainingAggregationDto']['type'], string> = {
   HARD: 'bg-red-300',
   MEDIUM: 'bg-yellow-300',
   LIGHT: 'bg-green-300',
@@ -39,8 +35,8 @@ function useTrainingsCalendar() {
   const [filters, setFilters] = useState<{ from: string; to: string } | undefined>();
   const { data, isLoading } = useTrainingsQuery(filters);
   const invalidate = useInvalidateTrainings();
-  const { update } = useTrainingUpdate({
-    onSuccess: async () => void (await invalidate(filters)),
+  const { assignTraining } = useTrainingAssign({
+    onSuccess: invalidate.bind(null, filters),
   });
 
   const events = useMemo(() => {
@@ -67,7 +63,7 @@ function useTrainingsCalendar() {
     events,
     isLoading,
 
-    update,
+    assignTraining,
     setFilters,
   };
 }

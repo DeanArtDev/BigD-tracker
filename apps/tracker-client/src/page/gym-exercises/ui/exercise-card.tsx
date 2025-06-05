@@ -2,13 +2,7 @@ import placeholderSrc from '@/assets/exercise-placeholder.webp';
 import { useYoutubeUrlParse } from '@/shared/lib/react/use-youtube-url-parse';
 import { AspectRatio } from '@/shared/ui-kit/ui/aspect-ratio';
 import { Button } from '@/shared/ui-kit/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/ui-kit/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
 import { Plus } from 'lucide-react';
 
 interface ExerciseCardProps {
@@ -18,12 +12,7 @@ interface ExerciseCardProps {
   readonly onAddClick?: () => void;
 }
 
-function ExerciseCard({
-  name,
-  exampleUrl,
-  onAddClick,
-  onMoreInfoClick,
-}: ExerciseCardProps) {
+function ExerciseCard({ name, exampleUrl, onAddClick, onMoreInfoClick }: ExerciseCardProps) {
   const { previewUrl } = useYoutubeUrlParse(exampleUrl);
 
   return (

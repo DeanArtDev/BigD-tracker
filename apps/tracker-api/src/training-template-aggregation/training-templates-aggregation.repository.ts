@@ -1,11 +1,12 @@
 import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
 import { TrainingTemplateRawData } from '@/tranings/trainings-template.mapper';
+import { TrainingsTemplatesRepository } from '@/tranings/trainings-templates.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
 import { KyselyService } from '@shared/modules/db';
 
-interface TrainingTemplatesAggregationRaw {
+export interface TrainingTemplatesAggregationRaw {
   trainingTemplate: TrainingTemplateRawData['selectable'];
   exercises: ExerciseTemplateRawData['selectable'][];
 }
@@ -15,6 +16,7 @@ export class TrainingTemplatesAggregationRepository {
   constructor(
     private readonly kyselyService: KyselyService,
     private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
+    private readonly trainingsTemplatesRepository: TrainingsTemplatesRepository,
   ) {}
 
   async createTrainingTemplateAggregation(data: {
@@ -22,6 +24,8 @@ export class TrainingTemplatesAggregationRepository {
     exerciseTemplates: Override<ExerciseTemplateRawData['insertable'], 'id', number>[];
   }): Promise<TrainingTemplatesAggregationRaw | undefined> {
     const { exerciseTemplates, trainingTemplate } = data;
+    const isExercisesEmpty = exerciseTemplates.length === 0;
+
     const raw = await this.kyselyService.db.transaction().execute(async (transaction) => {
       const result = await transaction
         .insertInto('trainings_templates')
@@ -29,20 +33,30 @@ export class TrainingTemplatesAggregationRepository {
         .returningAll()
         .executeTakeFirstOrThrow();
 
-      await transaction
-        .insertInto('trainings_exercises_templates')
-        .values(
-          exerciseTemplates.map((i, index) => ({
-            exercise_template_id: i.id,
-            training_template_id: result.id,
-            order: index,
-          })),
-        )
-        .executeTakeFirst();
+      if (!isExercisesEmpty) {
+        await transaction
+          .insertInto('trainings_exercises_templates')
+          .values(
+            exerciseTemplates.map((i, index) => ({
+              exercise_template_id: i.id,
+              training_template_id: result.id,
+              order: index,
+            })),
+          )
+          .executeTakeFirstOrThrow();
+      }
+
       return result;
     });
 
-    return await this.findTrainingTemplateAggregation({ templateId: raw.id });
+    if (isExercisesEmpty) {
+      return {
+        trainingTemplate: raw,
+        exercises: [],
+      };
+    }
+
+    return await this.findTrainingTemplateAggregationRelations({ templateId: raw.id });
   }
 
   async updateTrainingTemplateAggregation(
@@ -54,6 +68,7 @@ export class TrainingTemplatesAggregationRepository {
   ): Promise<TrainingTemplatesAggregationRaw | undefined> {
     const { replace } = options;
     const { exerciseTemplates, trainingTemplate } = data;
+    const isExercisesEmpty = exerciseTemplates.length === 0;
 
     const raw = await this.kyselyService.db.transaction().execute(async (transaction) => {
       const { id, name, user_id, type, description, worm_up_duration, post_training_duration } =
@@ -72,10 +87,14 @@ export class TrainingTemplatesAggregationRepository {
           post_training_duration: post_training_duration ?? (replace ? null : undefined),
         })
         .returningAll()
-        .executeTakeFirst();
-      if (result == null) return undefined;
+        .executeTakeFirstOrThrow();
 
       await this.deleteExerciseTemplatesRelations(trainingTemplate.id);
+
+      if (isExercisesEmpty) {
+        return result;
+      }
+
       await transaction
         .insertInto('trainings_exercises_templates')
         .values(
@@ -90,8 +109,14 @@ export class TrainingTemplatesAggregationRepository {
       return result;
     });
 
-    if (raw == null) return undefined;
-    return await this.findTrainingTemplateAggregation(
+    if (isExercisesEmpty) {
+      return {
+        trainingTemplate: raw,
+        exercises: [],
+      };
+    }
+
+    return await this.findTrainingTemplateAggregationRelations(
       { templateId: raw.id },
       { exerciseOrder: 'asc' },
     );
@@ -105,7 +130,7 @@ export class TrainingTemplatesAggregationRepository {
   ): Promise<TrainingTemplatesAggregationRaw[] | undefined> {
     const { order = 'desc', exerciseOrder = 'desc' } = options ?? {};
 
-    let query = this.getAllTemplatesQuery()
+    let query = this.getAllTemplateRelationsQuery()
       .orderBy('trainings_templates.updated_at', order)
       .orderBy('many_to_many_table.order', exerciseOrder);
 
@@ -136,7 +161,7 @@ export class TrainingTemplatesAggregationRepository {
     }, []);
   }
 
-  async findTrainingTemplateAggregation(
+  async findTrainingTemplateAggregationRelations(
     filters: {
       templateId: number;
     },
@@ -144,11 +169,12 @@ export class TrainingTemplatesAggregationRepository {
   ): Promise<TrainingTemplatesAggregationRaw | undefined> {
     const { order = 'desc', exerciseOrder = 'desc' } = options ?? {};
 
-    const result = await this.getAllTemplatesQuery()
+    const result = await this.getAllTemplateRelationsQuery()
       .where('trainings_templates.id', '=', filters?.templateId)
       .orderBy('trainings_templates.updated_at', order)
       .orderBy('many_to_many_table.order', exerciseOrder)
       .execute();
+
     if (result.length == 0) return undefined;
 
     return this.mapper.trainingTemplateToPersistence({ template: result[0], exercises: result });
@@ -174,15 +200,15 @@ export class TrainingTemplatesAggregationRepository {
     return rawExerciseTemplate;
   }
 
-  private getAllTemplatesQuery() {
+  private getAllTemplateRelationsQuery() {
     return this.kyselyService.db
       .selectFrom('trainings_templates')
-      .innerJoin(
+      .leftJoin(
         'trainings_exercises_templates as many_to_many_table',
         'trainings_templates.id',
         'many_to_many_table.training_template_id',
       )
-      .innerJoin(
+      .leftJoin(
         'exercises_templates',
         'exercises_templates.id',
         'many_to_many_table.exercise_template_id',
@@ -209,6 +235,45 @@ export class TrainingTemplatesAggregationRepository {
       ]);
   }
 
+  async test(id: number) {
+    const raw = await this.kyselyService.db
+      .selectFrom('trainings_templates')
+      .leftJoin(
+        'trainings_exercises_templates as many_to_many_table',
+        'trainings_templates.id',
+        'many_to_many_table.training_template_id',
+      )
+      .leftJoin(
+        'exercises_templates',
+        'exercises_templates.id',
+        'many_to_many_table.exercise_template_id',
+      )
+      .select([
+        'trainings_templates.created_at as template_created_at',
+        'trainings_templates.description as template_description',
+        'trainings_templates.id as template_id',
+        'trainings_templates.name as template_name',
+        'trainings_templates.post_training_duration as template_post_training_duration',
+        'trainings_templates.type as template_type',
+        'trainings_templates.updated_at as template_updated_at',
+        'trainings_templates.user_id as template_user_id',
+        'trainings_templates.worm_up_duration as template_worm_up_duration',
+
+        'exercises_templates.created_at as exercise_created_at',
+        'exercises_templates.description as exercise_description',
+        'exercises_templates.id as exercise_id',
+        'exercises_templates.name as exercise_name',
+        'exercises_templates.type as exercise_type',
+        'exercises_templates.updated_at as exercise_updated_at',
+        'exercises_templates.user_id as exercise_user_id',
+        'exercises_templates.example_url as exercise_example_url',
+      ])
+      .where('trainings_templates.id', '=', id)
+      .execute();
+
+    return raw;
+  }
+
   private get mapper() {
     return {
       trainingTemplateToPersistence: (data: {
@@ -224,28 +289,30 @@ export class TrainingTemplatesAggregationRepository {
           template_worm_up_duration: number | null;
         };
         exercises: {
-          exercise_id: number;
-          exercise_name: string;
+          exercise_id: number | null;
+          exercise_name: string | null;
           exercise_description: string | null;
-          exercise_updated_at: Date;
-          exercise_created_at: Date;
-          exercise_type: string;
+          exercise_updated_at: Date | null;
+          exercise_created_at: Date | null;
+          exercise_type: string | null;
           exercise_user_id: number | null;
           exercise_example_url: string | null;
         }[];
       }): TrainingTemplatesAggregationRaw => {
-        const exercises = data.exercises.map<ExerciseTemplateRawData['selectable']>((exercise) => {
-          return {
-            id: exercise.exercise_id,
-            name: exercise.exercise_name,
-            description: exercise.exercise_description,
-            updated_at: exercise.exercise_updated_at,
-            created_at: exercise.exercise_created_at,
-            type: exercise.exercise_type,
-            user_id: exercise.exercise_user_id,
-            example_url: exercise.exercise_example_url,
-          };
-        });
+        const exercises = data.exercises
+          .filter((e) => e.exercise_id != null)
+          .map((exercise) => {
+            return {
+              id: exercise.exercise_id,
+              name: exercise.exercise_name,
+              description: exercise.exercise_description,
+              updated_at: exercise.exercise_updated_at,
+              created_at: exercise.exercise_created_at,
+              type: exercise.exercise_type,
+              user_id: exercise.exercise_user_id,
+              example_url: exercise.exercise_example_url,
+            } as ExerciseTemplateRawData['selectable'];
+          });
 
         return {
           exercises,

@@ -37,10 +37,7 @@ function AppHeader() {
           className="-ml-1"
           onClick={() => void (isMobile ? undefined : toggleSidebarState())}
         />
-        <Separator
-          orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
-        />
+        <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
 
         <h1 className="text-base font-medium">{item?.title}</h1>
       </div>

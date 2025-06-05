@@ -7,6 +7,7 @@ type CreateExerciseTemplateProps = Parameters<typeof Button>[0] & {
   readonly exerciseTemplate?: ApiDto['ExerciseTemplateDto'];
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
+  readonly onSuccess?: () => void;
 };
 
 const ManageExerciseTemplateFormLazy = withLazy(() =>
@@ -19,6 +20,7 @@ function ManageExerciseTemplate({
   exerciseTemplate,
   open,
   onOpenChange,
+  onSuccess,
   ...buttonProps
 }: CreateExerciseTemplateProps) {
   return (
@@ -36,17 +38,11 @@ function ManageExerciseTemplate({
         onOpenChange={onOpenChange}
         slotsProps={{
           header: {
-            element:
-              exerciseTemplate == null
-                ? 'Создание упражнения'
-                : 'Редактирование упражнения',
+            element: exerciseTemplate == null ? 'Создание упражнения' : 'Редактирование упражнения',
           },
         }}
       >
-        <ManageExerciseTemplateFormLazy
-          exerciseTemplate={exerciseTemplate}
-          onSuccess={() => void onOpenChange(false)}
-        />
+        <ManageExerciseTemplateFormLazy exerciseTemplate={exerciseTemplate} onSuccess={onSuccess} />
       </AdoptedDialog>
     </>
   );

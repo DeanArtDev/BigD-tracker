@@ -51,8 +51,8 @@ class TrainingDto {
   endDate?: string;
 
   @ApiPropertyOptional({
-    example: 300000,
-    description: 'измеряется в миллисекундах',
+    example: 30,
+    description: 'измеряется в минутах',
   })
   @IsInt()
   @Expose()
@@ -60,8 +60,8 @@ class TrainingDto {
   wormUpDuration?: number;
 
   @ApiPropertyOptional({
-    example: 300000,
-    description: 'измеряется в миллисекундах',
+    example: 30,
+    description: 'измеряется в минутах',
   })
   @IsInt()
   @Expose()

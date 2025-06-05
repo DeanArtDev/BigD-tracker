@@ -16,11 +16,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools client={queryClient} />
-      <SidebarProvider
-        className="bg-sidebar"
-        open={sidebarState}
-        defaultOpen={sidebarState}
-      >
+      <SidebarProvider className="bg-sidebar" open={sidebarState} defaultOpen={sidebarState}>
         {children}
       </SidebarProvider>
       <Toaster richColors />

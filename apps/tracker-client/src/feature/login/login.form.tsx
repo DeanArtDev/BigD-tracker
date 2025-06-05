@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/ui-kit/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Link } from 'react-router-dom';
 import { routes } from '@/shared/lib/routes';
@@ -50,7 +44,7 @@ function LoginForm() {
               },
             });
           })}
-          className="space-y-8"
+          className="space-y-8 flex flex-col grow w-full"
         >
           <CardHeader>
             <CardTitle>Вход</CardTitle>

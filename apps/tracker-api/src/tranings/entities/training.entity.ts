@@ -50,15 +50,15 @@ class TrainingEntity {
     }
 
     if (postTrainingDuration != null) {
-      const mins = 1000 * 60 * 3;
       validator.isNotIntFloat(postTrainingDuration, 'postTrainingDuration');
-      validator.isIntGt(postTrainingDuration, mins, 'postTrainingDuration');
+      validator.isIntMax(postTrainingDuration, 60, 'postTrainingDuration');
+      validator.isIntGt(postTrainingDuration, 3, 'postTrainingDuration');
     }
 
     if (wormUpDuration != null) {
-      const mins = 1000 * 60 * 3;
       validator.isNotIntFloat(wormUpDuration, 'wormUpDuration');
-      validator.isIntGt(wormUpDuration, mins, 'wormUpDuration');
+      validator.isIntMax(wormUpDuration, 60, 'wormUpDuration');
+      validator.isIntGt(wormUpDuration, 3, 'wormUpDuration');
     }
 
     validator.isIdValId(id, 'id');

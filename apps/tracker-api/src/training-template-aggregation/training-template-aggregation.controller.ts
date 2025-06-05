@@ -2,16 +2,8 @@ import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import { GetTrainingTemplatesAggregationFilters } from '@/training-template-aggregation/dto/get-training-aggregation.dto';
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  InternalServerErrorException,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { TrainingTemplatesAggregationRepository } from '@/training-template-aggregation/training-templates-aggregation.repository';
+import { Body, Controller, Get, HttpStatus, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TrainingTemplateAggregationResponse } from './dto/response-tarining-aggregation.dto';
 import { TrainingTemplateAggregationMapper } from './training-template-aggregation.mapper';
@@ -33,6 +25,7 @@ export class TrainingTemplateAggregationController {
     private readonly updateTrainingTemplateAggregationUseCase: UpdateTrainingTemplateAggregationUseCase,
     private readonly trainingTemplateAggregationService: TrainingTemplateAggregationService,
     private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
+    private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,
   ) {}
 
   @Get('templates')
@@ -59,27 +52,22 @@ export class TrainingTemplateAggregationController {
 
   @Post('templates')
   @ApiOperation({
-    summary: 'Создание шаблона тренировки',
+    summary: 'Создание шаблонов тренировок',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: TrainingTemplateAggregationResponse,
-    description: 'Тренировка создана',
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async createTrainingTemplate(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingTemplateAggregationRequest,
   ): Promise<TrainingTemplateAggregationResponse> {
-    try {
-      const templates = await this.createTrainingTemplateAggregationUseCase.execute(uid, data);
+    const templates = await this.createTrainingTemplateAggregationUseCase.execute(uid, data);
 
-      return {
-        data: templates.map(this.trainingTemplateAggregationMapper.fromEntityToDTO),
-      };
-    } catch {
-      throw new InternalServerErrorException('Failed to create training');
-    }
+    return {
+      data: templates.map(this.trainingTemplateAggregationMapper.fromEntityToDTO),
+    };
   }
 
   @Put('templates')

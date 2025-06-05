@@ -1,6 +1,6 @@
 import type { ApiDto } from '@/shared/api/types';
 
-const mapTrainingType: Record<ApiDto['TrainingDto']['type'], string> = {
+const mapTrainingType: Record<ApiDto['TrainingAggregationDto']['type'], string> = {
   LIGHT: 'Лёгкая',
   MEDIUM: 'Средняя',
   HARD: 'Тяжелая',

@@ -32,7 +32,7 @@ function TrainingsCalendar() {
   const calendarRef = useRef<FullCalendar | null>(null);
   useResizeTable({ onResize: () => void calendarRef.current?.doResize() });
 
-  const { isLoading, events, setFilters, update } = useTrainingsCalendar();
+  const { isLoading, events, setFilters, assignTraining } = useTrainingsCalendar();
 
   const isMobile = useIsMobile();
 
@@ -96,9 +96,7 @@ function TrainingsCalendar() {
           titleFormat={{ day: '2-digit', year: '2-digit', month: '2-digit' }}
           headerToolbar={{ start: '', center: '', end: '' }}
           slotLabelContent={(data) => {
-            return (
-              <span className="font-thin leading-none">{format(data.date, 'HH:mm')}</span>
-            );
+            return <span className="font-thin leading-none">{format(data.date, 'HH:mm')}</span>;
           }}
           timeZone="local"
           events={events}
@@ -130,9 +128,11 @@ function TrainingsCalendar() {
           }}
           eventDrop={(info) => {
             const training = info.event.extendedProps.extra;
-            update({
-              params: { path: { trainingId: training.id } },
-              body: { data: { startDate: info.event.start?.toISOString() } },
+            if (info.event.start == null) return;
+            assignTraining({
+              body: {
+                data: [{ trainingId: training.id, startDate: info.event.start?.toISOString() }],
+              },
             });
           }}
           eventContent={(arg) => {

@@ -24,8 +24,8 @@ class PutTrainingRequestData extends OmitType(TrainingDto, [
   description?: string | null;
 
   @ApiPropertyOptional({
-    example: 300000,
-    description: 'измеряется в миллисекундах',
+    example: 30,
+    description: 'измеряется в минутах',
     nullable: true,
   })
   @IsInt()
@@ -35,8 +35,8 @@ class PutTrainingRequestData extends OmitType(TrainingDto, [
   wormUpDuration?: number | null;
 
   @ApiPropertyOptional({
-    example: 300000,
-    description: 'измеряется в миллисекундах',
+    example: 30,
+    description: 'измеряется в минутах',
     nullable: true,
   })
   @IsInt()

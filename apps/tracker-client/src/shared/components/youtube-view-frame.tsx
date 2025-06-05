@@ -1,10 +1,10 @@
 import { AspectRatio } from '@/shared/ui-kit/ui/aspect-ratio';
 
-interface YoutubePreviewProps {
+interface YoutubeVideoFrameProps {
   readonly token: string;
 }
 
-function YoutubePreview({ token }: YoutubePreviewProps) {
+function YoutubeViewFrame({ token }: YoutubeVideoFrameProps) {
   return (
     <AspectRatio ratio={16 / 9}>
       <iframe
@@ -19,4 +19,4 @@ function YoutubePreview({ token }: YoutubePreviewProps) {
   );
 }
 
-export { YoutubePreview, type YoutubePreviewProps };
+export { YoutubeViewFrame, type YoutubeVideoFrameProps };

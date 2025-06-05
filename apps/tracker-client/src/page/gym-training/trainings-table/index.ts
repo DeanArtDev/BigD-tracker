@@ -1,1 +1,1 @@
-export * from './trainings-table';
+export { TrainingsTable } from './trainings-table';

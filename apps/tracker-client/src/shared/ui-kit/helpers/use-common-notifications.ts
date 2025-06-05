@@ -4,7 +4,9 @@ function useCommonNotifications() {
   return {
     success: () => toast.success('👍🏽 Успешно!', { position: 'top-center' }),
     somethingWentWrong: () =>
-      toast.error('Что то пошло не так, попробуйте еще раз', { position: 'top-center' }),
+      toast.error('Что то пошло не так, попробуйте еще раз', {
+        position: 'top-center',
+      }),
   };
 }
 

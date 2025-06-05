@@ -33,14 +33,12 @@ function useUrlQuery<TSchema extends UrlQueryMap = UrlQueryMap>(
       qs.parse(currentQuery, { ignoreQueryPrefix: true, interpretNumericEntities: true }),
     );
     return parsed.success && !isEmpty(parsed.data) ? parsed.data : undefined;
-  }, [currentQuery]);
+  }, [currentQuery, schema]);
 
   const setSearchQuery = useCallback<UseUrlQueryResponse<TSchema>[1]>(
     (value) => {
       const parsedCurrentQuery = qs.parse(currentQuery, { ignoreQueryPrefix: true });
-      setSearchParams(
-        qs.stringify({ ...parsedCurrentQuery, ...value }, { addQueryPrefix: true }),
-      );
+      setSearchParams(qs.stringify({ ...parsedCurrentQuery, ...value }, { addQueryPrefix: true }));
     },
     [currentQuery, setSearchParams],
   );

@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui-kit/ui/dialog';
+import { cn } from '@/shared/ui-kit/utils';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
 export function AdoptedDialog({
@@ -27,7 +28,12 @@ export function AdoptedDialog({
   // if (isDesktop) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={slotsProps?.content?.className}>
+      <DialogContent
+        className={cn(
+          'h-full max-h-[100vh] md:max-h-[80vh] max-w-auto md:max-w-[900px] p-2 py-3 sm:p-4 sm:py-5 lg:p-6 flex grow flex-col items-start',
+          slotsProps?.content?.className,
+        )}
+      >
         <DialogHeader>
           {slotsProps?.header?.element ? (
             <DialogTitle>{slotsProps?.header?.element}</DialogTitle>

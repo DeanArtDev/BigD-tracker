@@ -7,9 +7,9 @@ function useTrainingUpdate(
   } = {},
 ) {
   const notifications = getDefaultQueryNotifications();
-  const { mutate: update, ...others } = $privetQueryClient.useMutation(
-    'patch',
-    '/trainings/{trainingId}',
+  const { mutate: updateTraining, ...others } = $privetQueryClient.useMutation(
+    'put',
+    '/trainings',
     {
       ...notifications,
       onSuccess: options.onSuccess,
@@ -17,7 +17,7 @@ function useTrainingUpdate(
   );
 
   return {
-    update,
+    updateTraining,
     ...others,
   };
 }

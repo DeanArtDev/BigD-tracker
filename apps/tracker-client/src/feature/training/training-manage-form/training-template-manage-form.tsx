@@ -1,9 +1,5 @@
-import { useMeSuspense } from '@/entity/auth';
-import {
-  TrainingTypeSelectForm,
-  useTrainingTemplateCreate,
-  useTrainingTemplateUpdateAndReplace,
-} from '@/entity/trainings';
+import { TrainingTypeSelectForm } from '@/entity/trainings';
+import { ExerciseAddingBlock } from './exercise-adding-block/exercise-adding-block';
 import type { ApiDto } from '@/shared/api/types';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -20,27 +16,33 @@ import { Textarea } from '@/shared/ui-kit/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { trainingManageValidationSchema } from './training-manage-validation';
+import { useSubmit } from './use-submit';
 
 interface TrainingManageFormData {
   readonly name: string;
   readonly description?: string;
-  readonly type: ApiDto['TrainingDto']['type'];
+  readonly type: ApiDto['TrainingTemplateAggregationDto']['type'];
   readonly wormUpDuration?: number;
   readonly postTrainingDuration?: number;
+  readonly exerciseList: {
+    readonly id: number;
+    readonly name: string;
+    readonly sets: number;
+    readonly repetitions: number;
+  }[];
 }
 
 function TrainingTemplateManageForm({
   training,
   onSuccess,
 }: {
-  training?: ApiDto['TrainingTemplateDto'];
+  training?: ApiDto['TrainingTemplateAggregationDto'];
   onSuccess: () => void;
 }) {
-  const { me } = useMeSuspense();
-  const { create, isPending: isCreating } = useTrainingTemplateCreate();
-  const { update, isPending: isUpdating } = useTrainingTemplateUpdateAndReplace();
-
-  const isLoading = isCreating || isUpdating;
+  const { isLoading, handleSubmitForm } = useSubmit({
+    templateId: training?.id,
+    onSuccess,
+  });
 
   const form = useForm<TrainingManageFormData>({
     resolver: zodResolver(trainingManageValidationSchema),
@@ -49,15 +51,15 @@ function TrainingTemplateManageForm({
         ? {
             name: training.name,
             description: training.description,
-            wormUpDuration:
-              training.wormUpDuration == null
-                ? undefined
-                : training.wormUpDuration / 1000,
-            postTrainingDuration:
-              training.postTrainingDuration == null
-                ? undefined
-                : training.postTrainingDuration / 1000,
+            wormUpDuration: training.wormUpDuration,
+            postTrainingDuration: training.postTrainingDuration,
             type: training.type,
+            exerciseList: training.exercises.map((i) => ({
+              id: i.id,
+              name: i.name,
+              sets: 3,
+              repetitions: 12,
+            })),
           }
         : undefined,
     reValidateMode: 'onChange',
@@ -67,48 +69,8 @@ function TrainingTemplateManageForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((formData) => {
-          if (training != null) {
-            update(
-              {
-                body: {
-                  data: {
-                    type: formData.type,
-                    name: formData.name,
-                    description: formData.description,
-                    wormUpDuration:
-                      formData.wormUpDuration == null
-                        ? undefined
-                        : formData.wormUpDuration * 1000,
-                    postTrainingDuration:
-                      formData.postTrainingDuration == null
-                        ? undefined
-                        : formData.postTrainingDuration * 1000,
-                  },
-                },
-                params: { path: { trainingId: training.id } },
-              },
-              { onSuccess },
-            );
-            return;
-          }
-          create(
-            {
-              body: {
-                data: {
-                  userId: me.id,
-                  type: formData.type,
-                  name: formData.name,
-                  description: formData.description,
-                  wormUpDuration: (formData.wormUpDuration ?? 0) * 1000,
-                  postTrainingDuration: (formData.postTrainingDuration ?? 0) * 1000,
-                },
-              },
-            },
-            { onSuccess },
-          );
-        })}
-        className="space-y-8 flex flex-col"
+        onSubmit={form.handleSubmit(handleSubmitForm)}
+        className="space-y-8 flex flex-col grow w-full"
       >
         <FormField
           name="name"
@@ -124,7 +86,6 @@ function TrainingTemplateManageForm({
         />
 
         <FormField
-          control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
@@ -174,13 +135,15 @@ function TrainingTemplateManageForm({
           />
         </div>
 
+        <ExerciseAddingBlock />
+
         <Button
-          className="ml-auto min-w-[89px]"
+          className="ml-auto mt-auto min-w-[89px]"
           type="submit"
           disabled={isLoading || !form.formState.isDirty}
         >
           {isLoading ? (
-            <AppLoader size={20} />
+            <AppLoader inverse size={20} />
           ) : training == null ? (
             'Создать'
           ) : (
