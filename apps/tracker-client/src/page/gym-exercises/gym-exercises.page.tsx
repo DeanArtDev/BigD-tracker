@@ -1,9 +1,13 @@
-import { useExerciseTemplateDelete, useExerciseTemplatesQuery } from '@/entity/exercises';
+import {
+  useExerciseTemplateDelete,
+  useExerciseTemplatesQuery,
+  useExerciseTemplatesUrlParams,
+  useInvalidateExerciseTemplates,
+} from '@/entity/exercises';
 import { ManageExerciseTemplate } from '@/feature/exercise/manage-exercise-template';
-import { useExerciseTemplatesRequest } from '@/page/gym-exercises/model/use-exercise-templates-request';
 import { ExerciseCard } from '@/page/gym-exercises/ui/exercise-card';
 import { ExercisePreview } from '@/page/gym-exercises/ui/exercise-preview';
-import { PageWrapper } from '@/page/ui/page-wrapper';
+import { PageWrapper } from '../ui/page-wrapper';
 import type { ApiDto } from '@/shared/api/types';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { Toggle } from '@/shared/ui-kit/ui/toggle';
@@ -12,7 +16,8 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 function GymExercisesPage() {
-  const { isMy, setSearch } = useExerciseTemplatesRequest();
+  const { isMy, setSearch } = useExerciseTemplatesUrlParams();
+  const invalidate = useInvalidateExerciseTemplates();
   const { data, isLoading, isFetching } = useExerciseTemplatesQuery({ my: isMy });
 
   const [exerciseTemplate, setExerciseTemplate] = useState<
@@ -50,6 +55,10 @@ function GymExercisesPage() {
             className="ml-auto"
             variant="outline"
             onOpenChange={setOpenEdit}
+            onSuccess={() => {
+              setOpenEdit(false);
+              invalidate();
+            }}
           >
             <Plus /> Создать
           </ManageExerciseTemplate>
@@ -57,9 +66,7 @@ function GymExercisesPage() {
 
         <DataLoader parallelMount isLoading={isLoading}>
           <div
-            className={cn(
-              'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3',
-            )}
+            className={cn('grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3')}
           >
             {data?.map((exercise) => {
               return (

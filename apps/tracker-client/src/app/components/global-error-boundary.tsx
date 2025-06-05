@@ -1,29 +1,23 @@
-import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { Component, type PropsWithChildren } from 'react';
 
-export function GlobalErrorBoundary() {
-  const error = useRouteError();
+class GlobalErrorBoundary extends Component<PropsWithChildren> {
+  state = { hasError: false, error: null };
 
-  if (isRouteErrorResponse(error)) {
-    // это ответ из loader/action
-    return (
-      <div>
-        <h1>
-          {error.status} {error.statusText}
-        </h1>
-        <p>{error.data}</p>
-      </div>
-    );
-  } else if (error instanceof Error) {
-    // любое исключение
-    return (
-      <div>
-        <h1>Ошибка</h1>
-        <p>{error.message}</p>
-        <pre>{error.stack}</pre>
-      </div>
-    );
-  } else {
-    // всё остальное
-    return <h1>Неизвестная ошибка</h1>;
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, info: unknown) {
+    console.error('Error caught by boundary:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Что-то пошло не так: {String(this.state.error)}</div>;
+    }
+
+    return this.props.children;
   }
 }
+
+export { GlobalErrorBoundary };

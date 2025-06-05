@@ -1,4 +1,8 @@
-import { useTrainingDelete, useTrainingsTemplatesQuery } from '@/entity/trainings';
+import {
+  useInvalidateTrainingsTemplates,
+  useTrainingsTemplatesQuery,
+  useTrainingTemplateDelete,
+} from '@/entity/training-templates';
 import { TrainingTemplateManageDialog } from '@/feature/training/training-manage-form';
 import type { ApiDto } from '@/shared/api/types';
 import { useDevNotifications } from '@/shared/ui-kit/helpers';
@@ -14,9 +18,11 @@ import { useTrainingsTable } from './use-trainings-table';
 
 function TrainingsTable() {
   const { inDev } = useDevNotifications();
-  const { deleteTrigger, isPending } = useTrainingDelete();
+  const { deleteTrainingTemplate, isPending } = useTrainingTemplateDelete();
+  const invalidate = useInvalidateTrainingsTemplates();
+
   const { value, setTrue, setFalse } = useBoolean(false);
-  const [training, setTraining] = useState<ApiDto['TrainingTemplateDto'] | undefined>(
+  const [training, setTraining] = useState<ApiDto['TrainingTemplateAggregationDto'] | undefined>(
     undefined,
   );
 
@@ -24,7 +30,9 @@ function TrainingsTable() {
     loading: isPending,
     onEdit: setTraining,
     onAssign: inDev,
-    onDelete: (id) => void deleteTrigger({ params: { path: { trainingId: id } } }),
+    onDelete: (id) => {
+      deleteTrainingTemplate({ params: { path: { templateId: id } } }, { onSuccess: invalidate });
+    },
   });
   const { data = [], isEmpty, isLoading } = useTrainingsTemplatesQuery();
 
@@ -43,6 +51,7 @@ function TrainingsTable() {
           setTraining(undefined);
         }}
         onSuccess={() => {
+          invalidate();
           setFalse();
           setTraining(undefined);
         }}
@@ -54,7 +63,7 @@ function TrainingsTable() {
           <span className="hidden lg:inline">Добавить тренировку</span>
         </Button>
 
-        <DataTable<ApiDto['TrainingTemplateDto']>
+        <DataTable<ApiDto['TrainingTemplateAggregationDto']>
           data={data}
           columns={columns}
           onRowClick={() => {

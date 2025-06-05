@@ -1,11 +1,7 @@
 import { UserDropdownMenu } from '@/feature/sidebar/user-dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 import { DropdownMenu, DropdownMenuTrigger } from '@/shared/ui-kit/ui/dropdown-menu';
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/shared/ui-kit/ui/sidebar';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/shared/ui-kit/ui/sidebar';
 import { ChevronsUpDown } from 'lucide-react';
 
 export function NavUser({

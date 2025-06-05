@@ -1,7 +1,7 @@
 import { useUrlQuery } from '@/shared/lib/react/use-url-query';
 import { z } from 'zod';
 
-function useExerciseTemplatesRequest() {
+function useExerciseTemplatesUrlParams() {
   const schema = z.object({ my: z.boolean({ coerce: true }).optional() });
   type TSchema = z.infer<typeof schema>;
 
@@ -15,4 +15,4 @@ function useExerciseTemplatesRequest() {
   };
 }
 
-export { useExerciseTemplatesRequest };
+export { useExerciseTemplatesUrlParams };

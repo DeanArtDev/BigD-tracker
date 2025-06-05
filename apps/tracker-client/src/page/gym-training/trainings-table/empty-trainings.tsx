@@ -1,8 +1,10 @@
+import { useInvalidateTrainingsTemplates } from '@/entity/training-templates';
 import { TrainingTemplateManageDialog } from '@/feature/training/training-manage-form';
 import { useBoolean } from 'usehooks-ts';
 import { Button } from '@/shared/ui-kit/ui/button';
 
 function EmptyTrainings() {
+  const invalidate = useInvalidateTrainingsTemplates();
   const { value, setValue, setTrue, setFalse } = useBoolean(false);
 
   return (
@@ -17,7 +19,10 @@ function EmptyTrainings() {
       <TrainingTemplateManageDialog
         open={value}
         onOpenChange={setValue}
-        onSuccess={setFalse}
+        onSuccess={() => {
+          setFalse();
+          invalidate();
+        }}
       />
     </div>
   );

@@ -66,12 +66,12 @@ class Validator {
     }
   }
 
-  isIntGt(value: number, gt: number, field: string) {
-    if (!isInt(String(value), { gt })) {
+  isIntGt(value: number, min: number, field: string) {
+    if (!isInt(String(value), { min })) {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `${field} must not be greater than ${gt}`,
+        message: `${field}: ${value} must be greater or equal than ${min}`,
       });
     }
   }

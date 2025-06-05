@@ -7,7 +7,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('user_id', 'integer', (col) => col.references('users.id').onDelete('cascade'))
     .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
     .addColumn('description', 'text')
-    .addCheckConstraint('description_value', sql`char_length(description) <= 1024`)
     .addColumn('example_url', 'text', (col) => col.check(sql`char_length(name) <= 256`))
     .addColumn('type', 'text', (col) =>
       col.references('exercise_types.value').onDelete('restrict').notNull(),

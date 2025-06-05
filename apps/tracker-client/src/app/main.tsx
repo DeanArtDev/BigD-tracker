@@ -5,14 +5,17 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import { Providers } from './providers';
 import { FetchInterceptors } from './components/fetch-interceptors';
+import { GlobalErrorBoundary } from './components/global-error-boundary';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Providers>
-      <NetworkErrorNotifier />
-      <FetchInterceptors>
-        <RouterProvider router={router} />
-      </FetchInterceptors>
-    </Providers>
+    <GlobalErrorBoundary>
+      <Providers>
+        <NetworkErrorNotifier />
+        <FetchInterceptors>
+          <RouterProvider router={router} />
+        </FetchInterceptors>
+      </Providers>
+    </GlobalErrorBoundary>
   </StrictMode>,
 );

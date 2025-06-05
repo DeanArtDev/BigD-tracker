@@ -3,7 +3,10 @@ import {
   ExerciseTemplateRawData,
 } from '@/exercises/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
-import { TrainingTemplatesAggregationRepository } from '@/training-template-aggregation/training-templates-aggregation.repository';
+import {
+  TrainingTemplatesAggregationRaw,
+  TrainingTemplatesAggregationRepository,
+} from '@/training-template-aggregation/training-templates-aggregation.repository';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TrainingTemplateAggregationEntity } from '../../entities/training-template-aggregation.entity';
 import { TrainingTemplateAggregationMapper } from '../../training-template-aggregation.mapper';
@@ -61,17 +64,22 @@ export class CreateTrainingTemplateAggregationUseCase {
       rawExerciseTemplateList.map(this.exercisesTemplateMapper.fromPersistenceToEntity),
     );
 
-    const raw = await this.trainingTemplatesAggregationRepo.createTrainingTemplateAggregation({
-      trainingTemplate: {
-        type: item.type,
-        name: item.name,
-        description: item.description,
-        user_id: userId,
-        worm_up_duration: item.wormUpDuration,
-        post_training_duration: item.postTrainingDuration,
-      },
-      exerciseTemplates: rawExerciseTemplateList,
-    });
+    let raw: TrainingTemplatesAggregationRaw | undefined;
+    try {
+      raw = await this.trainingTemplatesAggregationRepo.createTrainingTemplateAggregation({
+        trainingTemplate: {
+          type: item.type,
+          name: item.name,
+          description: item.description,
+          user_id: userId,
+          worm_up_duration: item.wormUpDuration,
+          post_training_duration: item.postTrainingDuration,
+        },
+        exerciseTemplates: rawExerciseTemplateList,
+      });
+    } catch {
+      throw new InternalServerErrorException('Failed to create training');
+    }
 
     if (raw == null) {
       throw new InternalServerErrorException('Failed to create training');

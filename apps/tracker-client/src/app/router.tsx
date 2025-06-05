@@ -1,19 +1,17 @@
 import { AppMain } from '@/app/components/app-main';
 import { ContentWrapper } from '@/app/components/content-wrapper';
-import { AuthErrorBoundary } from './components/auth-error-boundary';
-import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
 import { OutOfAuthRoutes } from '@/app/components/out-of-auth-routes';
-import { routes } from '@/shared/lib/routes';
 import { AppSidebar } from '@/feature/sidebar';
-import { AppHeader } from './components/app-header';
-import { GlobalErrorBoundary } from './components/global-error-boundary';
-import { ProtectedRoutes } from './components/protected-routes';
+import { routes } from '@/shared/lib/routes';
+import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
 import { App } from './app';
+import { AppHeader } from './components/app-header';
+import { AuthErrorBoundary } from './components/auth-error-boundary';
+import { ProtectedRoutes } from './components/protected-routes';
 
 export const router = createBrowserRouter([
   {
     element: <App />,
-    errorElement: <GlobalErrorBoundary />,
     children: [
       {
         element: (

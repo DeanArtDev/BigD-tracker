@@ -30,10 +30,7 @@ function useLogin() {
     },
   });
 
-  const isWrongPassOrLogin = useMemo(
-    () => isExceptionWrongLoginOrPassword(error),
-    [error],
-  );
+  const isWrongPassOrLogin = useMemo(() => isExceptionWrongLoginOrPassword(error), [error]);
 
   return { login, isWrongPassOrLogin, error, ...states };
 }

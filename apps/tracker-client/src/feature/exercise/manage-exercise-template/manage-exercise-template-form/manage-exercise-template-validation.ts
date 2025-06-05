@@ -6,7 +6,8 @@ const requiredMessage = 'Обязательное поле';
 const validationSchema: z.Schema<ManageExerciseTemplateFormData> = z.object({
   name: z
     .string({ required_error: requiredMessage })
-    .min(4, { message: 'Не меньше 4 символов' }),
+    .min(4, { message: 'Не меньше 4 символов' })
+    .max(254, { message: 'Слишком длинное имя' }),
 
   type: z.enum(['WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC'] as const, {
     message: requiredMessage,

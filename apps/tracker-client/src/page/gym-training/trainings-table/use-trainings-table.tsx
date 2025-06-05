@@ -3,27 +3,28 @@ import type { ApiDto } from '@/shared/api/types';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Checkbox } from '@/shared/ui-kit/ui/checkbox';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Angry, Annoyed, Smile } from 'lucide-react';
+import { Angry, Annoyed, Blend, Smile } from 'lucide-react';
 import { type JSX } from 'react';
 import { TrainingsTableActions } from './trainings-table-actions';
 
-const mapTrainingTypeIcons: Record<ApiDto['TrainingDto']['type'], JSX.Element> = {
-  HARD: <Smile className="fill-red-400" />,
-  MEDIUM: <Annoyed className="fill-yellow-400" />,
-  LIGHT: <Angry className="fill-green-400" />,
-  MIXED: <Angry className="fill-green-400" />,
-};
+const mapTrainingTypeIcons: Record<ApiDto['TrainingTemplateAggregationDto']['type'], JSX.Element> =
+  {
+    HARD: <Smile className="fill-red-400" />,
+    MEDIUM: <Annoyed className="fill-yellow-400" />,
+    LIGHT: <Angry className="fill-green-400" />,
+    MIXED: <Blend className="fill-green-400" />,
+  };
 
 interface UseTrainingsTableParams {
   readonly loading: boolean;
-  readonly onEdit: (training: ApiDto['TrainingTemplateDto']) => void;
+  readonly onEdit: (training: ApiDto['TrainingTemplateAggregationDto']) => void;
   readonly onAssign: (trainingId: number) => void;
   readonly onDelete: (trainingId: number) => void;
 }
 
 function useTrainingsTable(
   params: UseTrainingsTableParams,
-): ColumnDef<ApiDto['TrainingTemplateDto']>[] {
+): ColumnDef<ApiDto['TrainingTemplateAggregationDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
 
   return [
@@ -83,11 +84,10 @@ function useTrainingsTable(
       accessorKey: 'Разминка',
       header: 'Разминка',
       cell: ({ row }) => {
-        const value =
-          row.original.wormUpDuration != null ? row.original.wormUpDuration / 1000 : 0;
+        const value = row.original.wormUpDuration;
         return (
           <p className="leading-7 [&:not(:first-child)]:mt-6">
-            {value > 0 ? `${value} мин` : 'Не сегодня'}
+            {value ? `${value} мин` : 'Не сегодня'}
           </p>
         );
       },
@@ -98,13 +98,10 @@ function useTrainingsTable(
       accessorKey: 'Заминка',
       header: 'Заминка',
       cell: ({ row }) => {
-        const value =
-          row.original.postTrainingDuration != null
-            ? row.original.postTrainingDuration / 1000
-            : 0;
+        const value = row.original.postTrainingDuration;
         return (
           <p className="leading-7 [&:not(:first-child)]:mt-6">
-            {value > 0 ? `${value} мин` : 'Не заминаюсь'}
+            {value ? `${value} мин` : 'Не заминаюсь'}
           </p>
         );
       },

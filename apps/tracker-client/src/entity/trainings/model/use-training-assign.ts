@@ -1,15 +1,15 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
 
-function useTrainingUpdate(
+function useTrainingAssign(
   options: {
     onSuccess?: () => Promise<void>;
   } = {},
 ) {
   const notifications = getDefaultQueryNotifications();
-  const { mutate: updateTraining, ...others } = $privetQueryClient.useMutation(
-    'put',
-    '/trainings',
+  const { mutate: assignTraining, ...others } = $privetQueryClient.useMutation(
+    'post',
+    '/trainings/assign',
     {
       ...notifications,
       onSuccess: options.onSuccess,
@@ -17,9 +17,9 @@ function useTrainingUpdate(
   );
 
   return {
-    updateTraining,
+    assignTraining,
     ...others,
   };
 }
 
-export { useTrainingUpdate };
+export { useTrainingAssign };

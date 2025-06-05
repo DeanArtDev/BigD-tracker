@@ -66,9 +66,7 @@ function DataLoader(props: DataLoaderProps) {
       {renderEmptyElement && emptyElement}
 
       {parallelMount ? (
-        <div className={clsx({ contents: readyToShow, hidden: !readyToShow })}>
-          {children}
-        </div>
+        <div className={clsx({ contents: readyToShow, hidden: !readyToShow })}>{children}</div>
       ) : (
         readyToShow && children
       )}

@@ -10,12 +10,11 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.references('trainings_types.value').onDelete('restrict').notNull(),
     )
     .addColumn('description', 'text')
-    .addCheckConstraint('description_value', sql`char_length(description) <= 1024`)
     .addColumn('worm_up_duration', 'integer', (col) =>
-      col.check(sql`post_training_duration >= 0 AND post_training_duration <= 900000`),
+      col.check(sql`post_training_duration >= 0 AND post_training_duration <= 60`),
     )
     .addColumn('post_training_duration', 'integer', (col) =>
-      col.check(sql`post_training_duration >= 0 AND post_training_duration <= 900000`),
+      col.check(sql`post_training_duration >= 0 AND post_training_duration <= 60`),
     )
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))

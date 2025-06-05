@@ -64,12 +64,11 @@ export class TrainingAggregationController {
 
   @Post()
   @ApiOperation({
-    summary: 'Создание тренировки',
+    summary: 'Создание тренировок',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: TrainingAggregationResponse,
-    description: 'Тренировка создана',
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async createTraining(
@@ -83,9 +82,9 @@ export class TrainingAggregationController {
     };
   }
 
-  @Put(':trainingId')
+  @Put()
   @ApiOperation({
-    summary: 'Полное обновление тренировки',
+    summary: 'Обновление тренировок',
     description: 'nullable поля очищают значения',
   })
   @ApiResponse({
