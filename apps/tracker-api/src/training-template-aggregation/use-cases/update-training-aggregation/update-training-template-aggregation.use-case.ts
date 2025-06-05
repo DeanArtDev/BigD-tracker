@@ -3,15 +3,15 @@ import {
   ExerciseTemplateRawData,
 } from '@/exercises/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
-import { TrainingTemplatesAggregationRepository } from '@/training-template-aggregation/training-templates-aggregation.repository';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TrainingTemplateAggregationEntity } from '../../entities/training-template-aggregation.entity';
 import { TrainingTemplateAggregationMapper } from '../../training-template-aggregation.mapper';
 import { TrainingTemplateAggregationService } from '../../training-template-aggregation.service';
-import { CreateTrainingTemplateAggregationRequestData } from './create-training-template-aggregation.dto';
+import { TrainingTemplatesAggregationRepository } from '../../training-templates-aggregation.repository';
+import { UpdateTrainingTemplateAggregationRequestData } from './update-training-template-aggregation.dto';
 
 @Injectable()
-export class CreateTrainingTemplateAggregationUseCase {
+export class UpdateTrainingTemplateAggregationUseCase {
   constructor(
     private readonly trainingTemplateAggregationService: TrainingTemplateAggregationService,
     private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
@@ -22,24 +22,25 @@ export class CreateTrainingTemplateAggregationUseCase {
 
   async execute(
     userId: number,
-    dto: CreateTrainingTemplateAggregationRequestData[],
+    dto: UpdateTrainingTemplateAggregationRequestData[],
   ): Promise<TrainingTemplateAggregationEntity[]> {
     const trainingTemplateList: TrainingTemplateAggregationEntity[] = [];
 
     for (const item of dto) {
-      trainingTemplateList.push(await this.createTrainingTemplate(userId, item));
+      trainingTemplateList.push(await this.updateTrainingTemplate(userId, item));
     }
     return trainingTemplateList;
   }
 
-  private async createTrainingTemplate(
+  private async updateTrainingTemplate(
     userId: number,
-    data: CreateTrainingTemplateAggregationRequestData,
+    data: UpdateTrainingTemplateAggregationRequestData,
   ): Promise<TrainingTemplateAggregationEntity> {
     const { exercises, ...item } = data;
+
     const trainingTemplate = this.trainingTemplateAggregationMapper.fromPersistenceToEntity({
       rawTrainingTemplate: {
-        id: Infinity,
+        id: item.id,
         created_at: new Date(),
         updated_at: new Date(),
         type: item.type,
@@ -61,20 +62,24 @@ export class CreateTrainingTemplateAggregationUseCase {
       rawExerciseTemplateList.map(this.exercisesTemplateMapper.fromPersistenceToEntity),
     );
 
-    const raw = await this.trainingTemplatesAggregationRepo.createTrainingTemplateAggregation({
-      trainingTemplate: {
-        type: item.type,
-        name: item.name,
-        description: item.description,
-        user_id: userId,
-        worm_up_duration: item.wormUpDuration,
-        post_training_duration: item.postTrainingDuration,
+    const raw = await this.trainingTemplatesAggregationRepo.updateTrainingTemplateAggregation(
+      {
+        trainingTemplate: {
+          id: item.id,
+          type: item.type,
+          name: item.name,
+          description: item.description,
+          user_id: userId,
+          worm_up_duration: item.wormUpDuration,
+          post_training_duration: item.postTrainingDuration,
+        },
+        exerciseTemplates: rawExerciseTemplateList,
       },
-      exerciseTemplates: rawExerciseTemplateList,
-    });
+      { replace: true },
+    );
 
     if (raw == null) {
-      throw new InternalServerErrorException('Failed to create training');
+      throw new InternalServerErrorException(`Failed to update training with id: ${item.id}`);
     }
 
     return this.trainingTemplateAggregationMapper.fromPersistenceToEntity({

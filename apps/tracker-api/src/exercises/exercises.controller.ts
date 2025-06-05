@@ -1,15 +1,13 @@
 import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
+import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
 import {
   PatchExerciseTemplateRequest,
   PatchExerciseTemplateResponse,
 } from '@/exercises/dtos/patch-exercise-template.dto';
-import {
-  PutExerciseTemplateRequest,
-  PutExerciseTemplateResponse,
-} from '@/exercises/dtos/put-exercise-template.dto';
+import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
+import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { mapAndValidateEntityList } from '@/shared/lib/map-and-validate-entity-list';
 import {
   Body,
@@ -29,15 +27,18 @@ import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import {
   CreateExerciseTemplateRequest,
   CreateExerciseTemplateResponse,
-  GetExerciseTemplatesQuery,
 } from './dtos/create-exercises-template.dto';
+import { GetExerciseTemplatesQuery } from './dtos/get-exercise-templates.dto';
+import { ExercisesTemplatesResponse } from './dtos/reaponse-exercises-templates.dto';
 import { ExercisesService } from './exercises.service';
 import { mapRawExerciseTemplateToDto } from './utils';
-import { ExercisesTemplatesResponse } from './dtos/reaponse-exercises-templates.dto';
 
 @Controller('exercises')
 export class ExercisesController {
-  constructor(readonly exercisesService: ExercisesService) {}
+  constructor(
+    readonly exercisesTemplateMapper: ExercisesTemplateMapper,
+    readonly exercisesService: ExercisesService,
+  ) {}
 
   @Get('/templates')
   @ApiOperation({
@@ -71,10 +72,13 @@ export class ExercisesController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async createExerciseTemplate(
-    @TokenPayload() tokenPayload: AccessTokenPayload,
+    @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateExerciseTemplateRequest,
   ) {
-    const rawExercises = await this.exercisesService.createExerciseTemplate(data);
+    const rawExercises = await this.exercisesService.createExerciseTemplate({
+      userId: uid,
+      ...data,
+    });
 
     return {
       data: mapAndValidateEntity(ExerciseTemplateDto, mapRawExerciseTemplateToDto(rawExercises)),
@@ -101,28 +105,23 @@ export class ExercisesController {
     };
   }
 
-  @Put('/templates/:templateId')
+  @Put('/templates')
   @ApiOperation({
-    summary: 'Полное обновление шаблона упражнения',
+    summary: 'Обновление шаблонов упражнения',
+    description: 'nullable поля очищают значения',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: PutExerciseTemplateResponse,
+    type: ExercisesTemplatesResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async updateExerciseTemplateAndReplace(
-    @Param('templateId', ParseIntPipe) templateId: number,
     @Body() { data }: PutExerciseTemplateRequest,
-  ): Promise<PutExerciseTemplateResponse> {
-    const rawExercises = await this.exercisesService.updateTemplateAndReplace(templateId, {
-      type: data.type,
-      name: data.name,
-      exampleUrl: data.exampleUrl ?? null,
-      description: data?.description ?? null,
-    });
+  ): Promise<ExercisesTemplatesResponse> {
+    const exercises = await this.exercisesService.updateTemplates(data);
 
     return {
-      data: mapAndValidateEntity(ExerciseTemplateDto, mapRawExerciseTemplateToDto(rawExercises)),
+      data: exercises.map(this.exercisesTemplateMapper.fromEntityToDTO),
     };
   }
 

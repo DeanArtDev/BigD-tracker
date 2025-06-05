@@ -1,13 +1,17 @@
-import { TrainingTemplateRawData } from '@/tranings/trainings-template.mapper';
 import { Injectable } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
 import { KyselyService } from '@shared/modules/db';
+import { TrainingTemplateRawData } from './trainings-template.mapper';
 
 @Injectable()
 export class TrainingsTemplatesRepository {
   constructor(private kyselyService: KyselyService) {}
 
-  async findOneById({ id }: { id: number }) {
+  async findOneById({
+    id,
+  }: {
+    id: number;
+  }): Promise<TrainingTemplateRawData['selectable'] | undefined> {
     return await this.kyselyService.db
       .selectFrom('trainings_templates')
       .where('id', '=', id)

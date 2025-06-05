@@ -21,10 +21,10 @@ export class TrainingTemplateAggregationService {
     private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,
   ) {}
 
-  async getTrainings(data: { userId: number }): Promise<TrainingTemplateAggregationEntity[]> {
+  async getTrainings(data: { userId?: number }): Promise<TrainingTemplateAggregationEntity[]> {
     const rawAggregations =
       await this.trainingTemplatesAggregationRepo.getAllTrainingTemplateAggregation({
-        userId: data.userId,
+        userId: data?.userId,
       });
     if (rawAggregations == null) return [];
 

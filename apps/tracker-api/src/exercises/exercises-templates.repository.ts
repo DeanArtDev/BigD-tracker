@@ -21,6 +21,14 @@ export class ExercisesTemplatesRepository {
       .executeTakeFirst();
   }
 
+  async findByIds(ids: number[]): Promise<ExerciseTemplateRawData['selectable'][] | undefined> {
+    return await this.kyselyService.db
+      .selectFrom('exercises_templates')
+      .where('id', '=', ids)
+      .selectAll()
+      .execute();
+  }
+
   async findByFilters(
     filters: {
       userId?: number;
@@ -82,22 +90,33 @@ export class ExercisesTemplatesRepository {
   }
 
   async update(
-    data: Override<ExerciseTemplateRawData['insertable'], 'id', number>,
+    data: Override<ExerciseTemplateRawData['updateable'], 'id', number>[],
     options: { replace: boolean } = { replace: false },
-  ): Promise<ExerciseTemplateRawData['selectable'] | undefined> {
+  ): Promise<ExerciseTemplateRawData['selectable'][]> {
     const { replace } = options;
 
-    return await this.kyselyService.db
-      .updateTable('exercises_templates')
-      .where('id', '=', data.id)
-      .set({
-        type: data.type,
-        name: data.name,
-        description: data.description ?? (replace ? null : undefined),
-        example_url: data.example_url ?? (replace ? null : undefined),
-      })
-      .returningAll()
-      .executeTakeFirst();
+    return await this.kyselyService.db.transaction().execute(async (transaction) => {
+      const buffer: ExerciseTemplateRawData['selectable'][] = [];
+
+      for (const item of data) {
+        const result = await transaction
+          .updateTable('exercises_templates')
+          .where('id', '=', item.id)
+          .set({
+            type: item.type,
+            name: item.name,
+            description: item.description ?? (replace ? null : undefined),
+            example_url: item.example_url ?? (replace ? null : undefined),
+            updated_at: new Date(),
+          })
+          .returningAll()
+          .executeTakeFirstOrThrow();
+
+        buffer.push(result);
+      }
+
+      return buffer;
+    });
   }
 
   async updateAndReplace(
@@ -123,7 +142,7 @@ export class ExercisesTemplatesRepository {
       .executeTakeFirst();
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<boolean> {
     const result = await this.kyselyService.db
       .deleteFrom('exercises_templates')
       .where('id', '=', id)

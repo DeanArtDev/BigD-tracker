@@ -1,8 +1,10 @@
+import { CreateExerciseTemplateRequest } from '@/exercises/dtos/create-exercises-template.dto';
+import { PutExerciseTemplateRequest } from '@/exercises/dtos/put-exercise-template.dto';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Nullable } from 'kysely';
+import { Override } from '@shared/lib/type-helpers';
 import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
-import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExerciseType } from './entity/exercise.entity';
+import { ExercisesTemplateMapper, ExerciseTemplateRawData } from './exercise-template.mapper';
 import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 
 @Injectable()
@@ -17,14 +19,21 @@ export class ExercisesService {
     return rawTemplates.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
   }
 
-  async createExerciseTemplate(data: {
-    userId?: number;
-    name: string;
-    description?: string;
-    exampleUrl?: string;
-    type: ExerciseType;
-  }) {
-    const rowExercise = await this.exercisesTemplatesRepository.create(data);
+  async createExerciseTemplate(data: CreateExerciseTemplateRequest['data'] & { userId: number }) {
+    const entity = this.exercisesTemplateMapper.fromDtoToEntity({
+      ...data,
+      id: Infinity,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    const raw = this.exercisesTemplateMapper.fromEntityToPersistence(entity);
+    const rowExercise = await this.exercisesTemplatesRepository.create({
+      type: raw.type,
+      name: raw.name,
+      user_id: raw.user_id,
+      description: raw.description,
+      example_url: raw.example_url,
+    });
     if (rowExercise == null) {
       throw new InternalServerErrorException('Failed to create exercise template');
     }
@@ -33,7 +42,7 @@ export class ExercisesService {
 
   async deleteExerciseTemplate(id: number) {
     await this.findExerciseTemplate({ id });
-    return await this.exercisesTemplatesRepository.delete(id);
+    await this.exercisesTemplatesRepository.delete(id);
   }
 
   async findExerciseTemplate({ id }: { id: number }): Promise<ExerciseTemplateEntity> {
@@ -42,6 +51,19 @@ export class ExercisesService {
       throw new NotFoundException('Exercise template is not found');
     }
     return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExercise);
+  }
+
+  async findExerciseTemplates(ids: number[]): Promise<ExerciseTemplateEntity[]> {
+    const list = await this.exercisesTemplatesRepository.findByIds(ids);
+    if (list == null) {
+      throw new NotFoundException('Exercise templates are not found');
+    }
+
+    if (list.length !== ids.length) {
+      throw new NotFoundException('Not all exercise templates are found');
+    }
+
+    return list.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
   }
 
   async updateTemplatePartly(
@@ -61,21 +83,19 @@ export class ExercisesService {
     return exercise;
   }
 
-  async updateTemplateAndReplace(
-    id: number,
-    data: {
-      name: string;
-      type: ExerciseType;
-    } & Nullable<{
-      exampleUrl: string;
-      description: string;
-    }>,
-  ) {
-    await this.findExerciseTemplate({ id });
-    const exercise = await this.exercisesTemplatesRepository.updateAndReplace(id, data);
-    if (exercise == null) {
-      throw new InternalServerErrorException({ id }, { cause: 'Failed to update' });
+  async updateTemplates(
+    data: PutExerciseTemplateRequest['data'],
+  ): Promise<ExerciseTemplateEntity[]> {
+    await this.findExerciseTemplates(data.map((i) => i.id));
+
+    try {
+      const raws = await this.exercisesTemplatesRepository.update(
+        data.map(this.exercisesTemplateMapper.fromUpdateDtoToRaw),
+        { replace: true },
+      );
+      return raws.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
+    } catch {
+      throw new InternalServerErrorException(`Failed to update exercise templates`);
     }
-    return exercise;
   }
 }

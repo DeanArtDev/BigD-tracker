@@ -21,10 +21,10 @@ import { TrainingTemplateAggregationModule } from '@/training-template-aggregati
     DatabaseModule,
     UsersModule,
     AuthModule,
+    TrainingTemplateAggregationModule,
     TrainingsModule,
     ExercisesModule,
     TrainingAggregationModule,
-    TrainingTemplateAggregationModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],
 })

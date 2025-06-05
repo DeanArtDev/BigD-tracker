@@ -3,7 +3,7 @@ import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsArray, IsInt, ValidateNested } from 'class-validator';
 
-class CreateTrainingTemplatesAggregationExercise {
+class UpdateTrainingTemplatesAggregationExercise {
   @ApiProperty({ example: 1 })
   @IsInt()
   @Expose()
@@ -20,36 +20,36 @@ class CreateTrainingTemplatesAggregationExercise {
   repetitions: number;
 }
 
-class CreateTrainingTemplateAggregationRequestData extends OmitType(TrainingTemplateDto, [
-  'id',
+class UpdateTrainingTemplateAggregationRequestData extends OmitType(TrainingTemplateDto, [
+  'userId',
   'createdAt',
   'updatedAt',
-  'userId',
 ] as const) {
   @ApiProperty({
-    type: CreateTrainingTemplatesAggregationExercise,
+    type: UpdateTrainingTemplatesAggregationExercise,
     isArray: true,
   })
   @IsArray()
-  @Type(() => CreateTrainingTemplatesAggregationExercise)
+  @Type(() => UpdateTrainingTemplatesAggregationExercise)
   @ValidateNested({ each: true })
-  exercises: CreateTrainingTemplatesAggregationExercise[];
+  exercises: UpdateTrainingTemplatesAggregationExercise[];
 }
 
-class CreateTrainingTemplateAggregationRequest {
+class UpdateTrainingTemplateAggregationRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: CreateTrainingTemplateAggregationRequestData,
+    type: UpdateTrainingTemplateAggregationRequestData,
     isArray: true,
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateTrainingTemplateAggregationRequestData)
-  data: CreateTrainingTemplateAggregationRequestData[];
+  @Type(() => UpdateTrainingTemplateAggregationRequestData)
+  data: UpdateTrainingTemplateAggregationRequestData[];
 }
 
 export {
-  CreateTrainingTemplateAggregationRequest,
-  CreateTrainingTemplatesAggregationExercise,
-  CreateTrainingTemplateAggregationRequestData,
+  UpdateTrainingTemplateAggregationRequest,
+  UpdateTrainingTemplatesAggregationExercise,
+  UpdateTrainingTemplateAggregationRequestData,
 };
+

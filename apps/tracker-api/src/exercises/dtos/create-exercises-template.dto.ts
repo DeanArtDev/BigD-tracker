@@ -1,21 +1,14 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
-import { IsBooleanString } from '@shared/decorators/is-boolean-string';
-import { Expose, Type } from 'class-transformer';
-import { IsOptional, ValidateNested } from 'class-validator';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 import { ExerciseTemplateDto } from './exercise-template.dto';
 
 class CreateExerciseTemplateDto extends OmitType(ExerciseTemplateDto, [
   'id',
   'createdAt',
+  'updatedAt',
+  'userId',
 ] as const) {}
-
-class GetExerciseTemplatesQuery {
-  @ApiPropertyOptional({ example: false })
-  @IsOptional()
-  @Expose()
-  @IsBooleanString()
-  my?: boolean;
-}
 
 class CreateExerciseTemplateRequest {
   @ApiProperty({
@@ -37,4 +30,4 @@ class CreateExerciseTemplateResponse {
   data: ExerciseTemplateDto;
 }
 
-export { CreateExerciseTemplateRequest, CreateExerciseTemplateResponse, GetExerciseTemplatesQuery };
+export { CreateExerciseTemplateRequest, CreateExerciseTemplateResponse };

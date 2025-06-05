@@ -22,7 +22,7 @@ interface ExerciseEntityData {
 }
 
 class ExerciseEntity {
-  constructor(data: ExerciseEntityData) {
+  constructor(private readonly data: ExerciseEntityData) {
     const { id, trainingId, userId, description, name, type, exampleUrl, createdAt, updatedAt } =
       data;
 
@@ -41,29 +41,35 @@ class ExerciseEntity {
     validator.isEnum(type, ExerciseType, 'type');
     validator.isDateISO(createdAt, 'createdAt');
     validator.isDateISO(updatedAt, 'updatedAt');
-
-    Object.assign(this, {
-      id,
-      name,
-      type,
-      userId,
-      createdAt,
-      updatedAt,
-      trainingId,
-      exampleUrl,
-      description,
-    });
   }
 
-  public readonly id: number;
-  public readonly userId: number;
-  public readonly trainingId: number;
-  public readonly name: string;
-  public readonly type: ExerciseType;
-  public readonly createdAt: string;
-  public readonly updatedAt: string;
-  public readonly description?: string;
-  public readonly exampleUrl?: string;
+  get id() {
+    return this.data.id;
+  }
+  get userId() {
+    return this.data.userId;
+  }
+  get trainingId() {
+    return this.data.trainingId;
+  }
+  get name() {
+    return this.data.name;
+  }
+  get type() {
+    return this.data.type;
+  }
+  get createdAt() {
+    return this.data.createdAt;
+  }
+  get updatedAt() {
+    return this.data.updatedAt;
+  }
+  get description() {
+    return this.data.description;
+  }
+  get exampleUrl() {
+    return this.data.exampleUrl;
+  }
 }
 
 export { ExerciseEntity, ExerciseType };

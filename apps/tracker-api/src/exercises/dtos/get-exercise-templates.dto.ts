@@ -3,7 +3,7 @@ import { IsBooleanString } from '@shared/decorators/is-boolean-string';
 import { Expose } from 'class-transformer';
 import { IsOptional } from 'class-validator';
 
-class GetTrainingTemplatesAggregationFilters {
+class GetExerciseTemplatesQuery {
   @ApiPropertyOptional({ example: false })
   @IsOptional()
   @Expose()
@@ -11,4 +11,4 @@ class GetTrainingTemplatesAggregationFilters {
   my?: boolean;
 }
 
-export { GetTrainingTemplatesAggregationFilters };
+export { GetExerciseTemplatesQuery };

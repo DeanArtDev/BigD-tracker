@@ -5,6 +5,7 @@ import { TrainingTemplateAggregationController } from './training-template-aggre
 import { TrainingTemplateAggregationMapper } from './training-template-aggregation.mapper';
 import { TrainingTemplateAggregationService } from './training-template-aggregation.service';
 import { CreateTrainingTemplateAggregationUseCase } from './use-cases/create-training-aggregation';
+import { UpdateTrainingTemplateAggregationUseCase } from './use-cases/update-training-aggregation';
 import { TrainingTemplatesAggregationRepository } from './training-templates-aggregation.repository';
 
 @Module({
@@ -15,6 +16,7 @@ import { TrainingTemplatesAggregationRepository } from './training-templates-agg
     TrainingTemplateAggregationService,
     TrainingTemplateAggregationMapper,
     TrainingTemplatesAggregationRepository,
+    UpdateTrainingTemplateAggregationUseCase,
   ],
 })
 export class TrainingTemplateAggregationModule {}
