@@ -1,4 +1,3 @@
-import { useMeSuspense } from '@/entity/auth';
 import { useExerciseTemplateCreate, useExerciseTemplateUpdate } from '@/entity/exercises';
 import { ExerciseTypeSelectForm } from '@/entity/exercises/ui/exercise-type-select-form';
 import { validationSchema } from '@/feature/exercise/manage-exercise-template/manage-exercise-template-form/manage-exercise-template-validation';
@@ -37,7 +36,6 @@ function ManageExerciseTemplateForm({
   exerciseTemplate,
   onSuccess,
 }: ManageExerciseTemplateFormProps) {
-  const { me } = useMeSuspense();
   const isCreating = exerciseTemplate == null;
 
   const { create, isPending: isCreatePending } = useExerciseTemplateCreate();
@@ -65,13 +63,13 @@ function ManageExerciseTemplateForm({
   return (
     <Form {...form}>
       <form
+        className="space-y-8 flex flex-col grow w-full justify-start"
         onSubmit={form.handleSubmit((formData) => {
           if (isCreating) {
             create(
               {
                 body: {
                   data: {
-                    userId: me.id,
                     name: formData.name,
                     type: formData.type,
                     description: formData.description,
@@ -85,21 +83,22 @@ function ManageExerciseTemplateForm({
             if (exerciseTemplate == null) return;
             update(
               {
-                params: { path: { templateId: exerciseTemplate.id } },
                 body: {
-                  data: {
-                    name: formData.name,
-                    type: formData.type,
-                    description: formData.description,
-                    exampleUrl: formData.url,
-                  },
+                  data: [
+                    {
+                      id: exerciseTemplate.id,
+                      name: formData.name,
+                      type: formData.type,
+                      description: formData.description,
+                      exampleUrl: formData.url,
+                    },
+                  ],
                 },
               },
               { onSuccess },
             );
           }
         })}
-        className="space-y-8 flex flex-col"
       >
         <FormField
           name="name"
@@ -150,11 +149,7 @@ function ManageExerciseTemplateForm({
           )}
         />
 
-        <Button
-          className="ml-auto"
-          type="submit"
-          disabled={isLoading || !form.formState.isDirty}
-        >
+        <Button className="ml-auto" type="submit" disabled={isLoading || !form.formState.isDirty}>
           {isLoading ? <AppLoader inverse size={20} /> : null}
           {isCreating ? 'Создать' : 'Редактировать'}
         </Button>

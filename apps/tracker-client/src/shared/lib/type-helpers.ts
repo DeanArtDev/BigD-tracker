@@ -14,4 +14,8 @@ type Undefinedable<T> = {
   [P in keyof T]+?: T[P] | undefined;
 };
 
-export type { Override, ValueOf, Nullable, Undefinedable };
+interface HasId {
+  readonly id: number | string;
+}
+
+export type { HasId, Override, ValueOf, Nullable, Undefinedable };

@@ -1,11 +1,5 @@
 import { mapExerciseType } from '@/entity/exercises/lib/constants';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui-kit/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui-kit/ui/form';
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import {
   Select,
@@ -25,7 +19,7 @@ function ExerciseTypeSelectForm(props: { name?: string; required?: boolean }) {
     <FormField
       name={name}
       render={({ field }) => (
-        <FormItem className="grow">
+        <FormItem>
           <FormLabel>
             <RequiredSign on={required}>Тип</RequiredSign>
           </FormLabel>

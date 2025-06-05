@@ -9,7 +9,7 @@ const TrainingTemplateManageFormLazy = withLazy(() =>
 );
 
 interface TrainingTemplateCreateDialogProps {
-  readonly training?: ApiDto['TrainingTemplateDto'];
+  readonly training?: ApiDto['TrainingTemplateAggregationDto'];
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
   readonly onSuccess: () => void;
@@ -29,7 +29,9 @@ function TrainingTemplateManageDialog({
         header: {
           element: training == null ? 'Создание тренировки' : 'Редактирование тренировки',
         },
-        content: { className: 'max-w-auto md:max-w-[900px] pb-4 md:pb-10' },
+        content: {
+          className: 'overflow-x-scroll',
+        },
       }}
     >
       <TrainingTemplateManageFormLazy training={training} onSuccess={onSuccess} />

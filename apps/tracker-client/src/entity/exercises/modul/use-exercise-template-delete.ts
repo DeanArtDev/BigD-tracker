@@ -12,7 +12,6 @@ function useExerciseTemplateDelete() {
       ...options,
       onSuccess: async () => {
         await invalidate({ my: true });
-        await invalidate({ my: false });
         options.onSuccess();
       },
     },

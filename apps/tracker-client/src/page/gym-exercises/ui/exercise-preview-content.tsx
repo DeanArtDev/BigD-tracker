@@ -3,7 +3,7 @@ import { mapExerciseType } from '@/entity/exercises/lib/constants';
 import { ExerciseConfirmDelete } from '@/entity/exercises/ui/exercise-confirm-delete';
 import { ExerciseEditTooltip } from '@/entity/exercises/ui/exercise-edit-tooltip';
 import type { ApiDto } from '@/shared/api/types';
-import { YoutubePreview } from '@/shared/components/youtube-preview';
+import { YoutubeViewFrame } from '@/shared/components/youtube-view-frame';
 import { useYoutubeUrlParse } from '@/shared/lib/react/use-youtube-url-parse';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -30,28 +30,31 @@ function ExercisePreviewContent({
   const isMine = exercise?.userId === me.id;
 
   return (
-    <>
+    <div className="flex flex-col grow w-full gap-4">
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <Button size="sm" variant="outline">
             <Plus />
           </Button>
           <span className="mr-5">{exercise?.name}</span>
+
+          {exercise && (
+            <Badge variant="secondary" className="ml-auto h-min">
+              {mapExerciseType[exercise?.type]}
+            </Badge>
+          )}
         </DialogTitle>
       </DialogHeader>
 
-      {exercise && (
-        <Badge variant="secondary" className="ml-auto h-min">
-          {mapExerciseType[exercise?.type]}
-        </Badge>
-      )}
+      <div className="overflow-y-auto flex flex-col grow gap-4">
+        {token && <YoutubeViewFrame token={token} />}
 
-      <div className="overflow-y-auto flex flex-col gap-4">
-        {token && <YoutubePreview token={token} />}
+        <div>
+          <h4 className="mb-1 text-md font-semibold">Описание</h4>
+          <p className="whitespace-pre-line text-sm leading-5">{exercise?.description}</p>
+        </div>
 
-        <p className="whitespace-pre-line text-sm">{exercise?.description}</p>
-
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 mt-auto">
           <ExerciseEditTooltip on={!isMine}>
             <Button
               size="sm"
@@ -76,7 +79,7 @@ function ExercisePreviewContent({
           </ExerciseConfirmDelete>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

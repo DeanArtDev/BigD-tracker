@@ -1,5 +1,4 @@
-import { useExerciseTemplatesQuery } from '@/entity/exercises';
-import { useExerciseTemplatesRequest } from '@/page/gym-exercises/model/use-exercise-templates-request';
+import { useExerciseTemplatesQuery, useExerciseTemplatesUrlParams } from '@/entity/exercises';
 import type { ApiDto } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
@@ -29,7 +28,7 @@ function ExercisePreview({
   onDelete,
   onOpenChange,
 }: ExerciseTemplatePreviewProps) {
-  const { isMy } = useExerciseTemplatesRequest();
+  const { isMy } = useExerciseTemplatesUrlParams();
   const { data } = useExerciseTemplatesQuery({ my: isMy });
   const exercise = useMemo(() => {
     return data?.find((x) => x.id === exerciseId);
@@ -41,8 +40,7 @@ function ExercisePreview({
       onOpenChange={loading ? undefined : onOpenChange}
       slotsProps={{
         content: {
-          className: `grid-rows-[auto_1fr] max-h-[100vh] md:max-h-[80vh] 
-          max-w-auto md:max-w-[900px] p-2 md:pb-4 md:pb-10 lg:p-6`,
+          className: `grid-rows-[auto_1fr]`,
         },
       }}
     >
