@@ -1,6 +1,7 @@
 const trainingsQueryKeys = {
+  mainKey: ['get', '/trainings'] as const,
   getTrainings: (filters?: { from: string; to: string }) => {
-    return ['get', '/trainings', { params: { query: filters } }] as const;
+    return [...trainingsQueryKeys.mainKey, { params: { query: filters } }] as const;
   },
 };
 

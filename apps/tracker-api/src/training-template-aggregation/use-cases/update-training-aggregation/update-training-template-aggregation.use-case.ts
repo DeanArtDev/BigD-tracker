@@ -3,7 +3,7 @@ import {
   ExerciseTemplateRawData,
 } from '@/exercises/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingTemplateAggregationEntity } from '../../entities/training-template-aggregation.entity';
 import { TrainingTemplateAggregationMapper } from '../../training-template-aggregation.mapper';
 import { TrainingTemplateAggregationService } from '../../training-template-aggregation.service';
@@ -15,8 +15,8 @@ export class UpdateTrainingTemplateAggregationUseCase {
   constructor(
     private readonly trainingTemplateAggregationService: TrainingTemplateAggregationService,
     private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
-    private readonly exerciseTemplatesRepository: ExercisesTemplatesRepository,
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
+    private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
     private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,
   ) {}
 
@@ -54,8 +54,7 @@ export class UpdateTrainingTemplateAggregationUseCase {
 
     const rawExerciseTemplateList: ExerciseTemplateRawData['selectable'][] = [];
     for (const exercise of exercises) {
-      const rawExerciseTemplate =
-        await this.trainingTemplatesAggregationRepo.findRawExerciseTemplates(exercise.id);
+      const rawExerciseTemplate = await this.findExerciseTemplate(exercise.id);
       rawExerciseTemplateList.push(rawExerciseTemplate);
     }
     trainingTemplate.addExercises(
@@ -86,5 +85,15 @@ export class UpdateTrainingTemplateAggregationUseCase {
       rawTrainingTemplate: raw.trainingTemplate,
       rawExercisesTemplates: raw.exercises,
     });
+  }
+
+  private async findExerciseTemplate(
+    exerciseId: number,
+  ): Promise<ExerciseTemplateRawData['selectable']> {
+    const raw = await this.exercisesTemplatesRepository.findOneById({ id: exerciseId });
+    if (raw == null) {
+      throw new NotFoundException(`Exercise template with id: ${exerciseId} is not found`);
+    }
+    return raw;
   }
 }

@@ -33,7 +33,7 @@ export default {
           email: testUserConfig.TEST_USER_LOGIN,
         })
         .returningAll()
-        .executeTakeFirst();
+        .executeTakeFirstOrThrow();
 
       if (result != null) {
         console.log(`✅Тестовый пользак ${testUserConfig.TEST_USER_LOGIN} залит успешно`);

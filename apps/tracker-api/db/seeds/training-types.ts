@@ -14,7 +14,7 @@ export default {
           .insertInto('trainings_types')
           .values({ value })
           .returning(['value'])
-          .executeTakeFirst();
+          .executeTakeFirstOrThrow();
         if (result != null) buffer.push(result);
       }
 

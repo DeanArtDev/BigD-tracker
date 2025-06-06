@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
 import { DB, KyselyService } from '@shared/modules/db';
-import { ExpressionBuilder, Nullable } from 'kysely';
+import { ExpressionBuilder } from 'kysely';
 import { ExerciseTemplateRawData } from './exercise-template.mapper';
-import { ExerciseType } from './entity/exercise.entity';
+import { ExerciseType } from './entity/exercise-template.entity';
 
 @Injectable()
 export class ExercisesTemplatesRepository {
@@ -30,22 +30,24 @@ export class ExercisesTemplatesRepository {
   }
 
   async findByFilters(
+    userId: number,
     filters: {
-      userId?: number;
-    } = {},
+      my: boolean;
+    },
   ) {
     let query = this.kyselyService.db
       .selectFrom('exercises_templates')
       .orderBy('created_at', 'desc')
       .selectAll();
 
-    const { userId } = filters;
     query = query.where((eb) => {
       const conditions: ReturnType<ExpressionBuilder<DB, 'exercises_templates'>>[] = [];
-      if (userId) {
-        conditions.push(eb('user_id', '=', userId));
+
+      conditions.push(eb('user_id', '=', userId));
+      if (!filters.my) {
+        conditions.push(eb('user_id', 'is', null));
       }
-      return eb.and(conditions);
+      return eb.or(conditions);
     });
 
     return await query.execute();
@@ -117,29 +119,6 @@ export class ExercisesTemplatesRepository {
 
       return buffer;
     });
-  }
-
-  async updateAndReplace(
-    id: number,
-    data: {
-      name: string;
-      type: ExerciseType;
-    } & Nullable<{
-      exampleUrl: string;
-      description: string;
-    }>,
-  ) {
-    return await this.kyselyService.db
-      .updateTable('exercises_templates')
-      .where('id', '=', id)
-      .set({
-        type: data.type,
-        name: data.name,
-        description: data.description,
-        example_url: data.exampleUrl,
-      })
-      .returningAll()
-      .executeTakeFirst();
   }
 
   async delete(id: number): Promise<boolean> {

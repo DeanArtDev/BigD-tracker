@@ -17,11 +17,18 @@ const validationSchema: z.Schema<ManageExerciseTemplateFormData> = z.object({
 
   url: z
     .string()
-    .url({ message: 'Не валидная ссылка' })
-    .refine((val) => val.startsWith('https://www.youtube.com/'), {
-      message: 'Ссылка не ведет на youtube видео',
-    })
-    .or(z.undefined()),
+    .trim()
+    .refine(
+      (val) => {
+        if (val == null || val.trim() === '') return true;
+        return val.startsWith('https://www.youtube.com/');
+      },
+      {
+        message: 'Ссылка должна вести на youtube видео',
+      },
+    )
+    .or(z.undefined())
+    .transform((v) => (v === '' ? undefined : v)),
 });
 
 export { validationSchema };

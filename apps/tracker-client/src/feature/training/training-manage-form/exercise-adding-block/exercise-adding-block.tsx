@@ -3,10 +3,11 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { ExerciseElements } from './exercise-elements';
 import { DndVerticalContainer } from '@/shared/components/dnd-vertical-container';
 import { Frown, GripVertical } from 'lucide-react';
-import { type FieldArrayPath, useFieldArray } from 'react-hook-form';
+import { type FieldArrayPath, useFieldArray, useFormState } from 'react-hook-form';
 import type { TrainingManageFormData } from '../training-template-manage-form';
 
 function ExerciseAddingBlock() {
+  const formState = useFormState<TrainingManageFormData>();
   const { fields, prepend, remove, move } = useFieldArray<
     { exerciseList: TrainingManageFormData['exerciseList'] },
     FieldArrayPath<{ exerciseList: TrainingManageFormData['exerciseList'] }>,
@@ -51,12 +52,13 @@ function ExerciseAddingBlock() {
                   id={exercise.id}
                   key={exercise.id}
                   name={exercise.name}
+                  disabled={formState.disabled}
                   beforeStartSlot={
                     <Button
                       className="!p-2 cursor-grab"
                       size="sm"
                       type="button"
-                      disabled={fields.length === 1}
+                      disabled={fields.length === 1 || formState.disabled}
                       variant="ghost"
                       {...listeners}
                       {...attributes}

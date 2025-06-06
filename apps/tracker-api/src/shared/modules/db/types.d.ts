@@ -19,7 +19,6 @@ export interface Exercises {
   example_url: string | null;
   id: Generated<number>;
   name: string;
-  training_id: number;
   type: string;
   updated_at: Generated<Timestamp>;
   user_id: number;
@@ -81,10 +80,10 @@ export interface Trainings {
   worm_up_duration: number | null;
 }
 
-export interface TrainingsExercisesTemplates {
+export interface TrainingsExerciseTemplates {
   exercise_template_id: number;
   order: number;
-  training_template_id: number;
+  training_id: number;
 }
 
 export interface TrainingsTemplates {
@@ -103,6 +102,12 @@ export interface TrainingsTypes {
   value: string;
 }
 
+export interface TrainingTemplatesExerciseTemplates {
+  exercise_template_id: number;
+  order: number;
+  training_template_id: number;
+}
+
 export interface Users {
   avatar: string | null;
   created_at: Generated<Timestamp>;
@@ -119,8 +124,9 @@ export interface DB {
   exercises_templates: ExercisesTemplates;
   repetitions: Repetitions;
   sessions: Sessions;
+  training_templates_exercise_templates: TrainingTemplatesExerciseTemplates;
   trainings: Trainings;
-  trainings_exercises_templates: TrainingsExercisesTemplates;
+  trainings_exercise_templates: TrainingsExerciseTemplates;
   trainings_templates: TrainingsTemplates;
   trainings_types: TrainingsTypes;
   users: Users;

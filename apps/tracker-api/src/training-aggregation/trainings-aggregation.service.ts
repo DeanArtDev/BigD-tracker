@@ -1,34 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ExercisesRepository } from '@/exercises/exercises.repository';
+import { TrainingAggregationEntity } from '@/training-aggregation/entities/training-aggregation.entity';
+import { TrainingAggregationRepository } from '@/training-aggregation/training-aggregation.repository';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TrainingsAggregationMapper } from './trainings-aggregation.mapper';
-import { TrainingAggregationEntity } from './entities/training-aggregation.entity';
 
 @Injectable()
 export class TrainingsAggregationService {
   constructor(
     readonly trainingsRepository: TrainingsRepository,
-    readonly exercisesRepository: ExercisesRepository,
     readonly trainingAggregationMapper: TrainingsAggregationMapper,
+    readonly trainingAggregationRepository: TrainingAggregationRepository,
   ) {}
 
-  async getTrainings(filters: { userId: number; to?: string; from?: string }) {
-    const buffer: TrainingAggregationEntity[] = [];
+  async getTrainings(
+    userId: number,
+    filters: { to?: string; from?: string },
+  ): Promise<TrainingAggregationEntity[]> {
+    const raw = await this.trainingAggregationRepository.findAllTrainingAggregation(
+      userId,
+      filters,
+    );
+    if (raw == null) return [];
 
-    const rawTrainings = await this.trainingsRepository.findByRangeForUser(filters);
-    for (const rawTraining of rawTrainings) {
-      const rawExercises = await this.exercisesRepository.findExercisesByFilters({
-        trainingId: rawTraining.id,
-        userId: rawTraining.user_id,
-      });
-      const trainingAggregation = this.trainingAggregationMapper.fromPersistenceToEntity({
-        rawTraining,
-        rawExercises,
-      });
-      buffer.push(trainingAggregation);
-    }
-
-    return buffer;
+    return raw.map((item) =>
+      this.trainingAggregationMapper.fromPersistenceToEntity({
+        rawTraining: item.trainingTemplate,
+        rawExercises: item.exercises,
+      }),
+    );
   }
 
   async deleteTrainingAggregation(trainingId: number): Promise<void> {

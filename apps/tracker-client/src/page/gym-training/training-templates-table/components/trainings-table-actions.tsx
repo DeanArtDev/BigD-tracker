@@ -10,6 +10,8 @@ import { IconDotsVertical } from '@tabler/icons-react';
 
 interface TrainingsTableActionsProps {
   readonly disable?: boolean;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
   readonly onEdit: () => void;
   readonly onAssign: () => void;
   readonly onDelete: () => void;
@@ -17,6 +19,8 @@ interface TrainingsTableActionsProps {
 
 function TrainingsTableActions({
   disable,
+  canEdit = false,
+  canDelete = false,
   onDelete,
   onAssign,
   onEdit,
@@ -36,7 +40,7 @@ function TrainingsTableActions({
 
       <DropdownMenuContent align="end" className="w-32">
         <DropdownMenuItem
-          disabled={disable}
+          disabled={disable || !canEdit}
           onClick={(evt) => {
             evt.stopPropagation();
             onEdit();
@@ -54,8 +58,9 @@ function TrainingsTableActions({
           Назначить
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+
         <DropdownMenuItem
-          disabled={disable}
+          disabled={disable || !canDelete}
           variant="destructive"
           onClick={(evt) => {
             evt.stopPropagation();

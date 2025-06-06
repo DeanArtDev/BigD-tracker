@@ -7,8 +7,7 @@ import { DB } from '@shared/modules/db';
 import { Selectable } from 'kysely';
 import { Insertable, Updateable } from 'kysely/dist/esm';
 import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
-import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
-import { ExerciseType } from './entity/exercise.entity';
+import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
 
 interface ExerciseTemplateRawData {
   readonly selectable: Selectable<DB['exercises_templates']>;
@@ -71,6 +70,21 @@ class ExercisesTemplateMapper extends BaseMapper<
       example_url: dto.exampleUrl,
       description: dto.description,
     };
+  };
+
+  fromPersistenceToDto = (raw: ExerciseTemplateRawData['selectable']): ExerciseTemplateDto => {
+    const instance: ExerciseTemplateDto = {
+      id: raw.id,
+      name: raw.name,
+      type: raw.type as ExerciseType,
+      createdAt: raw.created_at.toISOString(),
+      updatedAt: raw.updated_at.toISOString(),
+      userId: raw.user_id ?? undefined,
+      description: raw.description ?? undefined,
+      exampleUrl: raw.example_url ?? undefined,
+    };
+
+    return mapAndValidateEntity(ExerciseTemplateDto, instance);
   };
 }
 

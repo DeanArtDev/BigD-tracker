@@ -104,7 +104,7 @@ function TrainingTemplateManageForm({
         />
 
         <div className="grid grid-cols-2 gap-3">
-          <TrainingTypeSelectForm />
+          <TrainingTypeSelectForm disabled={form.formState.disabled} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 min-h-[108px] items-start">

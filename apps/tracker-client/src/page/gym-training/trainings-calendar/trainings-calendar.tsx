@@ -1,7 +1,9 @@
-import { useResizeTable } from '@/page/gym-training/trainings-calendar/use-resize-table';
-import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
+import { TrainingPreview } from '@/page/gym-training/trainings-calendar/components/training-preview';
+import { getTraining } from '@/page/gym-training/trainings-calendar/helpers';
+import type { ApiDto } from '@/shared/api/types';
+import { CalendarContentView } from './components/calendar-content-view';
+import { useResizeTable } from './use-resize-table';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { Card } from '@/shared/ui-kit/ui/card';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { cn } from '@/shared/ui-kit/utils';
 import ruLocale from '@fullcalendar/core/locales/ru';
@@ -10,10 +12,11 @@ import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
 import { format } from 'date-fns';
 import { debounce } from 'lodash-es';
-import { ChevronLeft, ChevronRight, GripVertical, Shrink } from 'lucide-react';
-import { useRef } from 'react';
+import { ChevronLeft, ChevronRight, Shrink } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useTrainingsCalendar } from './use-trainings-calendar';
+
 import './styles.css';
 
 let toastId: number | string | undefined;
@@ -24,7 +27,7 @@ const debouncedWarningToast = debounce(
       position: 'top-center',
     });
   },
-  5000,
+  1000,
   { leading: true, trailing: false },
 );
 
@@ -32,9 +35,10 @@ function TrainingsCalendar() {
   const calendarRef = useRef<FullCalendar | null>(null);
   useResizeTable({ onResize: () => void calendarRef.current?.doResize() });
 
-  const { isLoading, events, setFilters, assignTraining } = useTrainingsCalendar();
+  const { isLoading, isAssignLoading, events, setFilters, assignTraining, updateStartDate } =
+    useTrainingsCalendar();
 
-  const isMobile = useIsMobile();
+  const [training, setTraining] = useState<ApiDto['TrainingAggregationDto'] | undefined>();
 
   return (
     <div className={cn('flex flex-col text-xs relative')}>
@@ -79,7 +83,7 @@ function TrainingsCalendar() {
 
         <FullCalendar
           editable
-          selectable
+          selectable={false}
           height="auto"
           nowIndicator
           ref={calendarRef}
@@ -101,6 +105,7 @@ function TrainingsCalendar() {
           timeZone="local"
           events={events}
           eventAllow={(dropInfo) => {
+            if (isAssignLoading) return false;
             const date = dropInfo.start;
 
             const now = new Date();
@@ -113,9 +118,30 @@ function TrainingsCalendar() {
 
             return true;
           }}
-          eventChange={console.dir}
+          eventChange={(info) => {
+            const training = getTraining(info.event.extendedProps.extra);
+            if (info.event.start == null || training == null) return;
+            updateStartDate({ id: training.id, startDate: info.event.start?.toISOString() });
+            assignTraining(
+              {
+                body: {
+                  data: [{ trainingId: training.id, startDate: info.event.start.toISOString() }],
+                },
+              },
+              {
+                onError: () => {
+                  if (info.oldEvent.start == null) return;
+                  updateStartDate({
+                    id: training.id,
+                    startDate: info.oldEvent.start?.toISOString(),
+                  });
+                },
+              },
+            );
+          }}
           eventClick={(info) => {
-            console.log(info.event.extendedProps.extra);
+            setTraining(getTraining(info.event.extendedProps.extra));
+            console.log(`Вы кликнули, просто кликнули, ${info.event.extendedProps.extra}`);
           }}
           datesSet={(info) => {
             setFilters({
@@ -126,42 +152,25 @@ function TrainingsCalendar() {
           dateClick={(info) => {
             console.log(`Вы кликнули по дате: ${info.dateStr}`);
           }}
-          eventDrop={(info) => {
-            const training = info.event.extendedProps.extra;
-            if (info.event.start == null) return;
-            assignTraining({
-              body: {
-                data: [{ trainingId: training.id, startDate: info.event.start?.toISOString() }],
-              },
-            });
-          }}
           eventContent={(arg) => {
             return (
-              <Card
-                className={cn(
-                  'flex flex-row justify-between gap-2 items-center text-xs p-1 rounded-md',
-                  arg.backgroundColor,
-                  { ['h-[40px]']: isMobile },
-                )}
-              >
-                {!isMobile && (
-                  <span className="w-full text-center wrap-anywhere whitespace-normal">
-                    {arg.event.title}
-                  </span>
-                )}
-                {arg.isDraggable && (
-                  <GripVertical
-                    className={cn('relative right-[-5px]', {
-                      'ml-auto': isMobile,
-                    })}
-                    size={15}
-                  />
-                )}
-              </Card>
+              <CalendarContentView
+                bgcolor={arg.backgroundColor}
+                title={arg.event.title}
+                isLoading={isAssignLoading}
+                isDraggable={arg.isDraggable}
+              />
             );
           }}
         />
       </DataLoader>
+
+      <TrainingPreview
+        training={training}
+        onOpenChange={(v) => {
+          if (!v) setTraining(undefined);
+        }}
+      />
     </div>
   );
 }

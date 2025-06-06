@@ -1,3 +1,4 @@
+import { useMeSuspense } from '@/entity/auth';
 import { mapTrainingType } from '@/entity/trainings/lib';
 import type { ApiDto } from '@/shared/api/types';
 import { Badge } from '@/shared/ui-kit/ui/badge';
@@ -5,7 +6,7 @@ import { Checkbox } from '@/shared/ui-kit/ui/checkbox';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Angry, Annoyed, Blend, Smile } from 'lucide-react';
 import { type JSX } from 'react';
-import { TrainingsTableActions } from './trainings-table-actions';
+import { TrainingsTableActions } from '../components/trainings-table-actions';
 
 const mapTrainingTypeIcons: Record<ApiDto['TrainingTemplateAggregationDto']['type'], JSX.Element> =
   {
@@ -26,6 +27,7 @@ function useTrainingsTable(
   params: UseTrainingsTableParams,
 ): ColumnDef<ApiDto['TrainingTemplateAggregationDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
+  const { me } = useMeSuspense();
 
   return [
     {
@@ -111,6 +113,8 @@ function useTrainingsTable(
       id: 'actions',
       cell: ({ row }) => (
         <TrainingsTableActions
+          canEdit={me.id === row.original.userId}
+          canDelete={me.id === row.original.userId}
           disable={loading}
           onAssign={() => void onAssign(row.original.id)}
           onEdit={() => void onEdit(row.original)}

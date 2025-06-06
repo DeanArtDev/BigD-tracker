@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUrl } from 'class-validator';
-import { ExerciseType } from '../entity/exercise.entity';
+import { ExerciseType } from '../entity/exercise-template.entity';
 
 class ExerciseDto {
   @ApiProperty({ example: 1 })
@@ -13,11 +13,6 @@ class ExerciseDto {
   @IsInt()
   @Expose()
   userId: number;
-
-  @ApiProperty({ example: 1 })
-  @Expose()
-  @IsInt()
-  trainingId: number;
 
   @ApiProperty({ example: 'ANAEROBIC', enum: ExerciseType })
   @Type(() => String)

@@ -4,7 +4,8 @@ import { BaseMapper } from '@shared/lib/mapper';
 import { DB } from '@shared/modules/db';
 import { Insertable, Selectable, Updateable } from 'kysely';
 import { ExerciseDto } from './dtos/exercise.dto';
-import { ExerciseEntity, ExerciseType } from './entity/exercise.entity';
+import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
+import { ExerciseTemplateRawData } from './exercise-template.mapper';
 
 interface ExerciseRawData {
   readonly selectable: Selectable<DB['exercises']>;
@@ -15,15 +16,14 @@ interface ExerciseRawData {
 @Injectable()
 class ExercisesMapper extends BaseMapper<
   ExerciseDto,
-  ExerciseEntity,
+  ExerciseTemplateEntity,
   ExerciseRawData['selectable']
 > {
-  fromPersistenceToEntity = (rawData: ExerciseRawData['selectable']): ExerciseEntity => {
-    return new ExerciseEntity({
+  fromPersistenceToEntity = (rawData: ExerciseRawData['selectable']): ExerciseTemplateEntity => {
+    return new ExerciseTemplateEntity({
       id: rawData.id,
       name: rawData.name,
       userId: rawData.user_id,
-      trainingId: rawData.training_id,
       type: rawData.type as ExerciseType,
       createdAt: rawData.created_at.toISOString(),
       updatedAt: rawData.updated_at.toISOString(),
@@ -40,7 +40,6 @@ class ExercisesMapper extends BaseMapper<
       createdAt: raw.created_at.toISOString(),
       exampleUrl: raw.example_url ?? undefined,
       updatedAt: raw.updated_at.toISOString(),
-      trainingId: raw.training_id,
       description: raw.description ?? undefined,
       name: raw.name,
     };
@@ -48,25 +47,26 @@ class ExercisesMapper extends BaseMapper<
     return mapAndValidateEntity(ExerciseDto, instance);
   };
 
-  fromEntityToPersistence = (entity: ExerciseEntity): ExerciseRawData['selectable'] => {
+  fromEntityToPersistence = (
+    entity: ExerciseTemplateEntity,
+  ): ExerciseTemplateRawData['selectable'] => {
     return {
       id: entity.id,
       name: entity.name,
-      training_id: entity.trainingId,
       type: entity.type,
-      user_id: entity.userId,
       created_at: new Date(entity.createdAt),
       updated_at: new Date(entity.updatedAt),
+      user_id: entity.userId ?? null,
       description: entity.description ?? null,
       example_url: entity.exampleUrl ?? null,
     };
   };
 
-  fromDtoToEntity = (dto: ExerciseDto): ExerciseEntity => {
-    return new ExerciseEntity(dto);
+  fromDtoToEntity = (dto: ExerciseDto): ExerciseTemplateEntity => {
+    return new ExerciseTemplateEntity(dto);
   };
 
-  fromEntityToDTO = (entity: ExerciseEntity): ExerciseDto => {
+  fromEntityToDTO = (entity: ExerciseTemplateEntity): ExerciseDto => {
     return mapAndValidateEntity(ExerciseDto, entity);
   };
 }

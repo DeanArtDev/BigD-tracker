@@ -1,13 +1,10 @@
 import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
 import {
   PatchExerciseTemplateRequest,
   PatchExerciseTemplateResponse,
 } from '@/exercises/dtos/patch-exercise-template.dto';
-import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
-import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { mapAndValidateEntityList } from '@/shared/lib/map-and-validate-entity-list';
 import {
   Body,
@@ -23,15 +20,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import {
   CreateExerciseTemplateRequest,
   CreateExerciseTemplateResponse,
 } from './dtos/create-exercises-template.dto';
+import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
 import { GetExerciseTemplatesQuery } from './dtos/get-exercise-templates.dto';
+import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
 import { ExercisesTemplatesResponse } from './dtos/reaponse-exercises-templates.dto';
+import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExercisesService } from './exercises.service';
-import { mapRawExerciseTemplateToDto } from './utils';
 
 @Controller('exercises')
 export class ExercisesController {
@@ -50,12 +48,10 @@ export class ExercisesController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getExerciseTemplates(
-    @Query() { my }: GetExerciseTemplatesQuery,
-    @TokenPayload() tokenPayload: AccessTokenPayload,
+    @Query() { my = false }: GetExerciseTemplatesQuery,
+    @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<ExercisesTemplatesResponse> {
-    const rawExercises = await this.exercisesService.getExercisesTemplates({
-      userId: my === true ? tokenPayload.uid : undefined,
-    });
+    const rawExercises = await this.exercisesService.getExercisesTemplates(uid, { my });
 
     return {
       data: mapAndValidateEntityList(ExerciseTemplateDto, rawExercises),
@@ -81,7 +77,7 @@ export class ExercisesController {
     });
 
     return {
-      data: mapAndValidateEntity(ExerciseTemplateDto, mapRawExerciseTemplateToDto(rawExercises)),
+      data: this.exercisesTemplateMapper.fromPersistenceToDto(rawExercises),
     };
   }
 
@@ -101,7 +97,7 @@ export class ExercisesController {
     const rawExercises = await this.exercisesService.updateTemplatePartly(templateId, data);
 
     return {
-      data: mapAndValidateEntity(ExerciseTemplateDto, mapRawExerciseTemplateToDto(rawExercises)),
+      data: this.exercisesTemplateMapper.fromPersistenceToDto(rawExercises),
     };
   }
 

@@ -1,7 +1,13 @@
 import { Validator } from '@shared/lib/validator';
-import { ExerciseType } from './exercise.entity';
 
 const validator = new Validator('exercises-templates');
+
+enum ExerciseType {
+  'WORM-UP' = 'WORM-UP',
+  'POST-TRAINING' = 'POST-TRAINING',
+  'AEROBIC' = 'AEROBIC',
+  'ANAEROBIC' = 'ANAEROBIC',
+}
 
 interface ExerciseTemplateData {
   readonly id: number;
@@ -63,4 +69,4 @@ class ExerciseTemplateEntity {
   }
 }
 
-export { ExerciseTemplateEntity };
+export { ExerciseTemplateEntity, ExerciseType };

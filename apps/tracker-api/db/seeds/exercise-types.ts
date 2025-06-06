@@ -14,8 +14,9 @@ export default {
           .insertInto('exercise_types')
           .values({ value })
           .returning(['value'])
-          .executeTakeFirst();
-        if (result != null) buffer.push(result);
+          .executeTakeFirstOrThrow();
+
+        buffer.push(result);
       }
 
       for (const b of buffer) {
