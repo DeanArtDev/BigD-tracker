@@ -1,5 +1,5 @@
 import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
-import { ExerciseType } from '@/exercises/entity/exercise.entity';
+import { ExerciseType } from '@/exercises/entity/exercise-template.entity';
 import {
   ExercisesTemplateMapper,
   ExerciseTemplateRawData,

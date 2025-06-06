@@ -1,4 +1,4 @@
-import { ExerciseType } from '@/exercises/entity/exercise.entity';
+import { ExerciseType } from '@/exercises/entity/exercise-template.entity';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNullable } from '@shared/decorators/is-nullable';
 import { Expose, Type } from 'class-transformer';
@@ -9,11 +9,6 @@ class PutExerciseData {
   @IsInt()
   @Expose()
   id: number;
-
-  @ApiProperty({ example: 1 })
-  @Expose()
-  @IsInt()
-  trainingId: number;
 
   @ApiProperty({ example: 'ANAEROBIC', enum: ExerciseType })
   @Type(() => String)

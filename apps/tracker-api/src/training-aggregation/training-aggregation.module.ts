@@ -4,10 +4,12 @@ import { Module } from '@nestjs/common';
 import { TrainingsModule } from '@/tranings/trainings.module';
 import { UpdateTrainingAggregationUseCase } from './use-cases/update-training-aggregation';
 import { CreateTrainingAggregationUseCase } from './use-cases/create-training-aggregation';
+import { TrainingAggregationRepository } from './training-aggregation.repository';
 import { TrainingAggregationController } from './training-aggregation.controller';
 import { TrainingsAggregationService } from './trainings-aggregation.service';
 
 @Module({
+  exports: [TrainingsAggregationMapper],
   imports: [TrainingsModule, ExercisesModule],
   controllers: [TrainingAggregationController],
   providers: [
@@ -15,6 +17,7 @@ import { TrainingsAggregationService } from './trainings-aggregation.service';
     UpdateTrainingAggregationUseCase,
     TrainingsAggregationService,
     TrainingsAggregationMapper,
+    TrainingAggregationRepository,
   ],
 })
 export class TrainingAggregationModule {}

@@ -52,10 +52,7 @@ export class TrainingAggregationController {
     @Query() filters: GetTrainingsAggregationFilters,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingAggregationResponse> {
-    const trainings = await this.trainingsAggregationService.getTrainings({
-      userId: uid,
-      ...filters,
-    });
+    const trainings = await this.trainingsAggregationService.getTrainings(uid, filters);
 
     return {
       data: trainings.map(this.trainingAggregationMapper.fromEntityToDTO),

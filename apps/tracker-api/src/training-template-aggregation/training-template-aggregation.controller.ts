@@ -1,7 +1,7 @@
 import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import { GetTrainingTemplatesAggregationFilters } from '@/training-template-aggregation/dto/get-training-aggregation.dto';
+import { GetTrainingTemplatesAggregationFilters } from './dto/get-training-aggregation.dto';
 import { Body, Controller, Get, HttpStatus, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TrainingTemplateAggregationResponse } from './dto/response-tarining-aggregation.dto';
@@ -15,18 +15,23 @@ import {
   UpdateTrainingTemplateAggregationRequest,
   UpdateTrainingTemplateAggregationUseCase,
 } from './use-cases/update-training-aggregation';
+import {
+  AssignTrainingTemplateAggregationUseCase,
+  AssignTrainingTemplateRequest,
+} from './use-cases/assign-training-aggregation';
 
 @ApiTags('Training templates')
-@Controller('trainings')
+@Controller('trainings/templates')
 export class TrainingTemplateAggregationController {
   constructor(
     private readonly createTrainingTemplateAggregationUseCase: CreateTrainingTemplateAggregationUseCase,
     private readonly updateTrainingTemplateAggregationUseCase: UpdateTrainingTemplateAggregationUseCase,
+    private readonly assignTrainingTemplateAggregationUseCase: AssignTrainingTemplateAggregationUseCase,
     private readonly trainingTemplateAggregationService: TrainingTemplateAggregationService,
     private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
   ) {}
 
-  @Get('templates')
+  @Get()
   @ApiOperation({
     summary: 'Получение шаблонов тренировок',
   })
@@ -36,19 +41,17 @@ export class TrainingTemplateAggregationController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getTrainingsTemplates(
-    @Query() { my }: GetTrainingTemplatesAggregationFilters,
+    @Query() { my = false }: GetTrainingTemplatesAggregationFilters,
     @TokenPayload() { uid }: AccessTokenPayload,
   ) {
-    const templates = await this.trainingTemplateAggregationService.getTrainings({
-      userId: my ? uid : undefined,
-    });
+    const templates = await this.trainingTemplateAggregationService.getTrainings(uid, { my });
 
     return {
       data: templates.map(this.trainingTemplateAggregationMapper.fromEntityToDTO),
     };
   }
 
-  @Post('templates')
+  @Post()
   @ApiOperation({
     summary: 'Создание шаблонов тренировок',
   })
@@ -68,7 +71,23 @@ export class TrainingTemplateAggregationController {
     };
   }
 
-  @Put('templates')
+  @Post('assign')
+  @ApiOperation({
+    summary: 'Назначение шаблона на дату',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async assignTrainingTemplate(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: AssignTrainingTemplateRequest,
+  ) {
+    await this.assignTrainingTemplateAggregationUseCase.execute(uid, data);
+    return undefined;
+  }
+
+  @Put()
   @ApiOperation({
     summary: 'Полное обновление шаблонов тренировки',
     description: 'nullable поля очищают значения',

@@ -1,6 +1,7 @@
-import { ExerciseDto } from '@/exercises/dtos/exercise.dto';
-import { ExerciseType } from '@/exercises/entity/exercise.entity';
-import { ExerciseRawData, ExercisesMapper } from '@/exercises/exercise.mapper';
+import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
+import { ExerciseType } from '@/exercises/entity/exercise-template.entity';
+import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
+import { ExercisesMapper } from '@/exercises/exercise.mapper';
 import { TrainingType } from '@/tranings/entities/training.entity';
 import { TrainingRawData, TrainingsMapper } from '@/tranings/trainings.mapper';
 import { Injectable } from '@nestjs/common';
@@ -17,17 +18,16 @@ export class TrainingsAggregationMapper {
 
   fromPersistenceToDto = (raw: {
     rawTraining: TrainingRawData['selectable'];
-    rawExercises?: ExerciseRawData['selectable'][];
+    rawExercises?: ExerciseTemplateRawData['selectable'][];
   }): TrainingAggregationDto => {
     const { rawTraining, rawExercises = [] } = raw;
 
-    const exercisesDto: ExerciseDto[] = rawExercises.map((ex) => {
+    const exercisesDto: ExerciseTemplateDto[] = rawExercises.map((ex) => {
       return {
         id: ex.id,
         name: ex.name,
-        trainingId: ex.training_id,
         type: ex.type as ExerciseType,
-        userId: ex.user_id,
+        userId: ex.user_id ?? undefined,
         createdAt: ex.created_at.toISOString(),
         updatedAt: ex.updated_at.toISOString(),
         description: ex.description ?? undefined,
@@ -54,7 +54,7 @@ export class TrainingsAggregationMapper {
 
   fromPersistenceToEntity = (raw: {
     rawTraining: TrainingRawData['selectable'];
-    rawExercises?: ExerciseRawData['selectable'][];
+    rawExercises?: ExerciseTemplateRawData['selectable'][];
   }): TrainingAggregationEntity => {
     const { rawTraining, rawExercises = [] } = raw;
     const trainingAggregation = new TrainingAggregationEntity(
@@ -69,7 +69,7 @@ export class TrainingsAggregationMapper {
     entity: TrainingAggregationEntity,
   ): {
     rawTraining: TrainingRawData['selectable'];
-    rawExercises?: ExerciseRawData['selectable'][];
+    rawExercises?: ExerciseTemplateRawData['selectable'][];
   } => {
     const { exercises } = entity;
     return {

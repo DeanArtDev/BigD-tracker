@@ -1,4 +1,3 @@
-import { ExerciseEntity } from '@/exercises/entity/exercise.entity';
 import { ExercisesTemplateMapper } from '@/exercises/exercise-template.mapper';
 import { ExercisesMapper } from '@/exercises/exercise.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
@@ -11,6 +10,7 @@ import {
   CreateTrainingAggregationRequestData,
 } from './create-training-aggregation.dto';
 import { TrainingsAggregationMapper } from '../../trainings-aggregation.mapper';
+import { ExerciseTemplateEntity } from '@/exercises/entity/exercise-template.entity';
 
 @Injectable()
 export class CreateTrainingAggregationUseCase {
@@ -32,7 +32,7 @@ export class CreateTrainingAggregationUseCase {
     for (const { exercises, ...item } of dto) {
       const trainingAggregation = await this.createTraining({ userId, ...item });
 
-      const newExercises: ExerciseEntity[] = [];
+      const newExercises: ExerciseTemplateEntity[] = [];
       for (const e of exercises) {
         const exerciseEntity = await this.createExercise({
           userId,
@@ -78,7 +78,7 @@ export class CreateTrainingAggregationUseCase {
 
   private async createExercise(
     data: CreateTrainingAggregationExercise & { userId: number; trainingId: number },
-  ): Promise<ExerciseEntity> {
+  ): Promise<ExerciseTemplateEntity> {
     const rawExerciseTemplate = await this.exerciseTemplatesRepository.findOneById({
       id: data.id,
     });
@@ -90,7 +90,6 @@ export class CreateTrainingAggregationUseCase {
 
     const newRawExercise = await this.exerciseRepository.create({
       user_id: data.userId,
-      training_id: data.trainingId,
       name: exerciseTemplate.name,
       type: exerciseTemplate.type,
       example_url: exerciseTemplate.exampleUrl,

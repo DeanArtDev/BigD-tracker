@@ -21,11 +21,15 @@ export class TrainingTemplateAggregationService {
     private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,
   ) {}
 
-  async getTrainings(data: { userId?: number }): Promise<TrainingTemplateAggregationEntity[]> {
+  async getTrainings(
+    userId: number,
+    filters: { my: boolean },
+  ): Promise<TrainingTemplateAggregationEntity[]> {
     const rawAggregations =
-      await this.trainingTemplatesAggregationRepo.getAllTrainingTemplateAggregation({
-        userId: data?.userId,
-      });
+      await this.trainingTemplatesAggregationRepo.findAllTrainingTemplateAggregation(
+        userId,
+        filters,
+      );
     if (rawAggregations == null) return [];
 
     return rawAggregations.reduce<TrainingTemplateAggregationEntity[]>((acc, rawAggregation) => {
@@ -39,13 +43,6 @@ export class TrainingTemplateAggregationService {
     }, []);
   }
 
-  async deleteTrainingAggregation(trainingId: number): Promise<void> {
-    const isDeleted = await this.trainingsRepository.delete({ id: trainingId });
-    if (!isDeleted) {
-      throw new NotFoundException(`Training with id ${trainingId} not found`);
-    }
-  }
-
   async findExerciseTemplateById(id: number): Promise<ExerciseTemplateEntity> {
     const rawExerciseTemplate = await this.exerciseTemplatesRepository.findOneById({
       id,
@@ -56,14 +53,12 @@ export class TrainingTemplateAggregationService {
     return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExerciseTemplate);
   }
 
-  async findTrainingTemplateAggregationById(
-    id: number,
-  ): Promise<TrainingTemplateAggregationEntity> {
+  async findTrainingTemplateById(id: number): Promise<TrainingTemplateAggregationEntity> {
     const rawTrainingTemplate = await this.trainingsTemplatesRepository.findOneById({
       id,
     });
     if (rawTrainingTemplate == null) {
-      throw new NotFoundException('Training template is not found');
+      throw new NotFoundException(`Training template {id: ${id}} is not found`);
     }
     return this.trainingTemplateAggregationMapper.fromPersistenceToEntity({ rawTrainingTemplate });
   }

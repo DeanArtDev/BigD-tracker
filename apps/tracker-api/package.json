@@ -19,7 +19,7 @@
     "migrate": "ts-node tools/migrator.ts",
     "seed": "ts-node tools/run-seeds.ts",
     "typegen": "kysely-codegen --out-file ./src/shared/modules/db/types.d.ts --env-file .env.development --dialect postgres",
-    "catch-up-with:db": "pnpm migrate lts && pnpm seed && pnpm typegen",
+    "catch-up-with:db": "pnpm migrate lts && pnpm typegen && pnpm seed",
     "=== CI ===": "",
     "format": "prettier \"src/**/*.ts\" \"test/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
     "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",

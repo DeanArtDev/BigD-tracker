@@ -1,9 +1,7 @@
-import { ExerciseRawData } from './exercise.mapper';
 import { Injectable } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';
-import { DB, KyselyService } from '@shared/modules/db';
-import { ExpressionBuilder } from 'kysely';
-import { ExerciseType } from './entity/exercise.entity';
+import { KyselyService } from '@shared/modules/db';
+import { ExerciseRawData } from './exercise.mapper';
 
 @Injectable()
 export class ExercisesRepository {
@@ -17,40 +15,15 @@ export class ExercisesRepository {
       .executeTakeFirst();
   }
 
-  async findExercisesByFilters(
-    filters: {
-      userId?: number;
-      trainingId?: number;
-    } = {},
-  ) {
-    let query = this.kyselyService.db
-      .selectFrom('exercises')
-      .orderBy('created_at', 'desc')
-      .selectAll();
-
-    const { userId, trainingId } = filters;
-    query = query.where((eb) => {
-      const conditions: ReturnType<ExpressionBuilder<DB, 'exercises'>>[] = [];
-      if (userId) {
-        conditions.push(eb('user_id', '=', userId));
-      }
-      if (trainingId) {
-        conditions.push(eb('training_id', '=', trainingId));
-      }
-      return eb.and(conditions);
-    });
-
-    return await query.execute();
-  }
-
-  async create(data: ExerciseRawData['insertable']) {
+  async create(
+    data: ExerciseRawData['insertable'],
+  ): Promise<ExerciseRawData['selectable'] | undefined> {
     return await this.kyselyService.db
       .insertInto('exercises')
       .values({
         type: data.type,
         name: data.name,
         user_id: data.user_id,
-        training_id: data.training_id,
         description: data.description,
         example_url: data.example_url,
       })
@@ -66,30 +39,6 @@ export class ExercisesRepository {
     return result.numDeletedRows > 0;
   }
 
-  async updatePartly(data: {
-    id: number;
-    name?: string;
-    type?: ExerciseType;
-    userId?: number;
-    trainingId?: number;
-    exampleUrl?: string;
-    description?: string;
-  }) {
-    return await this.kyselyService.db
-      .updateTable('exercises')
-      .where('id', '=', data.id)
-      .set({
-        type: data.type,
-        name: data.name,
-        user_id: data.userId,
-        description: data.description,
-        training_id: data.trainingId,
-        example_url: data.exampleUrl,
-      })
-      .returningAll()
-      .executeTakeFirst();
-  }
-
   async update(
     data: Override<ExerciseRawData['updateable'], 'id', number>,
     options: { replace: boolean } = { replace: false },
@@ -102,7 +51,6 @@ export class ExercisesRepository {
       .set({
         type: data.type,
         name: data.name,
-        training_id: data.training_id,
         description: data.description ?? (replace ? null : undefined),
         example_url: data.example_url ?? (replace ? null : undefined),
       })

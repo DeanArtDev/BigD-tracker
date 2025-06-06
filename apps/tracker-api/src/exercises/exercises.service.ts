@@ -1,8 +1,7 @@
 import { CreateExerciseTemplateRequest } from '@/exercises/dtos/create-exercises-template.dto';
 import { PutExerciseTemplateRequest } from '@/exercises/dtos/put-exercise-template.dto';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
-import { ExerciseType } from './entity/exercise.entity';
+import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 
@@ -13,8 +12,11 @@ export class ExercisesService {
     readonly exercisesTemplateMapper: ExercisesTemplateMapper,
   ) {}
 
-  async getExercisesTemplates(filters: { userId?: number }): Promise<ExerciseTemplateEntity[]> {
-    const rawTemplates = await this.exercisesTemplatesRepository.findByFilters(filters);
+  async getExercisesTemplates(
+    userId: number,
+    filters: { my: boolean },
+  ): Promise<ExerciseTemplateEntity[]> {
+    const rawTemplates = await this.exercisesTemplatesRepository.findByFilters(userId, filters);
     return rawTemplates.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
   }
 
