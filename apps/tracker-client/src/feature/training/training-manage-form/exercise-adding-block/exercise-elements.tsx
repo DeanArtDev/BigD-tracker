@@ -8,11 +8,19 @@ interface ExerciseElementsProps {
   readonly id: number;
   readonly name: string;
   readonly index: number;
+  readonly disabled?: boolean;
   readonly beforeStartSlot?: ReactNode;
   readonly onRemove: (index: number) => void;
 }
 
-function ExerciseElements({ id, name, index, beforeStartSlot, onRemove }: ExerciseElementsProps) {
+function ExerciseElements({
+  id,
+  disabled,
+  name,
+  index,
+  beforeStartSlot,
+  onRemove,
+}: ExerciseElementsProps) {
   return (
     <div key={id} className="flex gap-2 items-center border rounded-md p-2">
       {beforeStartSlot}
@@ -45,7 +53,13 @@ function ExerciseElements({ id, name, index, beforeStartSlot, onRemove }: Exerci
         />
       </div>
 
-      <Button type="button" variant="ghost" size="sm" onClick={() => void onRemove(index)}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        disabled={disabled}
+        onClick={() => void onRemove(index)}
+      >
         <X />
       </Button>
     </div>

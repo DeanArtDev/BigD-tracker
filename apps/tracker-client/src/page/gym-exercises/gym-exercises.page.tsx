@@ -5,20 +5,20 @@ import {
   useInvalidateExerciseTemplates,
 } from '@/entity/exercises';
 import { ManageExerciseTemplate } from '@/feature/exercise/manage-exercise-template';
-import { ExerciseCard } from '@/page/gym-exercises/ui/exercise-card';
-import { ExercisePreview } from '@/page/gym-exercises/ui/exercise-preview';
-import { PageWrapper } from '../ui/page-wrapper';
+import { ExerciseCard } from './ui/exercise-card';
+import { ExercisePreview } from './ui/exercise-preview';
 import type { ApiDto } from '@/shared/api/types';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { Toggle } from '@/shared/ui-kit/ui/toggle';
 import { cn } from '@/shared/ui-kit/utils';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import { PageWrapper } from '../ui/page-wrapper';
 
 function GymExercisesPage() {
   const { isMy, setSearch } = useExerciseTemplatesUrlParams();
   const invalidate = useInvalidateExerciseTemplates();
-  const { data, isLoading, isFetching } = useExerciseTemplatesQuery({ my: isMy });
+  const { data, isLoading, isFetching, isEmpty } = useExerciseTemplatesQuery({ my: isMy });
 
   const [exerciseTemplate, setExerciseTemplate] = useState<
     ApiDto['ExerciseTemplateDto'] | undefined
@@ -34,7 +34,7 @@ function GymExercisesPage() {
         'overflow-hidden': isLoading,
       })}
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col grow gap-4">
         <div className="flex">
           <Toggle
             pressed={isMy}
@@ -64,7 +64,18 @@ function GymExercisesPage() {
           </ManageExerciseTemplate>
         </div>
 
-        <DataLoader parallelMount isLoading={isLoading}>
+        <DataLoader
+          parallelMount
+          isLoading={isLoading}
+          isEmpty={isEmpty}
+          emptyElement={
+            <div className="border-2 border-dotted rounded-lg grow p-2 m-4 flex flex-col justify-center items-center">
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight text-center mb-4">
+                {isMy ? 'Созданных тобой упражнений пока нет' : 'Упражнения не найдены'}
+              </h3>
+            </div>
+          }
+        >
           <div
             className={cn('grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3')}
           >

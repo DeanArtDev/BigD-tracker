@@ -1,6 +1,7 @@
-import { AppMain } from '@/app/components/app-main';
-import { ContentWrapper } from '@/app/components/content-wrapper';
-import { OutOfAuthRoutes } from '@/app/components/out-of-auth-routes';
+import { AppMain } from './components/app-main';
+import { ContentWrapper } from './components/content-wrapper';
+import { OutOfAuthRoutes } from './components/out-of-auth-routes';
+import { RouterErrorBoundary } from './components/router-error-boundary';
 import { AppSidebar } from '@/feature/sidebar';
 import { routes } from '@/shared/lib/routes';
 import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
@@ -12,6 +13,7 @@ import { ProtectedRoutes } from './components/protected-routes';
 export const router = createBrowserRouter([
   {
     element: <App />,
+    errorElement: <RouterErrorBoundary />,
     children: [
       {
         element: (
