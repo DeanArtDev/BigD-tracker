@@ -19,7 +19,6 @@ export class TrainingsService {
     return rowTraining;
   }
 
-
   async deleteTrainingTemplate(data: { id: number; userId: number }) {
     const template = await this.trainingsTemplatesRepository.findOneById({ id: data.id });
     if (template?.user_id !== data.userId) {
