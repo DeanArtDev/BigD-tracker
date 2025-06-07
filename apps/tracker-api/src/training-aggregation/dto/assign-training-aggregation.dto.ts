@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsInt, IsISO8601, ValidateNested } from 'class-validator';
 
-class AssignTrainingDtoData {
+class AssignTrainingAggregationDtoData {
   @ApiProperty({
     example: 1,
   })
@@ -18,15 +18,15 @@ class AssignTrainingDtoData {
   startDate: string;
 }
 
-class AssignTrainingRequest {
+class AssignTrainingAggregationRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: AssignTrainingDtoData,
+    type: AssignTrainingAggregationDtoData,
     isArray: true,
   })
   @ValidateNested({ each: true })
-  @Type(() => AssignTrainingDtoData)
-  data: AssignTrainingDtoData[];
+  @Type(() => AssignTrainingAggregationDtoData)
+  data: AssignTrainingAggregationDtoData[];
 }
 
-export { AssignTrainingRequest, AssignTrainingDtoData };
+export { AssignTrainingAggregationRequest, AssignTrainingAggregationDtoData };

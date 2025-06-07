@@ -1,12 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
 import { TrainingsTemplatesRepository } from '@/tranings/trainings-templates.repository';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
-import { TrainingTemplatesAggregationRepository } from './training-templates-aggregation.repository';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { TrainingTemplateAggregationEntity } from './entities/training-template-aggregation.entity';
 import { TrainingTemplateAggregationMapper } from './training-template-aggregation.mapper';
+import { TrainingTemplatesAggregationRepository } from './training-templates-aggregation.repository';
 
 @Injectable()
 export class TrainingTemplateAggregationService {
@@ -41,23 +40,14 @@ export class TrainingTemplateAggregationService {
     }, []);
   }
 
-  async findExerciseTemplateById(id: number): Promise<ExerciseTemplateEntity> {
-    const rawExerciseTemplate = await this.exerciseTemplatesRepository.findOneById({
-      id,
-    });
-    if (rawExerciseTemplate == null) {
-      throw new NotFoundException('Exercise template is not found');
+  async deleteTrainingTemplate(data: { id: number; userId: number }) {
+    const template = await this.trainingsTemplatesRepository.findOneById({ id: data.id });
+    if (template?.user_id !== data.userId) {
+      throw new ForbiddenException('Delete can only your own training templates');
     }
-    return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExerciseTemplate);
-  }
-
-  async findTrainingTemplateById(id: number): Promise<TrainingTemplateAggregationEntity> {
-    const rawTrainingTemplate = await this.trainingsTemplatesRepository.findOneById({
-      id,
-    });
-    if (rawTrainingTemplate == null) {
-      throw new NotFoundException(`Training template {id: ${id}} is not found`);
+    const isDeleted = await this.trainingsTemplatesRepository.delete(data);
+    if (!isDeleted) {
+      throw new NotFoundException(`Training with id ${data.id} not found`);
     }
-    return this.trainingTemplateAggregationMapper.fromPersistenceToEntity({ rawTrainingTemplate });
   }
 }

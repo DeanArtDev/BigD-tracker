@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
+import { AssignTrainingAggregationRequest } from './dto/assign-training-aggregation.dto';
 import { GetTrainingsAggregationFilters } from './dto/get-training-aggregation.dto';
 import { TrainingAggregationResponse } from './dto/response-tarining-aggregation.dto';
 import { TrainingAggregationDto } from './dto/training-aggregation.dto';
@@ -99,6 +100,21 @@ export class TrainingAggregationController {
     return {
       data: trainings.map(this.trainingAggregationMapper.fromEntityToDTO),
     };
+  }
+
+  @Post('assign')
+  @ApiOperation({
+    summary: 'Назначение тренировки на дату',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async assignTraining(@Body() { data }: AssignTrainingAggregationRequest) {
+    for (const item of data) {
+      await this.trainingsAggregationService.setStartDataAtTraining(item);
+    }
+    return undefined;
   }
 
   @Delete(':trainingId')
