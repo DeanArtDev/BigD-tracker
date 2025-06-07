@@ -1,4 +1,5 @@
-import { TrainingPreview } from '@/page/gym-training/trainings-calendar/components/training-preview';
+import { TrainingPreview } from '@/entity/trainings';
+import { DeleteTemplateButton } from '@/feature/training/delete-template/delete-template-button';
 import { getTraining } from '@/page/gym-training/trainings-calendar/helpers';
 import type { ApiDto } from '@/shared/api/types';
 import { CalendarContentView } from './components/calendar-content-view';
@@ -35,8 +36,15 @@ function TrainingsCalendar() {
   const calendarRef = useRef<FullCalendar | null>(null);
   useResizeTable({ onResize: () => void calendarRef.current?.doResize() });
 
-  const { isLoading, isAssignLoading, events, setFilters, assignTraining, updateStartDate } =
-    useTrainingsCalendar();
+  const {
+    isLoading,
+    isAssignLoading,
+    events,
+    setFilters,
+    assignTraining,
+    updateStartDate,
+    invalidateCalendarData,
+  } = useTrainingsCalendar();
 
   const [training, setTraining] = useState<ApiDto['TrainingAggregationDto'] | undefined>();
 
@@ -141,7 +149,6 @@ function TrainingsCalendar() {
           }}
           eventClick={(info) => {
             setTraining(getTraining(info.event.extendedProps.extra));
-            console.log(`Вы кликнули, просто кликнули, ${info.event.extendedProps.extra}`);
           }}
           datesSet={(info) => {
             setFilters({
@@ -167,6 +174,18 @@ function TrainingsCalendar() {
 
       <TrainingPreview
         training={training}
+        appendContentSlot={
+          !!training && (
+            <DeleteTemplateButton
+              className="ml-auto"
+              trainingId={training?.id}
+              onSuccess={() => {
+                invalidateCalendarData();
+                setTraining(undefined);
+              }}
+            />
+          )
+        }
         onOpenChange={(v) => {
           if (!v) setTraining(undefined);
         }}

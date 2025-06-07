@@ -1,5 +1,9 @@
-import { useInvalidateTrainings, useTrainingAssign, useTrainingsQuery } from '@/entity/trainings';
-import { useTrainingStartDateUpdate } from '@/entity/trainings/model/update-cache/use-training-start-date-update';
+import {
+  useInvalidateTrainings,
+  useTrainingAssign,
+  useTrainingsQuery,
+  useTrainingStartDateUpdate,
+} from '@/entity/trainings';
 import type { ApiDto } from '@/shared/api/types';
 import type { Override } from '@/shared/lib/type-helpers';
 import type { EventInput } from '@fullcalendar/core';
@@ -37,7 +41,7 @@ function useTrainingsCalendar() {
   const { data, isLoading } = useTrainingsQuery(filters);
   const invalidate = useInvalidateTrainings();
   const { assignTraining, isPending } = useTrainingAssign({
-    onSuccess: invalidate.bind(null, filters),
+    onSuccess: invalidate.bind(null, undefined, { drop: true }),
   });
   const updater = useTrainingStartDateUpdate();
   const updateStartDate = (data: { id: number; startDate: string }) => void updater(data, filters);
@@ -66,13 +70,14 @@ function useTrainingsCalendar() {
 
   return {
     events,
-    isLoading,
 
+    isLoading,
     isAssignLoading: isPending,
 
     assignTraining,
     setFilters,
     updateStartDate,
+    invalidateCalendarData: () => invalidate(filters),
   };
 }
 
