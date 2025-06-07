@@ -1,4 +1,4 @@
-import { PutExerciseTemplateRequest } from '@/exercises/dtos/put-exercise-template.dto';
+import { PutExerciseTemplateRequest } from '@/exercises-templates/dtos/put-exercise-template.dto';
 import { Injectable } from '@nestjs/common';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { BaseMapper } from '@shared/lib/mapper';

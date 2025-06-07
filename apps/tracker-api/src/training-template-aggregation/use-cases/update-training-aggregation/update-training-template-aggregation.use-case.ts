@@ -1,8 +1,8 @@
 import {
   ExercisesTemplateMapper,
   ExerciseTemplateRawData,
-} from '@/exercises/exercise-template.mapper';
-import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
+} from '@/exercises-templates/exercise-template.mapper';
+import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingTemplateAggregationEntity } from '../../entities/training-template-aggregation.entity';
 import { TrainingTemplateAggregationMapper } from '../../training-template-aggregation.mapper';

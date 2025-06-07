@@ -1,9 +1,9 @@
-import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
-import { ExerciseType } from '@/exercises/entity/exercise-template.entity';
+import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
+import { ExerciseType } from '@/exercises-templates/entity/exercise-template.entity';
 import {
   ExercisesTemplateMapper,
   ExerciseTemplateRawData,
-} from '@/exercises/exercise-template.mapper';
+} from '@/exercises-templates/exercise-template.mapper';
 import { TrainingType } from '@/tranings/entities/training.entity';
 import {
   TrainingsTemplatesMapper,

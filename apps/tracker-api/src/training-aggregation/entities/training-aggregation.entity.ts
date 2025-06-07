@@ -1,4 +1,4 @@
-import { ExerciseTemplateEntity } from '@/exercises/entity/exercise-template.entity';
+import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
 import { TrainingEntity } from '@/tranings/entities/training.entity';
 import { Validator } from '@shared/lib/validator';
 

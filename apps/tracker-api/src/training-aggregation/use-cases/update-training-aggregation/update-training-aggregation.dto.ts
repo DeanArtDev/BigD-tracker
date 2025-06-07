@@ -1,10 +1,10 @@
-import { PutExerciseData } from '@/exercises/dtos/put-exercise.dto';
+import { PutExerciseTemplateRequestData } from '@/exercises-templates/dtos/put-exercise-template.dto';
 import { PutTrainingRequestData } from '@/tranings/dtos/put-training.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
-class UpdateTrainingAggregationExercise extends PutExerciseData {}
+class UpdateTrainingAggregationExercise extends PutExerciseTemplateRequestData {}
 
 class UpdateTrainingAggregationRequestData extends PutTrainingRequestData {
   @ApiProperty({

@@ -2,7 +2,18 @@ import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import { GetTrainingTemplatesAggregationFilters } from './dto/get-training-aggregation.dto';
-import { Body, Controller, Get, HttpStatus, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TrainingTemplateAggregationResponse } from './dto/response-tarining-aggregation.dto';
 import { TrainingTemplateAggregationMapper } from './training-template-aggregation.mapper';
@@ -106,5 +117,25 @@ export class TrainingTemplateAggregationController {
     return {
       data: templates.map(this.trainingTemplateAggregationMapper.fromEntityToDTO),
     };
+  }
+
+  @Delete(':templateId')
+  @ApiOperation({
+    summary: 'Удаление шаблона тренировки',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Шаблон тренировки удален',
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async deleteTemplateTraining(
+    @Param('templateId', ParseIntPipe) templateId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<void> {
+    await this.trainingTemplateAggregationService.deleteTrainingTemplate({
+      id: templateId,
+      userId: uid,
+    });
+    return undefined;
   }
 }
