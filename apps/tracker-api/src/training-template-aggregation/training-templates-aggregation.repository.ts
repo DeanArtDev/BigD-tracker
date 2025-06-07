@@ -1,4 +1,4 @@
-import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
+import { ExerciseTemplateRawData } from '@/exercises-templates/exercise-template.mapper';
 import { TrainingTemplateRawData } from '@/tranings/trainings-template.mapper';
 import { Injectable } from '@nestjs/common';
 import { Override } from '@shared/lib/type-helpers';

@@ -1,12 +1,12 @@
-import { CreateExerciseTemplateRequest } from '@/exercises/dtos/create-exercises-template.dto';
-import { PutExerciseTemplateRequest } from '@/exercises/dtos/put-exercise-template.dto';
+import { CreateExerciseTemplateRequest } from '@/exercises-templates/dtos/create-exercises-template.dto';
+import { PutExerciseTemplateRequest } from '@/exercises-templates/dtos/put-exercise-template.dto';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 
 @Injectable()
-export class ExercisesService {
+export class ExerciseTemplateService {
   constructor(
     readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
     readonly exercisesTemplateMapper: ExercisesTemplateMapper,

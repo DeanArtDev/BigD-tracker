@@ -4,7 +4,7 @@ import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 import {
   PatchExerciseTemplateRequest,
   PatchExerciseTemplateResponse,
-} from '@/exercises/dtos/patch-exercise-template.dto';
+} from './dtos/patch-exercise-template.dto';
 import { mapAndValidateEntityList } from '@/shared/lib/map-and-validate-entity-list';
 import {
   Body,
@@ -29,13 +29,13 @@ import { GetExerciseTemplatesQuery } from './dtos/get-exercise-templates.dto';
 import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
 import { ExercisesTemplatesResponse } from './dtos/reaponse-exercises-templates.dto';
 import { ExercisesTemplateMapper } from './exercise-template.mapper';
-import { ExercisesService } from './exercises.service';
+import { ExerciseTemplateService } from './exercise-template.service';
 
 @Controller('exercises')
-export class ExercisesController {
+export class ExerciseTemplatesController {
   constructor(
     readonly exercisesTemplateMapper: ExercisesTemplateMapper,
-    readonly exercisesService: ExercisesService,
+    readonly exercisesService: ExerciseTemplateService,
   ) {}
 
   @Get('/templates')

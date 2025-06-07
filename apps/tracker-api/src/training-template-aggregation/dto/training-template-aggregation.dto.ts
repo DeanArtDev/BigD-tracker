@@ -1,4 +1,4 @@
-import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
+import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
 import { TrainingTemplateDto } from '@/tranings/dtos/training-template.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';

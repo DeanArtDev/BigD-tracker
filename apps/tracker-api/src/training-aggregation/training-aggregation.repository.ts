@@ -1,4 +1,4 @@
-import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
+import { ExerciseTemplateRawData } from '@/exercises-templates/exercise-template.mapper';
 import { TrainingRawData } from '@/tranings/trainings.mapper';
 import { Injectable } from '@nestjs/common';
 import { KyselyService } from '@shared/modules/db';

@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ExerciseTemplateEntity } from '@/exercises/entity/exercise-template.entity';
-import { ExercisesTemplateMapper } from '@/exercises/exercise-template.mapper';
-import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
+import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
+import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
+import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
 import { TrainingsTemplatesRepository } from '@/tranings/trainings-templates.repository';
-import { ExercisesRepository } from '@/exercises/exercises.repository';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
 import { TrainingTemplatesAggregationRepository } from './training-templates-aggregation.repository';
 import { TrainingTemplateAggregationEntity } from './entities/training-template-aggregation.entity';
@@ -14,7 +13,6 @@ export class TrainingTemplateAggregationService {
   constructor(
     private readonly trainingsRepository: TrainingsRepository,
     private readonly trainingsTemplatesRepository: TrainingsTemplatesRepository,
-    private readonly exercisesRepository: ExercisesRepository,
     private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
     private readonly exerciseTemplatesRepository: ExercisesTemplatesRepository,
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,

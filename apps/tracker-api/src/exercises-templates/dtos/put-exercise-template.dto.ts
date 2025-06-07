@@ -1,4 +1,4 @@
-import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
+import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
@@ -21,4 +21,4 @@ class PutExerciseTemplateRequest {
   data: PutExerciseTemplateRequestData[];
 }
 
-export { PutExerciseTemplateRequest };
+export { PutExerciseTemplateRequest, PutExerciseTemplateRequestData };

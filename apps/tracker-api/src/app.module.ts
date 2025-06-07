@@ -1,4 +1,4 @@
-import { ExercisesModule } from '@/exercises/exercises.module';
+import { ExerciseTemplatesModule } from '@/exercises-templates/exercise-templates.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
@@ -23,7 +23,7 @@ import { TrainingTemplateAggregationModule } from '@/training-template-aggregati
     AuthModule,
     TrainingTemplateAggregationModule,
     TrainingsModule,
-    ExercisesModule,
+    ExerciseTemplatesModule,
     TrainingAggregationModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],

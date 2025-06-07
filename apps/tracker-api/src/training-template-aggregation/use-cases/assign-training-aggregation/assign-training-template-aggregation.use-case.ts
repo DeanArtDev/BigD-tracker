@@ -1,4 +1,4 @@
-import { ExercisesMapper } from '@/exercises/exercise.mapper';
+import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { TrainingsAggregationMapper } from '@/training-aggregation/trainings-aggregation.mapper';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -12,7 +12,7 @@ export class AssignTrainingTemplateAggregationUseCase {
     private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,
     private readonly trainingsRepository: TrainingsRepository,
     private readonly trainingsAggregationMapper: TrainingsAggregationMapper,
-    private readonly exercisesMapper: ExercisesMapper,
+    private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
     private readonly assignTrainingTemplateAggregationRepo: AssignTrainingTemplateAggregationRepository,
   ) {}
 
@@ -43,7 +43,7 @@ export class AssignTrainingTemplateAggregationUseCase {
     });
 
     trainingAggregationEntity.addExercises(
-      raw.exercises.map(this.exercisesMapper.fromPersistenceToEntity),
+      raw.exercises.map(this.exercisesTemplateMapper.fromPersistenceToEntity),
     );
 
     await this.assignTrainingTemplateAggregationRepo.attachExerciseTemplateToTraining(

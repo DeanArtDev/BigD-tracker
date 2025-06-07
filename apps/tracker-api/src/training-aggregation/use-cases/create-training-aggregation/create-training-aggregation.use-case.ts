@@ -1,25 +1,21 @@
-import { ExercisesTemplateMapper } from '@/exercises/exercise-template.mapper';
-import { ExercisesMapper } from '@/exercises/exercise.mapper';
-import { ExercisesTemplatesRepository } from '@/exercises/exercises-templates.repository';
-import { ExercisesRepository } from '@/exercises/exercises.repository';
+import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
+import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
+import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingAggregationEntity } from '../../entities/training-aggregation.entity';
+import { TrainingsAggregationMapper } from '../../trainings-aggregation.mapper';
 import {
   CreateTrainingAggregationExercise,
   CreateTrainingAggregationRequestData,
 } from './create-training-aggregation.dto';
-import { TrainingsAggregationMapper } from '../../trainings-aggregation.mapper';
-import { ExerciseTemplateEntity } from '@/exercises/entity/exercise-template.entity';
 
 @Injectable()
 export class CreateTrainingAggregationUseCase {
   constructor(
     private readonly trainingsRepository: TrainingsRepository,
-    private readonly exerciseRepository: ExercisesRepository,
     private readonly exerciseTemplatesRepository: ExercisesTemplatesRepository,
     private readonly trainingsAggregationMapper: TrainingsAggregationMapper,
-    private readonly exercisesMapper: ExercisesMapper,
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
   ) {}
 
@@ -85,20 +81,7 @@ export class CreateTrainingAggregationUseCase {
     if (rawExerciseTemplate == null) {
       throw new NotFoundException('Exercise template is not found');
     }
-    const exerciseTemplate =
-      this.exercisesTemplateMapper.fromPersistenceToEntity(rawExerciseTemplate);
 
-    const newRawExercise = await this.exerciseRepository.create({
-      user_id: data.userId,
-      name: exerciseTemplate.name,
-      type: exerciseTemplate.type,
-      example_url: exerciseTemplate.exampleUrl,
-      description: exerciseTemplate.description,
-    });
-    if (newRawExercise == null) {
-      throw new InternalServerErrorException(`Failed to create exercise`);
-    }
-
-    return this.exercisesMapper.fromPersistenceToEntity(newRawExercise);
+    return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExerciseTemplate);
   }
 }

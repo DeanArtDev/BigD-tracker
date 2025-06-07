@@ -1,7 +1,9 @@
-import { ExerciseTemplateDto } from '@/exercises/dtos/exercise-template.dto';
-import { ExerciseType } from '@/exercises/entity/exercise-template.entity';
-import { ExerciseTemplateRawData } from '@/exercises/exercise-template.mapper';
-import { ExercisesMapper } from '@/exercises/exercise.mapper';
+import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
+import { ExerciseType } from '@/exercises-templates/entity/exercise-template.entity';
+import {
+  ExercisesTemplateMapper,
+  ExerciseTemplateRawData,
+} from '@/exercises-templates/exercise-template.mapper';
 import { TrainingType } from '@/tranings/entities/training.entity';
 import { TrainingRawData, TrainingsMapper } from '@/tranings/trainings.mapper';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +15,7 @@ import { TrainingAggregationEntity } from './entities/training-aggregation.entit
 export class TrainingsAggregationMapper {
   constructor(
     private readonly trainingsMapper: TrainingsMapper,
-    private readonly exercisesMapper: ExercisesMapper,
+    private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
   ) {}
 
   fromPersistenceToDto = (raw: {
@@ -61,7 +63,7 @@ export class TrainingsAggregationMapper {
       this.trainingsMapper.fromPersistenceToEntity(rawTraining),
     );
     return trainingAggregation.addExercises(
-      rawExercises.map(this.exercisesMapper.fromPersistenceToEntity),
+      rawExercises.map(this.exercisesTemplateMapper.fromPersistenceToEntity),
     );
   };
 
@@ -73,14 +75,14 @@ export class TrainingsAggregationMapper {
   } => {
     const { exercises } = entity;
     return {
-      rawExercises: exercises.map(this.exercisesMapper.fromEntityToPersistence),
+      rawExercises: exercises.map(this.exercisesTemplateMapper.fromEntityToPersistence),
       rawTraining: this.trainingsMapper.fromEntityToPersistence(entity),
     };
   };
 
   fromDtoToEntity = (dto: TrainingAggregationDto): TrainingAggregationEntity => {
     return new TrainingAggregationEntity(dto).addExercises(
-      dto.exercises.map(this.exercisesMapper.fromDtoToEntity),
+      dto.exercises.map(this.exercisesTemplateMapper.fromDtoToEntity),
     );
   };
 
