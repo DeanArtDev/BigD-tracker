@@ -4,1177 +4,1144 @@
  */
 
 export interface paths {
-  '/users': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UsersController_getUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['UsersController_getUsers'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/users/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/users/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение общих данных о вошедшем в систему пользователе */
+        get: operations["UsersController_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Получение общих данных о вошедшем в систему пользователе */
-    get: operations['UsersController_me'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/register': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Регистрация пользователя
+         * @description Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)
+         */
+        post: operations["AuthController_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Регистрация пользователя
-     * @description Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)
-     */
-    post: operations['AuthController_register'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/refresh': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Обновление токена пользователя
+         * @description Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)
+         */
+        post: operations["AuthController_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Обновление токена пользователя
-     * @description Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)
-     */
-    post: operations['AuthController_refresh'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/logout': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Выход пользователя из системы */
+        post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Выход пользователя из системы */
-    post: operations['AuthController_logout'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/auth/login': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Вход пользователя в систему */
+        post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Вход пользователя в систему */
-    post: operations['AuthController_login'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/trainings/templates': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/trainings/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение шаблонов тренировок */
+        get: operations["TrainingTemplateAggregationController_getTrainingsTemplates"];
+        /**
+         * Полное обновление шаблонов тренировки
+         * @description nullable поля очищают значения
+         */
+        put: operations["TrainingTemplateAggregationController_putTrainingTemplate"];
+        /** Создание шаблонов тренировок */
+        post: operations["TrainingTemplateAggregationController_createTrainingTemplate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Получение шаблонов тренировок */
-    get: operations['TrainingTemplateAggregationController_getTrainingsTemplates'];
-    /**
-     * Полное обновление шаблонов тренировки
-     * @description nullable поля очищают значения
-     */
-    put: operations['TrainingTemplateAggregationController_putTrainingTemplate'];
-    /** Создание шаблона тренировки */
-    post: operations['TrainingTemplateAggregationController_createTrainingTemplate'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/trainings/templates/assign': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/trainings/templates/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Назначение шаблона на дату */
+        post: operations["TrainingTemplateAggregationController_assignTrainingTemplate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Назначение шаблона на дату */
-    post: operations['TrainingsController_assignTrainingTemplate'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/trainings/assign': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/trainings/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Назначение тренировки на дату */
+        post: operations["TrainingsController_assignTraining"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Назначение тренировки на дату */
-    post: operations['TrainingsController_assignTraining'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/trainings/templates/{templateId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/trainings/templates/{templateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удаление шаблона тренировки */
+        delete: operations["TrainingsController_deleteTemplateTraining"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Удаление шаблона тренировки */
-    delete: operations['TrainingsController_deleteTemplateTraining'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/exercises/templates': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/exercises/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение шаблонов упражнений */
+        get: operations["ExerciseTemplatesController_getExerciseTemplates"];
+        /**
+         * Обновление шаблонов упражнения
+         * @description nullable поля очищают значения
+         */
+        put: operations["ExerciseTemplatesController_updateExerciseTemplateAndReplace"];
+        /** Создание шаблона упражнения */
+        post: operations["ExerciseTemplatesController_createExerciseTemplate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Получение шаблонов упражнений */
-    get: operations['ExercisesController_getExerciseTemplates'];
-    /**
-     * Обновление шаблонов упражнения
-     * @description nullable поля очищают значения
-     */
-    put: operations['ExercisesController_updateExerciseTemplateAndReplace'];
-    /** Создание шаблона упражнения */
-    post: operations['ExercisesController_createExerciseTemplate'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/exercises/templates/{templateId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/exercises/templates/{templateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удаление шаблона упражнения */
+        delete: operations["ExerciseTemplatesController_deleteExerciseTemplate"];
+        options?: never;
+        head?: never;
+        /** Частичное обновление шаблона упражнения */
+        patch: operations["ExerciseTemplatesController_updateExerciseTemplatePartly"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Удаление шаблона упражнения */
-    delete: operations['ExercisesController_deleteExerciseTemplate'];
-    options?: never;
-    head?: never;
-    /** Частичное обновление шаблона упражнения */
-    patch: operations['ExercisesController_updateExerciseTemplatePartly'];
-    trace?: never;
-  };
-  '/trainings': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/trainings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение тренировок */
+        get: operations["TrainingAggregationController_getTrainings"];
+        /**
+         * Обновление тренировок
+         * @description nullable поля очищают значения
+         */
+        put: operations["TrainingAggregationController_putTraining"];
+        /** Создание тренировок */
+        post: operations["TrainingAggregationController_createTraining"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Получение тренировок */
-    get: operations['TrainingAggregationController_getTrainings'];
-    /**
-     * Обновление тренировок
-     * @description nullable поля очищают значения
-     */
-    put: operations['TrainingAggregationController_putTraining'];
-    /** Создание тренировки */
-    post: operations['TrainingAggregationController_createTraining'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/trainings/{trainingId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/trainings/{trainingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удаление тренировки */
+        delete: operations["TrainingAggregationController_deleteTraining"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Удаление тренировки */
-    delete: operations['TrainingAggregationController_deleteTraining'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    MeDto: {
-      id: number;
-      screenName?: string;
-      email: string;
-      /** @example /some-hash.png */
-      avatar?: string;
-      /** @example [
-       *       "admin",
-       *       "user",
-       *       "moderator"
-       *     ] */
-      roles?: string[];
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      createdAt?: string;
-      isVerified: boolean;
+    schemas: {
+        MeDto: {
+            id: number;
+            screenName?: string;
+            email: string;
+            /** @example /some-hash.png */
+            avatar?: string;
+            /** @example [
+             *       "admin",
+             *       "user",
+             *       "moderator"
+             *     ] */
+            roles?: string[];
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            createdAt?: string;
+            isVerified: boolean;
+        };
+        MeDtoResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["MeDto"];
+        };
+        RequestDto: {
+            /** @example example@example.com */
+            login: string;
+            /** @example 12345678 */
+            password: string;
+        };
+        RegisterRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["RequestDto"];
+        };
+        ResponseDto: {
+            /** @example jwt token is here */
+            token: string;
+        };
+        RegisterResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ResponseDto"];
+        };
+        RefreshDto: {
+            /** @example jwt token is here */
+            token: string;
+        };
+        RefreshResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["RefreshDto"];
+        };
+        LogoutResponse: {
+            /** @description Ответ сервера */
+            data: boolean;
+        };
+        LoginRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["RequestDto"];
+        };
+        LoginResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ResponseDto"];
+        };
+        ExerciseTemplateDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 1 */
+            userId?: number;
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            createdAt: string;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            updatedAt: string;
+        };
+        TrainingTemplateAggregationDto: {
+            /** @example 1 */
+            id: number;
+            /**
+             * @example MEDIUM
+             * @enum {string}
+             */
+            type: "LIGHT" | "MEDIUM" | "HARD" | "MIXED";
+            /** @example Понедельничная */
+            name: string;
+            /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+            description?: string;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            wormUpDuration?: number;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            postTrainingDuration?: number;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            createdAt: string;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            updatedAt: string;
+            /** @example 1 */
+            userId?: number;
+            exercises: components["schemas"]["ExerciseTemplateDto"][];
+        };
+        TrainingTemplateAggregationResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TrainingTemplateAggregationDto"][];
+        };
+        CreateTrainingTemplatesAggregationExercise: {
+            /** @example 1 */
+            id: number;
+            /** @example 3 */
+            sets: number;
+            /** @example 12 */
+            repetitions: number;
+        };
+        CreateTrainingTemplateAggregationRequestData: {
+            /**
+             * @example MEDIUM
+             * @enum {string}
+             */
+            type: "LIGHT" | "MEDIUM" | "HARD" | "MIXED";
+            /** @example Понедельничная */
+            name: string;
+            /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+            description?: string;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            wormUpDuration?: number;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            postTrainingDuration?: number;
+            exercises: components["schemas"]["CreateTrainingTemplatesAggregationExercise"][];
+        };
+        CreateTrainingTemplateAggregationRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["CreateTrainingTemplateAggregationRequestData"][];
+        };
+        AssignTrainingTemplateDtoData: {
+            /** @example 1 */
+            templateId: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate: string;
+        };
+        AssignTrainingTemplateRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["AssignTrainingTemplateDtoData"][];
+        };
+        UpdateTrainingTemplatesAggregationExercise: {
+            /** @example 1 */
+            id: number;
+            /** @example 3 */
+            sets: number;
+            /** @example 12 */
+            repetitions: number;
+        };
+        UpdateTrainingTemplateAggregationRequestData: {
+            /** @example 1 */
+            id: number;
+            /**
+             * @example MEDIUM
+             * @enum {string}
+             */
+            type: "LIGHT" | "MEDIUM" | "HARD" | "MIXED";
+            /** @example Понедельничная */
+            name: string;
+            /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+            description?: string;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            wormUpDuration?: number;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            postTrainingDuration?: number;
+            exercises: components["schemas"]["UpdateTrainingTemplatesAggregationExercise"][];
+        };
+        UpdateTrainingTemplateAggregationRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["UpdateTrainingTemplateAggregationRequestData"][];
+        };
+        AssignTrainingDtoData: {
+            /** @example 1 */
+            trainingId: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate: string;
+        };
+        AssignTrainingRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["AssignTrainingDtoData"][];
+        };
+        ExercisesTemplatesResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ExerciseTemplateDto"][];
+        };
+        CreateExerciseTemplateDto: {
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+        };
+        CreateExerciseTemplateRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["CreateExerciseTemplateDto"];
+        };
+        CreateExerciseTemplateResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ExerciseTemplateDto"];
+        };
+        PatchExerciseTemplateDto: {
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type?: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name?: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            updatedAt?: string;
+        };
+        PatchExerciseTemplateRequest: {
+            /** @description Запрос к серверу */
+            data: components["schemas"]["PatchExerciseTemplateDto"];
+        };
+        PatchExerciseTemplateResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ExerciseTemplateDto"];
+        };
+        PutExerciseTemplateRequestData: {
+            /** @example 1 */
+            id: number;
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+        };
+        PutExerciseTemplateRequest: {
+            /** @description Запрос к серверу */
+            data: components["schemas"]["PutExerciseTemplateRequestData"][];
+        };
+        TrainingAggregationDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 1 */
+            userId: number;
+            /**
+             * @example MEDIUM
+             * @enum {string}
+             */
+            type: "LIGHT" | "MEDIUM" | "HARD" | "MIXED";
+            /** @example Понедельничная */
+            name: string;
+            /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+            description?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate: string;
+            /** @example 2025-06-24T13:01:02.471Z */
+            endDate?: string;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            wormUpDuration?: number;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            postTrainingDuration?: number;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            createdAt: string;
+            /**
+             * @description ISO String
+             * @example 2025-05-24T13:01:02.471Z
+             */
+            updatedAt: string;
+            exercises: components["schemas"]["ExerciseTemplateDto"][];
+        };
+        TrainingAggregationResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TrainingAggregationDto"][];
+        };
+        CreateTrainingAggregationExercise: {
+            /** @example 1 */
+            id: number;
+            /** @example 3 */
+            sets: number;
+            /** @example 12 */
+            repetitions: number;
+        };
+        CreateTrainingAggregationRequestData: {
+            /**
+             * @example MEDIUM
+             * @enum {string}
+             */
+            type: "LIGHT" | "MEDIUM" | "HARD" | "MIXED";
+            /** @example Понедельничная */
+            name: string;
+            /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+            description?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate: string;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            wormUpDuration?: number;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            postTrainingDuration?: number;
+            exercises: components["schemas"]["CreateTrainingAggregationExercise"][];
+        };
+        CreateTrainingAggregationRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["CreateTrainingAggregationRequestData"][];
+        };
+        UpdateTrainingAggregationExercise: {
+            /** @example 1 */
+            id: number;
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+        };
+        UpdateTrainingAggregationRequestData: {
+            /** @example 1 */
+            id: number;
+            /**
+             * @example MEDIUM
+             * @enum {string}
+             */
+            type: "LIGHT" | "MEDIUM" | "HARD" | "MIXED";
+            /** @example Понедельничная */
+            name: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate: string;
+            /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
+            description?: Record<string, never> | null;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            wormUpDuration?: Record<string, never> | null;
+            /**
+             * @description измеряется в минутах
+             * @example 30
+             */
+            postTrainingDuration?: Record<string, never> | null;
+            exercises: components["schemas"]["UpdateTrainingAggregationExercise"][];
+        };
+        UpdateTrainingAggregationRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["UpdateTrainingAggregationRequestData"][];
+        };
     };
-    MeDtoResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['MeDto'];
-    };
-    RequestDto: {
-      /** @example example@example.com */
-      login: string;
-      /** @example 12345678 */
-      password: string;
-    };
-    RegisterRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['RequestDto'];
-    };
-    ResponseDto: {
-      /** @example jwt token is here */
-      token: string;
-    };
-    RegisterResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['ResponseDto'];
-    };
-    RefreshDto: {
-      /** @example jwt token is here */
-      token: string;
-    };
-    RefreshResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['RefreshDto'];
-    };
-    LogoutResponse: {
-      /** @description Ответ сервера */
-      data: boolean;
-    };
-    LoginRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['RequestDto'];
-    };
-    LoginResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['ResponseDto'];
-    };
-    ExerciseTemplateDto: {
-      /** @example 1 */
-      id: number;
-      /** @example 1 */
-      userId?: number;
-      /**
-       * @example ANAEROBIC
-       * @enum {string}
-       */
-      type: 'WORM-UP' | 'POST-TRAINING' | 'AEROBIC' | 'ANAEROBIC';
-      /** @example Жим лежа */
-      name: string;
-      /** @example свести лопатки */
-      description?: string;
-      /** @example https://youtube.com */
-      exampleUrl?: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      createdAt: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      updatedAt: string;
-    };
-    TrainingTemplateAggregationDto: {
-      /** @example 1 */
-      id: number;
-      /** @example 1 */
-      userId: number;
-      /**
-       * @example MEDIUM
-       * @enum {string}
-       */
-      type: 'LIGHT' | 'MEDIUM' | 'HARD' | 'MIXED';
-      /** @example Понедельничная */
-      name: string;
-      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
-      description?: string;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      wormUpDuration?: number;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      postTrainingDuration?: number;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      createdAt: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      updatedAt: string;
-      exercises: components['schemas']['ExerciseTemplateDto'][];
-    };
-    TrainingTemplateAggregationResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['TrainingTemplateAggregationDto'][];
-    };
-    CreateTrainingTemplatesAggregationExercise: {
-      /** @example 1 */
-      id: number;
-      /** @example 3 */
-      sets: number;
-      /** @example 12 */
-      repetitions: number;
-    };
-    CreateTrainingTemplateAggregationRequestData: {
-      /**
-       * @example MEDIUM
-       * @enum {string}
-       */
-      type: 'LIGHT' | 'MEDIUM' | 'HARD' | 'MIXED';
-      /** @example Понедельничная */
-      name: string;
-      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
-      description?: string;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      wormUpDuration?: number;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      postTrainingDuration?: number;
-      exercises: components['schemas']['CreateTrainingTemplatesAggregationExercise'][];
-    };
-    CreateTrainingTemplateAggregationRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['CreateTrainingTemplateAggregationRequestData'][];
-    };
-    UpdateTrainingTemplatesAggregationExercise: {
-      /** @example 1 */
-      id: number;
-      /** @example 3 */
-      sets: number;
-      /** @example 12 */
-      repetitions: number;
-    };
-    UpdateTrainingTemplateAggregationRequestData: {
-      /** @example 1 */
-      id: number;
-      /**
-       * @example MEDIUM
-       * @enum {string}
-       */
-      type: 'LIGHT' | 'MEDIUM' | 'HARD' | 'MIXED';
-      /** @example Понедельничная */
-      name: string;
-      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
-      description?: string;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      wormUpDuration?: number;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      postTrainingDuration?: number;
-      exercises: components['schemas']['UpdateTrainingTemplatesAggregationExercise'][];
-    };
-    UpdateTrainingTemplateAggregationRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['UpdateTrainingTemplateAggregationRequestData'][];
-    };
-    AssignTrainingTemplateDtoData: {
-      /** @example 1 */
-      templateId: number;
-      /** @example 2025-05-24T13:01:02.471Z */
-      startDate: string;
-    };
-    AssignTrainingTemplateRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['AssignTrainingTemplateDtoData'][];
-    };
-    AssignTrainingDtoData: {
-      /** @example 1 */
-      trainingId: number;
-      /** @example 2025-05-24T13:01:02.471Z */
-      startDate: string;
-    };
-    AssignTrainingRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['AssignTrainingDtoData'][];
-    };
-    ExercisesTemplatesResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['ExerciseTemplateDto'][];
-    };
-    CreateExerciseTemplateDto: {
-      /**
-       * @example ANAEROBIC
-       * @enum {string}
-       */
-      type: 'WORM-UP' | 'POST-TRAINING' | 'AEROBIC' | 'ANAEROBIC';
-      /** @example Жим лежа */
-      name: string;
-      /** @example свести лопатки */
-      description?: string;
-      /** @example https://youtube.com */
-      exampleUrl?: string;
-    };
-    CreateExerciseTemplateRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['CreateExerciseTemplateDto'];
-    };
-    CreateExerciseTemplateResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['ExerciseTemplateDto'];
-    };
-    PatchExerciseTemplateDto: {
-      /**
-       * @example ANAEROBIC
-       * @enum {string}
-       */
-      type?: 'WORM-UP' | 'POST-TRAINING' | 'AEROBIC' | 'ANAEROBIC';
-      /** @example Жим лежа */
-      name?: string;
-      /** @example свести лопатки */
-      description?: string;
-      /** @example https://youtube.com */
-      exampleUrl?: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      updatedAt?: string;
-    };
-    PatchExerciseTemplateRequest: {
-      /** @description Запрос к серверу */
-      data: components['schemas']['PatchExerciseTemplateDto'];
-    };
-    PatchExerciseTemplateResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['ExerciseTemplateDto'];
-    };
-    PutExerciseTemplateRequestData: {
-      /** @example 1 */
-      id: number;
-      /**
-       * @example ANAEROBIC
-       * @enum {string}
-       */
-      type: 'WORM-UP' | 'POST-TRAINING' | 'AEROBIC' | 'ANAEROBIC';
-      /** @example Жим лежа */
-      name: string;
-      /** @example свести лопатки */
-      description?: string;
-      /** @example https://youtube.com */
-      exampleUrl?: string;
-    };
-    PutExerciseTemplateRequest: {
-      /** @description Запрос к серверу */
-      data: components['schemas']['PutExerciseTemplateRequestData'][];
-    };
-    ExerciseDto: {
-      /** @example 1 */
-      id: number;
-      /** @example 1 */
-      userId: number;
-      /** @example 1 */
-      trainingId: number;
-      /**
-       * @example ANAEROBIC
-       * @enum {string}
-       */
-      type: 'WORM-UP' | 'POST-TRAINING' | 'AEROBIC' | 'ANAEROBIC';
-      /** @example Жим лежа */
-      name: string;
-      /** @example свести лопатки */
-      description?: string;
-      /** @example https://youtube.com */
-      exampleUrl?: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      createdAt: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      updatedAt: string;
-    };
-    TrainingAggregationDto: {
-      /** @example 1 */
-      id: number;
-      /** @example 1 */
-      userId: number;
-      /**
-       * @example MEDIUM
-       * @enum {string}
-       */
-      type: 'LIGHT' | 'MEDIUM' | 'HARD' | 'MIXED';
-      /** @example Понедельничная */
-      name: string;
-      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
-      description?: string;
-      /** @example 2025-05-24T13:01:02.471Z */
-      startDate: string;
-      /** @example 2025-06-24T13:01:02.471Z */
-      endDate?: string;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      wormUpDuration?: number;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      postTrainingDuration?: number;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      createdAt: string;
-      /**
-       * @description ISO String
-       * @example 2025-05-24T13:01:02.471Z
-       */
-      updatedAt: string;
-      exercises: components['schemas']['ExerciseDto'][];
-    };
-    TrainingAggregationResponse: {
-      /** @description Ответ сервера */
-      data: components['schemas']['TrainingAggregationDto'][];
-    };
-    CreateTrainingAggregationExercise: {
-      /** @example 1 */
-      id: number;
-      /** @example 3 */
-      sets: number;
-      /** @example 12 */
-      repetitions: number;
-    };
-    CreateTrainingAggregationRequestData: {
-      /**
-       * @example MEDIUM
-       * @enum {string}
-       */
-      type: 'LIGHT' | 'MEDIUM' | 'HARD' | 'MIXED';
-      /** @example Понедельничная */
-      name: string;
-      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
-      description?: string;
-      /** @example 2025-05-24T13:01:02.471Z */
-      startDate: string;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      wormUpDuration?: number;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      postTrainingDuration?: number;
-      exercises: components['schemas']['CreateTrainingAggregationExercise'][];
-    };
-    CreateTrainingAggregationRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['CreateTrainingAggregationRequestData'][];
-    };
-    UpdateTrainingAggregationExercise: {
-      /** @example 1 */
-      id: number;
-      /** @example 1 */
-      trainingId: number;
-      /**
-       * @example ANAEROBIC
-       * @enum {string}
-       */
-      type: 'WORM-UP' | 'POST-TRAINING' | 'AEROBIC' | 'ANAEROBIC';
-      /** @example Жим лежа */
-      name: string;
-      /** @example свести лопатки */
-      description?: Record<string, never> | null;
-      /** @example https://youtube.com */
-      exampleUrl?: Record<string, never> | null;
-    };
-    UpdateTrainingAggregationRequestData: {
-      /** @example 1 */
-      id: number;
-      /**
-       * @example MEDIUM
-       * @enum {string}
-       */
-      type: 'LIGHT' | 'MEDIUM' | 'HARD' | 'MIXED';
-      /** @example Понедельничная */
-      name: string;
-      /** @example 2025-05-24T13:01:02.471Z */
-      startDate: string;
-      /** @example описание (какие цели на тренировку, на что сделать упор и т.п) */
-      description?: Record<string, never> | null;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      wormUpDuration?: Record<string, never> | null;
-      /**
-       * @description измеряется в миллисекундах
-       * @example 300000
-       */
-      postTrainingDuration?: Record<string, never> | null;
-      exercises: components['schemas']['UpdateTrainingAggregationExercise'][];
-    };
-    UpdateTrainingAggregationRequest: {
-      /** @description Данные для запроса */
-      data: components['schemas']['UpdateTrainingAggregationRequestData'][];
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  UsersController_getUsers: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    UsersController_getUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-    };
-  };
-  UsersController_me: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          'application/json': components['schemas']['MeDtoResponse'];
+    };
+    UsersController_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  AuthController_register: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RegisterRequest'];
-      };
-    };
-    responses: {
-      /** @description Пользователь успешно зарегистрирован */
-      201: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDtoResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['RegisterResponse'];
+    };
+    AuthController_register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  AuthController_refresh: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Токен успешно продлен */
-      201: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRequest"];
+            };
         };
-        content: {
-          'application/json': components['schemas']['RefreshResponse'];
+        responses: {
+            /** @description Пользователь успешно зарегистрирован */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  AuthController_logout: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Выход совершен успешно */
-      201: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['LogoutResponse'];
+        requestBody?: never;
+        responses: {
+            /** @description Токен успешно продлен */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefreshResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  AuthController_login: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LoginRequest'];
-      };
-    };
-    responses: {
-      /** @description Вход совершен успешно */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['LoginResponse'];
+        requestBody?: never;
+        responses: {
+            /** @description Выход совершен успешно */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LogoutResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  TrainingTemplateAggregationController_getTrainingsTemplates: {
-    parameters: {
-      query?: {
-        my?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    AuthController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['TrainingTemplateAggregationResponse'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
         };
-      };
-    };
-  };
-  TrainingTemplateAggregationController_putTrainingTemplate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateTrainingTemplateAggregationRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description Вход совершен успешно */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['TrainingTemplateAggregationResponse'];
+    };
+    TrainingTemplateAggregationController_getTrainingsTemplates: {
+        parameters: {
+            query?: {
+                my?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  TrainingTemplateAggregationController_createTrainingTemplate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateTrainingTemplateAggregationRequest'];
-      };
-    };
-    responses: {
-      /** @description Тренировка создана */
-      201: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateAggregationResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['TrainingTemplateAggregationResponse'];
+    };
+    TrainingTemplateAggregationController_putTrainingTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  TrainingsController_assignTrainingTemplate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AssignTrainingTemplateRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTrainingTemplateAggregationRequest"];
+            };
         };
-        content?: never;
-      };
-    };
-  };
-  TrainingsController_assignTraining: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['AssignTrainingRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateAggregationResponse"];
+                };
+            };
         };
-        content?: never;
-      };
     };
-  };
-  TrainingsController_deleteTemplateTraining: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        templateId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Шаблон тренировки удален */
-      204: {
-        headers: {
-          [name: string]: unknown;
+    TrainingTemplateAggregationController_createTrainingTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-    };
-  };
-  ExercisesController_getExerciseTemplates: {
-    parameters: {
-      query?: {
-        my?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTrainingTemplateAggregationRequest"];
+            };
         };
-        content: {
-          'application/json': components['schemas']['ExercisesTemplatesResponse'];
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateAggregationResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  ExercisesController_updateExerciseTemplateAndReplace: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PutExerciseTemplateRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+    TrainingTemplateAggregationController_assignTrainingTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['ExercisesTemplatesResponse'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignTrainingTemplateRequest"];
+            };
         };
-      };
-    };
-  };
-  ExercisesController_createExerciseTemplate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateExerciseTemplateRequest'];
-      };
-    };
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          'application/json': components['schemas']['CreateExerciseTemplateResponse'];
+    };
+    TrainingsController_assignTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  ExercisesController_deleteExerciseTemplate: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        templateId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      204: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignTrainingRequest"];
+            };
         };
-        content?: never;
-      };
-    };
-  };
-  ExercisesController_updateExerciseTemplatePartly: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        templateId: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PatchExerciseTemplateRequest'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          'application/json': components['schemas']['PatchExerciseTemplateResponse'];
+    };
+    TrainingsController_deleteTemplateTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                templateId: number;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  TrainingAggregationController_getTrainings: {
-    parameters: {
-      query?: {
-        /** @description ISO String */
-        from?: string;
-        /** @description ISO String */
-        to?: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            /** @description Шаблон тренировки удален */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          'application/json': components['schemas']['TrainingAggregationResponse'];
+    };
+    ExerciseTemplatesController_getExerciseTemplates: {
+        parameters: {
+            query?: {
+                my?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  TrainingAggregationController_putTraining: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateTrainingAggregationRequest'];
-      };
-    };
-    responses: {
-      /** @description Тренировка обновлена */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExercisesTemplatesResponse"];
+                };
+            };
         };
-        content: {
-          'application/json': components['schemas']['TrainingAggregationResponse'];
+    };
+    ExerciseTemplatesController_updateExerciseTemplateAndReplace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  TrainingAggregationController_createTraining: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateTrainingAggregationRequest'];
-      };
-    };
-    responses: {
-      /** @description Тренировка создана */
-      201: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutExerciseTemplateRequest"];
+            };
         };
-        content: {
-          'application/json': components['schemas']['TrainingAggregationResponse'];
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExercisesTemplatesResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  TrainingAggregationController_deleteTraining: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        trainingId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Тренировка удалена */
-      204: {
-        headers: {
-          [name: string]: unknown;
+    ExerciseTemplatesController_createExerciseTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateExerciseTemplateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateExerciseTemplateResponse"];
+                };
+            };
+        };
     };
-  };
+    ExerciseTemplatesController_deleteExerciseTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                templateId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ExerciseTemplatesController_updateExerciseTemplatePartly: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                templateId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatchExerciseTemplateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatchExerciseTemplateResponse"];
+                };
+            };
+        };
+    };
+    TrainingAggregationController_getTrainings: {
+        parameters: {
+            query?: {
+                /** @description ISO String */
+                from?: string;
+                /** @description ISO String */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingAggregationResponse"];
+                };
+            };
+        };
+    };
+    TrainingAggregationController_putTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTrainingAggregationRequest"];
+            };
+        };
+        responses: {
+            /** @description Тренировка обновлена */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingAggregationResponse"];
+                };
+            };
+        };
+    };
+    TrainingAggregationController_createTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTrainingAggregationRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingAggregationResponse"];
+                };
+            };
+        };
+    };
+    TrainingAggregationController_deleteTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trainingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Тренировка удалена */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }
