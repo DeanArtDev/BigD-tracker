@@ -34,7 +34,7 @@ export function AdoptedDialog({
           slotsProps?.content?.className,
         )}
       >
-        <DialogHeader>
+        <DialogHeader className="mt-2 md:mt-0">
           {slotsProps?.header?.element ? (
             <DialogTitle>{slotsProps?.header?.element}</DialogTitle>
           ) : (

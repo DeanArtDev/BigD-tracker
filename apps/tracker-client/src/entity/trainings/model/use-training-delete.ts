@@ -6,9 +6,7 @@ function useTrainingDelete() {
   const { mutate: deleteTrigger, ...others } = $privetQueryClient.useMutation(
     'delete',
     '/trainings/{trainingId}',
-    {
-      ...options,
-    },
+    options,
   );
 
   return {
