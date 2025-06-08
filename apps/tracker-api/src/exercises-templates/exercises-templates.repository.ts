@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Override } from '@shared/lib/type-helpers';
+import { OmitCreateFields, Override } from '@shared/lib/type-helpers';
 import { DB, KyselyService } from '@shared/modules/db';
 import { ExpressionBuilder } from 'kysely';
 import { ExerciseTemplateRawData } from './exercise-template.mapper';
@@ -34,7 +34,7 @@ export class ExercisesTemplatesRepository {
     filters: {
       my: boolean;
     },
-  ) {
+  ): Promise<ExerciseTemplateRawData['selectable'][]> {
     let query = this.kyselyService.db
       .selectFrom('exercises_templates')
       .orderBy('created_at', 'desc')
@@ -54,7 +54,7 @@ export class ExercisesTemplatesRepository {
   }
 
   async create(
-    data: ExerciseTemplateRawData['insertable'],
+    data: OmitCreateFields<ExerciseTemplateRawData['insertable']>,
   ): Promise<ExerciseTemplateRawData['selectable'] | undefined> {
     return await this.kyselyService.db
       .insertInto('exercises_templates')

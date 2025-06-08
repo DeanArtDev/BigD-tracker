@@ -26,7 +26,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('fact_break', 'integer', (col) => col.check(sql`fact_break <= 600`))
 
     .addColumn('finish_type', 'text', (col) =>
-      col.references('repetitions_types.value').onDelete('restrict').notNull(),
+      col.references('repetitions_types.value').onDelete('restrict'),
     )
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))

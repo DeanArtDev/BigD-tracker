@@ -1,7 +1,9 @@
-import { CreateExerciseTemplateRequest } from '@/exercises-templates/dtos/create-exercises-template.dto';
-import { PutExerciseTemplateRequest } from '@/exercises-templates/dtos/put-exercise-template.dto';
+import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
+import { RepetitionsRepository } from '@/repetitions/repetitions.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
+import { CreateExerciseTemplateRequest } from './dtos/create-exercises-template.dto';
+import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
+import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 
@@ -10,40 +12,68 @@ export class ExerciseTemplateService {
   constructor(
     readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
     readonly exercisesTemplateMapper: ExercisesTemplateMapper,
+    readonly repetitionsRepository: RepetitionsRepository,
+    readonly repetitionMapper: RepetitionMapper,
   ) {}
 
   async getExercisesTemplates(
     userId: number,
     filters: { my: boolean },
   ): Promise<ExerciseTemplateEntity[]> {
-    const rawTemplates = await this.exercisesTemplatesRepository.findByFilters(userId, filters);
-    return rawTemplates.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
+    const rawExercises = await this.exercisesTemplatesRepository.findByFilters(userId, filters);
+
+    const buffer: ExerciseTemplateEntity[] = [];
+    for (const rawExercise of rawExercises) {
+      const exercise = this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise });
+      const rawRepetitions = await this.repetitionsRepository.findAllByFilters({
+        id: exercise.id,
+        userId,
+      });
+      exercise.addRepetitions(rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity));
+      buffer.push(exercise);
+    }
+
+    return buffer;
   }
 
-  async createExerciseTemplate(data: CreateExerciseTemplateRequest['data'] & { userId: number }) {
-    const entity = this.exercisesTemplateMapper.fromDtoToEntity({
-      ...data,
-      id: Infinity,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  async createExerciseTemplate(
+    data: CreateExerciseTemplateRequest['data'] & { userId: number },
+  ): Promise<ExerciseTemplateEntity> {
+    const exerciseEntity = this.exercisesTemplateMapper.fromCreateDtoToEntity(data);
+    const rawExercise = await this.exercisesTemplatesRepository.create({
+      type: exerciseEntity.type,
+      name: exerciseEntity.name,
+      user_id: exerciseEntity.userId,
+      description: exerciseEntity.description,
+      example_url: exerciseEntity.exampleUrl,
     });
-    const raw = this.exercisesTemplateMapper.fromEntityToPersistence(entity);
-    const rowExercise = await this.exercisesTemplatesRepository.create({
-      type: raw.type,
-      name: raw.name,
-      user_id: raw.user_id,
-      description: raw.description,
-      example_url: raw.example_url,
-    });
-    if (rowExercise == null) {
+    if (rawExercise == null) {
       throw new InternalServerErrorException('Failed to create exercise template');
     }
-    return rowExercise;
+    const rawRepetitions = await this.repetitionsRepository.createMany(
+      data.repetitions.map((rep) => {
+        return {
+          exercises_id: rawExercise.id,
+          target_break: rep.targetBreak,
+          target_count: rep.targetCount,
+          target_weight: rep.targetWeight,
+          user_id: exerciseEntity.userId,
+        };
+      }),
+    );
+    return this.exercisesTemplateMapper
+      .fromPersistenceToEntity({ rawExercise })
+      .addRepetitions(rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity));
   }
 
   async deleteExerciseTemplate(id: number) {
-    await this.findExerciseTemplate({ id });
-    await this.exercisesTemplatesRepository.delete(id);
+    try {
+      const exercise = await this.findExerciseTemplate({ id });
+      await this.exercisesTemplatesRepository.delete(id);
+      if (exercise) await this.repetitionsRepository.deleteByExerciseIds([id]);
+    } catch {
+      throw new InternalServerErrorException(`Failed to delete exercise template {id: ${id}}`);
+    }
   }
 
   async findExerciseTemplate({ id }: { id: number }): Promise<ExerciseTemplateEntity> {
@@ -51,7 +81,7 @@ export class ExerciseTemplateService {
     if (rawExercise == null) {
       throw new NotFoundException('Exercise template is not found');
     }
-    return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExercise);
+    return this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise });
   }
 
   async findExerciseTemplates(ids: number[]): Promise<ExerciseTemplateEntity[]> {
@@ -64,37 +94,46 @@ export class ExerciseTemplateService {
       throw new NotFoundException('Not all exercise templates are found');
     }
 
-    return list.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
+    return list.map((i) =>
+      this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise: i }),
+    );
   }
 
-  async updateTemplatePartly(
-    id: number,
-    data: {
-      name?: string;
-      type?: ExerciseType;
-      exampleUrl?: string;
-      description?: string;
-    },
-  ) {
-    await this.findExerciseTemplate({ id });
-    const exercise = await this.exercisesTemplatesRepository.updatePartly(id, data);
-    if (exercise == null) {
-      throw new InternalServerErrorException({ id }, { cause: 'Failed to update' });
-    }
-    return exercise;
-  }
-
-  async updateTemplates(
+  async updateTemplate(
+    templateId: number,
     data: PutExerciseTemplateRequest['data'],
-  ): Promise<ExerciseTemplateEntity[]> {
-    await this.findExerciseTemplates(data.map((i) => i.id));
+  ): Promise<ExerciseTemplateEntity> {
+    await this.findExerciseTemplate({ id: templateId });
 
     try {
-      const raws = await this.exercisesTemplatesRepository.update(
-        data.map(this.exercisesTemplateMapper.fromUpdateDtoToRaw),
-        { replace: true },
+      const raws = await this.exercisesTemplatesRepository.update([{ ...data, id: templateId }], {
+        replace: true,
+      });
+      if (raws.length === 0) {
+        throw new InternalServerErrorException(`Failed to update exercise templates`);
+      }
+
+      const exerciseEntity = this.exercisesTemplateMapper.fromPersistenceToEntity({
+        rawExercise: raws[0],
+      });
+
+      await this.repetitionsRepository.deleteByExerciseIds([exerciseEntity.id]);
+
+      const rawRepetitions = await this.repetitionsRepository.createMany(
+        data.repetitions.map((rep) => {
+          return {
+            exercises_id: exerciseEntity.id,
+            target_break: rep.targetBreak,
+            target_count: rep.targetCount,
+            target_weight: rep.targetWeight,
+            user_id: exerciseEntity.userId,
+          };
+        }),
       );
-      return raws.map(this.exercisesTemplateMapper.fromPersistenceToEntity);
+
+      return exerciseEntity.addRepetitions(
+        rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity),
+      );
     } catch {
       throw new InternalServerErrorException(`Failed to update exercise templates`);
     }

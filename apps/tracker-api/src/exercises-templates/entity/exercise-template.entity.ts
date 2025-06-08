@@ -1,3 +1,4 @@
+import { RepetitionEntity } from '@/repetitions/repetitions.entity';
 import { Validator } from '@shared/lib/validator';
 
 const validator = new Validator('exercises-templates');
@@ -11,16 +12,18 @@ enum ExerciseType {
 
 interface ExerciseTemplateData {
   readonly id: number;
-  readonly userId?: number;
-  readonly name: string;
-  readonly type: ExerciseType;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly description?: string;
-  readonly exampleUrl?: string;
+  userId?: number;
+  name: string;
+  type: ExerciseType;
+  createdAt: string;
+  updatedAt: string;
+  description?: string;
+  exampleUrl?: string;
 }
 
 class ExerciseTemplateEntity {
+  #repetitions: RepetitionEntity[];
+
   constructor(private readonly data: ExerciseTemplateData) {
     const { id, userId, description, name, type, exampleUrl, createdAt, updatedAt } = data;
 
@@ -41,6 +44,23 @@ class ExerciseTemplateEntity {
     validator.isEnum(type, ExerciseType, 'type');
     validator.isDateISO(createdAt, 'createdAt');
     validator.isDateISO(updatedAt, 'updatedAt');
+  }
+
+  public addRepetitions(data: RepetitionEntity[]) {
+    if (data.some((i) => i.exerciseId !== this.id)) {
+      validator.throwError(`Repetitions must belong to exercise {id: ${this.id}}`, 'repetitions');
+    }
+
+    const LIMIT = 20;
+    if (data.length > LIMIT) {
+      validator.throwError(
+        `There are to much repetitions for exercise {id: ${this.id}} limit is ${LIMIT}`,
+        'repetitions',
+      );
+    }
+
+    this.#repetitions = data;
+    return this;
   }
 
   get id() {
@@ -66,6 +86,9 @@ class ExerciseTemplateEntity {
   }
   get exampleUrl() {
     return this.data.exampleUrl;
+  }
+  get repetitions() {
+    return this.#repetitions;
   }
 }
 

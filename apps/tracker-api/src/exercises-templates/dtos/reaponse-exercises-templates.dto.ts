@@ -15,4 +15,14 @@ class ExercisesTemplatesResponse {
   data: ExerciseTemplateDto[];
 }
 
-export { ExercisesTemplatesResponse };
+class ExercisesTemplatesResponseSingle {
+  @ApiProperty({
+    description: 'Ответ сервера',
+    type: ExerciseTemplateDto,
+  })
+  @ValidateNested()
+  @Type(() => ExerciseTemplateDto)
+  data: ExerciseTemplateDto;
+}
+
+export { ExercisesTemplatesResponseSingle, ExercisesTemplatesResponse };

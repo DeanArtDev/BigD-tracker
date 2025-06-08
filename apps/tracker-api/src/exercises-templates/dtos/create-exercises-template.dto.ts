@@ -1,23 +1,36 @@
+import { CreateRepetitionsDto } from '@/repetitions/dto/create-repetitions.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import { IsArray, ValidateNested } from 'class-validator';
 import { ExerciseTemplateDto } from './exercise-template.dto';
 
-class CreateExerciseTemplateDto extends OmitType(ExerciseTemplateDto, [
+class CreateExerciseTemplateRequestData extends OmitType(ExerciseTemplateDto, [
   'id',
   'createdAt',
   'updatedAt',
   'userId',
-] as const) {}
+  'repetitions',
+] as const) {
+  @ApiProperty({
+    description: 'Повторения',
+    type: CreateRepetitionsDto,
+    isArray: true,
+  })
+  @Expose()
+  @IsArray()
+  @Type(() => CreateRepetitionsDto)
+  @ValidateNested({ each: true })
+  repetitions: CreateRepetitionsDto[];
+}
 
 class CreateExerciseTemplateRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: CreateExerciseTemplateDto,
+    type: CreateExerciseTemplateRequestData,
   })
   @ValidateNested()
-  @Type(() => CreateExerciseTemplateDto)
-  data: CreateExerciseTemplateDto;
+  @Type(() => CreateExerciseTemplateRequestData)
+  data: CreateExerciseTemplateRequestData;
 }
 
 class CreateExerciseTemplateResponse {
@@ -30,4 +43,8 @@ class CreateExerciseTemplateResponse {
   data: ExerciseTemplateDto;
 }
 
-export { CreateExerciseTemplateRequest, CreateExerciseTemplateResponse };
+export {
+  CreateExerciseTemplateRequest,
+  CreateExerciseTemplateResponse,
+  CreateExerciseTemplateRequestData,
+};

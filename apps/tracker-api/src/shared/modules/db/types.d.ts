@@ -34,7 +34,7 @@ export interface Repetitions {
   fact_break: number | null;
   fact_count: number | null;
   fact_weight: Numeric | null;
-  finish_type: string;
+  finish_type: string | null;
   id: Generated<number>;
   target_break: number;
   target_count: number;

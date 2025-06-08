@@ -58,7 +58,9 @@ export class UpdateTrainingTemplateAggregationUseCase {
       rawExerciseTemplateList.push(rawExerciseTemplate);
     }
     trainingTemplate.addExercises(
-      rawExerciseTemplateList.map(this.exercisesTemplateMapper.fromPersistenceToEntity),
+      rawExerciseTemplateList.map((rawExercise) =>
+        this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise }),
+      ),
     );
 
     const raw = await this.trainingTemplatesAggregationRepo.updateTrainingTemplateAggregation(

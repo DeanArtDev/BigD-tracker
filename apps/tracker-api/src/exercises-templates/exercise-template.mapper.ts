@@ -1,4 +1,5 @@
-import { PutExerciseTemplateRequest } from '@/exercises-templates/dtos/put-exercise-template.dto';
+import { RepetitionFinishType } from '@/repetitions/repetitions.entity';
+import { RepetitionMapper, RepetitionRawData } from '@/repetitions/repetitions.mapper';
 import { Injectable } from '@nestjs/common';
 import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { BaseMapper } from '@shared/lib/mapper';
@@ -6,7 +7,9 @@ import { Override } from '@shared/lib/type-helpers';
 import { DB } from '@shared/modules/db';
 import { Selectable } from 'kysely';
 import { Insertable, Updateable } from 'kysely/dist/esm';
+import { CreateExerciseTemplateRequestData } from './dtos/create-exercises-template.dto';
 import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
+import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
 import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
 
 interface ExerciseTemplateRawData {
@@ -19,21 +22,31 @@ interface ExerciseTemplateRawData {
 class ExercisesTemplateMapper extends BaseMapper<
   ExerciseTemplateDto,
   ExerciseTemplateEntity,
-  ExerciseTemplateRawData['selectable']
+  {
+    rawExercise: ExerciseTemplateRawData['selectable'];
+    rawRepetitions?: RepetitionRawData['selectable'][];
+  }
 > {
-  fromPersistenceToEntity = (
-    rawData: ExerciseTemplateRawData['selectable'],
-  ): ExerciseTemplateEntity => {
+  constructor(private readonly repetitionMapper: RepetitionMapper) {
+    super();
+  }
+
+  fromPersistenceToEntity = (rawData: {
+    rawExercise: ExerciseTemplateRawData['selectable'];
+    rawRepetitions?: RepetitionRawData['selectable'][];
+  }): ExerciseTemplateEntity => {
+    const { rawRepetitions = [], rawExercise } = rawData;
+
     return new ExerciseTemplateEntity({
-      id: rawData.id,
-      name: rawData.name,
-      type: rawData.type as ExerciseType,
-      createdAt: rawData.created_at.toISOString(),
-      updatedAt: rawData.updated_at.toISOString(),
-      userId: rawData.user_id ?? undefined,
-      description: rawData.description ?? undefined,
-      exampleUrl: rawData.example_url ?? undefined,
-    });
+      id: rawExercise.id,
+      name: rawExercise.name,
+      type: rawExercise.type as ExerciseType,
+      createdAt: rawExercise.created_at.toISOString(),
+      updatedAt: rawExercise.updated_at.toISOString(),
+      userId: rawExercise.user_id ?? undefined,
+      description: rawExercise.description ?? undefined,
+      exampleUrl: rawExercise.example_url ?? undefined,
+    }).addRepetitions(rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity));
   };
 
   fromEntityToPersistence = (
@@ -51,8 +64,10 @@ class ExercisesTemplateMapper extends BaseMapper<
     };
   };
 
-  fromDtoToEntity = (dto: ExerciseTemplateDto): ExerciseTemplateEntity => {
-    return new ExerciseTemplateEntity(dto);
+  fromDtoToEntity = ({ repetitions, ...dto }: ExerciseTemplateDto): ExerciseTemplateEntity => {
+    return new ExerciseTemplateEntity(dto).addRepetitions(
+      repetitions.map(this.repetitionMapper.fromDtoToEntity),
+    );
   };
 
   fromEntityToDTO = (entity: ExerciseTemplateEntity): ExerciseTemplateDto => {
@@ -60,7 +75,7 @@ class ExercisesTemplateMapper extends BaseMapper<
   };
 
   fromUpdateDtoToRaw = (
-    dto: PutExerciseTemplateRequest['data'][0],
+    dto: PutExerciseTemplateRequest['data'] & { id: number },
   ): Override<ExerciseTemplateRawData['updateable'], 'id', number> => {
     return {
       id: dto.id,
@@ -72,16 +87,46 @@ class ExercisesTemplateMapper extends BaseMapper<
     };
   };
 
-  fromPersistenceToDto = (raw: ExerciseTemplateRawData['selectable']): ExerciseTemplateDto => {
+  fromCreateDtoToEntity = (dto: CreateExerciseTemplateRequestData): ExerciseTemplateEntity => {
+    return new ExerciseTemplateEntity({
+      ...dto,
+      id: Infinity,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }).addRepetitions(dto.repetitions.map(this.repetitionMapper.fromCreateDtoToEntity));
+  };
+
+  fromPersistenceToDto = (raw: {
+    rawExercise: ExerciseTemplateRawData['selectable'];
+    rawRepetitions?: RepetitionRawData['selectable'][];
+  }): ExerciseTemplateDto => {
+    const { rawExercise, rawRepetitions = [] } = raw;
+
+    const repetitions: ExerciseTemplateDto['repetitions'] = rawRepetitions.map((repetition) => {
+      return {
+        id: repetition.id,
+        exerciseId: repetition.exercises_id,
+        userId: repetition.user_id ?? undefined,
+        factBreak: repetition.fact_break ?? undefined,
+        factWeight: repetition.fact_weight ?? undefined,
+        factCount: repetition.fact_count ?? undefined,
+        targetBreak: repetition.target_break,
+        targetWeight: repetition.target_weight,
+        targetCount: repetition.target_count,
+        finishType: repetition.finish_type as RepetitionFinishType,
+      };
+    });
+
     const instance: ExerciseTemplateDto = {
-      id: raw.id,
-      name: raw.name,
-      type: raw.type as ExerciseType,
-      createdAt: raw.created_at.toISOString(),
-      updatedAt: raw.updated_at.toISOString(),
-      userId: raw.user_id ?? undefined,
-      description: raw.description ?? undefined,
-      exampleUrl: raw.example_url ?? undefined,
+      id: rawExercise.id,
+      name: rawExercise.name,
+      type: rawExercise.type as ExerciseType,
+      createdAt: rawExercise.created_at.toISOString(),
+      updatedAt: rawExercise.updated_at.toISOString(),
+      userId: rawExercise.user_id ?? undefined,
+      description: rawExercise.description ?? undefined,
+      exampleUrl: rawExercise.example_url ?? undefined,
+      repetitions,
     };
 
     return mapAndValidateEntity(ExerciseTemplateDto, instance);

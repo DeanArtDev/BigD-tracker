@@ -3,9 +3,10 @@ import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
 import { BaseMapper } from '@shared/lib/mapper';
 import { DB } from '@shared/modules/db';
 import { Insertable, Selectable, Updateable } from 'kysely/dist/esm';
-import { toFinite } from 'lodash-es';
+import { CreateRepetitionsDto } from './dto/create-repetitions.dto';
 import { RepetitionsDto } from './dto/repetitions.dto';
-import { RepetitionEntity, RepetitionFinishType } from './repetitions.entity';
+import { RepetitionEntity } from './repetitions.entity';
+import { UpdateRepetitionsDto } from './dto/update-repetitions.dto';
 
 interface RepetitionRawData {
   readonly selectable: Selectable<DB['repetitions']>;
@@ -25,12 +26,23 @@ class RepetitionMapper extends BaseMapper<
       exerciseId: raw.exercises_id,
       userId: raw.user_id ?? undefined,
       targetBreak: raw.target_break,
-      factBreak: raw.fact_break ?? undefined,
       targetCount: raw.target_count,
-      factCount: raw.fact_count ?? undefined,
-      targetWeight: toFinite(raw.target_weight),
-      factWeight: raw.fact_weight != null ? toFinite(raw.fact_weight) : undefined,
-      finishType: raw.finish_type as RepetitionFinishType,
+      targetWeight: raw.target_weight,
+    });
+  };
+
+  fromCreateDtoToEntity = (dto: CreateRepetitionsDto): RepetitionEntity => {
+    return new RepetitionEntity({
+      ...dto,
+      id: Infinity,
+      exerciseId: Infinity,
+    });
+  };
+
+  fromUpdateDtoToEntity = (dto: UpdateRepetitionsDto): RepetitionEntity => {
+    return new RepetitionEntity({
+      ...dto,
+      exerciseId: Infinity,
     });
   };
 

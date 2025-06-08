@@ -1,10 +1,15 @@
 import { PutExerciseTemplateRequestData } from '@/exercises-templates/dtos/put-exercise-template.dto';
 import { PutTrainingRequestData } from '@/tranings/dtos/put-training.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArray, ValidateNested } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import { IsArray, IsInt, ValidateNested } from 'class-validator';
 
-class UpdateTrainingAggregationExercise extends PutExerciseTemplateRequestData {}
+class UpdateTrainingAggregationExercise extends PutExerciseTemplateRequestData {
+  @ApiProperty({ example: 1 })
+  @IsInt()
+  @Expose()
+  id: number;
+}
 
 class UpdateTrainingAggregationRequestData extends PutTrainingRequestData {
   @ApiProperty({

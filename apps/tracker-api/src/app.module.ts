@@ -11,7 +11,6 @@ import { TrainingsModule } from '@/tranings/trainings.module';
 import { TrainingAggregationModule } from '@/training-aggregation/training-aggregation.module';
 import { TrainingTemplateAggregationModule } from '@/training-template-aggregation/training-template-aggregation.module';
 import { RepetitionsModule } from '@/repetitions/repetitions.module';
-import { ExerciseAggregationModule } from './exercise-aggregation/exercise-aggregation.module';
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { ExerciseAggregationModule } from './exercise-aggregation/exercise-aggre
     ExerciseTemplatesModule,
     TrainingAggregationModule,
     RepetitionsModule,
-    ExerciseAggregationModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],
 })

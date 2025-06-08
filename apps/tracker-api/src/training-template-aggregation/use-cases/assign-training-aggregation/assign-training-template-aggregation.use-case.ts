@@ -43,7 +43,9 @@ export class AssignTrainingTemplateAggregationUseCase {
     });
 
     trainingAggregationEntity.addExercises(
-      raw.exercises.map(this.exercisesTemplateMapper.fromPersistenceToEntity),
+      raw.exercises.map((rawExercise) =>
+        this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise }),
+      ),
     );
 
     await this.assignTrainingTemplateAggregationRepo.attachExerciseTemplateToTraining(

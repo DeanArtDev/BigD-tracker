@@ -1,5 +1,3 @@
-import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
-import { ExerciseType } from '@/exercises-templates/entity/exercise-template.entity';
 import {
   ExercisesTemplateMapper,
   ExerciseTemplateRawData,
@@ -18,7 +16,7 @@ import { TrainingTemplateAggregationEntity } from './entities/training-template-
 export class TrainingTemplateAggregationMapper {
   constructor(
     private readonly trainingsTemplatesMapper: TrainingsTemplatesMapper,
-    private readonly exercisesTemplatesMapper: ExercisesTemplateMapper,
+    private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
   ) {}
 
   fromPersistenceToDto = (raw: {
@@ -26,19 +24,6 @@ export class TrainingTemplateAggregationMapper {
     rawExercises?: ExerciseTemplateRawData['selectable'][];
   }): TrainingTemplateAggregationDto => {
     const { rawTraining, rawExercises = [] } = raw;
-
-    const exercisesDto: ExerciseTemplateDto[] = rawExercises.map((ex) => {
-      return {
-        id: ex.id,
-        name: ex.name,
-        type: ex.type as ExerciseType,
-        userId: ex.user_id ?? undefined,
-        createdAt: ex.created_at.toISOString(),
-        updatedAt: ex.updated_at.toISOString(),
-        description: ex.description ?? undefined,
-        exampleUrl: ex.example_url ?? undefined,
-      };
-    });
 
     const instance: TrainingTemplateAggregationDto = {
       id: rawTraining.id,
@@ -50,7 +35,9 @@ export class TrainingTemplateAggregationMapper {
       userId: Infinity,
       postTrainingDuration: rawTraining.post_training_duration ?? undefined,
       wormUpDuration: rawTraining.worm_up_duration ?? undefined,
-      exercises: exercisesDto,
+      exercises: rawExercises.map((rawExercise) =>
+        this.exercisesTemplateMapper.fromPersistenceToDto({ rawExercise }),
+      ),
     };
     return mapAndValidateEntity(TrainingTemplateAggregationDto, instance);
   };
@@ -64,7 +51,9 @@ export class TrainingTemplateAggregationMapper {
       this.trainingsTemplatesMapper.fromPersistenceToEntity(rawTrainingTemplate),
     );
     return trainingAggregation.addExercises(
-      rawExercisesTemplates.map(this.exercisesTemplatesMapper.fromPersistenceToEntity),
+      rawExercisesTemplates.map((rawExercise) =>
+        this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise }),
+      ),
     );
   };
 
@@ -76,14 +65,14 @@ export class TrainingTemplateAggregationMapper {
   } => {
     const { exercises } = entity;
     return {
-      rawExercises: exercises.map(this.exercisesTemplatesMapper.fromEntityToPersistence),
+      rawExercises: exercises.map(this.exercisesTemplateMapper.fromEntityToPersistence),
       rawTraining: this.trainingsTemplatesMapper.fromEntityToPersistence(entity),
     };
   };
 
   fromDtoToEntity = (dto: TrainingTemplateAggregationDto): TrainingTemplateAggregationEntity => {
     return new TrainingTemplateAggregationEntity(dto).addExercises(
-      dto.exercises.map(this.exercisesTemplatesMapper.fromDtoToEntity),
+      dto.exercises.map(this.exercisesTemplateMapper.fromDtoToEntity),
     );
   };
 

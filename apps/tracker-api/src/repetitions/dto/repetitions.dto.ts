@@ -1,7 +1,7 @@
 import { RepetitionFinishType } from '@/repetitions/repetitions.entity';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 class RepetitionsDto {
   @ApiProperty({ example: 1 })
@@ -20,11 +20,12 @@ class RepetitionsDto {
   @Expose()
   exerciseId: number;
 
-  @ApiProperty({ example: 'MEDIUM', enum: RepetitionFinishType })
+  @ApiPropertyOptional({ example: 'SKIP', enum: RepetitionFinishType })
   @Type(() => String)
   @IsEnum(RepetitionFinishType)
+  @IsOptional()
   @Expose()
-  finishType: RepetitionFinishType;
+  finishType?: RepetitionFinishType;
 
   @ApiProperty({ example: 1, description: 'Желаемое количество повторений' })
   @IsInt()
@@ -37,16 +38,16 @@ class RepetitionsDto {
   @IsOptional()
   factCount?: number;
 
-  @ApiProperty({ example: 1, description: 'Желаемый вec' })
-  @IsInt()
+  @ApiProperty({ example: '20.5', description: 'Желаемый вec' })
+  @IsString()
   @Expose()
-  targetWeight: number;
+  targetWeight: string;
 
-  @ApiPropertyOptional({ example: 1, description: 'Фактический вec' })
-  @IsInt()
+  @ApiPropertyOptional({ example: '100.7', description: 'Фактический вec' })
+  @IsString()
   @Expose()
   @IsOptional()
-  factWeight?: number;
+  factWeight?: string;
 
   @ApiProperty({ example: 1, description: 'Желаемый перерыв, значение в секундах' })
   @IsInt()

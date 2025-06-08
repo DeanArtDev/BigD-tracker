@@ -83,6 +83,8 @@ export class CreateTrainingAggregationUseCase {
       throw new NotFoundException('Exercise template is not found');
     }
 
-    return this.exercisesTemplateMapper.fromPersistenceToEntity(rawExerciseTemplate);
+    return this.exercisesTemplateMapper.fromPersistenceToEntity({
+      rawExercise: rawExerciseTemplate,
+    });
   }
 }

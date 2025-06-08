@@ -1,3 +1,4 @@
+import { RepetitionsModule } from '@/repetitions/repetitions.module';
 import { TrainingsAggregationMapper } from './trainings-aggregation.mapper';
 import { Module } from '@nestjs/common';
 import { TrainingsModule } from '@/tranings/trainings.module';
@@ -10,7 +11,7 @@ import { ExerciseTemplatesModule } from '@/exercises-templates/exercise-template
 
 @Module({
   exports: [TrainingsAggregationMapper],
-  imports: [TrainingsModule, ExerciseTemplatesModule],
+  imports: [TrainingsModule, ExerciseTemplatesModule, RepetitionsModule],
   controllers: [TrainingAggregationController],
   providers: [
     CreateTrainingAggregationUseCase,

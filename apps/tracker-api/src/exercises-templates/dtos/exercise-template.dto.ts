@@ -1,6 +1,16 @@
+import { RepetitionsDto } from '@/repetitions/dto/repetitions.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsISO8601,
+  IsOptional,
+  IsString,
+  IsUrl,
+  ValidateNested,
+} from 'class-validator';
 import { ExerciseType } from '../entity/exercise-template.entity';
 
 class ExerciseTemplateDto {
@@ -43,6 +53,17 @@ class ExerciseTemplateDto {
   @Expose()
   @IsOptional()
   exampleUrl?: string;
+
+  @ApiProperty({
+    description: 'Повторения',
+    type: RepetitionsDto,
+    isArray: true,
+  })
+  @Expose()
+  @IsArray()
+  @Type(() => RepetitionsDto)
+  @ValidateNested({ each: true })
+  repetitions: RepetitionsDto[];
 
   @ApiProperty({
     example: '2025-05-24T13:01:02.471Z',

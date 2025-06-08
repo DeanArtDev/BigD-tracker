@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
-import { TrainingAggregationModule } from '@/training-aggregation/training-aggregation.module';
 import { ExerciseTemplatesModule } from '@/exercises-templates/exercise-templates.module';
+import { RepetitionsModule } from '@/repetitions/repetitions.module';
+import { TrainingAggregationModule } from '@/training-aggregation/training-aggregation.module';
 import { TrainingsModule } from '@/tranings/trainings.module';
+import { Module } from '@nestjs/common';
 import { TrainingTemplateAggregationController } from './training-template-aggregation.controller';
 import { TrainingTemplateAggregationMapper } from './training-template-aggregation.mapper';
 import { TrainingTemplateAggregationService } from './training-template-aggregation.service';
@@ -15,7 +16,7 @@ import { UpdateTrainingTemplateAggregationUseCase } from './use-cases/update-tra
 
 @Module({
   exports: [TrainingTemplateAggregationMapper],
-  imports: [TrainingsModule, ExerciseTemplatesModule, TrainingAggregationModule],
+  imports: [TrainingsModule, ExerciseTemplatesModule, TrainingAggregationModule, RepetitionsModule],
   controllers: [TrainingTemplateAggregationController],
   providers: [
     CreateTrainingTemplateAggregationUseCase,

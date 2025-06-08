@@ -1,10 +1,6 @@
 import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import {
-  PatchExerciseTemplateRequest,
-  PatchExerciseTemplateResponse,
-} from './dtos/patch-exercise-template.dto';
 import { mapAndValidateEntityList } from '@/shared/lib/map-and-validate-entity-list';
 import {
   Body,
@@ -14,7 +10,6 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Put,
   Query,
@@ -27,7 +22,10 @@ import {
 import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
 import { GetExerciseTemplatesQuery } from './dtos/get-exercise-templates.dto';
 import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
-import { ExercisesTemplatesResponse } from './dtos/reaponse-exercises-templates.dto';
+import {
+  ExercisesTemplatesResponse,
+  ExercisesTemplatesResponseSingle,
+} from './dtos/reaponse-exercises-templates.dto';
 import { ExercisesTemplateMapper } from './exercise-template.mapper';
 import { ExerciseTemplateService } from './exercise-template.service';
 
@@ -71,37 +69,17 @@ export class ExerciseTemplatesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateExerciseTemplateRequest,
   ) {
-    const rawExercises = await this.exercisesService.createExerciseTemplate({
+    const exercise = await this.exercisesService.createExerciseTemplate({
       userId: uid,
       ...data,
     });
 
     return {
-      data: this.exercisesTemplateMapper.fromPersistenceToDto(rawExercises),
+      data: this.exercisesTemplateMapper.fromEntityToDTO(exercise),
     };
   }
 
-  @Patch('/templates/:templateId')
-  @ApiOperation({
-    summary: 'Частичное обновление шаблона упражнения',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: PatchExerciseTemplateResponse,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async updateExerciseTemplatePartly(
-    @Param('templateId', ParseIntPipe) templateId: number,
-    @Body() { data }: PatchExerciseTemplateRequest,
-  ): Promise<PatchExerciseTemplateResponse> {
-    const rawExercises = await this.exercisesService.updateTemplatePartly(templateId, data);
-
-    return {
-      data: this.exercisesTemplateMapper.fromPersistenceToDto(rawExercises),
-    };
-  }
-
-  @Put('/templates')
+  @Put('/templates/:templateId')
   @ApiOperation({
     summary: 'Обновление шаблонов упражнения',
     description: 'nullable поля очищают значения',
@@ -112,12 +90,13 @@ export class ExerciseTemplatesController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async updateExerciseTemplateAndReplace(
+    @Param('templateId', ParseIntPipe) templateId: number,
     @Body() { data }: PutExerciseTemplateRequest,
-  ): Promise<ExercisesTemplatesResponse> {
-    const exercises = await this.exercisesService.updateTemplates(data);
+  ): Promise<ExercisesTemplatesResponseSingle> {
+    const exercise = await this.exercisesService.updateTemplate(templateId, data);
 
     return {
-      data: exercises.map(this.exercisesTemplateMapper.fromEntityToDTO),
+      data: this.exercisesTemplateMapper.fromEntityToDTO(exercise),
     };
   }
 

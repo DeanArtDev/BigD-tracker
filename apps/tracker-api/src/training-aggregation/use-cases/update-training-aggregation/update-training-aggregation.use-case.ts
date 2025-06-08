@@ -2,6 +2,7 @@ import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-templat
 import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
+import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
 import { TrainingAggregationDto } from '@/training-aggregation/dto/training-aggregation.dto';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -19,6 +20,7 @@ export class UpdateTrainingAggregationUseCase {
     private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
     private readonly trainingsAggregationMapper: TrainingsAggregationMapper,
     private readonly exerciseTemplateMapper: ExercisesTemplateMapper,
+    readonly repetitionMapper: RepetitionMapper,
   ) {}
 
   async execute(
@@ -49,7 +51,7 @@ export class UpdateTrainingAggregationUseCase {
       throw new NotFoundException('Exercise template is not found');
     }
 
-    const exerciseDto = this.exerciseTemplateMapper.fromPersistenceToDto(rawExercise);
+    const exerciseDto = this.exerciseTemplateMapper.fromPersistenceToDto({ rawExercise });
     const entity = this.exerciseTemplateMapper.fromDtoToEntity(
       this.mergeUpdateExerciseDtoWithDto(data, exerciseDto),
     );
@@ -62,7 +64,9 @@ export class UpdateTrainingAggregationUseCase {
       throw new InternalServerErrorException({ id: data.id }, { cause: 'Failed to update' });
     }
 
-    return this.exerciseTemplateMapper.fromPersistenceToEntity(updatedRawTraining[0]);
+    return this.exerciseTemplateMapper.fromPersistenceToEntity({
+      rawExercise: updatedRawTraining[0],
+    });
   }
 
   private async updateTraining(
@@ -74,9 +78,10 @@ export class UpdateTrainingAggregationUseCase {
     }
 
     const trainingDto = this.trainingsAggregationMapper.fromPersistenceToDto({ rawTraining });
-    const entity = this.trainingsAggregationMapper.fromDtoToEntity(
-      this.mergeUpdateTrainingDtoWithDto(dto, trainingDto),
-    );
+    const entity = this.trainingsAggregationMapper
+      .fromDtoToEntity(this.mergeUpdateTrainingDtoWithDto(dto, trainingDto))
+      .updatePostTrainingDuration(trainingDto.postTrainingDuration ?? undefined)
+      .updateWormUpDuration(trainingDto.wormUpDuration ?? undefined);
 
     const persistenceData = this.trainingsAggregationMapper.fromEntityToPersistence(entity);
     const updatedRawTraining = await this.trainingsRepository.update(persistenceData.rawTraining, {
@@ -93,35 +98,32 @@ export class UpdateTrainingAggregationUseCase {
   private mergeUpdateTrainingDtoWithDto(
     updateDto: Omit<UpdateTrainingAggregationRequestData, 'exercises'>,
     trainingDto: TrainingAggregationDto,
-  ): TrainingAggregationEntity {
-    const { id, name, type, startDate, description, wormUpDuration, postTrainingDuration } =
-      updateDto;
-    return this.trainingsAggregationMapper
-      .fromDtoToEntity({
-        ...trainingDto,
-        id,
-        name,
-        type,
-        startDate,
-        description: description ?? undefined,
-      })
-      .updatePostTrainingDuration(postTrainingDuration ?? undefined)
-      .updateWormUpDuration(wormUpDuration ?? undefined);
+  ): TrainingAggregationDto {
+    const { id, name, type, startDate, description } = updateDto;
+
+    return {
+      ...trainingDto,
+      id,
+      name,
+      type,
+      startDate,
+      description: description ?? undefined,
+    };
   }
 
   private mergeUpdateExerciseDtoWithDto(
     updateDto: UpdateTrainingAggregationExercise,
     exerciseDto: ExerciseTemplateDto,
-  ): ExerciseTemplateEntity {
+  ): ExerciseTemplateDto {
     const { id, name, type, description, exampleUrl } = updateDto;
 
-    return this.exerciseTemplateMapper.fromDtoToEntity({
+    return {
       ...exerciseDto,
       id,
       name,
       type,
       exampleUrl: exampleUrl ?? undefined,
       description: description ?? undefined,
-    });
+    };
   }
 }

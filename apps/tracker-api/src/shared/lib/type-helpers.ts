@@ -18,4 +18,12 @@ interface HasId {
   readonly id: number | string;
 }
 
-export type { HasId, Override, ValueOf, Nullable, Undefinedable };
+type OmitCreateFields<
+  T extends {
+    id?: number | undefined;
+    created_at?: string | Date | undefined;
+    updated_at?: string | Date | undefined;
+  },
+> = Omit<T, 'id' | 'created_at' | 'updated_at'>;
+
+export type { HasId, Override, ValueOf, Nullable, Undefinedable, OmitCreateFields };

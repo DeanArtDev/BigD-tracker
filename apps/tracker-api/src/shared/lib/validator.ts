@@ -1,3 +1,4 @@
+import { toFinite } from 'lodash-es';
 import { isAfter, isInt, isURL } from 'validator';
 import isISO8601 from 'validator/lib/isISO8601';
 import { DomainValidationError } from './errors';
@@ -83,6 +84,16 @@ class Validator {
         field,
         domain: this.domain,
         message: `${field} must not be grater than ${max}`,
+      });
+    }
+  }
+
+  isNumericString(value: string, field: string) {
+    if (Number.isNaN(toFinite(value))) {
+      throw new DomainValidationError({
+        field,
+        domain: this.domain,
+        message: `${field}:${value} must be a numeric string`,
       });
     }
   }
