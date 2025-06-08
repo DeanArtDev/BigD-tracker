@@ -26,6 +26,7 @@ class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, Selectable
       endDate: rawData.end_date?.toISOString() ?? undefined,
       wormUpDuration: rawData.worm_up_duration ?? undefined,
       postTrainingDuration: rawData.post_training_duration ?? undefined,
+      inProgress: rawData.in_progress,
       createdAt: rawData.created_at.toISOString(),
       updatedAt: rawData.created_at.toISOString(),
     });
@@ -44,6 +45,7 @@ class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, Selectable
       description: entity.description ?? null,
       post_training_duration: entity.postTrainingDuration ?? null,
       worm_up_duration: entity.wormUpDuration ?? null,
+      in_progress: entity.inProgress,
     };
   };
 

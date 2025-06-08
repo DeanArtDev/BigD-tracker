@@ -10,21 +10,22 @@ enum TrainingType {
 const validator = new Validator('trainings');
 
 interface TrainingEntityData {
-  readonly id: number;
-  readonly name: string;
-  readonly type: TrainingType;
-  readonly userId: number;
-  readonly startDate: string;
-  readonly postTrainingDuration?: number;
-  readonly wormUpDuration?: number;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly endDate?: string;
-  readonly description?: string;
+  id: number;
+  name: string;
+  type: TrainingType;
+  userId: number;
+  startDate: string;
+  postTrainingDuration?: number;
+  wormUpDuration?: number;
+  createdAt: string;
+  updatedAt: string;
+  endDate?: string;
+  description?: string;
+  inProgress: boolean;
 }
 
 class TrainingEntity {
-  constructor(data: TrainingEntityData) {
+  constructor(private readonly data: TrainingEntityData) {
     const {
       id,
       name,
@@ -36,6 +37,7 @@ class TrainingEntity {
       wormUpDuration,
       postTrainingDuration,
       startDate,
+      inProgress,
       description,
     } = data;
 
@@ -61,26 +63,16 @@ class TrainingEntity {
       validator.isIntGt(wormUpDuration, 3, 'wormUpDuration');
     }
 
+    if (inProgress && endDate != null) {
+      validator.throwError('Training cannot be in progress if has the end date', 'inProgress');
+    }
+
     validator.isIdValId(id, 'id');
     validator.isIdValId(userId, 'userId');
     validator.isNotStringEmpty(name, 'name');
     validator.isEnum(type, TrainingType, 'type');
     validator.isDateISO(createdAt, 'createdAt');
     validator.isDateISO(updatedAt, 'updatedAt');
-
-    Object.assign(this, {
-      id,
-      name,
-      type,
-      userId,
-      createdAt,
-      updatedAt,
-      endDate,
-      startDate,
-      description,
-    });
-    this.#wormUpDuration = wormUpDuration;
-    this.#postTrainingDuration = postTrainingDuration;
   }
 
   updateWormUpDuration(value: number | undefined) {
@@ -91,11 +83,8 @@ class TrainingEntity {
       );
     }
 
-    this.#wormUpDuration = value;
+    this.data.wormUpDuration = value;
     return this;
-  }
-  get wormUpDuration() {
-    return this.#wormUpDuration;
   }
 
   updatePostTrainingDuration(value: number | undefined) {
@@ -106,25 +95,67 @@ class TrainingEntity {
       );
     }
 
-    this.#postTrainingDuration = value;
+    this.data.postTrainingDuration = value;
     return this;
   }
-  get postTrainingDuration() {
-    return this.#postTrainingDuration;
+
+  updateInProgress(value: boolean) {
+    if (this.endDate != null && value) {
+      validator.throwError('Cannot start training if it has already ended', 'inProgress');
+    }
+
+    if (this.endDate == null && !value) {
+      validator.throwError(
+        `Cannot set inProgress: ${value} if it has not had end time yet`,
+        'inProgress',
+      );
+    }
+
+    this.data.inProgress = value;
+    return this;
   }
 
-  public readonly id: number;
-  public readonly name: string;
-  public readonly type: TrainingType;
-  public readonly userId: number;
-  public readonly startDate: string;
-  public readonly createdAt: string;
-  public readonly updatedAt: string;
-  public readonly endDate?: string;
-  public readonly description?: string;
+  get id() {
+    return this.data.id;
+  }
+  get name() {
+    return this.data.name;
+  }
+  get type() {
+    return this.data.type;
+  }
+  get userId() {
+    return this.data.userId;
+  }
+  get startDate() {
+    return this.data.startDate;
+  }
+  get postTrainingDuration() {
+    return this.data.postTrainingDuration;
+  }
+  get wormUpDuration() {
+    return this.data.wormUpDuration;
+  }
+  get createdAt() {
+    return this.data.createdAt;
+  }
+  get updatedAt() {
+    return this.data.updatedAt;
+  }
+  get endDate() {
+    return this.data.endDate;
+  }
+  get description() {
+    return this.data.description;
+  }
 
-  #postTrainingDuration?: number;
-  #wormUpDuration?: number;
+  get inProgress() {
+    return this.data.inProgress;
+  }
+
+  get isCompleted() {
+    return !this.data.inProgress && this.data.endDate != null;
+  }
 }
 
 export { TrainingEntity, TrainingType };

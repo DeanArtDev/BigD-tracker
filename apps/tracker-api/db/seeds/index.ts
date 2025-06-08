@@ -4,9 +4,11 @@ import exerciseTypes from './exercise-types';
 import trainingTemplates from './training-temlates';
 import trainings from './trainings';
 import exerciseTemplates from './exercise-templates';
+import repetitionTypes from './repetition-types';
 
 export default [
   testUser,
+  repetitionTypes,
   exerciseTypes,
   exerciseTemplates,
   trainingTypes,

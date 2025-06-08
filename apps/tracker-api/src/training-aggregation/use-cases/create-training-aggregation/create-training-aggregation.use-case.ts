@@ -61,6 +61,7 @@ export class CreateTrainingAggregationUseCase {
         end_date: null,
         start_date: new Date(),
         post_training_duration: data.postTrainingDuration ?? null,
+        in_progress: data.inProgress,
       },
     });
     const persistenceData = this.trainingsAggregationMapper.fromEntityToPersistence(entity);

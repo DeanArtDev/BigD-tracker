@@ -1,10 +1,12 @@
 import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
 import { TrainingTemplateDto } from '@/tranings/dtos/training-template.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
-class TrainingTemplateAggregationDto extends TrainingTemplateDto {
+class TrainingTemplateAggregationDto extends OmitType(TrainingTemplateDto, [
+  'inProgress',
+] as const) {
   @ApiProperty({
     type: ExerciseTemplateDto,
     isArray: true,

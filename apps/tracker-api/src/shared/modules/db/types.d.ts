@@ -13,17 +13,6 @@ export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export interface Exercises {
-  created_at: Generated<Timestamp>;
-  description: string | null;
-  example_url: string | null;
-  id: Generated<number>;
-  name: string;
-  type: string;
-  updated_at: Generated<Timestamp>;
-  user_id: number;
-}
-
 export interface ExercisesTemplates {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -40,19 +29,22 @@ export interface ExerciseTypes {
 }
 
 export interface Repetitions {
-  break_actual_duration: Timestamp | null;
-  break_expected_duration: Timestamp | null;
-  count: number;
   created_at: Generated<Timestamp>;
-  end_date: Timestamp | null;
   exercises_id: number;
+  fact_break: number | null;
+  fact_count: number | null;
+  fact_weight: Numeric | null;
   finish_type: string;
   id: Generated<number>;
-  start_date: Timestamp | null;
-  target_count: number | null;
-  target_weight: Numeric | null;
+  target_break: number;
+  target_count: number;
+  target_weight: Numeric;
   updated_at: Generated<Timestamp>;
-  weight: Numeric;
+  user_id: number | null;
+}
+
+export interface RepetitionsTypes {
+  value: string;
 }
 
 export interface Sessions {
@@ -71,6 +63,7 @@ export interface Trainings {
   description: string | null;
   end_date: Timestamp | null;
   id: Generated<number>;
+  in_progress: Generated<boolean>;
   name: string;
   post_training_duration: number | null;
   start_date: Generated<Timestamp>;
@@ -120,9 +113,9 @@ export interface Users {
 
 export interface DB {
   exercise_types: ExerciseTypes;
-  exercises: Exercises;
   exercises_templates: ExercisesTemplates;
   repetitions: Repetitions;
+  repetitions_types: RepetitionsTypes;
   sessions: Sessions;
   training_templates_exercise_templates: TrainingTemplatesExerciseTemplates;
   trainings: Trainings;

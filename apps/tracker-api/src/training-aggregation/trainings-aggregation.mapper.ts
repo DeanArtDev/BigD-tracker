@@ -49,6 +49,7 @@ export class TrainingsAggregationMapper {
       updatedAt: rawTraining.updated_at.toISOString(),
       postTrainingDuration: rawTraining.post_training_duration ?? undefined,
       wormUpDuration: rawTraining.worm_up_duration ?? undefined,
+      inProgress: rawTraining.in_progress,
       exercises: exercisesDto,
     };
     return mapAndValidateEntity(TrainingAggregationDto, instance);

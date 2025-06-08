@@ -6,8 +6,6 @@ export default {
   target: 'Типы для упражнений',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
-      await trx.deleteFrom('exercise_types').execute();
-
       const buffer: { value: string }[] = [];
       for (const value of ['WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC']) {
         const result = await trx

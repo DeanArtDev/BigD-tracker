@@ -79,6 +79,7 @@ export class TrainingAggregationRepository {
         'trainings.end_date as training_end_date',
         'trainings.user_id as training_user_id',
         'trainings.worm_up_duration as training_worm_up_duration',
+        'trainings.in_progress as training_in_progress',
 
         'exercises_templates.created_at as exercise_created_at',
         'exercises_templates.description as exercise_description',
@@ -111,6 +112,7 @@ export class TrainingAggregationRepository {
           | 'training_updated_at'
           | 'training_user_id'
           | 'training_worm_up_duration'
+          | 'training_in_progress'
         >;
         exercises: Pick<
           ManyToManyTemplateAggregation,
@@ -153,6 +155,7 @@ export class TrainingAggregationRepository {
             start_date: data.training.training_start_date,
             post_training_duration: data.training.training_post_training_duration,
             worm_up_duration: data.training.training_worm_up_duration,
+            in_progress: data.training.training_in_progress,
           },
         };
       },

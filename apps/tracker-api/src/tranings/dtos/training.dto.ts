@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
 import { TrainingType } from '../entities/training.entity';
 
 class TrainingDto {
@@ -67,6 +67,13 @@ class TrainingDto {
   @Expose()
   @IsOptional()
   postTrainingDuration?: number;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @Expose()
+  @IsBoolean()
+  inProgress: boolean;
 
   @ApiProperty({
     example: '2025-05-24T13:01:02.471Z',

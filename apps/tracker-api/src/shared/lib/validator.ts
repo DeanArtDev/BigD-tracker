@@ -1,6 +1,6 @@
 import { isAfter, isInt, isURL } from 'validator';
 import isISO8601 from 'validator/lib/isISO8601';
-import { DomainValidationError } from './domain-validation.error';
+import { DomainValidationError } from './errors';
 
 class Validator {
   constructor(public readonly domain: string) {}
@@ -47,7 +47,8 @@ class Validator {
   }
 
   isIdValId(value: number, field: string) {
-    if (value <= 0 && !isFinite(value) && Number.isNaN(value) && Number.isInteger(value)) {
+    if (!isFinite(value)) return;
+    if (value <= 0 || Number.isNaN(value) || !isInt(value.toString())) {
       throw new DomainValidationError({
         field,
         domain: this.domain,

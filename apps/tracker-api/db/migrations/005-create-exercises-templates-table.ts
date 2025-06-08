@@ -2,6 +2,16 @@ import { Kysely, sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
+    .createTable('exercise_types')
+    .addColumn('value', 'text', (col) => col.notNull().unique())
+    .addCheckConstraint(
+      'exercise_types_values',
+      sql`value in ('WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC')`,
+    )
+    .addPrimaryKeyConstraint('exercise_types_fkey', ['value'])
+    .execute();
+
+  await db.schema
     .createTable('exercises_templates')
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('user_id', 'integer', (col) => col.references('users.id').onDelete('cascade'))
