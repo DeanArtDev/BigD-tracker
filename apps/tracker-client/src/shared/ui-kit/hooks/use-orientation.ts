@@ -1,24 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+const subscribe = (callback: () => void) => {
+  const mql = window.matchMedia('(orientation: portrait)');
+  mql.addEventListener('change', callback);
+  return () => void mql.removeEventListener('change', callback);
+};
 
 export function useOrientation() {
-  const [orientation, setOrientation] = useState<'landscape' | 'portrait'>(() =>
-    window.matchMedia('(orientation: portrait)').matches ? 'portrait' : 'landscape',
-  );
-
-  useEffect(() => {
-    const mql = window.matchMedia('(orientation: portrait)');
-
-    const handler = (e: MediaQueryListEvent) => {
-      setOrientation(e.matches ? 'portrait' : 'landscape');
-    };
-
-    mql.addEventListener('change', handler);
-
-    return () => void mql.removeEventListener('change', handler);
-  }, []);
+  const value = useSyncExternalStore(subscribe, () => {
+    return window.matchMedia('(orientation: portrait)').matches ? 'portrait' : 'landscape';
+  });
 
   return {
-    isLandscape: orientation === 'landscape',
-    isPortrait: orientation === 'portrait',
+    isLandscape: value === 'landscape',
+    isPortrait: value === 'portrait',
   };
 }
