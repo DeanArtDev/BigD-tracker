@@ -1,7 +1,6 @@
-import { UpdateRepetitionsDto } from '@/repetitions/dto/update-repetitions.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
-import { IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 import { ExerciseTemplateDto } from './exercise-template.dto';
 
 class PutExerciseTemplateRequestData extends OmitType(ExerciseTemplateDto, [
@@ -10,18 +9,7 @@ class PutExerciseTemplateRequestData extends OmitType(ExerciseTemplateDto, [
   'createdAt',
   'updatedAt',
   'repetitions',
-] as const) {
-  @ApiProperty({
-    description: 'Повторения',
-    type: UpdateRepetitionsDto,
-    isArray: true,
-  })
-  @Expose()
-  @IsArray()
-  @Type(() => UpdateRepetitionsDto)
-  @ValidateNested({ each: true })
-  repetitions: UpdateRepetitionsDto[];
-}
+] as const) {}
 
 class PutExerciseTemplateRequest {
   @ApiProperty({

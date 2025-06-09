@@ -2,10 +2,12 @@ import {
   ExercisesTemplateMapper,
   ExerciseTemplateRawData,
 } from '@/exercises-templates/exercise-template.mapper';
+import { CreateTrainingAggregationRequestData } from '@/training-aggregation/use-cases/create-training-aggregation';
+import { UpdateTrainingAggregationRequestData } from '@/training-aggregation/use-cases/update-training-aggregation';
 import { TrainingType } from '@/tranings/entities/training.entity';
 import { TrainingRawData, TrainingsMapper } from '@/tranings/trainings.mapper';
 import { Injectable } from '@nestjs/common';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { TrainingAggregationDto } from './dto/training-aggregation.dto';
 import { TrainingAggregationEntity } from './entities/training-aggregation.entity';
 
@@ -39,7 +41,7 @@ export class TrainingsAggregationMapper {
         this.exercisesTemplateMapper.fromPersistenceToDto({ rawExercise: i }),
       ),
     };
-    return mapAndValidateEntity(TrainingAggregationDto, instance);
+    return mapEntity(TrainingAggregationDto, instance);
   };
 
   fromPersistenceToEntity = (raw: {
@@ -70,6 +72,25 @@ export class TrainingsAggregationMapper {
     };
   };
 
+  fromUpdateDtoToEntity = (
+    dto: Omit<UpdateTrainingAggregationRequestData, 'exercises'>,
+    userId?: number,
+  ): TrainingAggregationEntity => {
+    return new TrainingAggregationEntity({
+      id: dto.id,
+      userId: userId ?? Infinity,
+      type: dto.type,
+      name: dto.name,
+      description: dto.description ?? undefined,
+      inProgress: dto.inProgress,
+      startDate: dto.startDate,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      postTrainingDuration: dto.postTrainingDuration ?? undefined,
+      wormUpDuration: dto.wormUpDuration ?? undefined,
+    });
+  };
+
   fromDtoToEntity = (dto: TrainingAggregationDto): TrainingAggregationEntity => {
     return new TrainingAggregationEntity(dto).addExercises(
       dto.exercises.map(this.exercisesTemplateMapper.fromDtoToEntity),
@@ -77,6 +98,6 @@ export class TrainingsAggregationMapper {
   };
 
   fromEntityToDTO = (entity: TrainingAggregationEntity): TrainingAggregationDto => {
-    return mapAndValidateEntity(TrainingAggregationDto, entity);
+    return mapEntity(TrainingAggregationDto, entity);
   };
 }

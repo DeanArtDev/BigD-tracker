@@ -4,7 +4,7 @@ import { UsersService } from '@/users/users.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public, TokenPayload } from '@/auth/decorators';
 import { MeDto, MeDtoResponse } from './dtos/me.dto';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
 
@@ -33,7 +33,7 @@ export class UsersController {
     const user = await this.usersService.findUser({ id: tokenPayload.uid });
     if (user == null) throw new UnauthorizedException('User is not found');
     return {
-      data: mapAndValidateEntity(MeDto, {
+      data: mapEntity(MeDto, {
         id: user.id,
         email: user.email,
         avatar: user.avatar,

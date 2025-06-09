@@ -39,6 +39,7 @@ export interface Repetitions {
   target_break: number;
   target_count: number;
   target_weight: Numeric;
+  training_id: number | null;
   updated_at: Generated<Timestamp>;
   user_id: number | null;
 }

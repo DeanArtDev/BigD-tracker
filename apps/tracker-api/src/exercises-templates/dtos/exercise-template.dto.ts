@@ -2,7 +2,6 @@ import { RepetitionsDto } from '@/repetitions/dto/repetitions.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import {
-  IsArray,
   IsEnum,
   IsInt,
   IsISO8601,
@@ -60,7 +59,6 @@ class ExerciseTemplateDto {
     isArray: true,
   })
   @Expose()
-  @IsArray()
   @Type(() => RepetitionsDto)
   @ValidateNested({ each: true })
   repetitions: RepetitionsDto[];

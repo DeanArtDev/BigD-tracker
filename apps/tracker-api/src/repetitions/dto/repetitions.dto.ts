@@ -11,13 +11,11 @@ class RepetitionsDto {
 
   @ApiPropertyOptional({ example: 1 })
   @IsInt()
-  @Expose()
   @IsOptional()
   userId?: number;
 
   @ApiProperty({ example: 1 })
   @IsInt()
-  @Expose()
   exerciseId: number;
 
   @ApiPropertyOptional({ example: 'SKIP', enum: RepetitionFinishType })

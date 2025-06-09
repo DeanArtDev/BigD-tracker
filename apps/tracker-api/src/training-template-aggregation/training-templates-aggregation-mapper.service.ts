@@ -8,12 +8,12 @@ import {
   TrainingTemplateRawData,
 } from '@/tranings/trainings-template.mapper';
 import { Injectable } from '@nestjs/common';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { TrainingTemplateAggregationDto } from './dto/training-template-aggregation.dto';
 import { TrainingTemplateAggregationEntity } from './entities/training-template-aggregation.entity';
 
 @Injectable()
-export class TrainingTemplateAggregationMapper {
+export class TrainingTemplatesAggregationMapper {
   constructor(
     private readonly trainingsTemplatesMapper: TrainingsTemplatesMapper,
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
@@ -39,7 +39,7 @@ export class TrainingTemplateAggregationMapper {
         this.exercisesTemplateMapper.fromPersistenceToDto({ rawExercise }),
       ),
     };
-    return mapAndValidateEntity(TrainingTemplateAggregationDto, instance);
+    return mapEntity(TrainingTemplateAggregationDto, instance);
   };
 
   fromPersistenceToEntity = (raw: {
@@ -77,6 +77,6 @@ export class TrainingTemplateAggregationMapper {
   };
 
   fromEntityToDTO = (entity: TrainingTemplateAggregationEntity): TrainingTemplateAggregationDto => {
-    return mapAndValidateEntity(TrainingTemplateAggregationDto, entity);
+    return mapEntity(TrainingTemplateAggregationDto, entity);
   };
 }

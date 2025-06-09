@@ -1,3 +1,4 @@
+import { CreateRepetitionsDto } from '@/repetitions/dto/create-repetitions.dto';
 import { CreateTrainingRequestData } from '@/tranings/dtos/create-training.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
@@ -9,15 +10,12 @@ class CreateTrainingAggregationExercise {
   @Expose()
   id: number;
 
-  @ApiProperty({ example: 3 })
-  @IsInt()
+  @ApiProperty({ type: CreateRepetitionsDto, isArray: true })
+  @IsArray()
   @Expose()
-  sets: number;
-
-  @ApiProperty({ example: 12 })
-  @IsInt()
-  @Expose()
-  repetitions: number;
+  @Type(() => CreateRepetitionsDto)
+  @ValidateNested({ each: true })
+  repetitions: CreateRepetitionsDto[];
 }
 
 class CreateTrainingAggregationRequestData extends CreateTrainingRequestData {
@@ -35,11 +33,10 @@ class CreateTrainingAggregationRequest {
   @ApiProperty({
     description: 'Данные для запроса',
     type: CreateTrainingAggregationRequestData,
-    isArray: true,
   })
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => CreateTrainingAggregationRequestData)
-  data: CreateTrainingAggregationRequestData[];
+  data: CreateTrainingAggregationRequestData;
 }
 
 export {

@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TrainingTemplateAggregationResponse } from './dto/response-tarining-aggregation.dto';
-import { TrainingTemplateAggregationMapper } from './training-template-aggregation.mapper';
+import { TrainingTemplatesAggregationMapper } from './training-templates-aggregation-mapper.service';
 import { TrainingTemplateAggregationService } from './training-template-aggregation.service';
 import {
   CreateTrainingTemplateAggregationRequest,
@@ -39,7 +39,7 @@ export class TrainingTemplateAggregationController {
     private readonly updateTrainingTemplateAggregationUseCase: UpdateTrainingTemplateAggregationUseCase,
     private readonly assignTrainingTemplateAggregationUseCase: AssignTrainingTemplateAggregationUseCase,
     private readonly trainingTemplateAggregationService: TrainingTemplateAggregationService,
-    private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
+    private readonly trainingTemplateAggregationMapper: TrainingTemplatesAggregationMapper,
   ) {}
 
   @Get()

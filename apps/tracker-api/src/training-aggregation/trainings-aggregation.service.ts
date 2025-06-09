@@ -1,7 +1,16 @@
+import { CreateRepetitionsDto } from '@/repetitions/dto/create-repetitions.dto';
+import { RepetitionEntity } from '@/repetitions/repetitions.entity';
+import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
+import { RepetitionsRepository } from '@/repetitions/repetitions.repository';
 import { TrainingEntity } from '@/tranings/entities/training.entity';
 import { TrainingsMapper } from '@/tranings/trainings.mapper';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { TrainingAggregationEntity } from './entities/training-aggregation.entity';
 import { TrainingAggregationRepository } from './training-aggregation.repository';
 import { TrainingsAggregationMapper } from './trainings-aggregation.mapper';
@@ -9,28 +18,45 @@ import { TrainingsAggregationMapper } from './trainings-aggregation.mapper';
 @Injectable()
 export class TrainingsAggregationService {
   constructor(
-    private readonly trainingsRepository: TrainingsRepository,
     private readonly trainingsMapper: TrainingsMapper,
+    private readonly trainingsRepository: TrainingsRepository,
+
     private readonly trainingAggregationMapper: TrainingsAggregationMapper,
     private readonly trainingAggregationRepository: TrainingAggregationRepository,
+
+    private readonly repetitionMapper: RepetitionMapper,
+    private readonly repetitionsRepository: RepetitionsRepository,
   ) {}
 
   async getTrainings(
     userId: number,
     filters: { to?: string; from?: string },
   ): Promise<TrainingAggregationEntity[]> {
-    const raw = await this.trainingAggregationRepository.findAllTrainingAggregation(
+    const raws = await this.trainingAggregationRepository.findAllTrainingAggregation(
       userId,
       filters,
     );
-    if (raw == null) return [];
+    if (raws == null) return [];
 
-    return raw.map((item) =>
-      this.trainingAggregationMapper.fromPersistenceToEntity({
-        rawTraining: item.trainingTemplate,
-        rawExercises: item.exercises,
-      }),
-    );
+    const buffer: TrainingAggregationEntity[] = [];
+    for (const raw of raws) {
+      const trainingEntity = this.trainingAggregationMapper.fromPersistenceToEntity({
+        rawTraining: raw.trainingTemplate,
+        rawExercises: raw.exercises,
+      });
+
+      for (const exercise of trainingEntity.exercises) {
+        const rawRepetitions = await this.repetitionsRepository.findAllByFilters({
+          id: exercise.id,
+          userId: exercise.userId,
+        });
+        exercise.addRepetitions(rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity));
+      }
+
+      buffer.push(trainingEntity);
+    }
+
+    return buffer;
   }
 
   async setStartDataAtTraining(data: {
@@ -49,11 +75,17 @@ export class TrainingsAggregationService {
     return this.trainingsMapper.fromPersistenceToEntity(rawTraining);
   }
 
-  async deleteTrainingAggregation(trainingId: number): Promise<void> {
-    const isDeleted = await this.trainingsRepository.delete({ id: trainingId });
-    if (!isDeleted) {
+  async deleteTrainingAggregation(trainingId: number, userId: number): Promise<void> {
+    const existedTraining = await this.trainingsRepository.findOneById({ id: trainingId });
+    if (existedTraining == null) {
       throw new NotFoundException(`Training with id ${trainingId} not found`);
     }
+
+    if (userId !== existedTraining.user_id) {
+      throw new ForbiddenException('Delete can only your own training');
+    }
+
+    await this.trainingsRepository.delete({ id: trainingId });
   }
 
   private async findTrainingById(data: { id: number }) {
@@ -62,5 +94,43 @@ export class TrainingsAggregationService {
       throw new NotFoundException('Training is not found');
     }
     return rowTraining;
+  }
+
+  async createRepetitions(
+    userId: number,
+    trainingId: number,
+    exerciseId: number,
+    data: CreateRepetitionsDto[],
+  ): Promise<RepetitionEntity[]> {
+    const createRepetitionRawData: Parameters<typeof this.repetitionsRepository.createMany>[0] = [];
+
+    for (const repetition of data) {
+      const repetitionEntity = this.repetitionMapper.fromCreateDtoToEntity(repetition);
+      createRepetitionRawData.push({
+        user_id: userId,
+        training_id: trainingId,
+        exercises_id: exerciseId,
+        target_break: repetitionEntity.targetBreak,
+        target_count: repetitionEntity.targetCount,
+        target_weight: repetitionEntity.targetWeight,
+      });
+    }
+
+    try {
+      const raws = await this.repetitionsRepository.createMany(createRepetitionRawData);
+      return raws.map(this.repetitionMapper.fromPersistenceToEntity);
+    } catch {
+      throw new InternalServerErrorException(
+        `Failed to create repetitions ${JSON.stringify(
+          {
+            user_id: userId,
+            exercises_id: exerciseId,
+            training_id: trainingId,
+          },
+          null,
+          2,
+        )}`,
+      );
+    }
   }
 }

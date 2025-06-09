@@ -1,7 +1,8 @@
 import { RepetitionFinishType } from '@/repetitions/repetitions.entity';
 import { RepetitionMapper, RepetitionRawData } from '@/repetitions/repetitions.mapper';
+import { UpdateTrainingAggregationExercise } from '@/training-aggregation/use-cases/update-training-aggregation';
 import { Injectable } from '@nestjs/common';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { BaseMapper } from '@shared/lib/mapper';
 import { Override } from '@shared/lib/type-helpers';
 import { DB } from '@shared/modules/db';
@@ -71,20 +72,23 @@ class ExercisesTemplateMapper extends BaseMapper<
   };
 
   fromEntityToDTO = (entity: ExerciseTemplateEntity): ExerciseTemplateDto => {
-    return mapAndValidateEntity(ExerciseTemplateDto, entity);
+    return mapEntity(ExerciseTemplateDto, entity);
   };
 
-  fromUpdateDtoToRaw = (
-    dto: PutExerciseTemplateRequest['data'] & { id: number },
-  ): Override<ExerciseTemplateRawData['updateable'], 'id', number> => {
-    return {
+  fromUpdateDtoToEntity = (
+    dto: UpdateTrainingAggregationExercise,
+    userId?: number,
+  ): ExerciseTemplateEntity => {
+    return new ExerciseTemplateEntity({
       id: dto.id,
       type: dto.type,
       name: dto.name,
-      user_id: undefined,
-      example_url: dto.exampleUrl,
+      userId: userId ?? Infinity,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       description: dto.description,
-    };
+      exampleUrl: dto.exampleUrl,
+    });
   };
 
   fromCreateDtoToEntity = (dto: CreateExerciseTemplateRequestData): ExerciseTemplateEntity => {
@@ -93,7 +97,7 @@ class ExercisesTemplateMapper extends BaseMapper<
       id: Infinity,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    }).addRepetitions(dto.repetitions.map(this.repetitionMapper.fromCreateDtoToEntity));
+    });
   };
 
   fromPersistenceToDto = (raw: {
@@ -129,7 +133,7 @@ class ExercisesTemplateMapper extends BaseMapper<
       repetitions,
     };
 
-    return mapAndValidateEntity(ExerciseTemplateDto, instance);
+    return mapEntity(ExerciseTemplateDto, instance);
   };
 }
 

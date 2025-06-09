@@ -1,6 +1,6 @@
 import { TrainingDto } from '@/tranings/dtos/training.dto';
 import { Injectable } from '@nestjs/common';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { BaseMapper } from '@shared/lib/mapper';
 import { DB } from '@shared/modules/db';
 import { Insertable, Selectable, Updateable } from 'kysely';
@@ -54,7 +54,7 @@ class TrainingsMapper extends BaseMapper<TrainingDto, TrainingEntity, Selectable
   };
 
   fromEntityToDTO = (entity: TrainingEntity): TrainingDto => {
-    return mapAndValidateEntity(TrainingDto, entity);
+    return mapEntity(TrainingDto, entity);
   };
 }
 

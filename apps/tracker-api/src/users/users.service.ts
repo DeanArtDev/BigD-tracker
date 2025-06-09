@@ -7,7 +7,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UsersRepository } from '@/users/users.repository';
 import { User } from './users.entity';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { shapeUser } from '@/users/utils';
 
 type FindUserData =
@@ -34,14 +34,14 @@ export class UsersService {
   async getAll(): Promise<User[]> {
     const userList = await this.usersRepository.getAll();
 
-    return userList.map<User>((rawUser) => mapAndValidateEntity(User, shapeUser(rawUser)));
+    return userList.map<User>((rawUser) => mapEntity(User, shapeUser(rawUser)));
   }
 
   async findUser(data: FindUserData): Promise<User> {
     if (data.email != null) {
       const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
       if (rawUser == null) throw new NotFoundException('User is not found');
-      return mapAndValidateEntity(User, shapeUser(rawUser));
+      return mapEntity(User, shapeUser(rawUser));
     }
 
     if (data.screenName != null) {
@@ -49,13 +49,13 @@ export class UsersService {
         screenName: data.screenName,
       });
       if (rawUser == null) throw new NotFoundException('User is not found');
-      return mapAndValidateEntity(User, shapeUser(rawUser));
+      return mapEntity(User, shapeUser(rawUser));
     }
 
     if (data.id != null) {
       const rawUser = await this.usersRepository.findUserById({ id: data.id });
       if (rawUser == null) throw new NotFoundException('User is not found');
-      return mapAndValidateEntity(User, shapeUser(rawUser));
+      return mapEntity(User, shapeUser(rawUser));
     }
 
     return undefined as never;
@@ -87,7 +87,7 @@ export class UsersService {
     const rawUser = await this.usersRepository.findUserByEmail({ email: data.email });
     if (rawUser == null) return undefined;
     if (await this.validatePassword(data.password, rawUser.password_hash)) {
-      return mapAndValidateEntity(User, shapeUser(rawUser));
+      return mapEntity(User, shapeUser(rawUser));
     }
     return undefined;
   }

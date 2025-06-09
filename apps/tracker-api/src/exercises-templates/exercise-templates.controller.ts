@@ -1,7 +1,6 @@
 import { TokenPayload } from '@/auth/decorators';
 import { AccessTokenPayload } from '@/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import { mapAndValidateEntityList } from '@/shared/lib/map-and-validate-entity-list';
 import {
   Body,
   Controller,
@@ -15,6 +14,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 import {
   CreateExerciseTemplateRequest,
   CreateExerciseTemplateResponse,
@@ -52,7 +52,7 @@ export class ExerciseTemplatesController {
     const rawExercises = await this.exercisesService.getExercisesTemplates(uid, { my });
 
     return {
-      data: mapAndValidateEntityList(ExerciseTemplateDto, rawExercises),
+      data: plainToInstance(ExerciseTemplateDto, rawExercises, { excludeExtraneousValues: true }),
     };
   }
 
@@ -81,7 +81,7 @@ export class ExerciseTemplatesController {
 
   @Put('/templates/:templateId')
   @ApiOperation({
-    summary: 'Обновление шаблонов упражнения',
+    summary: 'Обновление шаблона упражнения',
     description: 'nullable поля очищают значения',
   })
   @ApiResponse({
@@ -109,9 +109,10 @@ export class ExerciseTemplatesController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async deleteExerciseTemplate(
+    @TokenPayload() { uid }: AccessTokenPayload,
     @Param('templateId', ParseIntPipe) templateId: number,
   ): Promise<void> {
-    await this.exercisesService.deleteExerciseTemplate(templateId);
+    await this.exercisesService.deleteExerciseTemplate(templateId, uid);
     return undefined;
   }
 }

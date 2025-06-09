@@ -15,4 +15,13 @@ class TrainingAggregationResponse {
   data: TrainingAggregationDto[];
 }
 
-export { TrainingAggregationResponse };
+class TrainingAggregationResponseSingle {
+  @ApiProperty({
+    description: 'Ответ сервера',
+    type: TrainingAggregationDto,
+  })
+  @Type(() => TrainingAggregationDto)
+  data: TrainingAggregationDto;
+}
+
+export { TrainingAggregationResponse, TrainingAggregationResponseSingle };

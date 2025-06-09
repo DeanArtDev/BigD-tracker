@@ -13,6 +13,7 @@ enum RepetitionFinishType {
 interface RepetitionEntityData {
   id: number;
   exerciseId: number;
+  trainingId?: number;
   userId?: number;
   targetCount: number;
   targetWeight: string;
@@ -35,6 +36,7 @@ type InitData = Pick<
 
 class RepetitionEntity {
   #data: RepetitionEntityData;
+  targetWeight: string;
 
   constructor(init: InitData) {
     const { id, userId, targetCount, targetBreak, targetWeight, exerciseId } = init;
@@ -52,6 +54,7 @@ class RepetitionEntity {
     validator.isIntMax(targetBreak, 900, 'targetBreak');
     validator.isNumericString(targetWeight, 'targetWeight');
 
+    this.targetWeight = targetWeight;
     this.#data = { ...init };
   }
 
@@ -69,11 +72,24 @@ class RepetitionEntity {
     this.#data.factBreak = factBreak;
   }
 
+  public assign(trainingId: number) {
+    if (this.#data.trainingId != null) {
+      validator.throwError(
+        `Can not reassign repetition {id: ${this.id}} to {trainingId:${trainingId}}`,
+        'trainingId',
+      );
+    }
+    this.#data.trainingId = trainingId;
+  }
+
   get id() {
     return this.#data.id;
   }
   get exerciseId() {
     return this.#data.exerciseId;
+  }
+  get trainingId() {
+    return this.#data.trainingId;
   }
   get userId() {
     return this.#data.userId;
@@ -84,9 +100,9 @@ class RepetitionEntity {
   get factCount() {
     return this.#data.factCount;
   }
-  get targetWeight() {
-    return this.#data.targetWeight;
-  }
+  // get targetWeight() {
+  //   return this.#data.targetWeight;
+  // }
   get factWeight() {
     return this.#data.factWeight;
   }

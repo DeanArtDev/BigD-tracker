@@ -1,6 +1,11 @@
 import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
 import { RepetitionsRepository } from '@/repetitions/repetitions.repository';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateExerciseTemplateRequest } from './dtos/create-exercises-template.dto';
 import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
 import { ExerciseTemplateEntity } from './entity/exercise-template.entity';
@@ -10,10 +15,10 @@ import { ExercisesTemplatesRepository } from './exercises-templates.repository';
 @Injectable()
 export class ExerciseTemplateService {
   constructor(
-    readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
-    readonly exercisesTemplateMapper: ExercisesTemplateMapper,
-    readonly repetitionsRepository: RepetitionsRepository,
-    readonly repetitionMapper: RepetitionMapper,
+    private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
+    private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
+    private readonly repetitionsRepository: RepetitionsRepository,
+    private readonly repetitionMapper: RepetitionMapper,
   ) {}
 
   async getExercisesTemplates(
@@ -27,7 +32,7 @@ export class ExerciseTemplateService {
       const exercise = this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise });
       const rawRepetitions = await this.repetitionsRepository.findAllByFilters({
         id: exercise.id,
-        userId,
+        userId: exercise.userId,
       });
       exercise.addRepetitions(rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity));
       buffer.push(exercise);
@@ -50,28 +55,22 @@ export class ExerciseTemplateService {
     if (rawExercise == null) {
       throw new InternalServerErrorException('Failed to create exercise template');
     }
-    const rawRepetitions = await this.repetitionsRepository.createMany(
-      data.repetitions.map((rep) => {
-        return {
-          exercises_id: rawExercise.id,
-          target_break: rep.targetBreak,
-          target_count: rep.targetCount,
-          target_weight: rep.targetWeight,
-          user_id: exerciseEntity.userId,
-        };
-      }),
-    );
-    return this.exercisesTemplateMapper
-      .fromPersistenceToEntity({ rawExercise })
-      .addRepetitions(rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity));
+
+    return this.exercisesTemplateMapper.fromPersistenceToEntity({ rawExercise });
   }
 
-  async deleteExerciseTemplate(id: number) {
+  async deleteExerciseTemplate(id: number, userId: number) {
     try {
       const exercise = await this.findExerciseTemplate({ id });
+      if (exercise.userId !== userId) {
+        throw new ForbiddenException('Delete can only your own training templates');
+      }
       await this.exercisesTemplatesRepository.delete(id);
       if (exercise) await this.repetitionsRepository.deleteByExerciseIds([id]);
-    } catch {
+    } catch (error) {
+      if (error instanceof ForbiddenException) {
+        throw error;
+      }
       throw new InternalServerErrorException(`Failed to delete exercise template {id: ${id}}`);
     }
   }
@@ -113,27 +112,9 @@ export class ExerciseTemplateService {
         throw new InternalServerErrorException(`Failed to update exercise templates`);
       }
 
-      const exerciseEntity = this.exercisesTemplateMapper.fromPersistenceToEntity({
+      return this.exercisesTemplateMapper.fromPersistenceToEntity({
         rawExercise: raws[0],
       });
-
-      await this.repetitionsRepository.deleteByExerciseIds([exerciseEntity.id]);
-
-      const rawRepetitions = await this.repetitionsRepository.createMany(
-        data.repetitions.map((rep) => {
-          return {
-            exercises_id: exerciseEntity.id,
-            target_break: rep.targetBreak,
-            target_count: rep.targetCount,
-            target_weight: rep.targetWeight,
-            user_id: exerciseEntity.userId,
-          };
-        }),
-      );
-
-      return exerciseEntity.addRepetitions(
-        rawRepetitions.map(this.repetitionMapper.fromPersistenceToEntity),
-      );
     } catch {
       throw new InternalServerErrorException(`Failed to update exercise templates`);
     }

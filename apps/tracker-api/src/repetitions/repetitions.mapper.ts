@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { mapAndValidateEntity } from '@shared/lib/map-and-validate-entity';
+import { mapEntity } from '@shared/lib/map-entity';
 import { BaseMapper } from '@shared/lib/mapper';
 import { DB } from '@shared/modules/db';
 import { Insertable, Selectable, Updateable } from 'kysely/dist/esm';
@@ -51,7 +51,7 @@ class RepetitionMapper extends BaseMapper<
   };
 
   fromEntityToDTO = (entity: RepetitionEntity): RepetitionsDto => {
-    return mapAndValidateEntity(RepetitionsDto, entity);
+    return mapEntity(RepetitionsDto, entity);
   };
 }
 

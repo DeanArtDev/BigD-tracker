@@ -1,6 +1,9 @@
 import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
+import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
+import { RepetitionsRepository } from '@/repetitions/repetitions.repository';
+import { TrainingsAggregationService } from '../../trainings-aggregation.service';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingAggregationEntity } from '../../entities/training-aggregation.entity';
@@ -13,36 +16,36 @@ import {
 @Injectable()
 export class CreateTrainingAggregationUseCase {
   constructor(
-    private readonly trainingsRepository: TrainingsRepository,
-    private readonly exerciseTemplatesRepository: ExercisesTemplatesRepository,
     private readonly trainingsAggregationMapper: TrainingsAggregationMapper,
+    private readonly trainingsAggregationService: TrainingsAggregationService,
+
+    private readonly trainingsRepository: TrainingsRepository,
+
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
+    private readonly exerciseTemplatesRepository: ExercisesTemplatesRepository,
+
+    private readonly repetitionMapper: RepetitionMapper,
+    private readonly repetitionsRepository: RepetitionsRepository,
   ) {}
 
   async execute(
     userId: number,
-    dto: CreateTrainingAggregationRequestData[],
-  ): Promise<TrainingAggregationEntity[]> {
-    const trainingAggregationList: TrainingAggregationEntity[] = [];
+    { exercises, ...item }: CreateTrainingAggregationRequestData,
+  ): Promise<TrainingAggregationEntity> {
+    const trainingAggregation = await this.createTraining({ userId, ...item });
 
-    for (const { exercises, ...item } of dto) {
-      const trainingAggregation = await this.createTraining({ userId, ...item });
+    const newExercises: ExerciseTemplateEntity[] = [];
+    for (const exercise of exercises) {
+      const exerciseEntity = await this.createExercise(userId, trainingAggregation.id, {
+        userId,
+        trainingId: trainingAggregation.id,
+        ...exercise,
+      });
 
-      const newExercises: ExerciseTemplateEntity[] = [];
-      for (const e of exercises) {
-        const exerciseEntity = await this.createExercise({
-          userId,
-          trainingId: trainingAggregation.id,
-          ...e,
-        });
-
-        newExercises.push(exerciseEntity);
-      }
-      trainingAggregation.addExercises(newExercises);
-      trainingAggregationList.push(trainingAggregation);
+      newExercises.push(exerciseEntity);
     }
 
-    return trainingAggregationList;
+    return trainingAggregation.addExercises(newExercises);
   }
 
   private async createTraining(
@@ -74,6 +77,8 @@ export class CreateTrainingAggregationUseCase {
   }
 
   private async createExercise(
+    userId: number,
+    trainingId: number,
     data: CreateTrainingAggregationExercise & { userId: number; trainingId: number },
   ): Promise<ExerciseTemplateEntity> {
     const rawExerciseTemplate = await this.exerciseTemplatesRepository.findOneById({
@@ -83,8 +88,17 @@ export class CreateTrainingAggregationUseCase {
       throw new NotFoundException('Exercise template is not found');
     }
 
-    return this.exercisesTemplateMapper.fromPersistenceToEntity({
+    const exerciseEntity = this.exercisesTemplateMapper.fromPersistenceToEntity({
       rawExercise: rawExerciseTemplate,
     });
+
+    const repetitions = await this.trainingsAggregationService.createRepetitions(
+      userId,
+      trainingId,
+      exerciseEntity.id,
+      data.repetitions,
+    );
+
+    return exerciseEntity.addRepetitions(repetitions);
   }
 }

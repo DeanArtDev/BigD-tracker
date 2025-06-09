@@ -3,8 +3,9 @@ import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-te
 import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
 import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
-import { TrainingAggregationDto } from '@/training-aggregation/dto/training-aggregation.dto';
+import { RepetitionsRepository } from '@/repetitions/repetitions.repository';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
+import { TrainingsAggregationService } from '../../trainings-aggregation.service';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingAggregationEntity } from '../../entities/training-aggregation.entity';
 import { TrainingsAggregationMapper } from '../../trainings-aggregation.mapper';
@@ -17,10 +18,15 @@ import {
 export class UpdateTrainingAggregationUseCase {
   constructor(
     private readonly trainingsRepository: TrainingsRepository,
-    private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
-    private readonly trainingsAggregationMapper: TrainingsAggregationMapper,
+
     private readonly exerciseTemplateMapper: ExercisesTemplateMapper,
-    readonly repetitionMapper: RepetitionMapper,
+    private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
+
+    private readonly trainingsAggregationMapper: TrainingsAggregationMapper,
+    private readonly trainingsAggregationService: TrainingsAggregationService,
+
+    private readonly repetitionMapper: RepetitionMapper,
+    private readonly repetitionsRepository: RepetitionsRepository,
   ) {}
 
   async execute(
@@ -30,11 +36,11 @@ export class UpdateTrainingAggregationUseCase {
     const trainingAggregationList: TrainingAggregationEntity[] = [];
 
     for (const { exercises, ...item } of dto) {
-      const trainingAggregation = await this.updateTraining(item);
+      const trainingAggregation = await this.updateTraining(userId, item);
 
       const newExercises: ExerciseTemplateEntity[] = [];
       for (const exercise of exercises) {
-        newExercises.push(await this.updateExercise(exercise));
+        newExercises.push(await this.updateExercise(userId, trainingAggregation.id, exercise));
       }
       trainingAggregation.addExercises(newExercises);
       trainingAggregationList.push(trainingAggregation);
@@ -44,6 +50,8 @@ export class UpdateTrainingAggregationUseCase {
   }
 
   private async updateExercise(
+    userId: number,
+    trainingId: number,
     data: UpdateTrainingAggregationExercise,
   ): Promise<ExerciseTemplateEntity> {
     const rawExercise = await this.exercisesTemplatesRepository.findOneById({ id: data.id });
@@ -51,25 +59,40 @@ export class UpdateTrainingAggregationUseCase {
       throw new NotFoundException('Exercise template is not found');
     }
 
-    const exerciseDto = this.exerciseTemplateMapper.fromPersistenceToDto({ rawExercise });
-    const entity = this.exerciseTemplateMapper.fromDtoToEntity(
-      this.mergeUpdateExerciseDtoWithDto(data, exerciseDto),
+    const updateExerciseEntity = this.exerciseTemplateMapper.fromUpdateDtoToEntity(data, userId);
+    updateExerciseEntity.addRepetitions(
+      data.repetitions.map((i) =>
+        this.repetitionMapper.fromDtoToEntity({ ...i, exerciseId: updateExerciseEntity.id }),
+      ),
     );
 
-    const persistenceData = this.exerciseTemplateMapper.fromEntityToPersistence(entity);
-    const updatedRawTraining = await this.exercisesTemplatesRepository.update([persistenceData], {
-      replace: true,
-    });
-    if (updatedRawTraining == null || updatedRawTraining.length === 0) {
+    this.exerciseTemplateMapper.fromEntityToPersistence(updateExerciseEntity);
+
+    try {
+      const updatedRawExercise = await this.exercisesTemplatesRepository.update([data], {
+        replace: true,
+      });
+
+      await this.repetitionsRepository.deleteByExerciseIds([data.id]);
+      const repetitionEntities = await this.trainingsAggregationService.createRepetitions(
+        userId,
+        trainingId,
+        data.id,
+        data.repetitions,
+      );
+
+      return this.exerciseTemplateMapper
+        .fromPersistenceToEntity({
+          rawExercise: updatedRawExercise[0],
+        })
+        .addRepetitions(repetitionEntities);
+    } catch {
       throw new InternalServerErrorException({ id: data.id }, { cause: 'Failed to update' });
     }
-
-    return this.exerciseTemplateMapper.fromPersistenceToEntity({
-      rawExercise: updatedRawTraining[0],
-    });
   }
 
   private async updateTraining(
+    userId: number,
     dto: Omit<UpdateTrainingAggregationRequestData, 'exercises'>,
   ): Promise<TrainingAggregationEntity> {
     const rawTraining = await this.trainingsRepository.findOneById({ id: dto.id });
@@ -77,13 +100,14 @@ export class UpdateTrainingAggregationUseCase {
       throw new NotFoundException(`training with id ${dto.id} not found`);
     }
 
-    const trainingDto = this.trainingsAggregationMapper.fromPersistenceToDto({ rawTraining });
-    const entity = this.trainingsAggregationMapper
-      .fromDtoToEntity(this.mergeUpdateTrainingDtoWithDto(dto, trainingDto))
-      .updatePostTrainingDuration(trainingDto.postTrainingDuration ?? undefined)
-      .updateWormUpDuration(trainingDto.wormUpDuration ?? undefined);
+    const updateTrainingEntity = this.trainingsAggregationMapper.fromUpdateDtoToEntity(dto, userId);
 
-    const persistenceData = this.trainingsAggregationMapper.fromEntityToPersistence(entity);
+    updateTrainingEntity
+      .updatePostTrainingDuration(updateTrainingEntity.postTrainingDuration ?? undefined)
+      .updateWormUpDuration(updateTrainingEntity.wormUpDuration ?? undefined);
+
+    const persistenceData =
+      this.trainingsAggregationMapper.fromEntityToPersistence(updateTrainingEntity);
     const updatedRawTraining = await this.trainingsRepository.update(persistenceData.rawTraining, {
       replace: true,
     });
@@ -93,22 +117,6 @@ export class UpdateTrainingAggregationUseCase {
     return this.trainingsAggregationMapper.fromPersistenceToEntity({
       rawTraining: updatedRawTraining,
     });
-  }
-
-  private mergeUpdateTrainingDtoWithDto(
-    updateDto: Omit<UpdateTrainingAggregationRequestData, 'exercises'>,
-    trainingDto: TrainingAggregationDto,
-  ): TrainingAggregationDto {
-    const { id, name, type, startDate, description } = updateDto;
-
-    return {
-      ...trainingDto,
-      id,
-      name,
-      type,
-      startDate,
-      description: description ?? undefined,
-    };
   }
 
   private mergeUpdateExerciseDtoWithDto(

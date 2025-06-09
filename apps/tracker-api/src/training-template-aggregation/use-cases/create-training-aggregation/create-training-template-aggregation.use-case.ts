@@ -9,13 +9,13 @@ import {
 } from '@/training-template-aggregation/training-templates-aggregation.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingTemplateAggregationEntity } from '../../entities/training-template-aggregation.entity';
-import { TrainingTemplateAggregationMapper } from '../../training-template-aggregation.mapper';
+import { TrainingTemplatesAggregationMapper } from '../../training-templates-aggregation-mapper.service';
 import { CreateTrainingTemplateAggregationRequestData } from './create-training-template-aggregation.dto';
 
 @Injectable()
 export class CreateTrainingTemplateAggregationUseCase {
   constructor(
-    private readonly trainingTemplateAggregationMapper: TrainingTemplateAggregationMapper,
+    private readonly trainingTemplateAggregationMapper: TrainingTemplatesAggregationMapper,
     private readonly exercisesTemplatesRepository: ExercisesTemplatesRepository,
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
     private readonly trainingTemplatesAggregationRepo: TrainingTemplatesAggregationRepository,

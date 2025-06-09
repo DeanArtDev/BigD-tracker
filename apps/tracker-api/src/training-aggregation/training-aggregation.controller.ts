@@ -14,11 +14,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { mapAndValidateEntityList } from '@shared/lib/map-and-validate-entity-list';
 import { AssignTrainingAggregationRequest } from './dto/assign-training-aggregation.dto';
 import { GetTrainingsAggregationFilters } from './dto/get-training-aggregation.dto';
-import { TrainingAggregationResponse } from './dto/response-tarining-aggregation.dto';
-import { TrainingAggregationDto } from './dto/training-aggregation.dto';
+import {
+  TrainingAggregationResponse,
+  TrainingAggregationResponseSingle,
+} from './dto/response-tarining-aggregation.dto';
 import { TrainingsAggregationMapper } from './trainings-aggregation.mapper';
 import { TrainingsAggregationService } from './trainings-aggregation.service';
 import {
@@ -62,7 +63,7 @@ export class TrainingAggregationController {
 
   @Post()
   @ApiOperation({
-    summary: 'Создание тренировок',
+    summary: 'Создание тренировки',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -72,11 +73,11 @@ export class TrainingAggregationController {
   async createTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingAggregationRequest,
-  ): Promise<TrainingAggregationResponse> {
-    const trainings = await this.createTrainingAggregationUseCase.execute(uid, data);
+  ): Promise<TrainingAggregationResponseSingle> {
+    const training = await this.createTrainingAggregationUseCase.execute(uid, data);
 
     return {
-      data: mapAndValidateEntityList(TrainingAggregationDto, trainings),
+      data: this.trainingAggregationMapper.fromEntityToDTO(training),
     };
   }
 
@@ -126,8 +127,11 @@ export class TrainingAggregationController {
     description: 'Тренировка удалена',
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async deleteTraining(@Param('trainingId', ParseIntPipe) trainingId: number): Promise<void> {
-    await this.trainingsAggregationService.deleteTrainingAggregation(trainingId);
+  async deleteTraining(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('trainingId', ParseIntPipe) trainingId: number,
+  ): Promise<void> {
+    await this.trainingsAggregationService.deleteTrainingAggregation(trainingId, uid);
     return undefined;
   }
 }

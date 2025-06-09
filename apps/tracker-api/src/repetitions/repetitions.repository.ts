@@ -15,8 +15,8 @@ export class RepetitionsRepository {
       return await this.kyselyService.db.transaction().execute(async (transaction) => {
         return await transaction.insertInto('repetitions').values(data).returningAll().execute();
       });
-    } catch (e) {
-      throw new BulkInsertFailedError(e?.message ?? 'Bulk insert of repetitions is failed');
+    } catch {
+      throw new BulkInsertFailedError('Bulk insert of repetitions is failed');
     }
   }
 
@@ -63,8 +63,8 @@ export class RepetitionsRepository {
         return await transaction.deleteFrom('repetitions').where('id', 'in', ids).execute();
       });
       return true;
-    } catch (e) {
-      throw new BulkInsertFailedError(e?.message ?? 'Bulk delete of repetitions is failed');
+    } catch {
+      throw new BulkInsertFailedError('Bulk delete of repetitions is failed');
     }
   }
 

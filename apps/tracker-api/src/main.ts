@@ -1,17 +1,17 @@
-import * as cookieParser from 'cookie-parser';
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { APP_ENV } from '@shared/configs';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
 import { AuthService } from '@/auth/auth.service';
-import { UsersService } from '@/users/users.service';
-import * as path from 'node:path';
-import * as express from 'express';
 import { ACCESS_TOKEN_KEY } from '@/auth/lib';
+import { UsersService } from '@/users/users.service';
 import { testUserConfig } from '@db/seeds/test-user';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { APP_ENV } from '@shared/configs';
+import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
+import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
+import * as path from 'node:path';
+import { AppModule } from './app.module';
 
 const DOCUMENTATION_URL = 'documentation';
 const SWAGGER_URL = 'swagger/json';

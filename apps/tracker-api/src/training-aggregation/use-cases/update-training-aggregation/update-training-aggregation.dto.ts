@@ -1,14 +1,26 @@
-import { PutExerciseTemplateRequestData } from '@/exercises-templates/dtos/put-exercise-template.dto';
+import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
+import { UpdateRepetitionsDto } from '@/repetitions/dto/update-repetitions.dto';
 import { PutTrainingRequestData } from '@/tranings/dtos/put-training.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsArray, IsInt, ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
 
-class UpdateTrainingAggregationExercise extends PutExerciseTemplateRequestData {
-  @ApiProperty({ example: 1 })
-  @IsInt()
+class UpdateTrainingAggregationExercise extends OmitType(ExerciseTemplateDto, [
+  'userId',
+  'createdAt',
+  'updatedAt',
+  'repetitions',
+] as const) {
+  @ApiProperty({
+    description: 'Повторения',
+    type: UpdateRepetitionsDto,
+    isArray: true,
+  })
   @Expose()
-  id: number;
+  @IsArray()
+  @Type(() => UpdateRepetitionsDto)
+  @ValidateNested({ each: true })
+  repetitions: UpdateRepetitionsDto[];
 }
 
 class UpdateTrainingAggregationRequestData extends PutTrainingRequestData {
