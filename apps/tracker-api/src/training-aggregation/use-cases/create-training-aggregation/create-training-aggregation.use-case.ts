@@ -1,13 +1,11 @@
 import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
-import { RepetitionMapper } from '@/repetitions/repetitions.mapper';
-import { RepetitionsRepository } from '@/repetitions/repetitions.repository';
-import { TrainingsAggregationService } from '../../trainings-aggregation.service';
 import { TrainingsRepository } from '@/tranings/trainings.repository';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TrainingAggregationEntity } from '../../entities/training-aggregation.entity';
 import { TrainingsAggregationMapper } from '../../trainings-aggregation.mapper';
+import { TrainingsAggregationService } from '../../trainings-aggregation.service';
 import {
   CreateTrainingAggregationExercise,
   CreateTrainingAggregationRequestData,

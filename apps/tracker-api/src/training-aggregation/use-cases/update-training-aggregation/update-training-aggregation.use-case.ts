@@ -1,4 +1,3 @@
-import { ExerciseTemplateDto } from '@/exercises-templates/dtos/exercise-template.dto';
 import { ExerciseTemplateEntity } from '@/exercises-templates/entity/exercise-template.entity';
 import { ExercisesTemplateMapper } from '@/exercises-templates/exercise-template.mapper';
 import { ExercisesTemplatesRepository } from '@/exercises-templates/exercises-templates.repository';
