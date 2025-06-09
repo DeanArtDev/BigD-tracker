@@ -23,9 +23,6 @@ export class CreateTrainingAggregationUseCase {
 
     private readonly exercisesTemplateMapper: ExercisesTemplateMapper,
     private readonly exerciseTemplatesRepository: ExercisesTemplatesRepository,
-
-    private readonly repetitionMapper: RepetitionMapper,
-    private readonly repetitionsRepository: RepetitionsRepository,
   ) {}
 
   async execute(

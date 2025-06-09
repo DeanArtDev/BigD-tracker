@@ -4,13 +4,11 @@ import { UpdateTrainingAggregationExercise } from '@/training-aggregation/use-ca
 import { Injectable } from '@nestjs/common';
 import { mapEntity } from '@shared/lib/map-entity';
 import { BaseMapper } from '@shared/lib/mapper';
-import { Override } from '@shared/lib/type-helpers';
 import { DB } from '@shared/modules/db';
 import { Selectable } from 'kysely';
 import { Insertable, Updateable } from 'kysely/dist/esm';
 import { CreateExerciseTemplateRequestData } from './dtos/create-exercises-template.dto';
 import { ExerciseTemplateDto } from './dtos/exercise-template.dto';
-import { PutExerciseTemplateRequest } from './dtos/put-exercise-template.dto';
 import { ExerciseTemplateEntity, ExerciseType } from './entity/exercise-template.entity';
 
 interface ExerciseTemplateRawData {

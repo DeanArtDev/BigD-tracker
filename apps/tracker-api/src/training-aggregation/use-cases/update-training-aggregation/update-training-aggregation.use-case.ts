@@ -118,20 +118,4 @@ export class UpdateTrainingAggregationUseCase {
       rawTraining: updatedRawTraining,
     });
   }
-
-  private mergeUpdateExerciseDtoWithDto(
-    updateDto: UpdateTrainingAggregationExercise,
-    exerciseDto: ExerciseTemplateDto,
-  ): ExerciseTemplateDto {
-    const { id, name, type, description, exampleUrl } = updateDto;
-
-    return {
-      ...exerciseDto,
-      id,
-      name,
-      type,
-      exampleUrl: exampleUrl ?? undefined,
-      description: description ?? undefined,
-    };
-  }
 }

@@ -2,7 +2,6 @@ import {
   ExercisesTemplateMapper,
   ExerciseTemplateRawData,
 } from '@/exercises-templates/exercise-template.mapper';
-import { CreateTrainingAggregationRequestData } from '@/training-aggregation/use-cases/create-training-aggregation';
 import { UpdateTrainingAggregationRequestData } from '@/training-aggregation/use-cases/update-training-aggregation';
 import { TrainingType } from '@/tranings/entities/training.entity';
 import { TrainingRawData, TrainingsMapper } from '@/tranings/trainings.mapper';
