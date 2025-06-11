@@ -19,13 +19,11 @@ export default {
   target: 'Тестовый пользователь',
   seed: async (db: Kysely<DB>) => {
     if (!testUserConfig.TEST_USER_LOGIN || !testUserConfig.TEST_USER_PASSWORD) {
-      console.log(`🚫 логин или пароль для тестового пользователя не установлен`);
+      console.info(`🚫 логин или пароль для тестового пользователя не установлен`);
       process.exit(1);
     }
 
     await db.transaction().execute(async (trx) => {
-      await trx.deleteFrom('users').execute();
-
       const result = await trx
         .insertInto('users')
         .values({
@@ -36,7 +34,7 @@ export default {
         .executeTakeFirstOrThrow();
 
       if (result != null) {
-        console.log(`✅Тестовый пользак ${testUserConfig.TEST_USER_LOGIN} залит успешно`);
+        console.info(`✅Тестовый пользак ${testUserConfig.TEST_USER_LOGIN} залит успешно`);
       }
     });
   },

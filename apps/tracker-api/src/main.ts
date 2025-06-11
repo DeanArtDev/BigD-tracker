@@ -26,7 +26,7 @@ const getTestUserToken = async (app: INestApplication, login: string) => {
     });
     return accessToken;
   } catch (err) {
-    console.log(`При создании токена для тестового пользователя что то отъебнуло`, err);
+    console.info(`При создании токена для тестового пользователя что то отъебнуло`, err);
   }
 };
 
@@ -85,7 +85,7 @@ async function bootstrap() {
   connectSwagger(app);
 
   await app.listen(port, '0.0.0.0', () => {
-    console.log(`
+    console.info(`
     🚀 Application is running at port http://localhost:${port};
     ----------------------------------------------------------------
     📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}?token=${testUserToken};

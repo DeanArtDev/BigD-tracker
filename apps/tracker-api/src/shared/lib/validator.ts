@@ -1,5 +1,5 @@
 import { toFinite } from 'lodash-es';
-import { isAfter, isInt, isURL } from 'validator';
+import { isAfter, isInt, isURL, isFloat } from 'validator';
 import isISO8601 from 'validator/lib/isISO8601';
 import { DomainValidationError } from './errors';
 
@@ -80,6 +80,16 @@ class Validator {
 
   isIntMax(value: number, max: number, field: string) {
     if (!isInt(String(value), { max })) {
+      throw new DomainValidationError({
+        field,
+        domain: this.domain,
+        message: `${field} must not be grater than ${max}`,
+      });
+    }
+  }
+
+  isFloatMax(value: number | string, max: number, field: string) {
+    if (!isFloat(String(value), { max })) {
       throw new DomainValidationError({
         field,
         domain: this.domain,

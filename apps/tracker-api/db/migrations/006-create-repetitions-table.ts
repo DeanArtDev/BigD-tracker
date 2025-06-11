@@ -12,12 +12,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable('repetitions')
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('exercises_id', 'integer', (col) =>
-      col.references('exercises_templates.id').onDelete('cascade').notNull(),
-    )
-    .addColumn('training_id', 'integer', (col) =>
-      col.references('trainings.id').onDelete('cascade'),
+      col.references('exercises.id').onDelete('cascade').notNull(),
     )
 
+    .addColumn('description', 'text')
     .addColumn('user_id', 'integer')
 
     .addColumn('target_count', 'integer', (col) => col.notNull().check(sql`target_count <= 300`))

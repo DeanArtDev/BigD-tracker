@@ -12,8 +12,6 @@ const trainings = [
     exercises: [
       {
         id: 1,
-        sets: 3,
-        repetitions: 12,
       },
     ],
   },
@@ -27,9 +25,7 @@ const trainings = [
     post_training_duration: 30,
     exercises: [
       {
-        id: 1,
-        sets: 3,
-        repetitions: 6,
+        id: 2,
       },
     ],
   },
@@ -42,9 +38,7 @@ const trainings = [
     post_training_duration: 30,
     exercises: [
       {
-        id: 1,
-        sets: 3,
-        repetitions: 3,
+        id: 3,
       },
     ],
   },
@@ -62,20 +56,21 @@ export default {
           .returning(['id'])
           .executeTakeFirstOrThrow();
 
-        await trx
-          .insertInto('trainings_exercise_templates')
-          .values(
-            exercises.map((i, index) => ({
-              training_id: result.id,
-              exercise_template_id: i.id,
-              order: index,
-            })),
-          )
-          .executeTakeFirstOrThrow();
+        await Promise.all(
+          exercises.map(async (exercise) => {
+            return await trx
+              .updateTable('exercises')
+              .where('id', '=', exercise.id)
+              .set({
+                training_id: result.id,
+              })
+              .executeTakeFirstOrThrow();
+          }),
+        );
       }
 
       for (const t of trainings) {
-        console.log(`✅ ${t.name} залита успешно`);
+        console.info(`✅ ${t.name} залита успешно`);
       }
     });
   },

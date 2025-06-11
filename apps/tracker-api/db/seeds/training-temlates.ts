@@ -9,9 +9,7 @@ const trainings = [
     worm_up_duration: 30,
     exercises: [
       {
-        id: 1,
-        sets: 3,
-        repetitions: 12,
+        id: 4,
       },
     ],
   },
@@ -23,9 +21,7 @@ const trainings = [
     post_training_duration: 30,
     exercises: [
       {
-        id: 1,
-        sets: 3,
-        repetitions: 6,
+        id: 5,
       },
     ],
   },
@@ -36,9 +32,7 @@ const trainings = [
     post_training_duration: 30,
     exercises: [
       {
-        id: 1,
-        sets: 3,
-        repetitions: 3,
+        id: 6,
       },
     ],
   },
@@ -56,20 +50,21 @@ export default {
           .returning(['id'])
           .executeTakeFirstOrThrow();
 
-        await trx
-          .insertInto('training_templates_exercise_templates')
-          .values(
-            exercises.map((i, index) => ({
-              training_template_id: result.id,
-              exercise_template_id: i.id,
-              order: index,
-            })),
-          )
-          .executeTakeFirstOrThrow();
+        await Promise.all(
+          exercises.map(async (exercise) => {
+            return await trx
+              .updateTable('exercises')
+              .where('id', '=', exercise.id)
+              .set({
+                training_template_id: result.id,
+              })
+              .executeTakeFirstOrThrow();
+          }),
+        );
       }
 
       for (const t of trainings) {
-        console.log(`✅ ${t.name} залита успешно`);
+        console.info(`✅ ${t.name} залита успешно`);
       }
     });
   },

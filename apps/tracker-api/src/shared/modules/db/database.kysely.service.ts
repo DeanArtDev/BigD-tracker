@@ -16,7 +16,7 @@ export class KyselyService implements OnApplicationShutdown {
   }
 
   async onApplicationShutdown(signal: string) {
-    console.log(`Shutting down DB pool due to ${signal}`);
+    console.info(`Shutting down DB pool due to ${signal}`);
 
     await this.kyselyInstance.pool.end();
   }

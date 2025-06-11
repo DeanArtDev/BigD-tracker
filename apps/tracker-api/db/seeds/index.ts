@@ -3,14 +3,14 @@ import testUser from './test-user';
 import exerciseTypes from './exercise-types';
 import trainingTemplates from './training-temlates';
 import trainings from './trainings';
-import exerciseTemplates from './exercise-templates';
+import exercises from './exercises';
 import repetitionTypes from './repetition-types';
 
 export default [
   testUser,
   repetitionTypes,
   exerciseTypes,
-  exerciseTemplates,
+  exercises,
   trainingTypes,
   trainings,
   trainingTemplates,
