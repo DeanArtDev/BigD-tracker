@@ -11,7 +11,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('repetitions')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('exercises_id', 'integer', (col) =>
+    .addColumn('exercise_id', 'integer', (col) =>
       col.references('exercises.id').onDelete('cascade').notNull(),
     )
 

@@ -1,16 +1,15 @@
-import { ExerciseTemplatesModule } from '@/exercises-templates/exercise-templates.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { ExercisesModule } from '@/modules/exercises';
+import { RepetitionsModule } from '@/modules/repetitions';
+import { TrainingTemplatesModule } from '@/modules/traning-templates';
+import { TrainingsModule } from '@/modules/tranings';
+import { UsersModule } from '@/modules/users/users.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { appConfigFactory } from '@shared/configs/app-config-factory';
+import { appConfigFactory } from '@/infrastructure/configs/app-config-factory';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
-import { DatabaseModule } from '@shared/modules/db';
-import { UsersModule } from '@/users/users.module';
-import { AuthModule } from '@/auth/auth.module';
-import { TrainingsModule } from '@/tranings/trainings.module';
-import { TrainingAggregationModule } from '@/training-aggregation/training-aggregation.module';
-import { TrainingTemplateAggregationModule } from '@/training-template-aggregation/training-template-aggregation.module';
-import { RepetitionsModule } from '@/repetitions/repetitions.module';
+import { DatabaseModule } from '@/infrastructure/db';
 
 @Module({
   imports: [
@@ -22,10 +21,9 @@ import { RepetitionsModule } from '@/repetitions/repetitions.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
-    TrainingTemplateAggregationModule,
     TrainingsModule,
-    ExerciseTemplatesModule,
-    TrainingAggregationModule,
+    TrainingTemplatesModule,
+    ExercisesModule,
     RepetitionsModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],

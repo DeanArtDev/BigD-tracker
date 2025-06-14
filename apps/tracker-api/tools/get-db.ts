@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import { join } from 'node:path';
 import { Pool } from 'pg';
-import { getDBEnv, DB } from '../src/shared/modules/db';
+import { getDBEnv, DB } from '../src/infrastructure/db';
 import { Kysely, PostgresDialect } from 'kysely';
 
 dotenv.config({
