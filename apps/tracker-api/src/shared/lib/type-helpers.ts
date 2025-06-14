@@ -26,4 +26,16 @@ type OmitCreateFields<
   },
 > = Omit<T, 'id' | 'created_at' | 'updated_at'>;
 
-export type { HasId, Override, ValueOf, Nullable, Undefinedable, OmitCreateFields };
+type Constructor<T = object> = new (...args: any[]) => T;
+type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
+
+export type {
+  Constructor,
+  AbstractConstructor,
+  HasId,
+  Override,
+  ValueOf,
+  Nullable,
+  Undefinedable,
+  OmitCreateFields,
+};

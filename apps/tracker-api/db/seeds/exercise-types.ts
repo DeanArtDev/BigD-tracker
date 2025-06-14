@@ -1,5 +1,5 @@
 import { Kysely } from 'kysely';
-import { DB } from '../../src/shared/modules/db/types';
+import { DB } from '../../src/infrastructure/db';
 
 export default {
   key: 'exercise-types',

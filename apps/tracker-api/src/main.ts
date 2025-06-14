@@ -1,12 +1,12 @@
-import { AuthService } from '@/auth/auth.service';
-import { ACCESS_TOKEN_KEY } from '@/auth/lib';
-import { UsersService } from '@/users/users.service';
+import { AuthService } from '@/modules/auth/auth.service';
+import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
+import { UsersService } from '@/modules/users/users.service';
 import { testUserConfig } from '@db/seeds/test-user';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { APP_ENV } from '@shared/configs';
+import { APP_ENV } from '@/infrastructure/configs';
 import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';

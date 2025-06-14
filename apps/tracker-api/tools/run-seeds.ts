@@ -1,6 +1,6 @@
 import { Kysely } from 'kysely';
 import seeds from '../db/seeds';
-import { DB } from '../src/shared/modules/db';
+import { DB } from '../src/infrastructure/db';
 import { getDb } from './get-db';
 
 export async function runSeeds() {
