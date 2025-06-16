@@ -1,6 +1,6 @@
 import { Kysely } from 'kysely';
 import seeds from '../db/seeds';
-import { DB } from '../src/shared/modules/db';
+import { DB } from '../src/infrastructure/db';
 import { getDb } from './get-db';
 
 export async function runSeeds() {
@@ -28,24 +28,24 @@ export async function runSeeds() {
 
     await runSeed(script, db);
 
-    console.log(`✅ Сид ${scriptKey} был успешно загружен!`);
+    console.info(`✅ Сид ${scriptKey} был успешно загружен!`);
   } else {
     let ranCount = 0;
 
-    console.log('Начинаем загрузку сидов...');
+    console.info('Начинаем загрузку сидов...');
     for (const { target, seed } of seeds) {
-      console.log(`⏳ Запуск сид-скрипта ${target}...`);
+      console.info(`⏳ Запуск сид-скрипта ${target}...`);
       ranCount += 1;
 
       await seed(db);
     }
 
     if (ranCount === seeds.length) {
-      console.log('✅ Все сиды были успешно загружены!');
+      console.info('✅ Все сиды были успешно загружены!');
     } else if (ranCount === 0) {
-      console.log('🤨 Не было выбрано ни одного сида для загрузки.');
+      console.info('🤨 Не было выбрано ни одного сида для загрузки.');
     } else {
-      console.log(`✅ успешно загружено ${ranCount} сид(-а, -ов)!`);
+      console.info(`✅ успешно загружено ${ranCount} сид(-а, -ов)!`);
     }
   }
 
@@ -56,7 +56,7 @@ async function runSeed(script: (typeof seeds)[number], db: Kysely<DB>) {
   const { target, seed } = script;
 
   try {
-    console.log(`⏳ Запуск сид-скрипта ${target}...`);
+    console.info(`⏳ Запуск сид-скрипта ${target}...`);
     await seed(db);
   } catch (error) {
     console.error(`❌ Произошла ошибка в сид-скрипте ${target}`, error);

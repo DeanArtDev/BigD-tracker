@@ -28,6 +28,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       col.check(sql`post_training_duration >= 0 AND post_training_duration <= 60`),
     )
 
+    .addColumn('in_progress', 'boolean', (col) => col.notNull().defaultTo(false))
+
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .execute();

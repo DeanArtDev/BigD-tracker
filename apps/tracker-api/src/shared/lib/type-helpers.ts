@@ -18,4 +18,24 @@ interface HasId {
   readonly id: number | string;
 }
 
-export type { HasId, Override, ValueOf, Nullable, Undefinedable };
+type OmitCreateFields<
+  T extends {
+    id?: number | undefined;
+    created_at?: string | Date | undefined;
+    updated_at?: string | Date | undefined;
+  },
+> = Omit<T, 'id' | 'created_at' | 'updated_at'>;
+
+type Constructor<T = object> = new (...args: any[]) => T;
+type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
+
+export type {
+  Constructor,
+  AbstractConstructor,
+  HasId,
+  Override,
+  ValueOf,
+  Nullable,
+  Undefinedable,
+  OmitCreateFields,
+};

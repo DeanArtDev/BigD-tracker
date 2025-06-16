@@ -1,0 +1,79 @@
+import { TrainingType } from '../trainings.repository';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose, Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
+
+class TrainingDto {
+  @ApiProperty({ example: 1 })
+  @IsInt()
+  @Expose()
+  id: number;
+
+  @ApiProperty({ example: 1 })
+  @IsInt()
+  @Expose()
+  userId: number;
+
+  @ApiProperty({ example: 'MEDIUM', enum: TrainingType })
+  @Type(() => String)
+  @IsEnum(TrainingType)
+  @Expose()
+  type: TrainingType;
+
+  @ApiProperty({
+    example: 'Понедельничная',
+  })
+  @IsString()
+  @Expose()
+  name: string;
+
+  @ApiPropertyOptional({
+    example: 'описание (какие цели на тренировку, на что сделать упор и т.п)',
+  })
+  @IsString()
+  @Expose()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({
+    example: '2025-05-24T13:01:02.471Z',
+  })
+  @Expose()
+  @IsISO8601()
+  startDate: string;
+
+  @ApiPropertyOptional({
+    example: '2025-06-24T13:01:02.471Z',
+  })
+  @Expose()
+  @IsISO8601()
+  @IsOptional()
+  endDate?: string;
+
+  @ApiPropertyOptional({
+    example: 30,
+    description: 'измеряется в минутах',
+  })
+  @IsInt()
+  @Expose()
+  @IsOptional()
+  wormUpDuration?: number;
+
+  @ApiPropertyOptional({
+    example: 30,
+    description: 'измеряется в минутах',
+  })
+  @IsInt()
+  @Expose()
+  @IsOptional()
+  postTrainingDuration?: number;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @Expose()
+  @IsBoolean()
+  inProgress: boolean;
+}
+
+export { TrainingDto };

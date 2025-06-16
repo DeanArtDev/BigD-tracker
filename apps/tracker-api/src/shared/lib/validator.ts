@@ -1,6 +1,7 @@
-import { isAfter, isInt, isURL } from 'validator';
+import { toFinite } from 'lodash-es';
+import { isAfter, isInt, isURL, isFloat } from 'validator';
 import isISO8601 from 'validator/lib/isISO8601';
-import { DomainValidationError } from './domain-validation.error';
+import { DomainValidationError } from './errors';
 
 class Validator {
   constructor(public readonly domain: string) {}
@@ -47,7 +48,8 @@ class Validator {
   }
 
   isIdValId(value: number, field: string) {
-    if (value <= 0 && !isFinite(value) && Number.isNaN(value) && Number.isInteger(value)) {
+    if (!isFinite(value)) return;
+    if (value <= 0 || Number.isNaN(value) || !isInt(value.toString())) {
       throw new DomainValidationError({
         field,
         domain: this.domain,
@@ -82,6 +84,26 @@ class Validator {
         field,
         domain: this.domain,
         message: `${field} must not be grater than ${max}`,
+      });
+    }
+  }
+
+  isFloatMax(value: number | string, max: number, field: string) {
+    if (!isFloat(String(value), { max })) {
+      throw new DomainValidationError({
+        field,
+        domain: this.domain,
+        message: `${field} must not be grater than ${max}`,
+      });
+    }
+  }
+
+  isNumericString(value: string, field: string) {
+    if (Number.isNaN(toFinite(value))) {
+      throw new DomainValidationError({
+        field,
+        domain: this.domain,
+        message: `${field}:${value} must be a numeric string`,
       });
     }
   }

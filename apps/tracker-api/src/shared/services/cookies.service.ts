@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { APP_ENV } from '@shared/configs';
+import { APP_ENV } from '@/infrastructure/configs';
 import { Response } from 'express';
 
 export const REFRESH_TOKEN_FIELD = 'refresh_token';

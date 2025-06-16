@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { DomainValidationError } from '@shared/lib/domain-validation.error';
+import { DomainValidationError } from '@shared/lib/errors';
 import { Response } from 'express';
 
 @Catch(DomainValidationError)

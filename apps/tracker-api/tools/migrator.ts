@@ -28,7 +28,7 @@ async function migrate() {
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
-      console.log(`✅ Миграция ${it.migrationName} выполнена`);
+      console.info(`✅ Миграция ${it.migrationName} выполнена`);
     } else if (it.status === 'Error') {
       console.error(`❌ Ошибка в миграции ${it.migrationName}`);
     }
@@ -39,7 +39,7 @@ async function migrate() {
     console.error(error);
     process.exit(1);
   } else {
-    console.log('🎉 Все миграции успешно применены!');
+    console.info('🎉 Все миграции успешно применены!');
   }
 
   await db.destroy();
