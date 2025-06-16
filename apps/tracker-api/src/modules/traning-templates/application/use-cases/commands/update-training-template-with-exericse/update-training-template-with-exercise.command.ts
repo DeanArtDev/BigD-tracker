@@ -1,15 +1,15 @@
 import { ExerciseType, UpdateExercisesWithRepetitionsCommand } from '@/modules/exercises';
+import { GetTrainingTemplateWithExercisesQuery } from '../../queries/get-training-template-with-exercises.query';
+import { TrainingTemplateWithExercisesEntity } from '../../../../domain/entities';
+import {
+  TRAINING_TEMPLATES_REPOSITORY,
+  TrainingTemplatesRepository,
+} from '../../../training-templates.repository';
+import { TrainingType } from '@/modules/tranings';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { KyselyUnitOfWork } from '@shared/core/uow';
-import { TrainingWithExercisesEntity } from '../../../../domain/entities/training-with-exercises.entity';
-import {
-  TRAININGS_REPOSITORY,
-  TrainingsRepository,
-  TrainingType,
-} from '../../../trainings.repository';
-import { GetTrainingsWithExercisesQuery } from '../../queries/get-trainings-with-exercises.query';
 
-interface UpdateTrainingWithExercisesInput {
+interface UpdateTrainingTemplateWithExercisesInput {
   readonly id: number;
   readonly userId: number;
   readonly name: string;
@@ -34,58 +34,62 @@ interface UpdateTrainingWithExercisesInput {
 }
 
 @Injectable()
-class UpdateTrainingWithExercisesCommand {
+class UpdateTrainingTemplateWithExercisesCommand {
   constructor(
-    @Inject(TRAININGS_REPOSITORY)
-    private readonly trainingsRepo: TrainingsRepository,
+    @Inject(TRAINING_TEMPLATES_REPOSITORY)
+    private readonly trainingTemplateRepo: TrainingTemplatesRepository,
 
-    private readonly getTrainingsWithExercises: GetTrainingsWithExercisesQuery,
     private readonly updateExercisesWithRepetitions: UpdateExercisesWithRepetitionsCommand,
+    private readonly getTrainingTemplateWithExercises: GetTrainingTemplateWithExercisesQuery,
 
     private readonly unitOfWork: KyselyUnitOfWork,
   ) {}
 
-  async execute(input: UpdateTrainingWithExercisesInput): Promise<TrainingWithExercisesEntity> {
-    const { exercises: exercisesDto, ...trainingDto } = input;
+  async execute(
+    input: UpdateTrainingTemplateWithExercisesInput,
+  ): Promise<TrainingTemplateWithExercisesEntity> {
+    const { exercises: exercisesDto, ...templateDto } = input;
 
     return await this.unitOfWork.execute(async (transaction) => {
-      const training = await this.getTrainingsWithExercises.one({
-        id: trainingDto.id,
-        userId: trainingDto.userId,
+      const template = await this.getTrainingTemplateWithExercises.one({
+        id: templateDto.id,
+        userId: templateDto.userId,
       });
 
-      training
+      template
         .update({
-          type: trainingDto.type,
-          name: trainingDto.name,
-          description: trainingDto.description,
+          type: templateDto.type,
+          name: templateDto.name,
+          description: templateDto.description,
+          postTrainingDuration: templateDto.postTrainingDuration,
+          wormUpDuration: templateDto.wormUpDuration,
         })
-        .updatePostTrainingDuration(trainingDto.postTrainingDuration)
-        .updateWormUpDuration(trainingDto.wormUpDuration)
         .updateExercises(exercisesDto);
 
-      const updatedTraining = await this.trainingsRepo.update(
+      const updatedTemplate = await this.trainingTemplateRepo.update(
         {
-          id: training.id,
-          type: training.type,
-          description: training.description,
-          name: training.name,
-          post_training_duration: training?.postTrainingDuration,
-          worm_up_duration: training?.wormUpDuration,
+          id: template.id,
+          type: template.type,
+          description: template.description,
+          name: template.name,
+          post_training_duration: template?.postTrainingDuration,
+          worm_up_duration: template?.wormUpDuration,
         },
         { replace: true },
         transaction,
       );
-      if (updatedTraining == null) {
-        throw new InternalServerErrorException(`Failed to update training id: ${trainingDto.id}`);
+      if (updatedTemplate == null) {
+        throw new InternalServerErrorException(
+          `Failed to update training template id: ${templateDto.id}`,
+        );
       }
 
       await Promise.all(
-        training.exercises.map(async (exercise) => {
+        template.exercises.map(async (exercise) => {
           return await this.updateExercisesWithRepetitions.execute(
             {
               id: exercise.id,
-              userId: training.userId,
+              userId: template.userId,
               name: exercise.name,
               type: exercise.type,
               description: exercise.description,
@@ -106,9 +110,9 @@ class UpdateTrainingWithExercisesCommand {
         }),
       );
 
-      return training;
+      return template;
     });
   }
 }
 
-export { UpdateTrainingWithExercisesCommand, UpdateTrainingWithExercisesInput };
+export { UpdateTrainingTemplateWithExercisesCommand, UpdateTrainingTemplateWithExercisesInput };

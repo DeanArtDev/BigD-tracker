@@ -4,11 +4,14 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -17,20 +20,20 @@ import {
   TrainingTemplateResponse,
   TrainingTemplateResponseSingle,
 } from './application/dtos';
+import {
+  CreateTrainingTemplateCommand,
+  CreateTrainingTemplateWithExercisesRequest,
+  UpdateTrainingTemplateWithExerciseRequest,
+} from './application/use-cases';
 import { TrainingTemplatesService } from './domain/training-templates.service';
-import { CreateTrainingTemplateWithExercisesRequest } from './application/use-cases';
 
-/*TODO:
- *  [x] получение одной с упражнениями
- *  [x] получение всех с my
- *  [x] создание
- *  [] удаление
- *  [] обновление
- * */
 @ApiTags('Training templates')
 @Controller('trainings-templates')
 export class TrainingTemplatesController {
-  constructor(private readonly trainingTemplatesService: TrainingTemplatesService) {}
+  constructor(
+    private readonly trainingTemplatesService: TrainingTemplatesService,
+    private readonly createTrainingTemplateCommand: CreateTrainingTemplateCommand,
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -86,62 +89,45 @@ export class TrainingTemplatesController {
     };
   }
 
-  // @Put('/:trainingId')
-  // @ApiOperation({
-  //   summary: 'Обновление тренировки с упражнениями',
-  //   description: 'nullable поля очищают значения',
-  // })
-  // @ApiResponse({
-  //   status: HttpStatus.OK,
-  //   description: 'Тренировка обновлена',
-  //   type: TrainingWithExercisesResponseSingle,
-  // })
-  // @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  // async putTraining(
-  //   @TokenPayload() { uid }: AccessTokenPayload,
-  //   @Param('trainingId', ParseIntPipe) trainingId: number,
-  //   @Body() { data }: UpdateTrainingWithExerciseRequest,
-  // ): Promise<TrainingWithExercisesResponseSingle> {
-  //   return {
-  //     data: await this.trainingsService.updateWithExercises({
-  //       id: trainingId,
-  //       userId: uid,
-  //       ...data,
-  //     }),
-  //   };
-  // }
-  //
-  // @Post('assign')
-  // @ApiOperation({
-  //   summary: 'Назначение тренировки на дату',
-  // })
-  // @ApiResponse({
-  //   status: HttpStatus.OK,
-  // })
-  // @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  // async assignTraining(
-  //   @Res({ passthrough: true }) res: Response,
-  //   @Body() { data }: AssignTrainingRequest,
-  // ): Promise<void> {
-  //   await this.assignTrainingCommand.execute(data);
-  //   res.status(HttpStatus.OK).end();
-  // }
-  //
-  // @Delete(':trainingId')
-  // @ApiOperation({
-  //   summary: 'Удаление тренировки',
-  // })
-  // @ApiResponse({
-  //   status: HttpStatus.NO_CONTENT,
-  //   description: 'Тренировка удалена',
-  // })
-  // @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  // async deleteTraining(
-  //   @TokenPayload() { uid }: AccessTokenPayload,
-  //   @Param('trainingId', ParseIntPipe) trainingId: number,
-  //   @Res({ passthrough: true }) res: Response,
-  // ): Promise<void> {
-  //   await this.deleteTrainingCommand.execute(trainingId, uid);
-  //   res.status(HttpStatus.NO_CONTENT).end();
-  // }
+  @Put('/:templateId')
+  @ApiOperation({
+    summary: 'Обновление шаблона тренировки с упражнениями',
+    description: 'nullable поля очищают значения',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: TrainingTemplateResponseSingle,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async putTraining(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('templateId', ParseIntPipe) templateId: number,
+    @Body() { data }: UpdateTrainingTemplateWithExerciseRequest,
+  ): Promise<TrainingTemplateResponseSingle> {
+    return {
+      data: await this.trainingTemplatesService.updateOneWithExercises({
+        id: templateId,
+        userId: uid,
+        ...data,
+      }),
+    };
+  }
+
+  @Delete(':templateId')
+  @ApiOperation({
+    summary: 'Удаление тренировки',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Тренировка удалена',
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTraining(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('templateId', ParseIntPipe) templateId: number,
+  ): Promise<void> {
+    await this.createTrainingTemplateCommand.execute({ id: templateId, userId: uid });
+    return;
+  }
 }

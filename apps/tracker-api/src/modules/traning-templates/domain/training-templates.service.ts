@@ -1,4 +1,4 @@
-import { TrainingTemplateWithExercisesDto } from '@/modules/traning-templates/application/dtos';
+import { TrainingTemplateWithExercisesDto } from '../application/dtos';
 import { Injectable } from '@nestjs/common';
 import { TrainingTemplateDto } from '../application/dtos/training-template.dto';
 import {
@@ -10,6 +10,8 @@ import {
   CreateTrainingTemplateWithExercisesInput,
   GetTrainingTemplatesQuery,
   GetTrainingTemplateWithExercisesQuery,
+  UpdateTrainingTemplateWithExercisesCommand,
+  UpdateTrainingTemplateWithExercisesInput,
 } from '../application/use-cases';
 
 @Injectable()
@@ -21,31 +23,39 @@ class TrainingTemplatesService {
     private readonly getTrainingTemplateWithExercisesQuery: GetTrainingTemplateWithExercisesQuery,
     private readonly trainingTemplatesWithExercisesMapper: TrainingTemplatesWithExercisesMapper,
     private readonly createTrainingTemplateWithExercisesCommand: CreateTrainingTemplateWithExercisesCommand,
+    private readonly updateTrainingTemplateWithExercises: UpdateTrainingTemplateWithExercisesCommand,
   ) {}
 
   async all(input: { userId: number; my?: boolean }): Promise<TrainingTemplateDto[]> {
-    const trainings = await this.getTrainingTemplatesQuery.all(input);
-    return trainings.map(this.trainingTemplatesMapper.fromEntityToDTO);
+    const template = await this.getTrainingTemplatesQuery.all(input);
+    return template.map(this.trainingTemplatesMapper.fromEntityToDTO);
   }
 
   async one(input: { id: number; userId?: number }): Promise<TrainingTemplateDto> {
-    const training = await this.getTrainingTemplatesQuery.one(input);
-    return this.trainingTemplatesMapper.fromEntityToDTO(training);
+    const template = await this.getTrainingTemplatesQuery.one(input);
+    return this.trainingTemplatesMapper.fromEntityToDTO(template);
   }
 
   async oneWithExercises(input: {
     id: number;
     userId?: number;
   }): Promise<TrainingTemplateWithExercisesDto> {
-    const training = await this.getTrainingTemplateWithExercisesQuery.one(input);
-    return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(training);
+    const template = await this.getTrainingTemplateWithExercisesQuery.one(input);
+    return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(template);
   }
 
   async createOneWithExercises(
     input: CreateTrainingTemplateWithExercisesInput,
   ): Promise<TrainingTemplateWithExercisesDto> {
-    const training = await this.createTrainingTemplateWithExercisesCommand.execute(input);
-    return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(training);
+    const template = await this.createTrainingTemplateWithExercisesCommand.execute(input);
+    return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(template);
+  }
+
+  async updateOneWithExercises(
+    input: UpdateTrainingTemplateWithExercisesInput,
+  ): Promise<TrainingTemplateWithExercisesDto> {
+    const template = await this.updateTrainingTemplateWithExercises.execute(input);
+    return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(template);
   }
 }
 

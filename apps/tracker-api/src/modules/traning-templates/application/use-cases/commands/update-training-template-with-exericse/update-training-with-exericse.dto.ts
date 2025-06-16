@@ -1,10 +1,10 @@
 import { UpdateExerciseWithRepetitionsData } from '@/modules/exercises';
-import { TrainingType } from '../../../trainings.repository';
+import { TrainingType } from '@/modules/tranings';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsArray, IsEnum, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class ExerciseWithRepetitionsRequestData extends UpdateExerciseWithRepetitionsData {
+class TemplateExerciseWithRepetitions extends UpdateExerciseWithRepetitionsData {
   @ApiProperty({
     example: 1,
   })
@@ -13,7 +13,7 @@ class ExerciseWithRepetitionsRequestData extends UpdateExerciseWithRepetitionsDa
   id: number;
 }
 
-class UpdateTrainingWithExerciseRequestData {
+class UpdateTrainingTemplateWithExerciseRequestData {
   @ApiProperty({ example: 'MEDIUM', enum: TrainingType })
   @Type(() => String)
   @IsEnum(TrainingType)
@@ -53,22 +53,22 @@ class UpdateTrainingWithExerciseRequestData {
   @IsOptional()
   postTrainingDuration?: number;
 
-  @ApiProperty({ type: ExerciseWithRepetitionsRequestData, isArray: true })
+  @ApiProperty({ type: TemplateExerciseWithRepetitions, isArray: true })
   @IsArray()
   @Expose()
   @ValidateNested({ each: true })
-  @Type(() => ExerciseWithRepetitionsRequestData)
-  exercises: ExerciseWithRepetitionsRequestData[];
+  @Type(() => TemplateExerciseWithRepetitions)
+  exercises: TemplateExerciseWithRepetitions[];
 }
 
-class UpdateTrainingWithExerciseRequest {
+class UpdateTrainingTemplateWithExerciseRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: UpdateTrainingWithExerciseRequestData,
+    type: UpdateTrainingTemplateWithExerciseRequestData,
   })
   @ValidateNested()
-  @Type(() => UpdateTrainingWithExerciseRequestData)
-  data: UpdateTrainingWithExerciseRequestData;
+  @Type(() => UpdateTrainingTemplateWithExerciseRequestData)
+  data: UpdateTrainingTemplateWithExerciseRequestData;
 }
 
-export { UpdateTrainingWithExerciseRequestData, UpdateTrainingWithExerciseRequest };
+export { UpdateTrainingTemplateWithExerciseRequestData, UpdateTrainingTemplateWithExerciseRequest };

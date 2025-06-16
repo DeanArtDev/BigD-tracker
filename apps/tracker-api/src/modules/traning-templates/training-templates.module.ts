@@ -7,9 +7,11 @@ import {
 } from './application/mappers';
 import { TRAINING_TEMPLATES_REPOSITORY } from './application/training-templates.repository';
 import {
-  GetTrainingTemplatesQuery,
+  CreateTrainingTemplateCommand,
   CreateTrainingTemplateWithExercisesCommand,
+  GetTrainingTemplatesQuery,
   GetTrainingTemplateWithExercisesQuery,
+  UpdateTrainingTemplateWithExercisesCommand,
 } from './application/use-cases';
 import { TrainingTemplatesService } from './domain/training-templates.service';
 import { KyselyTrainingTemplatesRepository } from './infra/kysely-training-templates.repository';
@@ -27,6 +29,8 @@ import { TrainingTemplatesController } from './training-templates.controller';
     TrainingTemplatesService,
     KyselyUnitOfWork,
     CreateTrainingTemplateWithExercisesCommand,
+    CreateTrainingTemplateCommand,
+    UpdateTrainingTemplateWithExercisesCommand,
   ],
 })
 export class TrainingTemplatesModule {}
