@@ -22,6 +22,7 @@ import { TrainingsService } from './trainings.service';
 import {
   AssignTrainingCommand,
   AssignTrainingRequest,
+  CreateTrainingByTemplateRequest,
   CreateTrainingWithExercisesRequest,
   DeleteTrainingCommand,
   UpdateTrainingWithExerciseRequest,
@@ -90,6 +91,24 @@ export class TrainingsController {
   ): Promise<TrainingWithExercisesResponseSingle> {
     return {
       data: await this.trainingsService.createWithExercises({ ...data, userId: uid }),
+    };
+  }
+
+  @Post('/templates')
+  @ApiOperation({
+    summary: 'Создание тренировки по шаблону',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: TrainingWithExercisesResponseSingle,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async createTrainingByTemplate(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: CreateTrainingByTemplateRequest,
+  ): Promise<TrainingWithExercisesResponseSingle> {
+    return {
+      data: await this.trainingsService.crateTrainingByTemplate({ ...data, userId: uid }),
     };
   }
 

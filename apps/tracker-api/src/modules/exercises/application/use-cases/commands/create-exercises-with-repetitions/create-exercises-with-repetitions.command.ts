@@ -13,23 +13,18 @@ import {
 type CreateExerciseWithRepetitionsInput = (
   | {
       readonly trainingId?: never;
-      readonly userId: number;
       readonly templateId?: number;
-      readonly name: string;
-      readonly type: ExerciseType;
-      readonly description?: string;
-      readonly exampleUrl?: string;
     }
   | {
       readonly templateId?: never;
-      readonly userId: number;
       readonly trainingId?: number;
-      readonly name: string;
-      readonly type: ExerciseType;
-      readonly description?: string;
-      readonly exampleUrl?: string;
     }
 ) & {
+  readonly userId: number;
+  readonly name: string;
+  readonly type: ExerciseType;
+  readonly description?: string;
+  readonly exampleUrl?: string;
   readonly repetitions: {
     readonly targetCount: number;
     readonly description?: string;

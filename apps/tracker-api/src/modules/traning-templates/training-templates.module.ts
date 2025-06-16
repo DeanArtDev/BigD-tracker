@@ -19,6 +19,7 @@ import { TrainingTemplatesController } from './training-templates.controller';
 
 @Module({
   imports: [ExercisesModule],
+  exports: [GetTrainingTemplateWithExercisesQuery],
   controllers: [TrainingTemplatesController],
   providers: [
     { provide: TRAINING_TEMPLATES_REPOSITORY, useClass: KyselyTrainingTemplatesRepository },

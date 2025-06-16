@@ -3,14 +3,16 @@ import { TrainingWithExercisesDto } from './dtos/training-with-exercises.dto';
 import { TrainingDto } from './dtos/training.dto';
 import { TrainingsWithExercisesMapper } from './mappers/trainings-with-exercises.mapper';
 import { TrainingsMapper } from './mappers/trainings.mapper';
-import { GetTrainingsQuery } from './use-cases/queries/get-trainings.query';
 import {
+  CreateTrainingByTemplateCommand,
+  CreateTrainingByTemplateInput,
   CreateTrainingWithExercisesCommand,
   CreateTrainingWithExercisesInput,
   GetTrainingsWithExercisesQuery,
   UpdateTrainingWithExercisesCommand,
   UpdateTrainingWithExercisesInput,
 } from './use-cases';
+import { GetTrainingsQuery } from './use-cases/queries/get-trainings.query';
 
 @Injectable()
 class TrainingsService {
@@ -19,6 +21,7 @@ class TrainingsService {
     private readonly getTrainingsWithExercises: GetTrainingsWithExercisesQuery,
     private readonly createTrainingWithExercisesCommand: CreateTrainingWithExercisesCommand,
     private readonly updateTrainingWithExercisesCommand: UpdateTrainingWithExercisesCommand,
+    private readonly createTrainingByTemplateCommand: CreateTrainingByTemplateCommand,
 
     private readonly trainingsMapper: TrainingsMapper,
     private readonly getTrainingsQuery: GetTrainingsQuery,
@@ -50,6 +53,13 @@ class TrainingsService {
     input: UpdateTrainingWithExercisesInput,
   ): Promise<TrainingWithExercisesDto> {
     const training = await this.updateTrainingWithExercisesCommand.execute(input);
+    return this.trainingsWithExercisesMapper.fromEntityToDTO(training);
+  }
+
+  async crateTrainingByTemplate(
+    input: CreateTrainingByTemplateInput,
+  ): Promise<TrainingWithExercisesDto> {
+    const training = await this.createTrainingByTemplateCommand.execute(input);
     return this.trainingsWithExercisesMapper.fromEntityToDTO(training);
   }
 }

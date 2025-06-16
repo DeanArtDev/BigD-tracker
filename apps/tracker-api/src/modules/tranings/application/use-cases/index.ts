@@ -4,3 +4,4 @@ export * from './commands/assign-training';
 export * from './commands/create-training-with-exercises';
 export * from './commands/delete-training.command';
 export * from './commands/update-training-with-exercises';
+export * from './commands/create-training-by-template';

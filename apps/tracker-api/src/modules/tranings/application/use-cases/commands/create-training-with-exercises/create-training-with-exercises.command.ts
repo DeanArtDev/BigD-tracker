@@ -65,7 +65,7 @@ class CreateTrainingWithExercisesCommand {
           type: draftTraining.type,
           description: draftTraining.description,
           name: draftTraining.name,
-          post_training_duration: training?.postTrainingDuration,
+          post_training_duration: draftTraining?.postTrainingDuration,
           start_date: draftTraining.startDate,
           worm_up_duration: draftTraining?.wormUpDuration,
         },
