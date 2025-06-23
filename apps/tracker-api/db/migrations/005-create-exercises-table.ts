@@ -27,6 +27,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('type', 'text', (col) =>
       col.references('exercise_types.value').onDelete('restrict').notNull(),
     )
+    .addColumn('position', 'integer', (col) => col.notNull().defaultTo(0))
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))

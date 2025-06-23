@@ -10,8 +10,8 @@ const navMenuItems: NavMenuItem[] = [
     defaultOpen: false,
     items: [
       {
-        title: 'Главная',
-        to: routes.gymHome.path,
+        title: 'Текущая тренировка',
+        to: routes.gymActiveTraining.path,
       },
       {
         title: 'Дашборд',

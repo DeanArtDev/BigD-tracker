@@ -8,24 +8,23 @@ import { Angry, Annoyed, Blend, Smile } from 'lucide-react';
 import { type JSX } from 'react';
 import { TrainingsTableActions } from '../components/trainings-table-actions';
 
-const mapTrainingTypeIcons: Record<ApiDto['TrainingTemplateAggregationDto']['type'], JSX.Element> =
-  {
-    HARD: <Smile className="fill-red-400" />,
-    MEDIUM: <Annoyed className="fill-yellow-400" />,
-    LIGHT: <Angry className="fill-green-400" />,
-    MIXED: <Blend className="fill-green-400" />,
-  };
+const mapTrainingTypeIcons: Record<ApiDto['TrainingTemplateDto']['type'], JSX.Element> = {
+  HARD: <Smile className="fill-red-400" />,
+  MEDIUM: <Annoyed className="fill-yellow-400" />,
+  LIGHT: <Angry className="fill-green-400" />,
+  MIXED: <Blend className="fill-green-400" />,
+};
 
 interface UseTrainingsTableParams {
   readonly loading: boolean;
-  readonly onEdit: (training: ApiDto['TrainingTemplateAggregationDto']) => void;
+  readonly onEdit: (training: ApiDto['TrainingTemplateDto']) => void;
   readonly onAssign: (trainingId: number) => void;
   readonly onDelete: (trainingId: number) => void;
 }
 
 function useTrainingsTable(
   params: UseTrainingsTableParams,
-): ColumnDef<ApiDto['TrainingTemplateAggregationDto']>[] {
+): ColumnDef<ApiDto['TrainingTemplateDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
   const { me } = useMeSuspense();
 

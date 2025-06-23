@@ -40,11 +40,14 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
     filters: { userId?: number; onlyUser?: boolean },
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity[]> {
-    let query = this.db(trx).selectFrom('exercises').orderBy('created_at', 'desc').selectAll();
+    const { userId, onlyUser = false } = filters;
+    let query = this.db(trx)
+      .selectFrom('exercises')
+      .orderBy('created_at', 'desc')
+
+      .selectAll();
 
     query = query.where((eb) => {
-      const { userId, onlyUser = false } = filters;
-
       const commonFilters = [eb('training_id', 'is', null), eb('training_template_id', 'is', null)];
 
       const andConditions: ReturnType<ExpressionBuilder<DB, 'exercises'>>[] = [...commonFilters];
@@ -65,14 +68,19 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
   }
 
   async findAllByFilters(
-    filters: { userId?: number; trainingId?: number; templateId?: number },
+    filters: {
+      userId?: number;
+      trainingId?: number;
+      templateId?: number;
+      positionOrder?: 'asc' | 'desc';
+    },
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity[]> {
-    let query = this.db(trx).selectFrom('exercises').orderBy('created_at', 'desc').selectAll();
+    const { userId, trainingId, templateId, positionOrder = 'asc' } = filters;
+
+    let query = this.db(trx).selectFrom('exercises').orderBy('position', positionOrder).selectAll();
 
     query = query.where((eb) => {
-      const { userId, trainingId, templateId } = filters;
-
       const andConditions: ReturnType<ExpressionBuilder<DB, 'exercises'>>[] = [];
 
       if (trainingId) {
@@ -108,6 +116,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
         example_url: data.example_url,
         training_template_id: data.training_template_id,
         training_id: data.training_id,
+        position: data.position,
       })
       .returningAll()
       .executeTakeFirst();
@@ -136,6 +145,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
         training_template_id: data.training_template_id,
         description: data.description ?? (replace ? null : undefined),
         example_url: data.example_url ?? (replace ? null : undefined),
+        position: data.position,
       })
       .returningAll()
       .executeTakeFirst();
@@ -146,8 +156,11 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
 
   async upsert(
     input: ExerciseRawData['insertable'] & { id: number },
+    options: { replace: boolean } = { replace: false },
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity | null> {
+    const { replace } = options;
+
     const result = await this.db(trx)
       .insertInto('exercises')
       .values({
@@ -159,13 +172,15 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
         example_url: input.example_url,
         training_id: input.training_id,
         training_template_id: input.training_template_id,
+        position: input.position,
       })
       .onConflict((oc) =>
         oc.column('id').doUpdateSet({
           type: input.type,
           name: input.name,
-          description: input.description,
-          example_url: input.example_url,
+          description: input.description ?? (replace ? null : undefined),
+          example_url: input.example_url ?? (replace ? null : undefined),
+          position: input.position,
           updated_at: new Date(),
         }),
       )
@@ -196,6 +211,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
       exampleUrl: raw.example_url ?? undefined,
       trainingId: raw.training_id ?? undefined,
       trainingTemplateId: raw.training_template_id ?? undefined,
+      position: raw.position,
     });
   };
 }

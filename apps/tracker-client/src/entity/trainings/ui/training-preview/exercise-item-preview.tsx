@@ -1,37 +1,68 @@
+import { RepetitionItemPreview } from './repetition-item-preview';
 import { Badge } from '@/shared/ui-kit/ui/badge';
+import { Button } from '@/shared/ui-kit/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/shared/ui-kit/ui/collapsible';
-import { useState } from 'react';
+import { Separator } from '@/shared/ui-kit/ui/separator';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Fragment, useState } from 'react';
 
 interface ExerciseItemPreviewProps {
-  readonly count: number;
+  readonly index: number;
   readonly name: string;
   readonly type: string;
-  readonly description?: string;
+  readonly repetitions: {
+    readonly targetCount: number;
+    readonly targetBreak: number;
+    readonly targetWeight: string;
+  }[];
 }
 
-function ExerciseItemPreview({ count, type, name, description }: ExerciseItemPreviewProps) {
+function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPreviewProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Collapsible className="border rounded-xl grow" open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger asChild>
-        <li className="p-4 grid grid-cols-[max-content_1fr_max-content_max-content] gap-2 items-center">
-          <span>{count}.</span>
-          <span className="text-sm md:text-base">{name}</span>
-          <div className="ml-auto text-sm mr-1 wrap-break-word">3 / 12</div>
-          <Badge className="self-center" variant="secondary">
-            {type}
-          </Badge>
-        </li>
-      </CollapsibleTrigger>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <div className="flex gap-2 items-center border rounded-md p-2 bg-white relative">
+        <span>{index}.</span>
 
-      <CollapsibleContent className="text-xs p-4 pt-0">
-        <h6 className="font-bold">Описание</h6>
-        <p className="whitespace-pre-line text-xs leading-5">{description}</p>
+        <span className="text-sm">{name}</span>
+
+        <Badge className="self-center ml-auto" variant="secondary">
+          {type}
+        </Badge>
+
+        <CollapsibleTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => void setIsOpen((prev) => !prev)}
+          >
+            {isOpen ? <ChevronUp /> : <ChevronDown />}
+          </Button>
+        </CollapsibleTrigger>
+      </div>
+
+      <CollapsibleContent className="ml-[10%] mt-[-10px] pt-4 p-2 overflow-hidden text-xs border-x border-b rounded-bl-md rounded-br-md">
+        <ul className="flex flex-col grow gap-3">
+          {repetitions.map((rep, idx) => {
+            return (
+              <Fragment key={idx}>
+                <RepetitionItemPreview
+                  index={idx}
+                  count={rep.targetCount}
+                  weight={rep.targetWeight}
+                  breakDuration={rep.targetBreak}
+                />
+                <Separator className="last-of-type:hidden" />
+              </Fragment>
+            );
+          })}
+        </ul>
       </CollapsibleContent>
     </Collapsible>
   );

@@ -1,30 +1,30 @@
 import { ExercisesModule } from '@/modules/exercises';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { SyncCollectionRepository } from '@shared/core/repository';
 import { KyselyUnitOfWork } from '@shared/core/uow';
 import {
   TrainingTemplatesMapper,
   TrainingTemplatesWithExercisesMapper,
 } from './application/mappers';
-import { TRAINING_TEMPLATES_REPOSITORY } from './application/training-templates.repository';
+import { TRAINING_TEMPLATES_REPOSITORY } from './application/repositories';
 import {
   CreateTrainingTemplateCommand,
   CreateTrainingTemplateWithExercisesCommand,
   GetTrainingTemplatesQuery,
-  GetTrainingTemplateWithExercisesQuery,
   UpdateTrainingTemplateWithExercisesCommand,
 } from './application/use-cases';
 import { TrainingTemplatesService } from './domain/training-templates.service';
 import { KyselyTrainingTemplatesRepository } from './infra/kysely-training-templates.repository';
-import { TrainingTemplatesController } from './training-templates.controller';
+import { TrainingTemplatesController } from './application/training-templates.controller';
 
 @Module({
-  imports: [ExercisesModule],
-  exports: [GetTrainingTemplateWithExercisesQuery],
+  imports: [forwardRef(() => ExercisesModule)],
+  exports: [GetTrainingTemplatesQuery],
   controllers: [TrainingTemplatesController],
   providers: [
     { provide: TRAINING_TEMPLATES_REPOSITORY, useClass: KyselyTrainingTemplatesRepository },
     GetTrainingTemplatesQuery,
-    GetTrainingTemplateWithExercisesQuery,
+    SyncCollectionRepository,
     TrainingTemplatesMapper,
     TrainingTemplatesWithExercisesMapper,
     TrainingTemplatesService,

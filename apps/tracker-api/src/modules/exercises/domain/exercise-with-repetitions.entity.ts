@@ -1,5 +1,6 @@
 import { RepetitionEntity } from '@/modules/repetitions';
 import { Validator } from '@shared/lib/validator';
+
 import { ExerciseData, ExerciseEntity } from './exercise.entity';
 
 const validator = new Validator('exercises-with-repetitions');
@@ -9,7 +10,7 @@ interface ExerciseWithRepetitionsData extends ExerciseData {
 }
 
 type UpdateExerciseRepetitionsInput = {
-  id: number;
+  id?: number;
   targetCount: number;
   targetWeight: string;
   targetBreak: number;
@@ -22,7 +23,7 @@ class ExerciseWithRepetitionsEntity extends ExerciseEntity {
   ): ExerciseWithRepetitionsEntity => {
     const exercise = ExerciseEntity.create(data);
     return new ExerciseWithRepetitionsEntity({
-      id: exercise.id ?? Infinity,
+      id: exercise.id,
       type: exercise.type,
       name: exercise.name,
       description: exercise.description,
@@ -30,8 +31,9 @@ class ExerciseWithRepetitionsEntity extends ExerciseEntity {
       userId: exercise.userId,
       trainingId: exercise.trainingId,
       trainingTemplateId: exercise.trainingTemplateId,
+      position: exercise.position,
       repetitions: [],
-    });
+    }).validate();
   };
 
   static restore = (
@@ -47,49 +49,95 @@ class ExerciseWithRepetitionsEntity extends ExerciseEntity {
       userId: exercise.userId,
       trainingId: exercise.trainingId,
       trainingTemplateId: exercise.trainingTemplateId,
+      position: exercise.position,
       repetitions: [],
     });
   };
 
   private constructor(protected readonly data: ExerciseWithRepetitionsData) {
     super(data);
-    this.validate();
   }
 
   public setRepetitions(repetitions: RepetitionEntity[]): this {
     this.data.repetitions = repetitions;
+    validator.isIntGt(this.repetitions.length, 1, 'repetitions');
     this.validate();
     return this;
   }
 
   public updateRepetitions(input: UpdateExerciseRepetitionsInput): this {
-    const indexMap = new Map<number, UpdateExerciseRepetitionsInput[0]>();
-    for (const rep of input) {
-      if (indexMap.has(rep.id)) {
-        validator.throwError(
-          `There are duplicated repetition ids ${input.map((i) => i.id).join(', ')}`,
-          'repetitions',
+    const indexMap = new Map<number, RepetitionEntity>();
+    for (const repetition of this.data.repetitions) {
+      indexMap.set(repetition.id, repetition);
+    }
+
+    const buffer: RepetitionEntity[] = [];
+
+    for (let index = 0; index < input.length; index++) {
+      const rep = input[index];
+
+      if (rep.id == null) {
+        buffer.push(
+          RepetitionEntity.create({
+            position: index,
+            exerciseId: this.id,
+            userId: this.userId,
+            description: rep.description,
+            targetBreak: rep.targetBreak,
+            targetWeight: rep.targetWeight,
+            targetCount: rep.targetCount,
+          }),
+        );
+        continue;
+      }
+
+      const prevRep = indexMap.get(rep.id);
+      if (prevRep != null) {
+        buffer.push(
+          prevRep
+            .updateTargets({
+              targetCount: rep.targetCount,
+              targetWeight: rep.targetWeight,
+              targetBreak: rep.targetBreak,
+            })
+            .updateDescription(rep.description)
+            .updatePosition(index),
         );
       }
-
-      indexMap.set(rep.id, rep);
     }
 
+    this.setRepetitions(buffer);
+    return this;
+  }
+
+  public canStart(trainingId: number): boolean {
+    if (!super.canStart(trainingId)) return false;
+
     for (const repetition of this.data.repetitions) {
-      const newData = indexMap.get(repetition.id);
-      if (indexMap.has(repetition.id) && newData != null) {
-        repetition
-          .updateTargets({
-            targetCount: newData.targetCount,
-            targetWeight: newData.targetWeight,
-            targetBreak: newData.targetBreak,
-          })
-          .updateDescription(newData.description);
+      if (!repetition.canStart(this.data.id)) return false;
+    }
+
+    return true;
+  }
+
+  public canFinish(trainingId: number): boolean {
+    if (!super.canFinish(trainingId)) return false;
+
+    for (const repetition of this.data.repetitions) {
+      if (!repetition.canFinish(this.data.id)) return false;
+    }
+
+    return true;
+  }
+
+  public canUpdateRepetitionBreak(repetitionId: number): boolean {
+    for (const repetition of this.data.repetitions) {
+      if (repetition.id === repetitionId) {
+        return repetition.canSetBreak();
       }
     }
 
-    this.validate();
-    return this;
+    return false;
   }
 
   public validate() {
@@ -105,6 +153,13 @@ class ExerciseWithRepetitionsEntity extends ExerciseEntity {
 
     if (this.data.repetitions.some((i) => i.exerciseId !== this.id)) {
       validator.throwError(`Repetitions must belong to exercise {id: ${this.id}}`, 'repetitions');
+    }
+
+    if (
+      new Set(this.data.repetitions.map((item) => item.position)).size !==
+      this.data.repetitions.length
+    ) {
+      validator.throwError(`Repetitions must not have position duplicates`, 'repetitions');
     }
 
     for (const repetition of this.data.repetitions) {

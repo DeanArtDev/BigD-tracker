@@ -6,8 +6,16 @@ export default {
   target: 'Типы для упражнений',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
+      const list = ['WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC'];
+      const existedList = await trx.selectFrom('exercise_types').selectAll().execute();
+
+      if (existedList.length === list.length) {
+        console.info(`✅ Типы упражнений уже залиты`);
+        return;
+      }
+
       const buffer: { value: string }[] = [];
-      for (const value of ['WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC']) {
+      for (const value of list) {
         const result = await trx
           .insertInto('exercise_types')
           .values({ value })

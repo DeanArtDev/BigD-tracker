@@ -1,28 +1,52 @@
 import { ExerciseSearch } from '@/entity/exercises/ui/exercise-search';
-import { Button } from '@/shared/ui-kit/ui/button';
-import { ExerciseElements } from './exercise-elements';
 import { DndVerticalContainer } from '@/shared/components/dnd-vertical-container';
-import { Frown, GripVertical } from 'lucide-react';
-import { type FieldArrayPath, useFieldArray, useFormState } from 'react-hook-form';
+import { ErrorMessageForm } from '@/shared/components/form';
+import { Alert, AlertDescription } from '@/shared/ui-kit/ui/alert';
+import { Button } from '@/shared/ui-kit/ui/button';
+import { AlertCircleIcon, Frown, GripVertical } from 'lucide-react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import type { TrainingManageFormData } from '../training-template-manage-form';
+import { ExerciseElements } from './exercise-elements';
 
 function ExerciseAddingBlock() {
-  const formState = useFormState<TrainingManageFormData>();
-  const { fields, prepend, remove, move } = useFieldArray<
-    { exerciseList: TrainingManageFormData['exerciseList'] },
-    FieldArrayPath<{ exerciseList: TrainingManageFormData['exerciseList'] }>,
-    'formUid'
-  >({ name: 'exerciseList', keyName: 'formUid' });
+  const methods = useFormContext<TrainingManageFormData>();
+  const { fields, append, remove, move } = useFieldArray({
+    name: 'exercises',
+    keyName: 'formUid',
+    control: methods.control,
+  });
 
   return (
     <div className="flex flex-col gap-4">
       <ExerciseSearch
         modal
         onSelect={(exercise) => {
-          const inx = fields.findIndex((field) => field.id === exercise.id);
-          if (inx === -1) {
-            prepend({ id: exercise.id, name: exercise.name, sets: 3, repetitions: 12 });
-          }
+          append({
+            id: exercise.id,
+            name: exercise.name,
+            type: exercise.type,
+            description: exercise.description,
+            exampleUrl: exercise.exampleUrl,
+            repetitions: exercise.repetitions.map((rep) => ({
+              id: rep.id,
+              description: rep.description,
+              targetCount: rep.targetCount,
+              targetBreak: rep.targetBreak,
+              targetWeight: +rep.targetWeight,
+            })),
+          });
+        }}
+      />
+
+      <ErrorMessageForm
+        name="exercises"
+        renderContent={({ message }) => {
+          return (
+            <Alert variant="destructive">
+              <AlertCircleIcon />
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          );
         }}
       />
 
@@ -32,9 +56,9 @@ function ExerciseAddingBlock() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 md:gap-4">
         <DndVerticalContainer
-          items={fields}
+          items={fields.map((i) => ({ moveId: i.formUid, ...i }))}
           onElementsSort={({ oldIndex, newIndex }) => void move(oldIndex, newIndex)}
           itemRender={({
             index,
@@ -46,19 +70,21 @@ function ExerciseAddingBlock() {
             setNodeRef,
           }) => {
             return (
-              <div ref={setNodeRef} style={{ transform: cssTransform, transition: cssTransition }}>
+              <div
+                key={exercise.moveId}
+                ref={setNodeRef}
+                style={{ transform: cssTransform, transition: cssTransition }}
+              >
                 <ExerciseElements
                   index={index}
-                  id={exercise.id}
-                  key={exercise.id}
                   name={exercise.name}
-                  disabled={formState.disabled}
+                  disabled={methods.formState.disabled}
                   beforeStartSlot={
                     <Button
                       className="!p-2 cursor-grab"
                       size="sm"
                       type="button"
-                      disabled={fields.length === 1 || formState.disabled}
+                      disabled={fields.length === 1 || methods.formState.disabled}
                       variant="ghost"
                       {...listeners}
                       {...attributes}

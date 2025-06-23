@@ -9,7 +9,7 @@ interface ExerciseRawData {
     Override<Updateable<DB['exercises']>, 'id', number>,
     'updated_at' | 'created_at'
   >;
-  readonly insertable: OmitCreateFields<Insertable<DB['exercises']>>;
+  readonly insertable: OmitCreateFields<Override<Insertable<DB['exercises']>, 'position', number>>;
 }
 
 interface ExercisesRepository {
@@ -18,7 +18,12 @@ interface ExercisesRepository {
   findAllByIds(ids: number[], trx?: Transaction<DB>): Promise<ExerciseEntity[]>;
 
   findAllByFilters(
-    filters: { userId?: number; trainingId?: number; templateId?: number },
+    filters: {
+      userId?: number;
+      trainingId?: number;
+      templateId?: number;
+      positionOrder?: 'asc' | 'desc';
+    },
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity[]>;
 
@@ -39,6 +44,7 @@ interface ExercisesRepository {
 
   upsert(
     input: ExerciseRawData['insertable'] & { id: number },
+    options: { replace: boolean },
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity | null>;
 

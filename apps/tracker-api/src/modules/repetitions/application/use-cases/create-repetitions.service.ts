@@ -6,8 +6,16 @@ import {
   REPETITIONS_REPOSITORY,
   RepetitionsRepository,
 } from '../repetitions.repository';
-import { CreateRepetitionDto } from '../dto/create-repetition.dto';
 import { RepetitionEntity } from '../../domain/repetition.entity';
+
+interface CreateRepetitionInput {
+  readonly userId?: number;
+  readonly exerciseId: number;
+  readonly targetCount: number;
+  readonly targetWeight: string;
+  readonly targetBreak: number;
+  readonly position: number;
+}
 
 @Injectable()
 export class CreateRepetitionsService {
@@ -17,20 +25,21 @@ export class CreateRepetitionsService {
   ) {}
 
   async execute(
-    dto: CreateRepetitionDto[],
+    dto: CreateRepetitionInput[],
     userId?: number,
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity[]> {
     const repetitionsDraft = dto.map(RepetitionEntity.create);
 
     return await this.repetitionsRepo.createMany(
-      repetitionsDraft.map<RepetitionRawData['insertable']>((repetition) => {
+      repetitionsDraft.map<RepetitionRawData['insertable']>((rep) => {
         return {
           user_id: userId,
-          exercise_id: repetition.exerciseId,
-          target_count: repetition.targetCount,
-          target_weight: repetition.targetWeight,
-          target_break: repetition.targetBreak,
+          exercise_id: rep.exerciseId,
+          target_count: rep.targetCount,
+          target_weight: rep.targetWeight,
+          target_break: rep.targetBreak,
+          position: rep.position,
         };
       }),
       trx,

@@ -52,11 +52,20 @@ class CreateTrainingWithExercisesCommand {
       const draftTraining = TrainingWithExercisesEntity.create(training);
 
       draftTraining.setExercises(
-        exercises.map((exercise) =>
-          ExerciseWithRepetitionsEntity.create(exercise)
-            .setRepetitions(exercise.repetitions.map(RepetitionEntity.create))
-            .assignToTraining({ trainingId: draftTraining.id }),
-        ),
+        exercises.map((exercise, index) => {
+          const newExercise = ExerciseWithRepetitionsEntity.create({
+            ...exercise,
+            position: index,
+          });
+
+          return newExercise
+            .setRepetitions(
+              exercise.repetitions.map((rep, index) =>
+                RepetitionEntity.create({ ...rep, position: index, exerciseId: newExercise.id }),
+              ),
+            )
+            .assignToTraining({ trainingId: draftTraining.id });
+        }),
       );
 
       const newTraining = await this.trainingsRepo.create(
@@ -79,6 +88,7 @@ class CreateTrainingWithExercisesCommand {
         draftTraining.exercises.map(async (exercise) => {
           return await this.createExercisesWithRepetitions.execute(
             {
+              position: exercise.position,
               userId: training.userId,
               name: exercise.name,
               type: exercise.type,

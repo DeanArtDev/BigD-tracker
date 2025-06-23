@@ -1,1 +1,1 @@
-export * from './use-cases/queries/get-training-template-with-exercises.query';
+export * from './use-cases/queries/get-training-templates-query';

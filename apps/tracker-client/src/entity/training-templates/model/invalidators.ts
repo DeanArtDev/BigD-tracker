@@ -11,4 +11,12 @@ function useInvalidateTrainingsTemplates() {
   };
 }
 
-export { useInvalidateTrainingsTemplates };
+function useInvalidateTrainingsTemplateById() {
+  return async (params: { templateId: number }) => {
+    return queryClient.invalidateQueries({
+      queryKey: trainingTemplatesQueryKeys.getOneTrainingTemplates(params),
+    });
+  };
+}
+
+export { useInvalidateTrainingsTemplates, useInvalidateTrainingsTemplateById };

@@ -15,19 +15,18 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis, restrictToWindowEdges } from '@dnd-kit/modifiers';
-import { type ItemRenderProps, SortableItem } from './sortable-item';
-import type { HasId } from '@/shared/lib/type-helpers';
+import { SortableItem } from './sortable-item';
+import type { DndItem, ItemRenderProps } from './types';
 
-interface DndVerticalContainerProps<TItem extends HasId> {
+interface DndVerticalContainerProps<TItem extends DndItem> {
   readonly items: TItem[];
   readonly itemRender: (renderProps: ItemRenderProps<TItem> & { index: number }) => JSX.Element;
-  readonly computeKey?: (item: TItem) => string;
 
   readonly onElementsSort: (data: { items: TItem[]; oldIndex: number; newIndex: number }) => void;
 }
 
-function DndVerticalContainer<TItem extends HasId>(props: DndVerticalContainerProps<TItem>) {
-  const { items, computeKey, itemRender, onElementsSort } = props;
+function DndVerticalContainer<TItem extends DndItem>(props: DndVerticalContainerProps<TItem>) {
+  const { items, itemRender, onElementsSort } = props;
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -40,8 +39,8 @@ function DndVerticalContainer<TItem extends HasId>(props: DndVerticalContainerPr
     const { active, over } = event;
 
     if (over != null && active.id !== over.id) {
-      const oldIndex = items.findIndex((i) => i.id === active.id);
-      const newIndex = items.findIndex((i) => i.id === over.id);
+      const oldIndex = items.findIndex((i) => i.moveId === active.id);
+      const newIndex = items.findIndex((i) => i.moveId === over.id);
 
       onElementsSort({ oldIndex, newIndex, items: arrayMove(items, oldIndex, newIndex) });
     }
@@ -54,14 +53,16 @@ function DndVerticalContainer<TItem extends HasId>(props: DndVerticalContainerPr
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((item, index) => (
-          <SortableItem
-            key={computeKey?.(item) ?? item.id}
-            item={item}
-            itemRender={(renderProps) => itemRender({ ...renderProps, index })}
-          />
-        ))}
+      <SortableContext items={items.map((i) => i.moveId)} strategy={verticalListSortingStrategy}>
+        {items.map((item, index) => {
+          return (
+            <SortableItem
+              key={item.moveId}
+              item={item}
+              itemRender={(renderProps) => itemRender({ ...renderProps, index })}
+            />
+          );
+        })}
       </SortableContext>
     </DndContext>
   );

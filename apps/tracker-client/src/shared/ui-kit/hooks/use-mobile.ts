@@ -15,5 +15,9 @@ const subscribe = (callback: () => void) => {
 };
 
 export function useIsMobile() {
-  return useSyncExternalStore(subscribe, () => throttled(), () => false);
+  return useSyncExternalStore(
+    subscribe,
+    () => throttled(),
+    () => false,
+  );
 }

@@ -6,7 +6,7 @@ function useTrainingTemplateCreate() {
 
   const { mutate: createTrainingTemplates, ...others } = $privetQueryClient.useMutation(
     'post',
-    '/trainings/templates',
+    '/trainings-templates',
     {
       ...options,
     },

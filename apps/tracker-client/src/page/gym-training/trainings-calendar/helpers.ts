@@ -1,7 +1,7 @@
 import type { ApiDto } from '@/shared/api/types';
 
-function getTraining(extra: object): ApiDto['TrainingAggregationDto'] {
-  return extra as ApiDto['TrainingAggregationDto'];
+function getTraining(extra: object): ApiDto['TrainingWithExercisesDto'] {
+  return extra as ApiDto['TrainingWithExercisesDto'];
 }
 
 export { getTraining };

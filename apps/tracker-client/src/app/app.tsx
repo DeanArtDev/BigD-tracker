@@ -1,5 +1,7 @@
-import './styles/index.css';
+import { FetchInterceptors } from './components/fetch-interceptors';
 import { Outlet } from 'react-router-dom';
+
+import './styles/index.css';
 
 /*TODO
  *  [] imports order
@@ -10,5 +12,9 @@ import { Outlet } from 'react-router-dom';
  *  [] добавить общение для токена между вкладками BroadcastEvents
  * */
 export function App() {
-  return <Outlet />;
+  return (
+    <FetchInterceptors>
+      <Outlet />
+    </FetchInterceptors>
+  );
 }

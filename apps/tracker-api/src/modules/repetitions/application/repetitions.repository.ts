@@ -18,6 +18,7 @@ interface RepetitionsRepository {
     filters: {
       exerciseId?: number;
       userId?: number | null;
+      positionOrder?: 'asc' | 'desc';
     },
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity[]>;

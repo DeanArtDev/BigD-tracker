@@ -52,6 +52,7 @@ export class KyselyExercisesWithRepetitionsRepository
     await this.exercisesRepository.upsert(
       {
         id: exercise.id,
+        position: exercise.position,
         type: exercise.type,
         name: exercise.name,
         user_id: exercise.userId,
@@ -60,6 +61,7 @@ export class KyselyExercisesWithRepetitionsRepository
         training_id: exercise.trainingId,
         training_template_id: exercise.trainingTemplateId,
       },
+      { replace: true },
       trx,
     );
   }
@@ -77,6 +79,7 @@ export class KyselyExercisesWithRepetitionsRepository
         await this.repetitionsRepo.createMany(
           [
             {
+              position: rep.position,
               description: rep.description,
               user_id: rep.userId,
               target_weight: rep.targetWeight,
@@ -93,6 +96,7 @@ export class KyselyExercisesWithRepetitionsRepository
         await this.repetitionsRepo.update(
           {
             id: rep.id,
+            position: rep.position,
             description: rep.description,
             user_id: rep.userId,
             target_weight: rep.targetWeight,

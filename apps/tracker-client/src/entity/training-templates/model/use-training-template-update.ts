@@ -5,7 +5,7 @@ function useTrainingTemplateUpdate() {
   const options = getDefaultQueryNotifications();
   const { mutate: updateTrainingTemplates, ...others } = $privetQueryClient.useMutation(
     'put',
-    '/trainings/templates',
+    '/trainings-templates/{templateId}',
     {
       ...options,
     },

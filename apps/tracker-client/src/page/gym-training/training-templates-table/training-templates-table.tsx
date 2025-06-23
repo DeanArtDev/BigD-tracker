@@ -1,13 +1,12 @@
 import {
+  useInvalidateTrainingsTemplateById,
   useInvalidateTrainingsTemplates,
   useTrainingsTemplatesQuery,
   useTrainingTemplateDelete,
   useTrainingTemplatesUrlParams,
 } from '@/entity/training-templates';
-import { useTrainingTemplateAssign } from '@/entity/training-templates/model/use-training-template-assign';
-import { useInvalidateTrainings } from '@/entity/trainings';
+import { useInvalidateTrainings, useTrainingCreateByTemplate } from '@/entity/trainings';
 import { TrainingTemplateManageDialog } from '@/feature/training/training-manage-form';
-import { AssignTemplateDialog } from '@/page/gym-training/training-templates-table/components/assign-template-dialog';
 import type { ApiDto } from '@/shared/api/types';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -17,25 +16,25 @@ import { Toggle } from '@/shared/ui-kit/ui/toggle';
 import { IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useBoolean } from 'usehooks-ts';
+import { AssignTemplateDialog } from './components/assign-template-dialog';
 import { EmptyTrainings } from './components/empty-trainings';
 import { useTrainingsTable } from './model/use-trainings-table';
 
 function TrainingTemplatesTable() {
   const { deleteTrainingTemplate, isPending: isTemplateDeleting } = useTrainingTemplateDelete();
   const invalidateTemplates = useInvalidateTrainingsTemplates();
+  const invalidateTemplateById = useInvalidateTrainingsTemplateById();
   const invalidateTrainings = useInvalidateTrainings();
 
-  const { value, setTrue, setFalse } = useBoolean(false);
-  const [training, setTraining] = useState<ApiDto['TrainingTemplateAggregationDto'] | undefined>(
-    undefined,
-  );
+  const { value: dialogOpen, setTrue, setFalse } = useBoolean(false);
+  const [templateId, setTemplateId] = useState<number | undefined>();
 
-  const { assignTrainingTemplates, isPending: isTemplateAssigning } = useTrainingTemplateAssign();
+  const { createTrainingByTemplate, isPending: isTrainingCreate } = useTrainingCreateByTemplate();
   const [assignTemplateId, setAssignTemplateId] = useState<number | undefined>(undefined);
 
   const columns = useTrainingsTable({
     loading: isTemplateDeleting,
-    onEdit: setTraining,
+    onEdit: (row) => void setTemplateId(row.id),
     onAssign: setAssignTemplateId,
     onDelete: (id) => {
       deleteTrainingTemplate(
@@ -51,14 +50,14 @@ function TrainingTemplatesTable() {
   return (
     <>
       <AssignTemplateDialog
-        loading={isTemplateAssigning}
+        loading={isTrainingCreate}
         templateId={assignTemplateId}
         onOpenChange={(v) => {
           if (!v) setAssignTemplateId(undefined);
         }}
         onAssignDates={(date) => {
           if (date == null || assignTemplateId == null) return;
-          assignTrainingTemplates(
+          createTrainingByTemplate(
             {
               body: {
                 data: date.map((d) => ({
@@ -78,16 +77,17 @@ function TrainingTemplatesTable() {
       />
 
       <TrainingTemplateManageDialog
-        open={value || Boolean(training)}
-        training={training}
+        open={dialogOpen || templateId != null}
+        templateId={templateId}
         onOpenChange={() => {
           setFalse();
-          setTraining(undefined);
+          setTemplateId(undefined);
         }}
         onSuccess={() => {
-          invalidateTemplates();
+          void invalidateTemplates();
+          templateId != null && invalidateTemplateById({ templateId });
           setFalse();
-          setTraining(undefined);
+          setTemplateId(undefined);
         }}
       />
 
@@ -117,11 +117,11 @@ function TrainingTemplatesTable() {
           loadingElement={<AppLoader />}
           emptyElement={<EmptyTrainings />}
         >
-          <DataTable<ApiDto['TrainingTemplateAggregationDto']>
+          <DataTable<ApiDto['TrainingTemplateDto']>
             data={data}
             columns={columns}
             onRowClick={() => {
-              console.log('click on row');
+              console.info('click on row');
             }}
           />
         </DataLoader>

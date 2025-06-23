@@ -3,6 +3,7 @@ import {
   ExerciseWithRepetitionsEntity,
   UpdateExerciseRepetitionsInput,
 } from '@/modules/exercises';
+import { RepetitionEntity } from '@/modules/repetitions';
 import { Validator } from '@shared/lib/validator';
 import { TrainingEntity, TrainingEntityData } from './training.entity';
 
@@ -28,7 +29,7 @@ class TrainingWithExercisesEntity extends TrainingEntity {
     const training = TrainingEntity.create(data);
 
     return new TrainingWithExercisesEntity({
-      id: training.id ?? Infinity,
+      id: training.id,
       type: training.type,
       name: training.name,
       inProgress: training.inProgress,
@@ -61,17 +62,22 @@ class TrainingWithExercisesEntity extends TrainingEntity {
     });
   };
 
+  get exercises() {
+    return [...this.data.exercises];
+  }
+
   protected constructor(protected readonly data: TrainingWithExercisesEntityData) {
     super(data);
   }
 
-  setExercises(exercises: ExerciseWithRepetitionsEntity[]): this {
+  public setExercises(exercises: ExerciseWithRepetitionsEntity[]): this {
     this.data.exercises = exercises;
+    validator.isIntGt(this.exercises.length, 1, 'exercises');
     this.validate();
     return this;
   }
 
-  updateExercises(input: UpdateExerciseInput): this {
+  public updateExercises(input: UpdateExerciseInput): this {
     const indexMap = new Map<number, UpdateExerciseInput[0]>();
     for (const rep of input) {
       if (indexMap.has(rep.id)) {
@@ -83,11 +89,13 @@ class TrainingWithExercisesEntity extends TrainingEntity {
       indexMap.set(rep.id, rep);
     }
 
-    for (const exercise of this.data.exercises) {
+    for (let i = 0; i < this.data.exercises.length; i++) {
+      const exercise = this.data.exercises[i];
       const newData = indexMap.get(exercise.id);
       if (indexMap.has(exercise.id) && newData != null) {
         exercise
           .update({
+            position: i,
             type: newData.type,
             name: newData.name,
             description: newData.description,
@@ -108,6 +116,12 @@ class TrainingWithExercisesEntity extends TrainingEntity {
       validator.throwError(`Exercises must belong to training {id: ${this.id}}`, 'exercises');
     }
 
+    if (
+      new Set(this.data.exercises.map((item) => item.position)).size !== this.data.exercises.length
+    ) {
+      validator.throwError(`Exercises must not have position duplicates`, 'exercises');
+    }
+
     const LIMIT = 10;
     if (this.data.exercises.length > LIMIT) {
       validator.throwError(
@@ -123,8 +137,87 @@ class TrainingWithExercisesEntity extends TrainingEntity {
     return this;
   }
 
-  get exercises() {
-    return [...this.data.exercises];
+  public startTraining() {
+    super.start();
+
+    for (const exercises of this.data.exercises) {
+      if (!exercises.canStart(this.data.id)) return false;
+    }
+  }
+
+  public finishTraining() {
+    super.finish();
+
+    for (const exercises of this.data.exercises) {
+      if (!exercises.canFinish(this.data.id)) return false;
+    }
+  }
+
+  public canUpdateRepetitionFact(repetitionId: number): boolean {
+    if (!this.inProgress) {
+      validator.throwError(
+        `Training: ${this.data.id} has not started yet`,
+        'canUpdateRepetitionFact',
+      );
+    }
+
+    this.#allRepetitionsAccordanceToTrainingFlow(repetitionId, 'canUpdateRepetitionFact');
+
+    return true;
+  }
+
+  public canUpdateRepetitionBreak(repetitionId: number): boolean {
+    if (!this.inProgress) {
+      validator.throwError(
+        `Training: ${this.data.id} has not started yet`,
+        'canUpdateRepetitionBreak',
+      );
+    }
+
+    this.#allRepetitionsAccordanceToTrainingFlow(repetitionId, 'canUpdateRepetitionBreak');
+
+    for (const exercise of this.data.exercises) {
+      for (const rep of exercise.repetitions) {
+        if (rep.id === repetitionId) {
+          return exercise.canUpdateRepetitionBreak(repetitionId);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  #allRepetitionsAccordanceToTrainingFlow(repetitionId: number, field: string) {
+    const buffer: RepetitionEntity[] = [];
+    for (const exercises of this.data.exercises) {
+      buffer.push(...exercises.repetitions);
+    }
+
+    const index = buffer.findIndex((i) => i.id === repetitionId);
+    if (index === -1) {
+      validator.throwError(
+        `Training: ${this.data.id} doesn't nave a repetition: ${repetitionId}`,
+        field,
+      );
+    }
+
+    let left = index - 1;
+    let right = index + 1;
+    while (left !== 0 && right !== buffer.length - 1) {
+      const leftStatus = buffer[left]?.status;
+      const rightStatus = buffer[right]?.status;
+
+      if (leftStatus != null && leftStatus !== 'done') {
+        validator.throwError('All previous repetition have not done yet', field);
+      }
+
+      if (rightStatus != null && rightStatus !== 'inactive') {
+        validator.throwError(`All next repetition have not had 'inactive' status`, field);
+      }
+
+      left = left <= 0 ? 0 : --left;
+      right = right >= buffer.length - 1 ? buffer.length - 1 : ++right;
+    }
   }
 }
 

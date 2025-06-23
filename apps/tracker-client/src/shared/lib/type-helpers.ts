@@ -7,15 +7,11 @@ type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type
 type ValueOf<Type> = Type[keyof Type];
 
 type Nullable<T> = {
-  [P in keyof T]: T[P] | null;
-};
-
-type Undefinedable<T> = {
-  [P in keyof T]+?: T[P] | undefined;
+  [P in keyof T]: T[P] extends object | [] ? Nullable<T[P]> : T[P] | null;
 };
 
 interface HasId {
   readonly id: number | string;
 }
 
-export type { HasId, Override, ValueOf, Nullable, Undefinedable };
+export type { HasId, Override, ValueOf, Nullable };

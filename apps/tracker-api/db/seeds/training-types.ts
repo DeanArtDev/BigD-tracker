@@ -6,6 +6,14 @@ export default {
   target: 'Типы для тренировок',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
+      const list = ['LIGHT', 'MEDIUM', 'HARD', 'MIXED'];
+      const existedList = await trx.selectFrom('trainings_types').selectAll().execute();
+
+      if (existedList.length === list.length) {
+        console.info(`✅ Типы тренировок уже залиты`);
+        return;
+      }
+
       const buffer: { value: string }[] = [];
       for (const value of ['LIGHT', 'MEDIUM', 'HARD', 'MIXED']) {
         const result = await trx

@@ -9,7 +9,7 @@ function useTrainingUpdate(
   const notifications = getDefaultQueryNotifications();
   const { mutate: updateTraining, ...others } = $privetQueryClient.useMutation(
     'put',
-    '/trainings',
+    '/trainings/{trainingId}',
     {
       ...notifications,
       onSuccess: options.onSuccess,

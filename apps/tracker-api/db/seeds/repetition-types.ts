@@ -6,8 +6,16 @@ export default {
   target: 'Типы для повторений',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
+      const list = ['DONE', 'SKIP', 'TRIED', 'OVER'];
+      const existedList = await trx.selectFrom('repetitions_types').selectAll().execute();
+
+      if (existedList.length === list.length) {
+        console.info(`✅ Типы повторений уже залиты`);
+        return;
+      }
+
       const buffer: { value: string }[] = [];
-      for (const value of ['DONE', 'SKIP', 'TRIED', 'OVER']) {
+      for (const value of list) {
         const result = await trx
           .insertInto('repetitions_types')
           .values({ value })

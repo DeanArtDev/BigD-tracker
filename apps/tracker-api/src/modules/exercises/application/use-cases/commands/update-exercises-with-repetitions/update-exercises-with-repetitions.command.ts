@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/db';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { KyselyUnitOfWork } from '@shared/core/uow';
 import { Transaction } from 'kysely';
 import { ExerciseWithRepetitionsEntity } from '../../../../domain/exercise-with-repetitions.entity';
@@ -12,13 +12,14 @@ import { GetExercisesWithRepetitionsQuery } from '../../queries/get-exercises-wi
 
 interface UpdateExerciseWithRepetitionsInput {
   readonly id: number;
+  readonly position: number;
   readonly userId?: number;
   readonly name: string;
   readonly type: ExerciseType;
   readonly description?: string;
   readonly exampleUrl?: string;
   readonly repetitions: {
-    readonly id: number;
+    readonly id?: number;
     readonly targetCount: number;
     readonly description?: string;
     readonly targetWeight: string;
@@ -41,12 +42,13 @@ class UpdateExercisesWithRepetitionsCommand {
     input: UpdateExerciseWithRepetitionsInput,
     trx?: Transaction<DB>,
   ): Promise<ExerciseWithRepetitionsEntity> {
-    const { userId, type, name, repetitions, id, exampleUrl, description } = input;
+    const { userId, type, position, name, repetitions, id, exampleUrl, description } = input;
 
     const currentExercise = await this.getExercisesWithRepetitions.one({ id, userId });
 
     const updatedDraftedExercise = currentExercise
       .update({
+        position,
         name,
         type,
         exampleUrl,
@@ -54,17 +56,15 @@ class UpdateExercisesWithRepetitionsCommand {
       })
       .updateRepetitions(repetitions);
 
-    try {
-      await this.unitOfWork.useTransaction(trx).execute(async (transaction) => {
-        await this.kyselyExercisesWithRepetitionsRepo.save(updatedDraftedExercise, transaction);
-      });
-    } catch (error) {
-      throw new InternalServerErrorException(error, {
-        cause: `Failed to update exercise {id: ${id}}`,
-      });
-    }
+    await this.unitOfWork.useTransaction(trx).execute(async (transaction) => {
+      await this.kyselyExercisesWithRepetitionsRepo.save(updatedDraftedExercise, transaction);
+    });
 
-    return updatedDraftedExercise;
+    const exercise = await this.getExercisesWithRepetitions.one({ id, userId });
+    if (exercise.isTemplate) {
+      throw new ForbiddenException('Exercise template cannot be changed');
+    }
+    return exercise;
   }
 }
 

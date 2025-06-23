@@ -16,6 +16,7 @@ class RepetitionDto {
 
   @ApiProperty({ example: 1 })
   @IsInt()
+  @Expose()
   exerciseId: number;
 
   @ApiPropertyOptional({

@@ -7,8 +7,7 @@ const useTrainingStartDateUpdate = () => {
 
   return (data: { id: number; startDate: string }, filters?: { from: string; to: string }) => {
     const keys = trainingsQueryKeys.getTrainings(filters);
-    const previous: { data: ApiDto['TrainingAggregationDto'][] } | undefined =
-      queryClient.getQueryData(keys);
+    const previous: { data: ApiDto['TrainingDto'][] } | undefined = queryClient.getQueryData(keys);
 
     queryClient.setQueryData(keys, {
       data: (previous?.data ?? []).map((item) => {

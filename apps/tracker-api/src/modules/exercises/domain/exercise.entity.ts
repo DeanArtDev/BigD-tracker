@@ -1,10 +1,12 @@
 import { Validator } from '@shared/lib/validator';
+import { randomInt } from 'crypto';
 import { ExerciseType } from '../application/repositories/exercises.repository';
 
 const validator = new Validator('exercises');
 
 interface ExerciseData {
   readonly id: number;
+  position: number;
   userId?: number;
   trainingId?: number;
   trainingTemplateId?: number;
@@ -15,12 +17,12 @@ interface ExerciseData {
 }
 
 interface CreateData {
-  readonly id?: number;
   readonly userId?: number;
   readonly name: string;
   readonly type: ExerciseType;
   readonly description?: string;
   readonly exampleUrl?: string;
+  readonly position: number;
 }
 
 interface UpdateData {
@@ -28,17 +30,19 @@ interface UpdateData {
   readonly type: ExerciseType;
   readonly description?: string;
   readonly exampleUrl?: string;
+  readonly position: number;
 }
 
 class ExerciseEntity {
   static create(data: CreateData) {
     return new ExerciseEntity({
-      id: data.id ?? Infinity,
+      id: randomInt(0, Date.now()),
       type: data.type,
       name: data.name,
       description: data.description,
       exampleUrl: data.exampleUrl,
       userId: data.userId,
+      position: data.position,
     }).validate();
   }
 
@@ -52,6 +56,7 @@ class ExerciseEntity {
       userId: data.userId,
       trainingId: data.trainingId,
       trainingTemplateId: data.trainingTemplateId,
+      position: data.position,
     });
   }
 
@@ -59,9 +64,42 @@ class ExerciseEntity {
     this.validate();
   }
 
+  public canStart(trainingId: number): boolean {
+    if (this.data.trainingId == null || this.data.trainingId !== trainingId) {
+      validator.throwError(
+        `Exercise ${this.data.id} can't be started without any relation to a training`,
+        'canStart',
+      );
+    }
+
+    return true;
+  }
+
+  public canFinish(trainingId: number): boolean {
+    if (this.data.trainingId == null || this.data.trainingId !== trainingId) {
+      validator.throwError(
+        `Exercise ${this.data.id} can't be finished without any relation to a training`,
+        'canFinish',
+      );
+    }
+
+    return true;
+  }
+
   public validate() {
-    const { id, name, type, exampleUrl, trainingTemplateId, trainingId, userId, description } =
-      this.data;
+    const {
+      id,
+      name,
+      type,
+      exampleUrl,
+      position,
+      trainingTemplateId,
+      trainingId,
+      userId,
+      description,
+    } = this.data;
+
+    validator.isValidInt(position, 'position');
 
     validator.isNotStringEmpty(name, 'name');
     validator.isEnum(type, ExerciseType, 'type');
@@ -94,15 +132,15 @@ class ExerciseEntity {
   }
 
   update(data: UpdateData): this {
-    const { description, name, type, exampleUrl } = data;
+    const { description, name, position, type, exampleUrl } = data;
 
-    this.validate();
-
+    this.data.position = position;
     this.data.name = name;
     this.data.type = type;
     this.data.description = description;
     this.data.exampleUrl = exampleUrl;
 
+    this.validate();
     return this;
   }
 
@@ -139,14 +177,11 @@ class ExerciseEntity {
         'assignToTemplate',
       );
     }
-    this.validate();
     this.data.trainingTemplateId = input.trainingTemplateId;
+    this.validate();
     return this;
   }
 
-  get isDraft() {
-    return this.data.userId === Infinity || this.data.id === Infinity;
-  }
   get isCommon() {
     return this.userId == null;
   }
@@ -173,6 +208,13 @@ class ExerciseEntity {
   }
   get trainingTemplateId() {
     return this.data.trainingTemplateId;
+  }
+  get position() {
+    return this.data.position;
+  }
+
+  get isTemplate(): boolean {
+    return [this.userId, this.trainingId, this.trainingTemplateId].every((i) => i == null);
   }
 }
 

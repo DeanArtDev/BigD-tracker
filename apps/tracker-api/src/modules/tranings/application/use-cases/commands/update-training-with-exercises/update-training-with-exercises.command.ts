@@ -24,7 +24,7 @@ interface UpdateTrainingWithExercisesInput {
     readonly description?: string;
     readonly exampleUrl?: string;
     readonly repetitions: {
-      readonly id: number;
+      readonly id?: number;
       readonly targetCount: number;
       readonly targetWeight: string;
       readonly targetBreak: number;
@@ -85,6 +85,7 @@ class UpdateTrainingWithExercisesCommand {
           return await this.updateExercisesWithRepetitions.execute(
             {
               id: exercise.id,
+              position: exercise.position,
               userId: training.userId,
               name: exercise.name,
               type: exercise.type,

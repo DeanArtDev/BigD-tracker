@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { KyselyService } from '@/infrastructure/db';
+import { DB, KyselyService } from '@/infrastructure/db';
 import { TrainingEntity } from '@/modules/tranings/domain/entities/training.entity';
+import { BaseRepository } from '@shared/core/repository';
 import {
   TrainingRawData,
   TrainingsRepository,
   TrainingType,
 } from '../application/trainings.repository';
+import { set } from 'date-fns';
+import { Transaction } from 'kysely';
 
 @Injectable()
-export class KyselyTrainingsRepository implements TrainingsRepository {
-  constructor(private kyselyService: KyselyService) {}
+export class KyselyTrainingsRepository extends BaseRepository<DB> implements TrainingsRepository {
+  constructor(private kyselyService: KyselyService) {
+    super(kyselyService.db);
+  }
 
   async findOneById({ id }: { id: number }): Promise<TrainingEntity | null> {
     const result = await this.kyselyService.db
@@ -17,6 +22,33 @@ export class KyselyTrainingsRepository implements TrainingsRepository {
       .where('id', '=', id)
       .selectAll()
       .executeTakeFirst();
+
+    if (result == null) return null;
+    return this.#map(result);
+  }
+
+  async findActive(trx?: Transaction<DB>): Promise<TrainingEntity | null> {
+    const today = set(new Date().toISOString(), {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    });
+    const tomorrow = set(today, { date: today.getDate() + 1 });
+
+    let query = this.db(trx).selectFrom('trainings').selectAll();
+
+    query = query.where((eb) => {
+      const conditions = [
+        eb('end_date', 'is', null),
+        eb('start_date', '>=', today),
+        eb('start_date', '<', tomorrow),
+      ];
+
+      return eb.and(conditions);
+    });
+
+    const result = await query.executeTakeFirst();
 
     if (result == null) return null;
     return this.#map(result);

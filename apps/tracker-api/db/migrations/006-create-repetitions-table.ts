@@ -18,6 +18,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('description', 'text')
     .addColumn('user_id', 'integer')
 
+    .addColumn('position', 'integer', (col) => col.notNull().defaultTo(0))
+
     .addColumn('target_count', 'integer', (col) => col.notNull().check(sql`target_count <= 300`))
     .addColumn('fact_count', 'integer', (col) => col.check(sql`fact_count <= 300`))
 

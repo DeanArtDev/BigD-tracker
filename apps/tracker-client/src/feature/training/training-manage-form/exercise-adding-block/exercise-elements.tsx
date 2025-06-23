@@ -1,11 +1,16 @@
+import { RepetitionForm } from '@/entity/exercises/ui';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { FormControl, FormField, FormItem } from '@/shared/ui-kit/ui/form';
-import { Input } from '@/shared/ui-kit/ui/input';
-import { X } from 'lucide-react';
-import type { ReactNode } from 'react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/shared/ui-kit/ui/collapsible';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { type ReactNode, useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import type { TrainingManageFormData } from '../training-template-manage-form';
 
 interface ExerciseElementsProps {
-  readonly id: number;
   readonly name: string;
   readonly index: number;
   readonly disabled?: boolean;
@@ -14,55 +19,70 @@ interface ExerciseElementsProps {
 }
 
 function ExerciseElements({
-  id,
   disabled,
-  name,
   index,
+  name,
   beforeStartSlot,
   onRemove,
 }: ExerciseElementsProps) {
+  const methods = useFormContext<TrainingManageFormData>();
+  const { fields } = useFieldArray({
+    name: `exercises.${index}.repetitions`,
+    keyName: 'formUid',
+    control: methods.control,
+  });
+
+  const [open, setOpen] = useState(false);
+
   return (
-    <div key={id} className="flex gap-2 items-center border rounded-md p-2">
-      {beforeStartSlot}
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <div className="flex gap-2 items-center border rounded-md p-2 bg-white relative">
+        {beforeStartSlot}
 
-      <span>{index + 1}.</span>
+        <span>{index + 1}.</span>
 
-      <span className="text-sm">{name}</span>
+        <span className="text-sm">{name}</span>
 
-      <div className="grid grid-cols-[50px_min-content_50px] gap-2 items-center ml-auto">
-        <FormField
-          name={`exerciseList.${index}.sets`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input className="px-1 text-center" type="number" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        /
-        <FormField
-          name={`exerciseList.${index}.repetitions`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input className="px-1 text-center" type="number" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <CollapsibleTrigger asChild>
+          <Button
+            className="ml-auto"
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={disabled}
+            onClick={() => void setOpen((prev) => !prev)}
+          >
+            {open ? <ChevronUp /> : <ChevronDown />}
+          </Button>
+        </CollapsibleTrigger>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={disabled}
+          onClick={() => void onRemove(index)}
+        >
+          <X />
+        </Button>
       </div>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={disabled}
-        onClick={() => void onRemove(index)}
-      >
-        <X />
-      </Button>
-    </div>
+      <CollapsibleContent className="ml-[10%] mt-[-10px] pt-4 p-2 overflow-hidden text-xs border-x border-b rounded-bl-md rounded-br-md">
+        <ul className="flex flex-col grow gap-3">
+          {fields.map((rep, idx) => {
+            return (
+              <RepetitionForm<TrainingManageFormData>
+                key={rep.formUid}
+                index={idx}
+                weightName={`exercises.${index}.repetitions.${idx}.targetWeight`}
+                countName={`exercises.${index}.repetitions.${idx}.targetCount`}
+                breakName={`exercises.${index}.repetitions.${idx}.targetBreak`}
+              />
+            );
+          })}
+        </ul>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 

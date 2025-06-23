@@ -21,6 +21,7 @@ type CreateExerciseWithRepetitionsInput = (
     }
 ) & {
   readonly userId: number;
+  readonly position: number;
   readonly name: string;
   readonly type: ExerciseType;
   readonly description?: string;
@@ -48,12 +49,19 @@ class CreateExercisesWithRepetitionsCommand {
     trx?: Transaction<DB>,
   ): Promise<ExerciseWithRepetitionsEntity> {
     const exerciseDraft = ExerciseWithRepetitionsEntity.create({
+      position: input.position,
       userId: input.userId,
       type: input.type,
       name: input.name,
       exampleUrl: input.exampleUrl,
       description: input.description,
-    }).setRepetitions(input.repetitions.map(RepetitionEntity.create));
+    });
+
+    exerciseDraft.setRepetitions(
+      input.repetitions.map((rep, index) =>
+        RepetitionEntity.create({ ...rep, exerciseId: exerciseDraft.id, position: index }),
+      ),
+    );
 
     if (input.templateId != null) {
       exerciseDraft.assignToTemplate({ trainingTemplateId: input.templateId });
@@ -74,6 +82,7 @@ class CreateExercisesWithRepetitionsCommand {
   ): Promise<ExerciseWithRepetitionsEntity> {
     const exercise = await this.exercisesRepo.create(
       {
+        position: input.exercise.position,
         user_id: input.exercise.userId,
         type: input.exercise.type,
         name: input.exercise.name,
@@ -89,8 +98,9 @@ class CreateExercisesWithRepetitionsCommand {
     }
 
     const repetitions = await this.createRepetitionsService.execute(
-      input.exercise.repetitions.map((repetition) => {
+      input.exercise.repetitions.map((repetition, index) => {
         return {
+          position: index,
           description: repetition.description,
           targetWeight: repetition.targetWeight,
           targetCount: repetition.targetCount,

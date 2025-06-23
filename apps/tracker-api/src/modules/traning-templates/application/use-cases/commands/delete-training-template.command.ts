@@ -6,10 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { KyselyUnitOfWork } from '@shared/core/uow';
-import {
-  TRAINING_TEMPLATES_REPOSITORY,
-  TrainingTemplatesRepository,
-} from '../../training-templates.repository';
+import { TRAINING_TEMPLATES_REPOSITORY, TrainingTemplatesRepository } from '../../repositories';
 
 @Injectable()
 class CreateTrainingTemplateCommand {

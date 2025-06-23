@@ -1,64 +1,51 @@
 import { TrainingTypeSelectForm } from '@/entity/trainings';
-import { ExerciseAddingBlock } from './exercise-adding-block/exercise-adding-block';
-import type { ApiDto } from '@/shared/api/types';
+import { InputForm, InputNumberForm, TextAreaForm } from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui-kit/ui/form';
-import { Input } from '@/shared/ui-kit/ui/input';
-import { Textarea } from '@/shared/ui-kit/ui/textarea';
+import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
+import { Form } from '@/shared/ui-kit/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod/v4';
+import { ExerciseAddingBlock } from './exercise-adding-block/exercise-adding-block';
 import { trainingManageValidationSchema } from './training-manage-validation';
 import { useSubmit } from './use-submit';
 
-interface TrainingManageFormData {
-  readonly name: string;
-  readonly description?: string;
-  readonly type: ApiDto['TrainingTemplateAggregationDto']['type'];
-  readonly wormUpDuration?: number;
-  readonly postTrainingDuration?: number;
-  readonly exerciseList: {
-    readonly id: number;
-    readonly name: string;
-    readonly sets: number;
-    readonly repetitions: number;
-  }[];
-}
+type TrainingManageFormData = z.input<typeof trainingManageValidationSchema>;
+type SubmitFormData = z.output<typeof trainingManageValidationSchema>;
 
 function TrainingTemplateManageForm({
-  training,
+  templateId,
   onSuccess,
 }: {
-  training?: ApiDto['TrainingTemplateAggregationDto'];
+  templateId?: number;
   onSuccess: () => void;
 }) {
-  const { isLoading, handleSubmitForm } = useSubmit({
-    templateId: training?.id,
-    onSuccess,
-  });
+  const { trainingTemplate, isLoading, handleSubmitForm } = useSubmit({ templateId, onSuccess });
 
-  const form = useForm<TrainingManageFormData>({
+  const form = useForm<TrainingManageFormData, any, SubmitFormData>({
     resolver: zodResolver(trainingManageValidationSchema),
     values:
-      training != null
+      trainingTemplate != null
         ? {
-            name: training.name,
-            description: training.description,
-            wormUpDuration: training.wormUpDuration,
-            postTrainingDuration: training.postTrainingDuration,
-            type: training.type,
-            exerciseList: training.exercises.map((i) => ({
+            name: trainingTemplate.name,
+            description: trainingTemplate.description,
+            wormUpDuration: trainingTemplate.wormUpDuration,
+            postTrainingDuration: trainingTemplate.postTrainingDuration,
+            type: trainingTemplate.type,
+            exercises: trainingTemplate.exercises.map((i) => ({
               id: i.id,
               name: i.name,
-              sets: 3,
-              repetitions: 12,
+              description: i.description,
+              type: i.type,
+              exampleUrl: i.exampleUrl,
+              repetitions: i.repetitions.map((i) => ({
+                id: i.id,
+                description: i.description,
+                targetCount: i.targetCount,
+                targetWeight: +i.targetWeight,
+                targetBreak: i.targetBreak,
+              })),
             })),
           }
         : undefined,
@@ -69,38 +56,17 @@ function TrainingTemplateManageForm({
   return (
     <Form {...form}>
       <form
+        noValidate
         onSubmit={form.handleSubmit(handleSubmitForm)}
         className="space-y-8 flex flex-col grow w-full"
       >
-        <FormField
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Название</FormLabel>
-              <FormControl>
-                <Input placeholder="Мошная тренировка ног" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <InputForm required name="name" label="Название" placeholder="Мошная тренировка ног" />
 
-        <FormField
+        <TextAreaForm
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Описание</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Опиши на что обратить внимание"
-                  className="max-h-[150px]"
-                  {...field}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Описание"
+          placeholder="Опиши на что обратить внимание"
+          className="max-h-[150px]"
         />
 
         <div className="grid grid-cols-2 gap-3">
@@ -108,30 +74,18 @@ function TrainingTemplateManageForm({
         </div>
 
         <div className="grid grid-cols-2 gap-3 min-h-[108px] items-start">
-          <FormField
+          <InputNumberForm
+            isErrorMessage
             name="wormUpDuration"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Время разминки</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="15 минут" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Время разминки"
+            placeholder="15 минут"
           />
 
-          <FormField
+          <InputNumberForm
+            isErrorMessage
             name="postTrainingDuration"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Время заминки</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="20 минут" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Время заминки"
+            placeholder="20 минут"
           />
         </div>
 
@@ -142,17 +96,13 @@ function TrainingTemplateManageForm({
           type="submit"
           disabled={isLoading || !form.formState.isDirty}
         >
-          {isLoading ? (
-            <AppLoader inverse size={20} />
-          ) : training == null ? (
-            'Создать'
-          ) : (
-            'Редактировать'
-          )}
+          <DataLoader isLoading={isLoading} loadingElement={<AppLoader inverse size={20} />}>
+            {trainingTemplate == null ? 'Создать' : 'Редактировать'}
+          </DataLoader>
         </Button>
       </form>
     </Form>
   );
 }
 
-export { TrainingTemplateManageForm, type TrainingManageFormData };
+export { TrainingTemplateManageForm, type TrainingManageFormData, type SubmitFormData };

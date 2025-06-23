@@ -1,11 +1,39 @@
-import { z } from 'zod';
-import type { ManageExerciseTemplateFormData } from './manage-exercise-template-form';
+import { transformPlaceholder } from '@/shared/lib/utils/zod';
+import { z } from 'zod/v4';
 
 const requiredMessage = 'Обязательное поле';
 
-const validationSchema: z.Schema<ManageExerciseTemplateFormData> = z.object({
+const repetitionSchema = z.object({
+  id: z.number().optional(),
+
+  targetCount: z
+    .number({ error: requiredMessage })
+    .int({ message: 'Значение должно быть целым' })
+    .gte(1, { message: 'Значение не может быть меньше 1' })
+    .lte(300, { message: 'Значение не может быть больше 300' })
+    .or(z.literal(null))
+    .transform(transformPlaceholder.number),
+
+  targetBreak: z
+    .number({ error: requiredMessage })
+    .overwrite((value) => value * 60)
+    .gte(1, { error: 'Значение не может быть меньше 1' })
+    .lte(900, { error: 'Значение не может быть больше 15 минут' })
+    .overwrite((value) => value / 60)
+    .or(z.literal(null))
+    .transform(transformPlaceholder.number),
+
+  targetWeight: z
+    .number({ error: requiredMessage })
+    .gte(1, { message: 'Значение не может быть меньше 1' })
+    .lte(999.99, { message: 'Значение не может быть больше 999.99' })
+    .or(z.literal(null))
+    .transform(transformPlaceholder.number),
+});
+
+const validationSchema = z.object({
   name: z
-    .string({ required_error: requiredMessage })
+    .string({ error: requiredMessage })
     .min(4, { message: 'Не меньше 4 символов' })
     .max(254, { message: 'Слишком длинное имя' }),
 
@@ -13,7 +41,7 @@ const validationSchema: z.Schema<ManageExerciseTemplateFormData> = z.object({
     message: requiredMessage,
   }),
 
-  description: z.string().or(z.undefined()),
+  description: z.string().optional().transform(transformPlaceholder.optional),
 
   url: z
     .string()
@@ -21,14 +49,19 @@ const validationSchema: z.Schema<ManageExerciseTemplateFormData> = z.object({
     .refine(
       (val) => {
         if (val == null || val.trim() === '') return true;
-        return val.startsWith('https://www.youtube.com/');
+        return val.startsWith('https://www.youtube.com/') || val.startsWith('https://youtu.be/');
       },
       {
         message: 'Ссылка должна вести на youtube видео',
       },
     )
-    .or(z.undefined())
-    .transform((v) => (v === '' ? undefined : v)),
+    .optional()
+    .transform(transformPlaceholder.optional),
+
+  repetitions: z
+    .array(repetitionSchema)
+    .min(1, { message: 'Необходимо задать подходы' })
+    .max(20, { message: '20 подходов максимум' }),
 });
 
 export { validationSchema };

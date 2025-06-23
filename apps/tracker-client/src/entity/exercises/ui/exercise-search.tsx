@@ -1,4 +1,4 @@
-import { useExerciseTemplatesQuery } from '@/entity/exercises';
+import { useExerciseQuery } from '@/entity/exercises';
 import type { ApiDto } from '@/shared/api/types';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -12,20 +12,19 @@ import {
 } from '@/shared/ui-kit/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui-kit/ui/popover';
 import { Plus } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useToggle } from 'usehooks-ts';
 
 interface ExerciseSearchProps {
   readonly modal?: boolean;
-  readonly onSelect: (exercises: ApiDto['ExerciseTemplateDto']) => void;
-  readonly onDelete?: (exercises: ApiDto['ExerciseTemplateDto']) => void;
+  readonly onSelect: (exercises: ApiDto['ExerciseWithRepetitionsDto']) => void;
+  readonly onDelete?: (exercises: ApiDto['ExerciseWithRepetitionsDto']) => void;
 }
 
-function ExerciseSearch({ modal, onSelect, onDelete }: ExerciseSearchProps) {
+function ExerciseSearch({ modal, onSelect }: ExerciseSearchProps) {
   const [open, setOpen] = useState(false);
-  const valuesSet = useRef(new Set<string>());
   const { 1: toggle } = useToggle();
-  const { data, isLoading } = useExerciseTemplatesQuery();
+  const { data, isLoading } = useExerciseQuery();
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
@@ -53,15 +52,8 @@ function ExerciseSearch({ modal, onSelect, onDelete }: ExerciseSearchProps) {
                 <CommandItem
                   key={exercise.id}
                   value={`${exercise.name}:${exercise.id}`}
-                  onSelect={(currentValue) => {
-                    const id = currentValue.split(':')[1];
-                    if (valuesSet.current.has(id)) {
-                      valuesSet.current.delete(id);
-                      onDelete?.(exercise);
-                    } else {
-                      valuesSet.current.add(id);
-                      onSelect(exercise);
-                    }
+                  onSelect={() => {
+                    onSelect(exercise);
                     toggle();
                   }}
                 >

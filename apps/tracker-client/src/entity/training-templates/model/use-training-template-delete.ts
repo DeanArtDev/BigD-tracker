@@ -5,7 +5,7 @@ function useTrainingTemplateDelete() {
   const options = getDefaultQueryNotifications();
   const { mutate: deleteTrainingTemplate, ...others } = $privetQueryClient.useMutation(
     'delete',
-    '/trainings/templates/{templateId}',
+    '/trainings-templates/{templateId}',
     {
       ...options,
     },

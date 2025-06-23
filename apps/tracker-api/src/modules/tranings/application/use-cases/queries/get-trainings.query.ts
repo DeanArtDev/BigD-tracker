@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/db';
-import { TrainingEntity } from '@/modules/tranings/domain/entities/training.entity';
+import { TrainingEntity } from '../../../domain/entities/training.entity';
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { TRAININGS_REPOSITORY, TrainingsRepository } from '../../trainings.repository';

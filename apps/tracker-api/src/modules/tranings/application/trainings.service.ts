@@ -58,8 +58,13 @@ class TrainingsService {
 
   async crateTrainingByTemplate(
     input: CreateTrainingByTemplateInput,
-  ): Promise<TrainingWithExercisesDto> {
-    const training = await this.createTrainingByTemplateCommand.execute(input);
+  ): Promise<TrainingWithExercisesDto[]> {
+    const trainings = await this.createTrainingByTemplateCommand.execute(input);
+    return trainings.map(this.trainingsWithExercisesMapper.fromEntityToDTO);
+  }
+
+  async getActiveTraining({ userId }: { userId: number }): Promise<TrainingWithExercisesDto> {
+    const training = await this.getTrainingsWithExercises.getActive({ userId });
     return this.trainingsWithExercisesMapper.fromEntityToDTO(training);
   }
 }
