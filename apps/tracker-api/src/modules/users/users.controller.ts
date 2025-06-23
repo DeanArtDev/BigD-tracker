@@ -1,12 +1,12 @@
-import { Controller, Get, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { User } from './users.entity';
-import { UsersService } from '@/modules/users/users.service';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public, TokenPayload } from '@/modules/auth/decorators';
-import { MeDto, MeDtoResponse } from './dtos/me.dto';
-import { mapEntity } from '@shared/lib/map-entity';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
+import { UsersService } from '@/modules/users/users.service';
+import { Controller, Get, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { mapEntity } from '@shared/lib/map-entity';
+import { MeDto, MeDtoResponse } from './dtos/me.dto';
+import { User } from './users.entity';
 
 @Controller('users')
 export class UsersController {

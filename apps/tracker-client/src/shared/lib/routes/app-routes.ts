@@ -12,10 +12,10 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/gym'),
 
-  gymHome: (<Path extends string = string>(path: Path) => ({
+  gymActiveTraining: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
-  }))('/gym/home'),
+  }))('/gym/active'),
 
   gymDashboard: (<Path extends string = string>(path: Path) => ({
     path,

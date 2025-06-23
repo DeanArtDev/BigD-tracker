@@ -15,7 +15,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ExerciseResponse } from './dtos/exercise-response.dto';
 import {
   ExerciseWithRepetitionsResponse,
   ExerciseWithRepetitionsResponseSingle,
@@ -40,13 +39,13 @@ export class ExercisesController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: ExerciseResponse,
+    type: ExerciseWithRepetitionsResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getExercises(
     @Query() { my = false }: GetExerciseQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<ExerciseResponse> {
+  ): Promise<ExerciseWithRepetitionsResponse> {
     return {
       data: await this.exercisesService.getExerciseTemplates({ userId: uid, my }),
     };
@@ -66,7 +65,7 @@ export class ExercisesController {
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<ExerciseWithRepetitionsResponseSingle> {
     return {
-      data: await this.exercisesService.getOneExerciseWithRepetitions({
+      data: await this.exercisesService.getOneExercise({
         id: exerciseId,
         userId: uid,
       }),
@@ -87,7 +86,7 @@ export class ExercisesController {
     @Body() { data }: CreateExerciseWithRepetitionsRequest,
   ): Promise<ExerciseWithRepetitionsResponseSingle> {
     return {
-      data: await this.exercisesService.createExerciseWithRepetitions({ ...data, userId: uid }),
+      data: await this.exercisesService.createExercise({ ...data, userId: uid, position: 0 }),
     };
   }
 
@@ -107,10 +106,11 @@ export class ExercisesController {
     @Body() { data }: UpdateExerciseWithRepetitionsRequest,
   ): Promise<ExerciseWithRepetitionsResponseSingle> {
     return {
-      data: await this.exercisesService.updateExerciseWithRepetitions({
+      data: await this.exercisesService.updateExercise({
         ...data,
         id: exerciseId,
         userId: uid,
+        position: 0,
       }),
     };
   }

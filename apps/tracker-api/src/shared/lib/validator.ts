@@ -47,9 +47,18 @@ class Validator {
     }
   }
 
+  isValidInt(value: number, field: string) {
+    if (value < 0 || Number.isNaN(value) || !isInt(value.toString()) || !Number.isFinite(value)) {
+      throw new DomainValidationError({
+        field,
+        domain: this.domain,
+        message: `Invalid integer ${field}:${value}`,
+      });
+    }
+  }
+
   isIdValId(value: number, field: string) {
-    if (!isFinite(value)) return;
-    if (value <= 0 || Number.isNaN(value) || !isInt(value.toString())) {
+    if (value <= 0 || Number.isNaN(value) || !isInt(value.toString()) || !Number.isFinite(value)) {
       throw new DomainValidationError({
         field,
         domain: this.domain,

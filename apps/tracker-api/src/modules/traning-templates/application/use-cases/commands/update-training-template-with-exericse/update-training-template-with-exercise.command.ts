@@ -1,13 +1,21 @@
-import { ExerciseType, UpdateExercisesWithRepetitionsCommand } from '@/modules/exercises';
-import { GetTrainingTemplateWithExercisesQuery } from '../../queries/get-training-template-with-exercises.query';
-import { TrainingTemplateWithExercisesEntity } from '../../../../domain/entities';
+import { DB, KyselyService } from '@/infrastructure/db';
 import {
-  TRAINING_TEMPLATES_REPOSITORY,
-  TrainingTemplatesRepository,
-} from '../../../training-templates.repository';
+  CreateExercisesWithRepetitionsCommand,
+  ExerciseType,
+  UpdateExercisesWithRepetitionsCommand,
+} from '@/modules/exercises';
 import { TrainingType } from '@/modules/tranings';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ISyncCollectionMethods,
+  SyncCollectionRepository,
+  SyncCollectionRepositoryHelper,
+} from '@shared/core/repository';
 import { KyselyUnitOfWork } from '@shared/core/uow';
+import { Transaction } from 'kysely';
+import { TrainingTemplateWithExercisesEntity } from '../../../../domain/entities';
+import { TRAINING_TEMPLATES_REPOSITORY, TrainingTemplatesRepository } from '../../../repositories';
+import { GetTrainingTemplatesQuery } from '../../queries/get-training-templates-query';
 
 interface UpdateTrainingTemplateWithExercisesInput {
   readonly id: number;
@@ -24,7 +32,7 @@ interface UpdateTrainingTemplateWithExercisesInput {
     readonly description?: string;
     readonly exampleUrl?: string;
     readonly repetitions: {
-      readonly id: number;
+      readonly id?: number;
       readonly targetCount: number;
       readonly targetWeight: string;
       readonly targetBreak: number;
@@ -34,84 +42,135 @@ interface UpdateTrainingTemplateWithExercisesInput {
 }
 
 @Injectable()
-class UpdateTrainingTemplateWithExercisesCommand {
+class UpdateTrainingTemplateWithExercisesCommand
+  implements ISyncCollectionMethods<TrainingTemplateWithExercisesEntity, DB>
+{
+  private syncCollection: SyncCollectionRepositoryHelper<TrainingTemplateWithExercisesEntity, DB>;
+  private userId: number;
+
   constructor(
+    private readonly kyselyService: KyselyService,
+
     @Inject(TRAINING_TEMPLATES_REPOSITORY)
     private readonly trainingTemplateRepo: TrainingTemplatesRepository,
+    private readonly getTrainingTemplatesQuery: GetTrainingTemplatesQuery,
 
     private readonly updateExercisesWithRepetitions: UpdateExercisesWithRepetitionsCommand,
-    private readonly getTrainingTemplateWithExercises: GetTrainingTemplateWithExercisesQuery,
+    private readonly createExercisesWithRepetitions: CreateExercisesWithRepetitionsCommand,
 
     private readonly unitOfWork: KyselyUnitOfWork,
-  ) {}
+    private readonly syncCollectionRepo: SyncCollectionRepository<DB>,
+  ) {
+    this.syncCollection = new SyncCollectionRepositoryHelper<
+      TrainingTemplateWithExercisesEntity,
+      DB
+    >({
+      upsertRoot: this.upsertRoot.bind(this),
+      sync: this.sync.bind(this),
+      db: this.kyselyService.db,
+    });
+  }
 
   async execute(
     input: UpdateTrainingTemplateWithExercisesInput,
   ): Promise<TrainingTemplateWithExercisesEntity> {
     const { exercises: exercisesDto, ...templateDto } = input;
+    this.userId = templateDto.userId;
 
     return await this.unitOfWork.execute(async (transaction) => {
-      const template = await this.getTrainingTemplateWithExercises.one({
+      const template = await this.getTrainingTemplatesQuery.oneWithExercises({
         id: templateDto.id,
         userId: templateDto.userId,
       });
 
-      template
-        .update({
-          type: templateDto.type,
-          name: templateDto.name,
-          description: templateDto.description,
-          postTrainingDuration: templateDto.postTrainingDuration,
-          wormUpDuration: templateDto.wormUpDuration,
-        })
-        .updateExercises(exercisesDto);
-
-      const updatedTemplate = await this.trainingTemplateRepo.update(
-        {
-          id: template.id,
-          type: template.type,
-          description: template.description,
-          name: template.name,
-          post_training_duration: template?.postTrainingDuration,
-          worm_up_duration: template?.wormUpDuration,
-        },
-        { replace: true },
-        transaction,
-      );
-      if (updatedTemplate == null) {
-        throw new InternalServerErrorException(
-          `Failed to update training template id: ${templateDto.id}`,
-        );
+      if (template.isCommon) {
+        throw new ForbiddenException('Common template cannot be changed');
       }
 
-      await Promise.all(
-        template.exercises.map(async (exercise) => {
-          return await this.updateExercisesWithRepetitions.execute(
-            {
-              id: exercise.id,
-              userId: template.userId,
-              name: exercise.name,
-              type: exercise.type,
-              description: exercise.description,
-              exampleUrl: exercise.exampleUrl,
-              repetitions: exercise.repetitions.map((repetition) => {
-                return {
-                  id: repetition.id,
-                  targetCount: repetition.targetCount,
-                  targetWeight: repetition.targetWeight,
-                  description: repetition.description,
-                  targetBreak: repetition.targetBreak,
-                };
-              }),
-            },
-
-            transaction,
-          );
+      template.update({
+        type: templateDto.type,
+        name: templateDto.name,
+        description: templateDto.description,
+        postTrainingDuration: templateDto.postTrainingDuration,
+        wormUpDuration: templateDto.wormUpDuration,
+      });
+      template.updateExercises(
+        exercisesDto.map((exercise, index) => {
+          return {
+            ...exercise,
+            position: index,
+          };
         }),
       );
 
-      return template;
+      await this.syncCollection.save(template, transaction);
+
+      return await this.getTrainingTemplatesQuery.oneWithExercises({
+        id: templateDto.id,
+        userId: templateDto.userId,
+      });
     });
+  }
+
+  async upsertRoot(
+    aggregate: TrainingTemplateWithExercisesEntity,
+    trx: Transaction<DB>,
+  ): Promise<void> {
+    await this.trainingTemplateRepo.upsert(
+      {
+        id: aggregate.id,
+        type: aggregate.type,
+        name: aggregate.name,
+        user_id: aggregate.userId,
+        description: aggregate.description,
+        worm_up_duration: aggregate.wormUpDuration,
+        post_training_duration: aggregate.postTrainingDuration,
+      },
+      { replace: true },
+      trx,
+    );
+  }
+
+  async sync(aggregate: TrainingTemplateWithExercisesEntity, trx: Transaction<DB>): Promise<void> {
+    if (this.userId == null) {
+      throw new UnauthorizedException('Template can be updated only by its owner');
+    }
+
+    const delta = await this.syncCollectionRepo.execute({
+      trx,
+      tableName: 'exercises',
+      parent: { id: aggregate.id, field: 'training_template_id' },
+      newRowsIds: aggregate.exercises.map((e) => e.id),
+    });
+
+    for (const exercise of aggregate.exercises) {
+      if (delta.toInsert.includes(exercise.id)) {
+        await this.createExercisesWithRepetitions.execute(
+          {
+            position: exercise.position,
+            exampleUrl: exercise.exampleUrl,
+            name: exercise.name,
+            type: exercise.type,
+            templateId: aggregate.id,
+            userId: this.userId,
+            description: exercise.description,
+            repetitions: exercise.repetitions.map((rep) => {
+              return {
+                targetCount: rep.targetCount,
+                targetWeight: rep.targetWeight,
+                description: rep.description,
+                targetBreak: rep.targetBreak,
+              };
+            }),
+          },
+          trx,
+        );
+      }
+
+      if (delta.toKeep.includes(exercise.id)) {
+        await this.updateExercisesWithRepetitions.execute(exercise, trx);
+      }
+    }
   }
 }
 

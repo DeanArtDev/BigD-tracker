@@ -1,6 +1,6 @@
 import type { ApiDto } from '@/shared/api/types';
 
-const mapExerciseType: Record<ApiDto['ExerciseTemplateDto']['type'], string> = {
+const mapExerciseType: Record<ApiDto['ExerciseWithRepetitionsDto']['type'], string> = {
   'AEROBIC': 'аэробное',
   'ANAEROBIC': 'анаэробное',
   'WORM-UP': 'разминочное',

@@ -4,14 +4,14 @@ import {
   ExerciseWithRepetitionsEntity,
 } from '@/modules/exercises';
 import { RepetitionEntity } from '@/modules/repetitions';
-import {
-  TRAINING_TEMPLATES_REPOSITORY,
-  TrainingTemplatesRepository,
-} from '../../../training-templates.repository';
-import { TrainingTemplateWithExercisesEntity } from '../../../../domain/entities';
 import { TrainingType } from '@/modules/tranings';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { KyselyUnitOfWork } from '@shared/core/uow';
+import { TrainingTemplateWithExercisesEntity } from '../../../../domain/entities';
+import {
+  TRAINING_TEMPLATES_REPOSITORY,
+  TrainingTemplatesRepository,
+} from '../../../repositories/training-templates.repository';
 
 interface CreateTrainingTemplateWithExercisesInput {
   readonly userId: number;
@@ -53,11 +53,19 @@ class CreateTrainingTemplateWithExercisesCommand {
       const draftTemplate = TrainingTemplateWithExercisesEntity.create(training);
 
       draftTemplate.setExercises(
-        exercises.map((exercise) =>
-          ExerciseWithRepetitionsEntity.create(exercise)
-            .setRepetitions(exercise.repetitions.map(RepetitionEntity.create))
-            .assignToTemplate({ trainingTemplateId: draftTemplate.id }),
-        ),
+        exercises.map((exercise, index) => {
+          const newExercise = ExerciseWithRepetitionsEntity.create({
+            ...exercise,
+            position: index,
+          });
+          return newExercise
+            .setRepetitions(
+              exercise.repetitions.map((rep, index) =>
+                RepetitionEntity.create({ ...rep, position: index, exerciseId: newExercise.id }),
+              ),
+            )
+            .assignToTemplate({ trainingTemplateId: draftTemplate.id });
+        }),
       );
 
       const newTemplate = await this.trainingTemplateRepo.create(
@@ -76,9 +84,10 @@ class CreateTrainingTemplateWithExercisesCommand {
       }
 
       const newExercises = await Promise.all(
-        draftTemplate.exercises.map(async (exercise) => {
+        draftTemplate.exercises.map(async (exercise, index) => {
           return await this.createExercisesWithRepetitions.execute(
             {
+              position: index,
               userId: training.userId,
               name: exercise.name,
               type: exercise.type,

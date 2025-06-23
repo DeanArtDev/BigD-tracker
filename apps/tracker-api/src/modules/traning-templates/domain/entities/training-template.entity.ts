@@ -1,5 +1,6 @@
 import { TrainingType } from '@/modules/tranings';
 import { Validator } from '@shared/lib/validator';
+import { randomInt } from 'crypto';
 
 const validator = new Validator('training-templates');
 
@@ -14,7 +15,6 @@ interface TrainingTemplateEntityData {
 }
 
 interface CreateData {
-  readonly id?: number;
   readonly userId?: number;
   readonly name: string;
   readonly type: TrainingType;
@@ -35,7 +35,7 @@ class TrainingTemplateEntity {
   static create(data: CreateData): TrainingTemplateEntity {
     return new TrainingTemplateEntity({
       ...data,
-      id: data.id ?? Infinity,
+      id: randomInt(0, Date.now()),
     }).validate();
   }
 
@@ -59,15 +59,7 @@ class TrainingTemplateEntity {
   }
 
   public validate(): this {
-    const {
-      id = Infinity,
-      name,
-      type,
-      userId,
-      wormUpDuration,
-      postTrainingDuration,
-      description,
-    } = this.data;
+    const { id, name, type, userId, wormUpDuration, postTrainingDuration, description } = this.data;
 
     if (description != null) {
       validator.isNotStringEmpty(description, 'description');
@@ -114,6 +106,9 @@ class TrainingTemplateEntity {
   }
   get description() {
     return this.data.description;
+  }
+  get isCommon() {
+    return this.data.userId == null;
   }
 }
 

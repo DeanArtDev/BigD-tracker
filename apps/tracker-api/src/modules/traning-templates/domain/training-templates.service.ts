@@ -1,5 +1,5 @@
-import { TrainingTemplateWithExercisesDto } from '../application/dtos';
 import { Injectable } from '@nestjs/common';
+import { TrainingTemplateWithExercisesDto } from '../application/dtos';
 import { TrainingTemplateDto } from '../application/dtos/training-template.dto';
 import {
   TrainingTemplatesMapper,
@@ -9,7 +9,6 @@ import {
   CreateTrainingTemplateWithExercisesCommand,
   CreateTrainingTemplateWithExercisesInput,
   GetTrainingTemplatesQuery,
-  GetTrainingTemplateWithExercisesQuery,
   UpdateTrainingTemplateWithExercisesCommand,
   UpdateTrainingTemplateWithExercisesInput,
 } from '../application/use-cases';
@@ -20,7 +19,6 @@ class TrainingTemplatesService {
     private readonly getTrainingTemplatesQuery: GetTrainingTemplatesQuery,
     private readonly trainingTemplatesMapper: TrainingTemplatesMapper,
 
-    private readonly getTrainingTemplateWithExercisesQuery: GetTrainingTemplateWithExercisesQuery,
     private readonly trainingTemplatesWithExercisesMapper: TrainingTemplatesWithExercisesMapper,
     private readonly createTrainingTemplateWithExercisesCommand: CreateTrainingTemplateWithExercisesCommand,
     private readonly updateTrainingTemplateWithExercises: UpdateTrainingTemplateWithExercisesCommand,
@@ -31,16 +29,8 @@ class TrainingTemplatesService {
     return template.map(this.trainingTemplatesMapper.fromEntityToDTO);
   }
 
-  async one(input: { id: number; userId?: number }): Promise<TrainingTemplateDto> {
-    const template = await this.getTrainingTemplatesQuery.one(input);
-    return this.trainingTemplatesMapper.fromEntityToDTO(template);
-  }
-
-  async oneWithExercises(input: {
-    id: number;
-    userId?: number;
-  }): Promise<TrainingTemplateWithExercisesDto> {
-    const template = await this.getTrainingTemplateWithExercisesQuery.one(input);
+  async oneWithExercises(input: { id: number }): Promise<TrainingTemplateWithExercisesDto> {
+    const template = await this.getTrainingTemplatesQuery.oneWithExercises(input);
     return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(template);
   }
 

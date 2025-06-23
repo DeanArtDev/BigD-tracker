@@ -1,35 +1,22 @@
-import { useExerciseTemplateCreate, useExerciseTemplateUpdate } from '@/entity/exercises';
-import { ExerciseTypeSelectForm } from '@/entity/exercises/ui/exercise-type-select-form';
-import { validationSchema } from '@/feature/exercise/manage-exercise-template/manage-exercise-template-form/manage-exercise-template-validation';
+import { useExerciseCreate, useExerciseUpdate } from '@/entity/exercises';
+import { ExerciseTypeSelectForm } from '@/entity/exercises/ui';
 import type { ApiDto } from '@/shared/api/types';
-import type { Undefinedable } from '@/shared/lib/type-helpers';
+import { ErrorMessageForm, InputForm, TextAreaForm } from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui-kit/ui/form';
-import { Input } from '@/shared/ui-kit/ui/input';
-import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
-import { Textarea } from '@/shared/ui-kit/ui/textarea';
+import { Form } from '@/shared/ui-kit/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod/v4';
+import { validationSchema } from './manage-exercise-template-validation';
+import { RepetitionsBlock } from './repetitions-block';
 
-type ManageExerciseTemplateFormData = {
-  readonly name: string;
-  readonly type: ApiDto['ExerciseTemplateDto']['type'];
-} & Undefinedable<{
-  readonly description: string;
-  readonly url: string;
-}>;
+type ManageExerciseTemplateFormData = z.input<typeof validationSchema>;
+type SubmitFormData = z.output<typeof validationSchema>;
 
 interface ManageExerciseTemplateFormProps {
-  readonly exerciseTemplate?: ApiDto['ExerciseTemplateDto'];
-  readonly onSuccess?: () => void;
+  readonly exerciseTemplate?: ApiDto['ExerciseWithRepetitionsDto'];
+  readonly onSuccess?: (action: 'create' | 'update') => void;
 }
 
 function ManageExerciseTemplateForm({
@@ -38,31 +25,43 @@ function ManageExerciseTemplateForm({
 }: ManageExerciseTemplateFormProps) {
   const isCreating = exerciseTemplate == null;
 
-  const { create, isPending: isCreatePending } = useExerciseTemplateCreate();
-  const { update, isPending: isUpdatePending } = useExerciseTemplateUpdate();
+  const { create, isPending: isCreatePending } = useExerciseCreate();
+  const { update, isPending: isUpdatePending } = useExerciseUpdate();
   const isLoading = isCreatePending || isUpdatePending;
 
-  const form = useForm<ManageExerciseTemplateFormData>({
+  const form = useForm<ManageExerciseTemplateFormData, any, SubmitFormData>({
     resolver: zodResolver(validationSchema),
     reValidateMode: 'onChange',
+    disabled: isLoading,
     values:
       exerciseTemplate != null
         ? {
-            type: exerciseTemplate?.type,
-            description: exerciseTemplate?.description,
-            name: exerciseTemplate?.name,
-            url: exerciseTemplate?.exampleUrl,
+            type: exerciseTemplate.type,
+            name: exerciseTemplate.name,
+            description: exerciseTemplate.description ?? undefined,
+            url: exerciseTemplate.exampleUrl ?? undefined,
+            repetitions: exerciseTemplate.repetitions.map((rep) => ({
+              id: rep.id ?? undefined,
+              description: rep.description ?? undefined,
+              targetWeight: +rep.targetWeight,
+              targetCount: rep.targetCount,
+              targetBreak: rep.targetBreak,
+            })),
           }
         : undefined,
     defaultValues: {
       type: 'ANAEROBIC',
+      url: undefined,
+      name: undefined,
+      description: undefined,
+      repetitions: [],
     },
-    disabled: isLoading,
   });
 
   return (
     <Form {...form}>
       <form
+        noValidate
         className="space-y-8 flex flex-col grow w-full justify-start"
         onSubmit={form.handleSubmit((formData) => {
           if (isCreating) {
@@ -74,82 +73,67 @@ function ManageExerciseTemplateForm({
                     type: formData.type,
                     description: formData.description,
                     exampleUrl: formData.url,
+                    repetitions: formData.repetitions.map((rep) => ({
+                      targetBreak: rep.targetBreak,
+                      targetCount: rep.targetCount,
+                      targetWeight: rep.targetWeight.toString(),
+                    })),
                   },
                 },
               },
-              { onSuccess },
+              { onSuccess: () => void onSuccess?.('create') },
             );
           } else {
             if (exerciseTemplate == null) return;
             update(
               {
+                params: { path: { exerciseId: exerciseTemplate.id } },
                 body: {
-                  data: [
-                    {
-                      id: exerciseTemplate.id,
-                      name: formData.name,
-                      type: formData.type,
-                      description: formData.description,
-                      exampleUrl: formData.url,
-                    },
-                  ],
+                  data: {
+                    name: formData.name,
+                    type: formData.type,
+                    description: formData.description,
+                    exampleUrl: formData.url,
+                    repetitions: formData.repetitions.map((rep) => ({
+                      id: rep.id,
+                      targetBreak: rep.targetBreak,
+                      targetCount: rep.targetCount,
+                      targetWeight: rep.targetWeight.toString(),
+                    })),
+                  },
                 },
               },
-              { onSuccess },
+              { onSuccess: () => void onSuccess?.('update') },
             );
           }
         })}
       >
-        <FormField
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <RequiredSign>Название</RequiredSign>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Наш любимый жим лежа?" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <InputForm required name="name" label="Название" placeholder="Наш любимый жим лежа?" />
 
         <ExerciseTypeSelectForm required />
 
-        <FormField
-          control={form.control}
+        <TextAreaForm
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Описание</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Опиши особенности выполнения"
-                  className="h-[120px] max-h-[350px]"
-                  {...field}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Описание"
+          placeholder="Опиши особенности выполнения"
+          className="h-[120px] max-h-[350px]"
         />
 
-        <FormField
+        <InputForm
           name="url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Youtube ссылка</FormLabel>
-              <FormControl>
-                <Input placeholder="https://www.youtube.com?v=some-video-id" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Youtube ссылка"
+          placeholder="https://www.youtube.com?v=some-video-id"
         />
 
-        <Button className="ml-auto" type="submit" disabled={isLoading || !form.formState.isDirty}>
+        <ErrorMessageForm<ManageExerciseTemplateFormData> name="repetitions" />
+
+        <RepetitionsBlock />
+
+        <Button
+          className="ml-auto mt-auto"
+          type="submit"
+          disabled={isLoading || !form.formState.isDirty}
+        >
           {isLoading ? <AppLoader inverse size={20} /> : null}
           {isCreating ? 'Создать' : 'Редактировать'}
         </Button>

@@ -153,14 +153,17 @@ export class KyselyRepetitionsRepository
     filters: {
       exerciseId: number;
       userId?: number | null;
+      positionOrder?: 'asc' | 'desc';
     },
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity[]> {
-    let query = this.db(trx).selectFrom('repetitions').selectAll();
+    const { userId, exerciseId, positionOrder = 'asc' } = filters;
+    let query = this.db(trx)
+      .selectFrom('repetitions')
+      .orderBy('position', positionOrder)
+      .selectAll();
 
     query = query.where((eb) => {
-      const { userId, exerciseId } = filters;
-
       const conditions: ReturnType<ExpressionBuilder<DB, 'repetitions'>>[] = [];
 
       if (exerciseId != null) {
@@ -221,6 +224,7 @@ export class KyselyRepetitionsRepository
       targetBreak: raw.target_break,
       targetCount: raw.target_count,
       description: raw.description ?? undefined,
+      position: raw.position,
     });
   };
 }

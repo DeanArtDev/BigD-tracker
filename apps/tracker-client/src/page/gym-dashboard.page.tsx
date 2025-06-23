@@ -1,5 +1,12 @@
+import { PageWrapper } from '@/page/ui/page-wrapper';
+import { InConstruct } from '@/shared/components/in-construct';
+
 function GymDashboardPage() {
-  return 'GymDashboardPage';
+  return (
+    <PageWrapper className="grow items-center justify-center">
+      <InConstruct />
+    </PageWrapper>
+  );
 }
 
 export const Component = GymDashboardPage;

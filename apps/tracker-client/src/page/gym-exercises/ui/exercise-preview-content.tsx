@@ -1,41 +1,24 @@
-import { useMeSuspense } from '@/entity/auth';
 import { mapExerciseType } from '@/entity/exercises/lib/constants';
-import { ExerciseConfirmDelete } from '@/entity/exercises/ui/exercise-confirm-delete';
-import { ExerciseEditTooltip } from '@/entity/exercises/ui/exercise-edit-tooltip';
+import { RepetitionItemPreview } from '@/entity/trainings';
 import type { ApiDto } from '@/shared/api/types';
 import { YoutubeViewFrame } from '@/shared/components/youtube-view-frame';
 import { useYoutubeUrlParse } from '@/shared/lib/react/use-youtube-url-parse';
 import { Badge } from '@/shared/ui-kit/ui/badge';
-import { Button } from '@/shared/ui-kit/ui/button';
 import { DialogHeader, DialogTitle } from '@/shared/ui-kit/ui/dialog';
-import { cn } from '@/shared/ui-kit/utils';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Separator } from '@/shared/ui-kit/ui/separator';
+import { Fragment } from 'react';
 
 interface ExercisePreviewContentProps {
-  readonly exercise?: ApiDto['ExerciseTemplateDto'] | null;
-  readonly loading: boolean;
-  readonly onDelete: () => void;
-  readonly onEdit: () => void;
+  readonly exercise?: ApiDto['ExerciseWithRepetitionsDto'] | null;
 }
 
-function ExercisePreviewContent({
-  exercise,
-  loading,
-
-  onEdit,
-  onDelete,
-}: ExercisePreviewContentProps) {
-  const { me } = useMeSuspense();
+function ExercisePreviewContent({ exercise }: ExercisePreviewContentProps) {
   const { token } = useYoutubeUrlParse(exercise?.exampleUrl);
-  const isMine = exercise?.userId === me.id;
 
   return (
-    <div className="flex flex-col grow w-full gap-4">
+    <div className="flex flex-col grow w-full gap-4 overflow-y-auto">
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
-          <Button size="sm" variant="outline">
-            <Plus />
-          </Button>
           <span className="mr-5">{exercise?.name}</span>
 
           {exercise && (
@@ -46,7 +29,7 @@ function ExercisePreviewContent({
         </DialogTitle>
       </DialogHeader>
 
-      <div className="overflow-y-auto flex flex-col grow gap-4">
+      <div className="flex flex-col grow gap-4">
         {token && <YoutubeViewFrame token={token} />}
 
         <div>
@@ -54,30 +37,25 @@ function ExercisePreviewContent({
           <p className="whitespace-pre-line text-sm leading-5">{exercise?.description}</p>
         </div>
 
-        <div className="flex justify-end gap-2 mt-auto">
-          <ExerciseEditTooltip on={!isMine}>
-            <Button
-              size="sm"
-              disabled={loading}
-              variant={isMine ? 'outline' : 'ghost'}
-              className={cn({ 'opacity-50': !isMine })}
-              onClick={onEdit}
-            >
-              <Pencil />
-            </Button>
-          </ExerciseEditTooltip>
+        <Separator />
 
-          <ExerciseConfirmDelete on={isMine} onOk={onDelete}>
-            <Button
-              size="sm"
-              className={cn({ 'opacity-50': !isMine })}
-              disabled={loading}
-              variant={isMine ? 'destructive' : 'ghost'}
-            >
-              <Trash2 />
-            </Button>
-          </ExerciseConfirmDelete>
-        </div>
+        <h4 className="mb-1 text-md font-semibold">Подходы</h4>
+        <ul className="space-y-2">
+          {exercise?.repetitions.map((rep, index) => {
+            return (
+              <Fragment key={rep.id}>
+                <RepetitionItemPreview
+                  index={index}
+                  count={rep.targetCount}
+                  weight={rep.targetWeight}
+                  breakDuration={rep.targetBreak}
+                />
+
+                <Separator className="last-of-type:hidden" />
+              </Fragment>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

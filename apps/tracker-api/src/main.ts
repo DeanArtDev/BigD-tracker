@@ -1,3 +1,4 @@
+import { APP_ENV } from '@/infrastructure/configs';
 import { AuthService } from '@/modules/auth/auth.service';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
 import { UsersService } from '@/modules/users/users.service';
@@ -6,7 +7,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { APP_ENV } from '@/infrastructure/configs';
+import { LoggerMiddleware } from '@shared/middlewares/logger.middleware';
 import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
@@ -61,6 +62,8 @@ const connectSwagger = (app: INestApplication) => {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(LoggerMiddleware);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // удаляет лишние поля
@@ -77,7 +80,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://localhost:3033'],
+    origin: ['http://localhost:3033', 'http://192.168.0.46:3033'],
     credentials: true,
   });
 

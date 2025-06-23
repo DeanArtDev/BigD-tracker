@@ -1,4 +1,3 @@
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -8,17 +7,18 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RegisterRequest, RegisterResponse } from './dto/register.dto';
-import { Request, Response } from 'express';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
 import { CookieService, REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
+import { Request, Response } from 'express';
+import { AuthService } from './auth.service';
 import { Public, TokenPayload } from './decorators';
-import { RefreshResponse } from './dto/refresh.dto';
-import { LogoutResponse } from './dto/logout.dto';
-import { LoginRequest, LoginResponse } from './dto/login.dto';
 import { AccessTokenPayload } from './dto/access-token.dto';
+import { LoginRequest, LoginResponse } from './dto/login.dto';
+import { LogoutResponse } from './dto/logout.dto';
+import { RefreshResponse } from './dto/refresh.dto';
+import { RegisterRequest, RegisterResponse } from './dto/register.dto';
 import { ACCESS_TOKEN_KEY } from './lib';
 
 @ApiTags('Auth.')

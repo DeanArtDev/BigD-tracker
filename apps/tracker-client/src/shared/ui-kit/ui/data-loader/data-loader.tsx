@@ -1,5 +1,5 @@
+import { cn } from '@/shared/ui-kit/utils';
 import { type PropsWithChildren, type ReactNode } from 'react';
-import { clsx } from 'clsx';
 import { AppLoader } from '../app-loader';
 import './styles.css';
 
@@ -15,6 +15,8 @@ interface DataLoaderProps extends PropsWithChildren {
 
   readonly blur?: boolean;
   readonly parallelMount?: boolean;
+
+  readonly blurContainerClassName?: string;
 }
 
 function DataLoader(props: DataLoaderProps) {
@@ -30,6 +32,8 @@ function DataLoader(props: DataLoaderProps) {
     errorElement = 'Ошибка',
     loadingElement = <AppLoader />,
 
+    blurContainerClassName,
+
     children,
   } = props;
 
@@ -40,7 +44,7 @@ function DataLoader(props: DataLoaderProps) {
   if (blur) {
     if (!readyToShow) {
       return (
-        <div className="spinner-container">
+        <div className={cn('spinner-container contents', blurContainerClassName)}>
           {children}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             {loadingElement}
@@ -49,7 +53,7 @@ function DataLoader(props: DataLoaderProps) {
       );
     } else {
       return (
-        <div>
+        <div className={cn('contents', blurContainerClassName)}>
           {children}
           <div className="overflow-hidden" />
         </div>
@@ -66,7 +70,7 @@ function DataLoader(props: DataLoaderProps) {
       {renderEmptyElement && emptyElement}
 
       {parallelMount ? (
-        <div className={clsx({ contents: readyToShow, hidden: !readyToShow })}>{children}</div>
+        <div className={cn({ contents: readyToShow, hidden: !readyToShow })}>{children}</div>
       ) : (
         readyToShow && children
       )}

@@ -1,7 +1,7 @@
 import {
-  useExerciseTemplateDelete,
-  useExerciseTemplatesQuery,
-  useExerciseTemplatesUrlParams,
+  useExerciseDelete,
+  useExerciseQuery,
+  useExerciseUrlParams,
   useInvalidateExerciseTemplates,
 } from '@/entity/exercises';
 import { ManageExerciseTemplate } from '@/feature/exercise/manage-exercise-template';
@@ -16,17 +16,17 @@ import { useState } from 'react';
 import { PageWrapper } from '../ui/page-wrapper';
 
 function GymExercisesPage() {
-  const { isMy, setSearch } = useExerciseTemplatesUrlParams();
+  const { isMy, setSearch } = useExerciseUrlParams();
   const invalidate = useInvalidateExerciseTemplates();
-  const { data, isLoading, isFetching, isEmpty } = useExerciseTemplatesQuery({ my: isMy });
+  const { data, isLoading, isFetching, isEmpty } = useExerciseQuery({ my: isMy });
 
   const [exerciseTemplate, setExerciseTemplate] = useState<
-    ApiDto['ExerciseTemplateDto'] | undefined
+    ApiDto['ExerciseWithRepetitionsDto'] | undefined
   >();
   const [openPreview, setOpenPreview] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
-  const { deleteTrigger, isPending } = useExerciseTemplateDelete();
+  const { deleteTrigger, isPending } = useExerciseDelete();
 
   return (
     <PageWrapper
@@ -54,10 +54,14 @@ function GymExercisesPage() {
             exerciseTemplate={exerciseTemplate}
             className="ml-auto"
             variant="outline"
-            onOpenChange={setOpenEdit}
+            onOpenChange={(value) => {
+              setOpenEdit(value);
+              !value && setExerciseTemplate(undefined);
+            }}
             onSuccess={() => {
-              setOpenEdit(false);
               invalidate();
+              setExerciseTemplate(undefined);
+              setOpenEdit(false);
             }}
           >
             <Plus /> Создать
@@ -83,8 +87,25 @@ function GymExercisesPage() {
               return (
                 <ExerciseCard
                   key={exercise.id}
+                  loading={isPending}
+                  ownerId={exercise.userId}
                   name={exercise.name}
                   exampleUrl={exercise.exampleUrl}
+                  onEdit={() => {
+                    setExerciseTemplate(exercise);
+                    setOpenEdit(true);
+                  }}
+                  onDelete={() => {
+                    void deleteTrigger(
+                      { params: { path: { exerciseId: exercise.id } } },
+                      {
+                        onSuccess: () => {
+                          invalidate();
+                          setOpenPreview(false);
+                        },
+                      },
+                    );
+                  }}
                   onMoreInfoClick={() => {
                     setOpenPreview(true);
                     setExerciseTemplate(exercise);
@@ -99,17 +120,6 @@ function GymExercisesPage() {
           open={openPreview}
           loading={isPending}
           exerciseId={exerciseTemplate?.id}
-          onEdit={(value) => {
-            setExerciseTemplate(value);
-            setOpenEdit(true);
-          }}
-          onDelete={() => {
-            if (exerciseTemplate == null) return;
-            void deleteTrigger(
-              { params: { path: { templateId: exerciseTemplate?.id } } },
-              { onSuccess: () => void setOpenPreview(false) },
-            );
-          }}
           onOpenChange={(value) => {
             if (!value) setExerciseTemplate(undefined);
             setOpenPreview(value);

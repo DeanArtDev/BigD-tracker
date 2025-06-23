@@ -1,5 +1,7 @@
 import { ExercisesModule } from '@/modules/exercises';
+import { RepetitionsModule } from '@/modules/repetitions';
 import { TrainingTemplatesModule } from '@/modules/traning-templates';
+import { ProcessTrainingCommand } from './application/use-cases/commands/process-training';
 import { KyselyUnitOfWork } from '@shared/core/uow';
 import { TrainingsService } from './application/trainings.service';
 import { TrainingsController } from './application/trainings.controller';
@@ -19,7 +21,7 @@ import {
 } from './application/use-cases';
 
 @Module({
-  imports: [ExercisesModule, forwardRef(() => TrainingTemplatesModule)],
+  imports: [ExercisesModule, RepetitionsModule, forwardRef(() => TrainingTemplatesModule)],
   exports: [TRAININGS_REPOSITORY],
   controllers: [TrainingsController],
   providers: [
@@ -35,6 +37,7 @@ import {
     UpdateTrainingWithExercisesCommand,
     AssignTrainingCommand,
     CreateTrainingByTemplateCommand,
+    ProcessTrainingCommand,
   ],
 })
 export class TrainingsModule {}

@@ -13,3 +13,4 @@ export {
 } from './application/repetitions.repository';
 export { CreateRepetitionsService } from './application/use-cases/create-repetitions.service';
 export { DeleteRepetitionsService } from './application/use-cases/delete-repetitions.service';
+export { FinishRepetitionsService } from './application/use-cases/finish-repetitions.service';

@@ -1,0 +1,41 @@
+import { withLazy } from '@/shared/lib/react/with-lazy';
+import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { type JSX, useState } from 'react';
+import type { RepetitionFactFormProps } from './repetition-fact-form';
+
+type RepetitionFactDialogProps = RepetitionFactFormProps & {
+  childRender: (params: { open: () => void; close: () => void }) => JSX.Element;
+};
+
+const RepetitionFactFormLazy = withLazy(() =>
+  import('./repetition-fact-form').then((m) => ({ default: m.RepetitionFactForm })),
+);
+
+function RepetitionFactDialog({ repetition, childRender, onSuccess }: RepetitionFactDialogProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <AdoptedDialog
+        open={open}
+        slotsProps={{
+          content: { className: 'sm:min-w-[450px] h-fit w-fit p-4' },
+          header: { element: 'Так че по факту?' },
+        }}
+        onOpenChange={setOpen}
+      >
+        <RepetitionFactFormLazy
+          repetition={repetition}
+          onSuccess={(formData) => {
+            onSuccess(formData);
+            setOpen(false);
+          }}
+        />
+      </AdoptedDialog>
+
+      {childRender({ open: setOpen.bind(null, true), close: setOpen.bind(null, false) })}
+    </>
+  );
+}
+
+export { RepetitionFactDialog, type RepetitionFactDialogProps };

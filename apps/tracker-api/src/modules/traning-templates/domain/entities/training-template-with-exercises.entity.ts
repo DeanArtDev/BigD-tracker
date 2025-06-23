@@ -3,8 +3,9 @@ import {
   ExerciseWithRepetitionsEntity,
   UpdateExerciseRepetitionsInput,
 } from '@/modules/exercises';
-import { TrainingTemplateEntity, TrainingTemplateEntityData } from './training-template.entity';
+import { RepetitionEntity } from '@/modules/repetitions';
 import { Validator } from '@shared/lib/validator';
+import { TrainingTemplateEntity, TrainingTemplateEntityData } from './training-template.entity';
 
 const validator = new Validator('training-templates-with-exercises');
 
@@ -12,8 +13,9 @@ type TrainingWithExercisesEntityData = TrainingTemplateEntityData & {
   exercises: ExerciseWithRepetitionsEntity[];
 };
 
-type UpdateExerciseInput = {
+type UpdateTemplateExerciseInput = {
   readonly id: number;
+  readonly position: number;
   name: string;
   type: ExerciseType;
   description?: string;
@@ -28,7 +30,7 @@ class TrainingTemplateWithExercisesEntity extends TrainingTemplateEntity {
     const training = TrainingTemplateEntity.create(data);
 
     return new TrainingTemplateWithExercisesEntity({
-      id: training.id ?? Infinity,
+      id: training.id,
       type: training.type,
       name: training.name,
       wormUpDuration: training.wormUpDuration,
@@ -61,37 +63,63 @@ class TrainingTemplateWithExercisesEntity extends TrainingTemplateEntity {
 
   setExercises(exercises: ExerciseWithRepetitionsEntity[]): this {
     this.data.exercises = exercises;
+    validator.isIntGt(this.exercises.length, 1, 'exercises');
     this.validate();
     return this;
   }
 
-  updateExercises(input: UpdateExerciseInput): this {
-    const indexMap = new Map<number, UpdateExerciseInput[0]>();
-    for (const rep of input) {
-      if (indexMap.has(rep.id)) {
-        validator.throwError(
-          `There are duplicated exercise ids ${input.map((i) => i.id).join(', ')}`,
-          'exercises',
+  public updateExercises(input: UpdateTemplateExerciseInput): this {
+    const indexMap = new Map<number, ExerciseWithRepetitionsEntity>();
+    for (const exercise of this.data.exercises) {
+      indexMap.set(exercise.id, exercise);
+    }
+
+    const buffer: ExerciseWithRepetitionsEntity[] = [];
+
+    for (let i = 0; i < input.length; i++) {
+      const exercise = input[i];
+      const prevExercise = indexMap.get(exercise.id);
+
+      if (prevExercise != null) {
+        buffer.push(
+          prevExercise
+            .update({
+              position: i,
+              type: prevExercise.type,
+              name: prevExercise.name,
+              description: prevExercise.description,
+              exampleUrl: prevExercise.exampleUrl,
+            })
+            .assignToTemplate({ trainingTemplateId: this.id })
+            .updateRepetitions(
+              exercise.repetitions.map((rep) => ({
+                id: rep.id,
+                description: rep.description,
+                targetBreak: rep.targetBreak,
+                targetWeight: rep.targetWeight,
+                targetCount: rep.targetCount,
+              })),
+            ),
+        );
+      } else {
+        const newExercise = ExerciseWithRepetitionsEntity.create({
+          ...exercise,
+          position: i,
+        }).assignToTemplate({
+          trainingTemplateId: this.id,
+        });
+
+        buffer.push(
+          newExercise.setRepetitions(
+            exercise.repetitions.map((rep, index) =>
+              RepetitionEntity.create({ ...rep, exerciseId: newExercise.id, position: index }),
+            ),
+          ),
         );
       }
-      indexMap.set(rep.id, rep);
     }
 
-    for (const exercise of this.data.exercises) {
-      const newData = indexMap.get(exercise.id);
-      if (indexMap.has(exercise.id) && newData != null) {
-        exercise
-          .update({
-            type: newData.type,
-            name: newData.name,
-            description: newData.description,
-            exampleUrl: newData.exampleUrl,
-          })
-          .updateRepetitions(newData.repetitions);
-      }
-    }
-
-    this.validate();
+    this.setExercises(buffer);
     return this;
   }
 
@@ -100,6 +128,12 @@ class TrainingTemplateWithExercisesEntity extends TrainingTemplateEntity {
 
     if (this.data.exercises.some((i) => i.trainingTemplateId !== this.id)) {
       validator.throwError(`Exercises must belong to training {id: ${this.id}}`, 'exercises');
+    }
+
+    if (
+      new Set(this.data.exercises.map((item) => item.position)).size !== this.data.exercises.length
+    ) {
+      validator.throwError(`Exercises must not have position duplicates`, 'exercises');
     }
 
     const LIMIT = 10;

@@ -12,7 +12,10 @@ function useTrainingAssign(
     '/trainings/assign',
     {
       ...notifications,
-      onSuccess: options.onSuccess,
+      onSuccess: async () => {
+        notifications.onSuccess();
+        await options.onSuccess?.();
+      },
     },
   );
 

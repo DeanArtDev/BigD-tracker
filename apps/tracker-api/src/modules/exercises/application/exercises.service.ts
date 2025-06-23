@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExerciseWithRepetitionsDto } from './dtos/exercise-with-repetitions.dto';
-import { ExerciseDto } from './dtos/exercise.dto';
 import { ExercisesWithRepetitionsMapper } from './mappers/exercises-with-repetitions.mapper';
-import { ExercisesMapper } from './mappers/exercises.mapper';
 import {
   CreateExercisesWithRepetitionsCommand,
   CreateExerciseWithRepetitionsInput,
@@ -12,43 +10,42 @@ import {
   UpdateExerciseWithRepetitionsInput,
 } from './use-cases/commands/update-exercises-with-repetitions/update-exercises-with-repetitions.command';
 import { GetExercisesWithRepetitionsQuery } from './use-cases/queries/get-exercises-with-repetitions.query';
-import { GetExercisesQuery } from './use-cases/queries/get-exercises.query';
 
 @Injectable()
 export class ExercisesService {
   constructor(
-    private readonly getExercisesQuery: GetExercisesQuery,
-    private readonly exercisesMapper: ExercisesMapper,
-
     private readonly getExercisesWithRepetitionsQuery: GetExercisesWithRepetitionsQuery,
     private readonly exercisesWithRepetitionsMapper: ExercisesWithRepetitionsMapper,
     private readonly createExercisesWithRepetitions: CreateExercisesWithRepetitionsCommand,
     private readonly updateExercisesWithRepetitions: UpdateExercisesWithRepetitionsCommand,
   ) {}
 
-  async getExerciseTemplates(input: { userId: number; my: boolean }): Promise<ExerciseDto[]> {
-    const exercises = await this.getExercisesQuery.all(input);
+  async getExerciseTemplates(input: {
+    userId: number;
+    my: boolean;
+  }): Promise<ExerciseWithRepetitionsDto[]> {
+    const exercises = await this.getExercisesWithRepetitionsQuery.allTemplates({
+      userId: input.userId,
+      onlyUser: input.my,
+    });
 
-    return exercises.map(this.exercisesMapper.fromEntityToDTO);
+    return exercises.map(this.exercisesWithRepetitionsMapper.fromEntityToDTO);
   }
 
-  async getOneExerciseWithRepetitions(input: {
-    id: number;
-    userId: number;
-  }): Promise<ExerciseWithRepetitionsDto> {
+  async getOneExercise(input: { id: number; userId: number }): Promise<ExerciseWithRepetitionsDto> {
     const exercise = await this.getExercisesWithRepetitionsQuery.one(input);
 
     return this.exercisesWithRepetitionsMapper.fromEntityToDTO(exercise);
   }
 
-  async createExerciseWithRepetitions(
+  async createExercise(
     input: CreateExerciseWithRepetitionsInput,
   ): Promise<ExerciseWithRepetitionsDto> {
     const exercise = await this.createExercisesWithRepetitions.execute(input);
     return this.exercisesWithRepetitionsMapper.fromEntityToDTO(exercise);
   }
 
-  async updateExerciseWithRepetitions(
+  async updateExercise(
     input: UpdateExerciseWithRepetitionsInput,
   ): Promise<ExerciseWithRepetitionsDto> {
     const exercise = await this.updateExercisesWithRepetitions.execute(input);

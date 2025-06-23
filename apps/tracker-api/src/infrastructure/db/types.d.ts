@@ -19,6 +19,7 @@ export interface Exercises {
   example_url: string | null;
   id: Generated<number>;
   name: string;
+  position: Generated<number>;
   training_id: number | null;
   training_template_id: number | null;
   type: string;
@@ -39,6 +40,7 @@ export interface Repetitions {
   fact_weight: Numeric | null;
   finish_type: string | null;
   id: Generated<number>;
+  position: Generated<number>;
   target_break: number;
   target_count: number;
   target_weight: Numeric;

@@ -3,6 +3,8 @@ export { ExercisesController } from './application/exercises.controller';
 export {
   ExerciseRawData,
   EXERCISE_REPOSITORY,
+  ExerciseType,
+  ExercisesRepository,
 } from './application/repositories/exercises.repository';
 export {
   CreateExerciseRequest,
@@ -18,7 +20,10 @@ export { CreateExerciseWithRepetitionsData } from './application/use-cases/comma
 export { UpdateExerciseWithRepetitionsData } from './application/use-cases/commands/update-exercises-with-repetitions/update-exercises-with-repetitions.dto';
 export { CreateExercisesWithRepetitionsCommand } from './application/use-cases/commands/create-exercises-with-repetitions/create-exercises-with-repetitions.command';
 export { UpdateExercisesWithRepetitionsCommand } from './application/use-cases/commands/update-exercises-with-repetitions/update-exercises-with-repetitions.command';
-export { ExerciseType } from './application/repositories/exercises.repository';
+export {
+  EXERCISE_WITH_REPETITIONS_REPOSITORY,
+  ExercisesWithRepetitionsRepository,
+} from './application/repositories/exercises-with-repetitions.repository';
 
 export {
   ExerciseWithRepetitionsEntity,

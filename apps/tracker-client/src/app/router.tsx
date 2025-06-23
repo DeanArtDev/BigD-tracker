@@ -16,6 +16,7 @@ export const router = createBrowserRouter([
     errorElement: <RouterErrorBoundary />,
     children: [
       {
+        errorElement: <AuthErrorBoundary />,
         element: (
           <ProtectedRoutes>
             <AppSidebar />
@@ -27,11 +28,10 @@ export const router = createBrowserRouter([
             </ContentWrapper>
           </ProtectedRoutes>
         ),
-        errorElement: <AuthErrorBoundary />,
         children: [
           {
             path: routes.home.path,
-            loader: () => redirect(routes.gymHome.path),
+            loader: () => redirect(routes.gymActiveTraining.path),
           },
           {
             path: routes.gymTrainings.path,
@@ -46,12 +46,16 @@ export const router = createBrowserRouter([
             lazy: () => import('@/page/gym-exercises'),
           },
           {
-            path: routes.gymHome.path,
-            lazy: () => import('@/page/gym-home.page'),
+            path: routes.gymActiveTraining.path,
+            lazy: () => import('@/page/gym-active-training'),
+          },
+          {
+            path: routes.gymPrograms.path,
+            lazy: () => import('@/page/gym-programs.page'),
           },
           {
             path: '*',
-            loader: () => redirect(routes.gymHome.path),
+            loader: () => redirect(routes.gymActiveTraining.path),
           },
         ],
       },
@@ -74,7 +78,7 @@ export const router = createBrowserRouter([
 
           {
             path: '*',
-            loader: () => redirect(routes.gymHome.path),
+            loader: () => redirect(routes.gymActiveTraining.path),
           },
         ],
       },

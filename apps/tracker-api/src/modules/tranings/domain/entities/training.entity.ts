@@ -1,4 +1,5 @@
 import { Validator } from '@shared/lib/validator';
+import { randomInt } from 'crypto';
 import { TrainingType } from '../../application/trainings.repository';
 
 const validator = new Validator('trainings');
@@ -17,7 +18,6 @@ interface TrainingEntityData {
 }
 
 interface CreateData {
-  readonly id?: number;
   readonly userId: number;
   readonly name: string;
   readonly type: TrainingType;
@@ -37,7 +37,7 @@ class TrainingEntity {
   static create(data: CreateData): TrainingEntity {
     return new TrainingEntity({
       ...data,
-      id: data.id ?? Infinity,
+      id: randomInt(0, Date.now()),
       inProgress: false,
     }).validate();
   }
@@ -86,9 +86,12 @@ class TrainingEntity {
     return this;
   }
 
-  start(): this {
-    if (this.endDate != null) {
-      validator.throwError('Cannot start training if it has already ended', 'start');
+  protected start(): this {
+    if (this.inProgress || this.isCompleted) {
+      validator.throwError(
+        `Training ${this.data.id} has been already started or ended`,
+        'canStart',
+      );
     }
 
     this.data.inProgress = true;
@@ -97,18 +100,32 @@ class TrainingEntity {
   }
 
   finish(): this {
-    if (this.endDate != null) {
-      validator.throwError(`Cannot finish training if it has already ended`, 'finish');
+    if (this.isCompleted) {
+      validator.throwError(
+        `Cannot finish training ${this.data.id} if it has already ended`,
+        'finish',
+      );
     }
+
+    if (!this.inProgress) {
+      validator.throwError(
+        `Cannot finish training ${this.data.id} if it hasn't started yet`,
+        'finish',
+      );
+    }
+
+    const endDate = new Date().toISOString();
+    validator.isDateAfter(endDate, this.data.startDate, 'finish');
+
     this.data.inProgress = false;
-    this.data.endDate = new Date().toISOString();
+    this.data.endDate = endDate;
     this.validate();
     return this;
   }
 
   public validate(): this {
     const {
-      id = Infinity,
+      id,
       name,
       type,
       userId,

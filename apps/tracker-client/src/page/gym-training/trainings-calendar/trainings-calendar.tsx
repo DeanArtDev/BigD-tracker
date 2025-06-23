@@ -1,9 +1,6 @@
 import { TrainingPreview } from '@/entity/trainings';
-import { DeleteTemplateButton } from '@/feature/training/delete-template/delete-template-button';
+import { DeleteTemplateButton } from '@/feature/training/delete-template';
 import { getTraining } from '@/page/gym-training/trainings-calendar/helpers';
-import type { ApiDto } from '@/shared/api/types';
-import { CalendarContentView } from './components/calendar-content-view';
-import { useResizeTable } from './use-resize-table';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { cn } from '@/shared/ui-kit/utils';
@@ -16,6 +13,8 @@ import { debounce } from 'lodash-es';
 import { ChevronLeft, ChevronRight, Shrink } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { CalendarContentView } from './components/calendar-content-view';
+import { useResizeTable } from './use-resize-table';
 import { useTrainingsCalendar } from './use-trainings-calendar';
 
 import './styles.css';
@@ -46,7 +45,7 @@ function TrainingsCalendar() {
     invalidateCalendarData,
   } = useTrainingsCalendar();
 
-  const [training, setTraining] = useState<ApiDto['TrainingAggregationDto'] | undefined>();
+  const [trainingId, setTrainingId] = useState<number | undefined>();
 
   return (
     <div className={cn('flex flex-col text-xs relative')}>
@@ -133,7 +132,7 @@ function TrainingsCalendar() {
             assignTraining(
               {
                 body: {
-                  data: [{ trainingId: training.id, startDate: info.event.start.toISOString() }],
+                  data: [{ id: training.id, startDate: info.event.start.toISOString() }],
                 },
               },
               {
@@ -148,7 +147,7 @@ function TrainingsCalendar() {
             );
           }}
           eventClick={(info) => {
-            setTraining(getTraining(info.event.extendedProps.extra));
+            setTrainingId(getTraining(info.event.extendedProps.extra).id);
           }}
           datesSet={(info) => {
             setFilters({
@@ -157,7 +156,7 @@ function TrainingsCalendar() {
             });
           }}
           dateClick={(info) => {
-            console.log(`Вы кликнули по дате: ${info.dateStr}`);
+            console.info(`Вы кликнули по дате: ${info.dateStr}`);
           }}
           eventContent={(arg) => {
             return (
@@ -173,21 +172,21 @@ function TrainingsCalendar() {
       </DataLoader>
 
       <TrainingPreview
-        training={training}
+        trainingId={trainingId}
         appendContentSlot={
-          !!training && (
+          trainingId != null && (
             <DeleteTemplateButton
               className="ml-auto"
-              trainingId={training?.id}
+              trainingId={trainingId}
               onSuccess={() => {
                 invalidateCalendarData();
-                setTraining(undefined);
+                setTrainingId(undefined);
               }}
             />
           )
         }
         onOpenChange={(v) => {
-          if (!v) setTraining(undefined);
+          if (!v) setTrainingId(undefined);
         }}
       />
     </div>

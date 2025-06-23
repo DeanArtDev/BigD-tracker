@@ -1,4 +1,3 @@
-import type { ApiDto } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
 
@@ -9,7 +8,7 @@ const TrainingTemplateManageFormLazy = withLazy(() =>
 );
 
 interface TrainingTemplateCreateDialogProps {
-  readonly training?: ApiDto['TrainingTemplateAggregationDto'];
+  readonly templateId?: number;
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
   readonly onSuccess: () => void;
@@ -17,7 +16,7 @@ interface TrainingTemplateCreateDialogProps {
 
 function TrainingTemplateManageDialog({
   open,
-  training,
+  templateId,
   onSuccess,
   onOpenChange,
 }: TrainingTemplateCreateDialogProps) {
@@ -27,14 +26,14 @@ function TrainingTemplateManageDialog({
       onOpenChange={onOpenChange}
       slotsProps={{
         header: {
-          element: training == null ? 'Создание тренировки' : 'Редактирование тренировки',
+          element: templateId == null ? 'Создание тренировки' : 'Редактирование тренировки',
         },
         content: {
           className: 'overflow-x-scroll',
         },
       }}
     >
-      <TrainingTemplateManageFormLazy training={training} onSuccess={onSuccess} />
+      <TrainingTemplateManageFormLazy templateId={templateId} onSuccess={onSuccess} />
     </AdoptedDialog>
   );
 }

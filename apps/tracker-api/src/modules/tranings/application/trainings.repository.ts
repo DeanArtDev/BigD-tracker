@@ -13,6 +13,7 @@ interface TrainingRawData {
 }
 
 interface TrainingsRepository {
+  findActive(trx?: Transaction<DB>): Promise<TrainingEntity | null>;
   findOneById(data: { id: number }, trx?: Transaction<DB>): Promise<TrainingEntity | null>;
   find(
     data: {

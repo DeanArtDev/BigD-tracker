@@ -29,7 +29,7 @@ class CalendarEvent<T extends Record<string, any>>
   }
 }
 
-const trainingTypeColorMap: Record<ApiDto['TrainingAggregationDto']['type'], string> = {
+const trainingTypeColorMap: Record<ApiDto['TrainingDto']['type'], string> = {
   HARD: 'bg-red-300',
   MEDIUM: 'bg-yellow-300',
   LIGHT: 'bg-green-300',
@@ -38,11 +38,12 @@ const trainingTypeColorMap: Record<ApiDto['TrainingAggregationDto']['type'], str
 
 function useTrainingsCalendar() {
   const [filters, setFilters] = useState<{ from: string; to: string } | undefined>();
-  const { data, isLoading } = useTrainingsQuery(filters);
+  const { data, isLoading } = useTrainingsQuery(filters, { enabled: filters != null });
   const invalidate = useInvalidateTrainings();
   const { assignTraining, isPending } = useTrainingAssign({
     onSuccess: invalidate.bind(null, undefined, { drop: true }),
   });
+
   const updater = useTrainingStartDateUpdate();
   const updateStartDate = (data: { id: number; startDate: string }) => void updater(data, filters);
 
@@ -54,7 +55,7 @@ function useTrainingsCalendar() {
 
     return (
       data?.map((i) => {
-        return new CalendarEvent<ApiDto['TrainingAggregationDto']>(
+        return new CalendarEvent<ApiDto['TrainingDto']>(
           {
             start: i.startDate ?? '',
             backgroundColor: trainingTypeColorMap[i.type],

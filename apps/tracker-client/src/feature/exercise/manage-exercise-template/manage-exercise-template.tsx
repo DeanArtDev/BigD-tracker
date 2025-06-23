@@ -4,7 +4,7 @@ import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
 import { Button } from '@/shared/ui-kit/ui/button';
 
 type CreateExerciseTemplateProps = Parameters<typeof Button>[0] & {
-  readonly exerciseTemplate?: ApiDto['ExerciseTemplateDto'];
+  readonly exerciseTemplate?: ApiDto['ExerciseWithRepetitionsDto'];
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
   readonly onSuccess?: () => void;
@@ -39,6 +39,9 @@ function ManageExerciseTemplate({
         slotsProps={{
           header: {
             element: exerciseTemplate == null ? 'Создание упражнения' : 'Редактирование упражнения',
+          },
+          content: {
+            className: 'overflow-x-scroll',
           },
         }}
       >

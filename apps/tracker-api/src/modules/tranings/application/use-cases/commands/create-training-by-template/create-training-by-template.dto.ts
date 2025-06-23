@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsInt, IsISO8601, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsISO8601, ValidateNested } from 'class-validator';
 
 class CreateTrainingByTemplateRequestData {
   @ApiProperty({ example: 1 })
@@ -20,10 +20,12 @@ class CreateTrainingByTemplateRequest {
   @ApiProperty({
     description: 'Данные для запроса',
     type: CreateTrainingByTemplateRequestData,
+    isArray: true,
   })
-  @ValidateNested()
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => CreateTrainingByTemplateRequestData)
-  data: CreateTrainingByTemplateRequestData;
+  data: CreateTrainingByTemplateRequestData[];
 }
 
 export { CreateTrainingByTemplateRequest };

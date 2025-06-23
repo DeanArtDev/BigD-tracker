@@ -24,9 +24,12 @@ export default {
     }
 
     await db.transaction().execute(async (trx) => {
+      await trx.deleteFrom('users').execute();
+
       const result = await trx
         .insertInto('users')
         .values({
+          id: 1,
           password_hash: bcrypt.hashSync(testUserConfig.TEST_USER_PASSWORD, 10),
           email: testUserConfig.TEST_USER_LOGIN,
         })

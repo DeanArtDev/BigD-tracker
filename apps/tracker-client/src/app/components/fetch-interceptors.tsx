@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { apiPrivateClient } from '@/shared/api/api-client';
 import { refreshToken, setIsAuth, useAccessTokenStore } from '@/entity/auth';
+import { apiPrivateClient } from '@/shared/api/api-client';
 import { isExceptionUnauthorized } from '@big-d/api-exception';
+import { useEffect, useRef, useState } from 'react';
 
 function FetchInterceptors({ children }: React.PropsWithChildren) {
   const isCalled = useRef(false);
+  const [isInterceptors, setIsInterceptors] = useState(false);
 
   useEffect(() => {
     if (isCalled.current) return;
@@ -29,8 +30,10 @@ function FetchInterceptors({ children }: React.PropsWithChildren) {
     });
 
     isCalled.current = true;
+    setIsInterceptors(true);
   }, []);
 
+  if (!isInterceptors) return null;
   return children;
 }
 

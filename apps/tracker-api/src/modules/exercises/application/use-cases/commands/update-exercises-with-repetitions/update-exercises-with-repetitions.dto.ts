@@ -1,12 +1,23 @@
+import { ExerciseDto } from '../../../dtos/exercise.dto';
 import { UpdateRepetitionDto } from '@/modules/repetitions';
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
-import { CreateExerciseRequestData } from '../../../dtos/create-exercise.dto';
+import { IsInt, IsOptional, ValidateNested } from 'class-validator';
 
-class UpdateRepetition extends OmitType(UpdateRepetitionDto, ['exerciseId'] as const) {}
+class UpdateRepetition extends OmitType(UpdateRepetitionDto, ['exerciseId', 'id'] as const) {
+  @ApiPropertyOptional({ example: 1 })
+  @IsInt()
+  @IsOptional()
+  @Expose()
+  id?: number;
+}
 
-class UpdateExerciseWithRepetitionsData extends CreateExerciseRequestData {
+class UpdateExerciseWithRepetitionsData extends OmitType(ExerciseDto, [
+  'id',
+  'templateId',
+  'trainingId',
+  'userId',
+] as const) {
   @ApiProperty({
     description: 'Повторения',
     type: UpdateRepetition,

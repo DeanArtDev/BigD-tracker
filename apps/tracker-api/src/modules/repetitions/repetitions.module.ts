@@ -1,4 +1,4 @@
-import { FinishRepetitionsService } from '@/modules/repetitions/application/use-cases/finish-repetitions.service/finish-repetitions.service';
+import { FinishRepetitionsService } from './application/use-cases/finish-repetitions.service';
 import { KyselyUnitOfWork } from '@shared/core/uow';
 import { DeleteRepetitionsService } from './application/use-cases/delete-repetitions.service';
 import { CreateRepetitionsService } from './application/use-cases/create-repetitions.service';

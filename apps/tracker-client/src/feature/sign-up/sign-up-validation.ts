@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import type { SignUpFormData } from './sign-up-form';
 
-const signUpValidationSchema: z.Schema<SignUpFormData> = z
+const signUpValidationSchema = z
   .object({
     email: z
       .string({ required_error: 'Почта обязательна' })
