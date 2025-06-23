@@ -62,7 +62,7 @@ class Validator {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `id must not be valid id:${value}`,
+        message: `${field} must be a valid id: ${value}`,
       });
     }
   }
