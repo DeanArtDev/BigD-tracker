@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { APP_ENV } from '@/infrastructure/configs';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY, PAYLOAD_KEY } from '../decorators';
+import { AccessTokenPayload } from '../dto/access-token.dto';
 import { ExceptionUnauthorized } from '@big-d/api-exception';
 
 @Injectable()
@@ -36,9 +37,9 @@ export class AuthGuard implements CanActivate {
     const token = authHeader.split(' ')[1];
 
     try {
-      request[PAYLOAD_KEY] = await this.jwtService.verifyAsync<{ userId: number }>(
+      request[PAYLOAD_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(
         token,
-        this.configService.get('AUTH_SECRET_KEY'),
+        { secret: this.configService.get('AUTH_SECRET_KEY') },
       );
 
       return true;
