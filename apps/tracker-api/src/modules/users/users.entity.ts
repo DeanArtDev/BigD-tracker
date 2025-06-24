@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsEmail, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
 
-/* Это блэт DTO а не entity!*/
+// This class represents a DTO and is not a persistence entity.
 class User {
   @ApiProperty({ example: 1 })
   @Expose()
