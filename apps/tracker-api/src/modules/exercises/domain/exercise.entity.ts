@@ -171,7 +171,7 @@ class ExerciseEntity {
         'assignToTemplate',
       );
     }
-    if (this.data.trainingId != null) {
+    if (this.data.trainingTemplateId != null) {
       validator.throwError(
         `You can not assign exercise: ${this.data.id} to template: ${input.trainingTemplateId} if it has already assigned to training`,
         'assignToTemplate',
