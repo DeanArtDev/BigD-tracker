@@ -8,9 +8,16 @@
     "format:all:fix": "turbo format:fix",
     "lint:all": "turbo lint -F=\"./apps/**\"",
     "lint:all:fix": "turbo lint:fix -F=\"./apps/**\"",
+    "deploy:to:prod": "bash ./deploy-scripts/bootstrap.sh",
     "--DEV--": "",
+    "tracker-db:dev:up": "docker-compose --profile dev --env-file ./.env.development -f docker-compose.yml up -d --wait",
+    "tracker-db:dev:down": "docker-compose --profile dev --env-file ./.env.development -f docker-compose.yml down",
     "--BUILD--": "",
-    "build:all": "turbo build -F=\"./apps/**\""
+    "tracker-compose:prod:up": "docker-compose --profile prod --env-file ./.env -f docker-compose.prod.yml up -d --wait",
+    "tracker-compose:prod:down": "docker-compose --profile prod --env-file ./.env -f docker-compose.prod.yml down",
+    "build:all": "turbo build -F=\"./apps/**\"",
+    "migrate:tracker-api": "turbo migrate -- lts -F=@big-d/tracker-api"
+
   },
   "keywords": [],
   "author": "",

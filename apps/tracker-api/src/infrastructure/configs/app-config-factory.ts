@@ -8,6 +8,7 @@ interface APP_ENV {
   readonly IS_PROD: boolean;
   readonly SESSION_REFRESH_TIME: number;
   readonly ACCESS_TOKEN_TIME: string;
+  readonly ORIGIN: string;
 }
 
 const appConfigFactory: ConfigFactory<APP_ENV> = () => ({
@@ -17,6 +18,7 @@ const appConfigFactory: ConfigFactory<APP_ENV> = () => ({
   SESSION_REFRESH_TIME: parseInt(process.env.SESSION_REFRESH_TIME ?? '', 10) || 86400000,
   AUTH_SECRET_KEY: process.env.AUTH_SECRET_KEY ?? '',
   ACCESS_TOKEN_TIME: process.env.ACCESS_TOKEN_TIME ?? '1h',
+  ORIGIN: process.env.ORIGIN ?? '',
 });
 
 export { appConfigFactory, APP_ENV };

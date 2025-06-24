@@ -5,6 +5,8 @@ dist
 .idea
 .next
 
+deploy-scripts
+
 npm-debug.log*
 
 *.tsbuildinfo
@@ -25,3 +27,6 @@ scripts/archive.tar.gz
 apps/*storybook.log
 ./turbo
 .turbo
+
+apps/**/.turbo
+dumps
