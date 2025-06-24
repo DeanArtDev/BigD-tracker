@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetTrainingsQuery } from './dtos/get-trainings.dto';
-import { TrainingResponse } from './dtos/tarining-response.dto';
+import { TrainingResponse } from './dtos/training-response.dto';
 import {
   TrainingWithExercisesResponse,
   TrainingWithExercisesResponseSingle,
