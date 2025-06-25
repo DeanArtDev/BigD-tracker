@@ -3,7 +3,7 @@ import { InConstruct } from '@/shared/components/in-construct';
 
 function GymDashboardPage() {
   return (
-    <PageWrapper className="grow items-center justify-center">
+    <PageWrapper className="grow items-center justify-center" title="Дашборд">
       <InConstruct />
     </PageWrapper>
   );
