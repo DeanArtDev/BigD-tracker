@@ -52,7 +52,7 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/tracker-api/packag
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/tracker-api/dist ./apps/tracker-api/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/tracker-api/node_modules ./apps/tracker-api/node_modules
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions ./libs/exceptions
-#COPY scripts/bootstrap.sh /usr/src/app/bootstrap.sh
+COPY scripts/bootstrap.sh /usr/src/app/bootstrap.sh
 COPY ./apps/tracker-api/swagger /usr/src/app/apps/tracker-api/swagger
 
 
@@ -61,7 +61,7 @@ ENV API_PORT=${API_PORT}
 EXPOSE ${API_PORT}
 
 USER root
-#RUN chmod +x /usr/src/app/bootstrap.sh
-#ENTRYPOINT ["/usr/src/app/bootstrap.sh", "dist/tools/migrator.js"]
+RUN chmod +x /usr/src/app/bootstrap.sh
+ENTRYPOINT ["/usr/src/app/bootstrap.sh", "dist/tools/migrator.js"]
 WORKDIR /usr/src/app/apps/tracker-api
 CMD node dist/src/main.js
