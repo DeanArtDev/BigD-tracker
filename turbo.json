@@ -7,6 +7,11 @@
     "start": {
       "dependsOn": ["build"]
     },
+
+    "migrate": {
+      "dependsOn": ["build"]
+    },
+
     "dev": {
       "dependsOn": ["^build"]
     },

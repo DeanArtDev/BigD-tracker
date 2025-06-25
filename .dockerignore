@@ -1,14 +1,10 @@
 .git
 .idea
 .turbo
-.dockerignore
 node_modules
-deploy-dists
 .DS_Store
 .gitattributes
 .gitignore
-.gitlab-ci.yml
 docker-compose.yml
 *.md
 dist
-.next

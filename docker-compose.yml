@@ -1,18 +1,22 @@
 services:
-  db:
+  tracker_db_dev:
+    profiles: ['dev']
+    platform: linux/amd64
     image: postgres:15
     env_file:
       - .env.development
-    container_name: tracker_db
+    container_name: tracker_db_dev
     restart: always
+    ports:
+      - ${DB_PORT}:${DB_PORT}
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
-    ports:
-      - ${DB_PORT}:${DB_PORT}
     volumes:
-      - /Users/dean/workspaces/docker/volumes:/var/lib/postgresql/data
+      - db_data_dev:/var/lib/postgresql/data
+
 
 volumes:
-  trackerdata:
+  db_data_dev:
+    name: tracker_db_dev_data

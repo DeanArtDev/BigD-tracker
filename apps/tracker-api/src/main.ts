@@ -80,20 +80,24 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://localhost:3033', 'http://192.168.0.46:3033'],
+    origin: configService.get<string>('ORIGIN').split(',').filter(Boolean),
     credentials: true,
   });
 
-  const testUserToken = await getTestUserToken(app, testUserConfig.TEST_USER_LOGIN);
-  connectSwagger(app);
+  let documentationMessage = `📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}`;
+  if (configService.get('IS_DEV')) {
+    const testUserToken = await getTestUserToken(app, testUserConfig.TEST_USER_LOGIN);
+    documentationMessage = `📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}?token=${testUserToken}`;
+  }
 
+  connectSwagger(app);
   await app.listen(port, '0.0.0.0', () => {
     console.info(`
-    🚀 Application is running at port http://localhost:${port};
+    🚀 Application is running at port http://localhost:${port}
     ----------------------------------------------------------------
-    📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}?token=${testUserToken};
+    ${documentationMessage}
     ----------------------------------------------------------------
-    📜 To get open api string schema at http://localhost:${port}/${SWAGGER_URL};
+    📜 To get open api string schema at http://localhost:${port}/${SWAGGER_URL}
     `);
   });
 }
