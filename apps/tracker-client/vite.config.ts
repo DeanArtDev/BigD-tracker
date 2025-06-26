@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
           lang: 'ru',
           description: 'Трекинг всего и вся',
           name: 'Tracker',
-          short_name: 'T',
+          short_name: 'Planner',
           start_url: '/gym/active?source=pwa',
           display: 'standalone',
           orientation: 'portrait',
