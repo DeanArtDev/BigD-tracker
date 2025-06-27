@@ -9,7 +9,7 @@ function GymCurrentTraining() {
   const { activeTraining, isLoading, isError, isNotFound, refetch } = useActiveTrainingQuery();
 
   return (
-    <PageWrapper className="grow gap-4 pt-4 pb-8 lg:gap-8">
+    <PageWrapper className="grow gap-4 pt-4 pb-8 lg:gap-8" title="Активная тренировка">
       <DataLoader
         isEmpty={isNotFound}
         isLoading={isLoading}

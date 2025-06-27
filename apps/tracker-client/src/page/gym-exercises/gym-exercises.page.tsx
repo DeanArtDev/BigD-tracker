@@ -33,6 +33,7 @@ function GymExercisesPage() {
       className={cn('grow gap-4 lg:gap-8', {
         'overflow-hidden': isLoading,
       })}
+      title="Упражнения"
     >
       <div className="flex flex-col grow gap-4">
         <div className="flex">

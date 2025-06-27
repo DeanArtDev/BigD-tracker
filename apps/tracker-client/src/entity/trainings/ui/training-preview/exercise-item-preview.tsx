@@ -1,4 +1,3 @@
-import { RepetitionItemPreview } from './repetition-item-preview';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Button } from '@/shared/ui-kit/ui/button';
 import {
@@ -6,9 +5,16 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/shared/ui-kit/ui/collapsible';
-import { Separator } from '@/shared/ui-kit/ui/separator';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/shared/ui-kit/ui/table';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 
 interface ExerciseItemPreviewProps {
   readonly index: number;
@@ -18,6 +24,9 @@ interface ExerciseItemPreviewProps {
     readonly targetCount: number;
     readonly targetBreak: number;
     readonly targetWeight: string;
+    readonly factCount?: number;
+    readonly factBreak?: number;
+    readonly factWeight?: string;
   }[];
 }
 
@@ -31,7 +40,7 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
 
         <span className="text-sm">{name}</span>
 
-        <Badge className="self-center ml-auto" variant="secondary">
+        <Badge className="hidden sm:flex self-center ml-auto" variant="secondary">
           {type}
         </Badge>
 
@@ -40,6 +49,7 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
             type="button"
             variant="ghost"
             size="sm"
+            className="ml-auto sm:ml-0"
             onClick={() => void setIsOpen((prev) => !prev)}
           >
             {isOpen ? <ChevronUp /> : <ChevronDown />}
@@ -47,24 +57,72 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
         </CollapsibleTrigger>
       </div>
 
-      <CollapsibleContent className="ml-[10%] mt-[-10px] pt-4 p-2 overflow-hidden text-xs border-x border-b rounded-bl-md rounded-br-md">
-        <ul className="flex flex-col grow gap-3">
-          {repetitions.map((rep, idx) => {
-            return (
-              <Fragment key={idx}>
-                <RepetitionItemPreview
-                  index={idx}
-                  count={rep.targetCount}
-                  weight={rep.targetWeight}
-                  breakDuration={rep.targetBreak}
-                />
-                <Separator className="last-of-type:hidden" />
-              </Fragment>
-            );
-          })}
-        </ul>
+      <CollapsibleContent className="ml-[5%] sm:ml-[10%] mt-[-10px] pt-2 overflow-hidden text-xs border-x border-b rounded-bl-md rounded-br-md">
+        <Table className="text-xs text-center table-auto">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-left w-full">Подход</TableHead>
+              <TableHead className="text-center">Вес</TableHead>
+              <TableHead className="text-center">Повторы</TableHead>
+              <TableHead className="text-center">Перерыв</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {repetitions.map((rep, idx) => {
+              const { targetWeight, targetCount, targetBreak, factCount, factWeight, factBreak } =
+                rep;
+
+              const fact =
+                factCount != null && factWeight != null && factBreak != null
+                  ? {
+                      count: factCount,
+                      weight: factWeight,
+                      break: factBreak,
+                    }
+                  : undefined;
+
+              return (
+                <>
+                  <TableRow>
+                    <TableCell
+                      className="font-bold text-left align-text-top pl-4 sm:pl-7"
+                      rowSpan={fact ? 2 : 1}
+                    >
+                      <div className="flex flex-col">
+                        {idx + 1}.{fact && <span className="ml-auto mt-4">Факт:</span>}
+                      </div>
+                    </TableCell>
+                    <DataView break={targetBreak} weight={targetWeight} count={targetCount} />
+                  </TableRow>
+                  {fact && (
+                    <TableRow>
+                      <DataView {...fact} />
+                    </TableRow>
+                  )}
+                </>
+              );
+            })}
+          </TableBody>
+        </Table>
       </CollapsibleContent>
     </Collapsible>
+  );
+}
+
+function DataView(props: {
+  readonly count: number;
+  readonly break: number;
+  readonly weight: string;
+}) {
+  const w = +props.weight;
+
+  return (
+    <>
+      <TableCell>{w % 1 !== 0 ? w : Math.trunc(w)}</TableCell>
+      <TableCell>{props.count}</TableCell>
+      <TableCell>{props.break}</TableCell>
+    </>
   );
 }
 

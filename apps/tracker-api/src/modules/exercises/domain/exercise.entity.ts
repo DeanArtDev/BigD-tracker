@@ -164,16 +164,21 @@ class ExerciseEntity {
   }
 
   assignToTemplate(input: { trainingTemplateId: number }): this {
-    if (this.data.trainingId != null) {
+    if (
+      this.data.trainingTemplateId != null &&
+      this.data.trainingTemplateId != input.trainingTemplateId
+    ) {
       validator.throwError(
-        `You can not assign exercise: ${this.data.id} to another training template: ${input.trainingTemplateId}
-         if it has already assigned to another one: ${this.data.trainingId}`,
+        `You can not assign exercise: ${this.data.id} to any training template: ${input.trainingTemplateId}
+         if it has already assigned to another one: ${this.data.trainingTemplateId}`,
         'assignToTemplate',
       );
     }
-    if (this.data.trainingTemplateId != null) {
+
+    if (this.data.trainingId != null) {
       validator.throwError(
-        `You can not assign exercise: ${this.data.id} to template: ${input.trainingTemplateId} if it has already assigned to training`,
+        `You can not assign exercise: ${this.data.id} to template: ${input.trainingTemplateId}
+         if it has already assigned to a training`,
         'assignToTemplate',
       );
     }
