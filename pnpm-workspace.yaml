@@ -1,5 +1,6 @@
 packages:
   - "apps/*"
+  - "clients/*"
   - "libs/*"
   - "configs/**"
 

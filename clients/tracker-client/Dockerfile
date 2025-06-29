@@ -38,7 +38,7 @@ WORKDIR /usr/src/app
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nodejs
 
-COPY --from=installer /usr/src/app/apps/tracker-client/dist /var/www/static/
-COPY --from=installer /usr/src/app/apps/tracker-client/nginx.conf /etc/nginx/nginx.conf
+COPY --from=installer /usr/src/app/clients/tracker-client/dist /var/www/static/
+COPY --from=installer /usr/src/app/clients/tracker-client/nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80

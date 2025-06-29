@@ -52,7 +52,7 @@ services:
       - .env
     build:
       context: .
-      dockerfile: ./apps/tracker-client/Dockerfile
+      dockerfile: ./clients/tracker-client/Dockerfile
       args:
         VITE_CLIENT_PORT: ${VITE_CLIENT_PORT:-3000}
         VITE_BASE_API_URL: ${VITE_BASE_API_URL:-/api}
