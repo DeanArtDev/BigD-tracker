@@ -51,7 +51,23 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/node_modules ./node_mod
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/tracker-api/package.json ./apps/tracker-api/package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/tracker-api/dist ./apps/tracker-api/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/tracker-api/node_modules ./apps/tracker-api/node_modules
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions ./libs/exceptions
+
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/dist ./libs/api-exceptions/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/package.json ./libs/api-exceptions/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/node_modules ./libs/api-exceptions/node_modules
+
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/dist ./libs/api-contracts/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/package.json ./libs/api-contracts/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/node_modules ./libs/api-contracts/node_modules
+
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/database/dist ./libs/database/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/database/package.json ./libs/database/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/database/node_modules ./libs/database/node_modules
+
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/dist ./libs/api-utils/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/package.json ./libs/api-utils/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/node_modules ./libs/api-utils/node_modules
+
 COPY scripts/bootstrap.sh /usr/src/app/bootstrap.sh
 COPY ./apps/tracker-api/swagger /usr/src/app/apps/tracker-api/swagger
 

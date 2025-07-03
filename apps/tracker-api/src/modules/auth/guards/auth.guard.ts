@@ -6,7 +6,7 @@ import { APP_ENV } from '@/infrastructure/configs';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY, PAYLOAD_KEY } from '../decorators';
 import { AccessTokenPayload } from '../dto/access-token.dto';
-import { ExceptionUnauthorized } from '@big-d/api-exception';
+import { ExceptionUnauthorized } from '@big-d/api-exceptions';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new ExceptionUnauthorized({
-        message: 'Missing or invalid Authorization token',
+        message: 'Missing authorization token',
       });
     }
 

@@ -1,6 +1,6 @@
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
+import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import {
   Body,
   Controller,

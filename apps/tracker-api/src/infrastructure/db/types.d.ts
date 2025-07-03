@@ -59,7 +59,7 @@ export interface Sessions {
   revoked: Generated<boolean>;
   token: string;
   user_agent: string | null;
-  users_id: number;
+  user_id: number;
   uuid: string;
 }
 

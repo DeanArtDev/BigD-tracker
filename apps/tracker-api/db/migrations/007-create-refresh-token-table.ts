@@ -4,7 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('sessions')
     .addColumn('uuid', 'uuid', (col) => col.notNull())
-    .addColumn('users_id', 'integer', (col) =>
+    .addColumn('user_id', 'integer', (col) =>
       col.references('users.id').onDelete('cascade').notNull(),
     )
     .addColumn('user_agent', 'text', (col) => col.check(sql`char_length(user_agent) <= 256`))
