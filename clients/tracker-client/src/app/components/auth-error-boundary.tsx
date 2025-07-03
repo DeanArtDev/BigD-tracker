@@ -1,5 +1,5 @@
 import { routes } from '@/shared/lib/routes';
-import { isExceptionUnauthorized } from '@big-d/api-exception';
+import { isExceptionUnauthorized } from '@big-d/api-exceptions';
 import { Navigate, useRouteError } from 'react-router-dom';
 
 function AuthErrorBoundary() {

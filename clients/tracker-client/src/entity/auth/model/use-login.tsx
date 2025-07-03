@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { $privetQueryClient } from '@/shared/api/api-client';
-import { isExceptionWrongLoginOrPassword } from '@big-d/api-exception';
+import { isExceptionWrongLoginOrPasswordBody } from '@big-d/api-exceptions';
 import { useAuthStore } from './use-auth-store';
 import { useAccessTokenStore } from './use-access-token-store';
 import { routes } from '@/shared/lib/routes';
@@ -30,7 +30,7 @@ function useLogin() {
     },
   });
 
-  const isWrongPassOrLogin = useMemo(() => isExceptionWrongLoginOrPassword(error), [error]);
+  const isWrongPassOrLogin = useMemo(() => isExceptionWrongLoginOrPasswordBody(error), [error]);
 
   return { login, isWrongPassOrLogin, error, ...states };
 }
