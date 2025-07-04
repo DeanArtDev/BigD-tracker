@@ -1,26 +1,31 @@
 import { appConfigFactory } from '@/infrastructure/configs';
-import { ErrorsToRpcExceptionInterceptor, LoggingInterceptor } from '@big-d/api-utils';
+import { accountServiceRmqConfig } from '@big-d/api-contracts';
+import {
+  ErrorsToRpcExceptionInterceptor,
+  RmqLoggerDeserializer,
+  RmqLoggerSerializer,
+} from '@big-d/api-utils';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const logger = new Logger('AccountService');
+  const logger = new Logger('Account Main');
   const config = await appConfigFactory();
-  const rmqUrl = `amqp://${config.RMQ_USER}:${config.RMQ_PASSWORD}@${config.RMQ_HOST}:${config.RMQ_PORT}`;
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-    transport: Transport.RMQ,
-    options: {
-      urls: [rmqUrl],
-      queue: 'account_service_queue',
-      queueOptions: { durable: config.IS_PROD, autoDelete: true },
-      exchange: 'account_service_exchange',
-      exchangeType: 'topic',
-      wildcards: true,
-    },
-  });
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    accountServiceRmqConfig({
+      host: config.RMQ_HOST,
+      port: config.RMQ_PORT,
+      user: config.RMQ_USER,
+      password: config.RMQ_PASSWORD,
+      isProd: config.IS_PROD,
+      deserializer: new RmqLoggerDeserializer(),
+      serializer: new RmqLoggerSerializer(),
+    }),
+  );
 
   app.useLogger(logger);
 
@@ -33,10 +38,9 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
-  app.useGlobalInterceptors(new LoggingInterceptor({ name: 'RMQ' }));
 
   await app.listen();
-  logger.log(`🚀 Account service is running`);
+  logger.log(`🚀 Account service is running, port: ${config.API_PORT}`);
 }
 
 bootstrap();

@@ -1,20 +1,17 @@
 import * as bcrypt from 'bcrypt';
 
 export class UserPassword {
-  private constructor(
-    private readonly hash: string,
-    private readonly salt: string,
-  ) {}
+  private constructor(private readonly hash: string) {}
 
   public static async create(password: string): Promise<UserPassword> {
     UserPassword.ensureValid(password);
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(password, salt);
-    return new UserPassword(hash, salt);
+    return new UserPassword(hash);
   }
 
   public static restore(password: string): UserPassword {
-    return new UserPassword(password, bcrypt.genSaltSync());
+    return new UserPassword(password);
   }
 
   private static ensureValid(plain: string): void {

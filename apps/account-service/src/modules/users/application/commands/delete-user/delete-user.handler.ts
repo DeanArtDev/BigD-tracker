@@ -1,14 +1,11 @@
 import { Inject, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { USER_REPOSITORY, UsersRepository } from '../../users.repository';
 import { DeleteUserCommand } from './delete-user.command';
 
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
-  constructor(
-    @Inject(USER_REPOSITORY) private readonly usersRepository: UsersRepository,
-    private readonly eventBus: EventBus,
-  ) {}
+  constructor(@Inject(USER_REPOSITORY) private readonly usersRepository: UsersRepository) {}
 
   async execute(input: DeleteUserCommand) {
     const existedUser = await this.usersRepository.findUserById({ id: input.id });

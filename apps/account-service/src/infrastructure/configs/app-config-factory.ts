@@ -2,6 +2,7 @@ import { ConfigFactory } from '@nestjs/config';
 import * as process from 'node:process';
 
 interface ACCOUNT_APP_ENV {
+  readonly API_PORT: number;
   readonly AUTH_SECRET_KEY: string;
   readonly IS_DEV: boolean;
   readonly IS_PROD: boolean;
@@ -14,6 +15,7 @@ interface ACCOUNT_APP_ENV {
 }
 
 const appConfigFactory: ConfigFactory<ACCOUNT_APP_ENV> = () => ({
+  API_PORT: parseInt(process.env.API_PORT ?? '', 10) || 4033,
   IS_DEV: process.env.NODE_ENV === 'development',
   IS_PROD: process.env.NODE_ENV === 'production',
   SESSION_REFRESH_TIME: parseInt(process.env.SESSION_REFRESH_TIME ?? '', 10) || 86400000,

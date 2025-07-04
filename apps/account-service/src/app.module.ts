@@ -1,6 +1,6 @@
 import { appConfigFactory } from '@/infrastructure/configs/app-config-factory';
 import { AuthModule } from '@/modules/auth/auth.module';
-import { RmqClientsModule } from '@/modules/rmq-clients';
+import { RmqClientsModule } from '@/infrastructure/rmq-clients';
 import { UsersModule } from '@/modules/users';
 import { DatabaseModule, DB_ENV, dbConfigFactory } from '@big-d/database';
 import { Module } from '@nestjs/common';
