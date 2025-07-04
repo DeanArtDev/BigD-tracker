@@ -1,4 +1,4 @@
-import { ExceptionUnauthorized, ExceptionWrongLoginOrPassword } from './exceptions';
+import { ExceptionUnauthorized } from './exceptions';
 import { Exception } from './exception-map';
 import { ExceptionBody } from './lib/types';
 

@@ -1,8 +1,8 @@
 import { Deserializer, RmqOptions, Serializer, Transport } from '@nestjs/microservices';
 
-const ACCOUNT_SERVICE_RMQ_KEY = Symbol('ACCOUNT_SERVICE');
+const TRAINING_SERVICE_RMQ_KEY = Symbol('TRAINING_SERVICE_RMQ_KEY');
 
-const accountServiceRmqConfig = (params: {
+const trainingServiceRmqConfig = (params: {
   user?: string;
   password?: string;
   host?: string;
@@ -21,9 +21,9 @@ const accountServiceRmqConfig = (params: {
     transport: Transport.RMQ,
     options: {
       urls: [`amqp://${user}:${password}@${host}:${port}`],
-      queue: 'account_service_queue',
+      queue: 'training_service_queue',
       queueOptions: { durable: isProd, autoDelete: true },
-      exchange: 'account_service_exchange',
+      exchange: 'training_service_exchange',
       exchangeType: 'topic',
       wildcards: true,
       deserializer,
@@ -32,4 +32,4 @@ const accountServiceRmqConfig = (params: {
   };
 };
 
-export { accountServiceRmqConfig, ACCOUNT_SERVICE_RMQ_KEY };
+export { trainingServiceRmqConfig, TRAINING_SERVICE_RMQ_KEY };

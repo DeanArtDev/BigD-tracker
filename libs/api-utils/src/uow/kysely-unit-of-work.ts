@@ -13,7 +13,7 @@ export class KyselyUnitOfWork<DB> {
     return this;
   }
 
-  async execute<T>(work: (trx: Transaction<DB>) => Promise<T>): Promise<T> {
+  async runTransaction<T>(work: (trx: Transaction<DB>) => Promise<T>): Promise<T> {
     if (this.transaction != null) {
       return await work(this.transaction);
     } else {

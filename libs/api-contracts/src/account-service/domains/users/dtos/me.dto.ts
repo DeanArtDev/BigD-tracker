@@ -1,25 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsInt, ValidateNested } from 'class-validator';
 import { UserDto } from './user.dto';
 
 class ReqData {
-  @IsInt()
   @Expose()
+  @IsInt()
   id: number;
 }
 
 class MeReq {
+  @Expose()
   @ValidateNested()
   @Type(() => ReqData)
   data: ReqData;
 }
 
 class MeRes {
-  @ApiProperty({
-    description: 'Ответ сервера',
-    type: UserDto,
-  })
+  @Expose()
   @ValidateNested()
   @Type(() => UserDto)
   data: UserDto;

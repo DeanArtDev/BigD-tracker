@@ -6,3 +6,4 @@ export * from './middlewares';
 export * from './interceptors';
 export * from './uow';
 export * from './repository';
+export * from './loggers';

@@ -17,7 +17,14 @@ export class ErrorsToRpcExceptionInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((error) => {
         if (error instanceof DomainValidationError) {
-          return throwError(() => new RpcDomainValidationError(error));
+          return throwError(
+            () =>
+              new RpcDomainValidationError({
+                message: error.message,
+                field: error.field,
+                domain: error.domain,
+              }),
+          );
         }
 
         if (error instanceof BadRequestException) {
