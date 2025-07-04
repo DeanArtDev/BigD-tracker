@@ -8,6 +8,7 @@ import {
   CallHandler,
   ConflictException,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
@@ -27,6 +28,10 @@ export class RpcToHttpExceptionInterceptor implements NestInterceptor {
 
         if (error.name === 'ConflictException') {
           return throwError(() => new ConflictException(error.response));
+        }
+
+        if (error.name === 'ForbiddenException') {
+          return throwError(() => new ForbiddenException(error.response));
         }
 
         if (isRpcDomainValidationError(error)) {

@@ -54,7 +54,7 @@
     "kysely-ctl": "^0.12.2",
     "lodash-es": "catalog:",
     "pg": "catalog:",
-    "reflect-metadata": "^0.2.2",
+    "reflect-metadata": "catalog:",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
     "validator": "catalog:"

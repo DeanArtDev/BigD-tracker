@@ -1,5 +1,11 @@
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { AccountLogin, AccountLogout, AccountRefresh, AccountRegister } from '@big-d/api-contracts';
+import {
+  ACCOUNT_SERVICE_RMQ_KEY,
+  AccountLogin,
+  AccountLogout,
+  AccountRefresh,
+  AccountRegister,
+} from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -31,7 +37,7 @@ export class AuthController {
   constructor(
     private readonly cookieService: CookieService,
 
-    @Inject('ACCOUNT_SERVICE')
+    @Inject(ACCOUNT_SERVICE_RMQ_KEY)
     private readonly accountClient: ClientProxy,
   ) {}
 

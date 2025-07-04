@@ -45,7 +45,7 @@ const connectSwagger = (app: INestApplication) => {
 };
 
 async function bootstrap() {
-  const logger = new Logger('Main module');
+  const logger = new Logger('API gateway main');
   const app = await NestFactory.create(AppModule);
 
   app.use(LoggerMiddleware);

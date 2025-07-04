@@ -1,27 +1,44 @@
+import { APP_ENV } from '@/infrastructure/configs';
+import {
+  TRAINING_SERVICE_RMQ_KEY,
+  trainingServiceRmqConfig,
+  accountServiceRmqConfig,
+  ACCOUNT_SERVICE_RMQ_KEY,
+} from '@big-d/api-contracts';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule } from '@nestjs/microservices';
 
 @Global()
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'ACCOUNT_SERVICE',
+        name: TRAINING_SERVICE_RMQ_KEY,
         imports: [ConfigModule],
         inject: [ConfigService],
-        useFactory: (config: ConfigService) => ({
-          name: 'ACCOUNT_SERVICE',
-          transport: Transport.RMQ,
-          options: {
-            urls: ['amqp://devuser:devpassword@localhost:5672'],
-            queue: 'account_service_queue',
-            queueOptions: { durable: false, autoDelete: true },
-            exchange: 'account_service_exchange',
-            exchangeType: 'topic',
-            wildcards: true,
-          },
-        }),
+        useFactory: (config: ConfigService<APP_ENV>) =>
+          trainingServiceRmqConfig({
+            host: config.get('RMQ_HOST'),
+            port: config.get('RMQ_PORT'),
+            user: config.get('RMQ_USER'),
+            password: config.get('RMQ_PASSWORD'),
+            isProd: config.get('IS_PROD', false),
+          }),
+      },
+
+      {
+        name: ACCOUNT_SERVICE_RMQ_KEY,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService<APP_ENV>) =>
+          accountServiceRmqConfig({
+            host: config.get('RMQ_HOST'),
+            port: config.get('RMQ_PORT'),
+            user: config.get('RMQ_USER'),
+            password: config.get('RMQ_PASSWORD'),
+            isProd: config.get('IS_PROD', false),
+          }),
       },
     ]),
   ],

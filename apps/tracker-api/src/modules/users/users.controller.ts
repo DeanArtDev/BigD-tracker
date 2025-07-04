@@ -2,7 +2,7 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { Public, TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { UsersService } from '@/modules/users/users.service';
-import { AccountGetMe } from '@big-d/api-contracts';
+import { ACCOUNT_SERVICE_RMQ_KEY, AccountGetMe } from '@big-d/api-contracts';
 import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,7 +15,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
 
-    @Inject('ACCOUNT_SERVICE') private readonly accountClient: ClientProxy,
+    @Inject(ACCOUNT_SERVICE_RMQ_KEY) private readonly accountClient: ClientProxy,
   ) {}
 
   @Get()

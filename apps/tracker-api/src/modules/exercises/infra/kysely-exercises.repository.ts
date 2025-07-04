@@ -160,7 +160,8 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity | null> {
     const { replace } = options;
-
+    console.dir(input, { depth: 0 });
+    console.log({ options });
     const result = await this.db(trx)
       .insertInto('exercises')
       .values({

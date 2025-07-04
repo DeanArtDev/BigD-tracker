@@ -19,14 +19,6 @@ class RepetitionDto {
   @Expose()
   exerciseId: number;
 
-  @ApiPropertyOptional({
-    example: 'описание как прошел подход',
-  })
-  @IsString()
-  @Expose()
-  @IsOptional()
-  description?: string;
-
   @ApiPropertyOptional({ example: 'SKIP', enum: RepetitionFinishType })
   @Type(() => String)
   @IsEnum(RepetitionFinishType)

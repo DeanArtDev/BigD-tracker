@@ -1,6 +1,14 @@
+import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { ACCESS_TOKEN_KEY } from '@/modules/auth';
+import {
+  TRAINING_SERVICE_RMQ_KEY,
+  TrainingCreateExercise,
+  TrainingDeleteExercise,
+  TrainingGetExerciseTemplates,
+  TrainingGetOneExercise,
+  TrainingUpdateExercise,
+} from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -8,29 +16,29 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { firstValueFrom } from 'rxjs';
 import {
   ExerciseWithRepetitionsResponse,
   ExerciseWithRepetitionsResponseSingle,
 } from './dtos/exercise-with-repetitions-response.dto';
 import { GetExerciseQuery } from './dtos/get-exercise.dto';
-import { ExercisesService } from './exercises.service';
 import { CreateExerciseWithRepetitionsRequest } from './use-cases/commands/create-exercises-with-repetitions/create-exercises-with-repetitions.dto';
-import { DeleteExercisesWithRepetitionsCommand } from './use-cases/commands/delete-exercises-with-repetitions.command';
 import { UpdateExerciseWithRepetitionsRequest } from './use-cases/commands/update-exercises-with-repetitions/update-exercises-with-repetitions.dto';
 
 @Controller('exercises')
 export class ExercisesController {
   constructor(
-    private readonly exercisesService: ExercisesService,
-
-    private readonly deleteExercisesWithRepetitions: DeleteExercisesWithRepetitionsCommand,
+    @Inject(TRAINING_SERVICE_RMQ_KEY)
+    private readonly trainingClient: ClientProxy,
   ) {}
 
   @Get('/templates')
@@ -46,9 +54,12 @@ export class ExercisesController {
     @Query() { my = false }: GetExerciseQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<ExerciseWithRepetitionsResponse> {
-    return {
-      data: await this.exercisesService.getExerciseTemplates({ userId: uid, my }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<
+        TrainingGetExerciseTemplates.Response,
+        TrainingGetExerciseTemplates.Request
+      >(TrainingGetExerciseTemplates.pattern, { data: { my, userId: uid } }),
+    );
   }
 
   @Get('/:exerciseId/repetitions')
@@ -64,12 +75,12 @@ export class ExercisesController {
     @Param('exerciseId', ParseIntPipe) exerciseId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<ExerciseWithRepetitionsResponseSingle> {
-    return {
-      data: await this.exercisesService.getOneExercise({
-        id: exerciseId,
-        userId: uid,
-      }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<TrainingGetOneExercise.Response, TrainingGetOneExercise.Request>(
+        TrainingGetOneExercise.pattern,
+        { data: { id: exerciseId, userId: uid } },
+      ),
+    );
   }
 
   @Post('/repetitions')
@@ -85,9 +96,12 @@ export class ExercisesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateExerciseWithRepetitionsRequest,
   ): Promise<ExerciseWithRepetitionsResponseSingle> {
-    return {
-      data: await this.exercisesService.createExercise({ ...data, userId: uid, position: 0 }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<TrainingCreateExercise.Response, TrainingCreateExercise.Request>(
+        TrainingCreateExercise.pattern,
+        { data: { ...data, userId: uid } },
+      ),
+    );
   }
 
   @Put('/:exerciseId/repetitions')
@@ -105,14 +119,22 @@ export class ExercisesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: UpdateExerciseWithRepetitionsRequest,
   ): Promise<ExerciseWithRepetitionsResponseSingle> {
-    return {
-      data: await this.exercisesService.updateExercise({
-        ...data,
-        id: exerciseId,
-        userId: uid,
-        position: 0,
-      }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<TrainingUpdateExercise.Response, TrainingUpdateExercise.Request>(
+        TrainingUpdateExercise.pattern,
+        {
+          data: {
+            id: exerciseId,
+            userId: uid,
+            type: data.type,
+            repetitions: data.repetitions,
+            name: data.name,
+            description: data.description,
+            exampleUrl: data.exampleUrl,
+          },
+        },
+      ),
+    );
   }
 
   @Delete('/:exerciseId')
@@ -128,7 +150,12 @@ export class ExercisesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('exerciseId', ParseIntPipe) exerciseId: number,
   ): Promise<void> {
-    await this.deleteExercisesWithRepetitions.execute({ id: exerciseId, userId: uid });
+    await firstValueFrom(
+      this.trainingClient.send<TrainingDeleteExercise.Response, TrainingDeleteExercise.Request>(
+        TrainingDeleteExercise.pattern,
+        { data: { id: exerciseId, userId: uid } },
+      ),
+    );
     return;
   }
 }
