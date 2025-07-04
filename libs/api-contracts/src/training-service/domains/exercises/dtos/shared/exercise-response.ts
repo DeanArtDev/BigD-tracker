@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
 import { ExerciseWithRepetitionsDto } from './exercise-with-repetitions.dto';
 import { ExerciseDto } from './exercise.dto';
 
