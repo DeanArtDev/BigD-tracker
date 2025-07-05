@@ -2,14 +2,8 @@
   "$schema": "https://turborepo.com/schema.json",
   "globalDependencies": ["tsconfig.json", "**/.env.*local"],
 
-
-
   "tasks": {
     "start": {
-      "dependsOn": ["build"]
-    },
-
-    "migrate": {
       "dependsOn": ["build"]
     },
 
@@ -20,29 +14,29 @@
     },
 
     "build": {
-      "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
 
-    "test": {
-      "dependsOn": ["^test"]
+    "prod": {
+      "dependsOn": ["^build"],
+      "cache": false
     },
 
-    "format": {
-      "dependsOn": ["^format"]
+    "seed": {
+      "outputs": [],
+      "cache": false
     },
 
-    "format:fix": {
-      "dependsOn": ["^format:fix"]
-    },
+    "test": {},
 
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
+    "format": {},
 
-    "lint:fix": {
-      "dependsOn": ["^lint:fix"]
-    },
+    "format:fix": {},
+
+    "lint": {},
+
+    "lint:fix": {},
+
     "clean": {
       "persistent": true,
       "cache": false

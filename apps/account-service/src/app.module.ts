@@ -33,7 +33,6 @@ import { ScheduleModule } from '@nestjs/schedule';
           user: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          schema: 'account',
           logging: ['query', 'error'],
         };
       },
