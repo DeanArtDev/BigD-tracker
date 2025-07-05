@@ -1,16 +1,10 @@
-import { OmitCreateFields, Override } from '@big-d/api-utils';
-import { Insertable, Transaction, Updateable } from 'kysely';
-import { Selectable } from 'kysely/dist/esm';
 import { DB } from '@big-d/database';
+import { Transaction } from 'kysely';
+import { Selectable } from 'kysely/dist/esm';
 import { UserEntity } from '../domain/user.entity';
 
 interface UserRawData {
   readonly selectable: Omit<Selectable<DB['users']>, 'updated_at' | 'created_at'>;
-  readonly updateable: Omit<
-    Override<Updateable<DB['users']>, 'id', number>,
-    'updated_at' | 'created_at'
-  >;
-  readonly insertable: OmitCreateFields<Insertable<DB['users']>>;
 }
 
 const USER_REPOSITORY = Symbol('USER_REPOSITORY');

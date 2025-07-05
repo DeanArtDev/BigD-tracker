@@ -1,12 +1,9 @@
-import { SessionEntity } from '@/modules/auth/domain/session.entity';
-import { OmitCreateFields } from '@big-d/api-utils';
+import { SessionEntity } from '@/modules/auth/domain';
 import { DB } from '@big-d/database';
-import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
+import { Selectable, Transaction } from 'kysely';
 
 interface AuthRawData {
   readonly selectable: Omit<Selectable<DB['sessions']>, 'updated_at' | 'created_at'>;
-  readonly updateable: Omit<Updateable<DB['sessions']>, 'updated_at' | 'created_at'>;
-  readonly insertable: OmitCreateFields<Insertable<DB['sessions']>>;
 }
 
 const AUTH_REPOSITORY = Symbol('AUTH_REPOSITORY');
