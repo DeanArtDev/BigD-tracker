@@ -13,6 +13,7 @@
     "agi-gateway:dev": "turbo dev -F=@big-d/api-gateway...",
     "account-service:dev": "turbo dev -F=@big-d/account-service...",
     "training-service:dev": "turbo dev -F=@big-d/training-service...",
+    "goal-service:dev": "turbo dev -F=@big-d/goal-service...",
     "tracker-client:dev": "turbo dev -F=@big-d/tracker-client...",
     "service-infrastucture:dev:up": "docker-compose --profile dev --env-file ./.env.development -f docker-compose.yml up -d --wait",
     "services-infrastucture:dev:down": "docker-compose --profile dev --env-file ./.env.development -f docker-compose.yml down",
