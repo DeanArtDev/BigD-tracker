@@ -1,6 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { IsInt, ValidateNested } from 'class-validator';
-import { TrainingTemplateWithExercisesResSingle } from './shared/training-templates-response.dto';
+import { TrainingWithExercisesResSingle } from './shared/trainings-response.dto';
 
 class ReqData {
   @Expose()
@@ -12,13 +12,13 @@ class ReqData {
   userId: number;
 }
 
-class GetOneTemplatesReq {
+class GetOneTrainingReq {
   @Expose()
   @Type(() => ReqData)
   @ValidateNested()
   data: ReqData;
 }
 
-class GetOneTemplatesRes extends TrainingTemplateWithExercisesResSingle {}
+class GetOneTrainingRes extends TrainingWithExercisesResSingle {}
 
-export { GetOneTemplatesReq, GetOneTemplatesRes };
+export { GetOneTrainingReq, GetOneTrainingRes };

@@ -11,9 +11,9 @@
   },
   "scripts": {
     "=== DEV ===": "",
-    "dev": "nodemon --exec \"pnpm build\" --watch ./src -e ts",
+    "dev": "pnpm build --watch",
     "=== BUILD ===": "",
-    "build": "rm -rf ./dist && tsc -p tsconfig.json",
+    "build": "tsc --build",
     "=== LINK ===": "",
     "test": "echo \"Error: no test specified , just skip\" && exit 0",
     "format": "npx prettier . --check",
@@ -27,7 +27,6 @@
     "@nestjs/microservices": "catalog:",
     "class-transformer": "catalog:",
     "class-validator": "catalog:",
-    "nodemon": "^3.1.10",
     "rxjs": "catalog:"
   },
   "devDependencies": {

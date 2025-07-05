@@ -1,6 +1,6 @@
 import { Generated } from '@big-d/database';
 import { Injectable } from '@nestjs/common';
-import { Kysely, Transaction } from 'kysely';
+import { Transaction } from 'kysely';
 import { CollectionDelta, CollectionDeltaCalculator } from './collection-delta-calculator';
 import { IdType } from './types';
 
@@ -25,21 +25,12 @@ class SyncCollectionRepositoryHelper<TAggregate, DB> {
     private readonly data: {
       readonly upsertRoot: ISyncCollectionMethods<TAggregate, DB>['upsertRoot'];
       readonly sync: ISyncCollectionMethods<TAggregate, DB>['sync'];
-      readonly db: Kysely<DB>;
     },
   ) {}
 
-  async save(aggregate: TAggregate, trx?: Transaction<DB>): Promise<void> {
-    if (trx != null) {
-      await this.data.upsertRoot(aggregate, trx);
-      await this.data.sync(aggregate, trx);
-      return;
-    }
-
-    return await this.data.db.transaction().execute(async (t) => {
-      await this.data.upsertRoot(aggregate, t);
-      await this.data.sync(aggregate, t);
-    });
+  async save(aggregate: TAggregate, trx: Transaction<DB>): Promise<void> {
+    await this.data.upsertRoot(aggregate, trx);
+    await this.data.sync(aggregate, trx);
   }
 }
 

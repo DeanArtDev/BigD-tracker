@@ -1,25 +1,24 @@
 import { Expose, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, ValidateNested } from 'class-validator';
-import { TrainingTemplateRes } from './shared/training-templates-response.dto';
+import { IsInt, ValidateNested } from 'class-validator';
+import { TrainingTemplateWithExercisesResSingle } from './shared/training-templates-response.dto';
 
 class ReqData {
   @Expose()
   @IsInt()
-  userId: number;
+  id: number;
 
   @Expose()
-  @IsOptional()
-  @IsBoolean()
-  my?: boolean;
+  @IsInt()
+  userId: number;
 }
 
-class GetTrainingTemplatesReq {
+class GetOneTemplateReq {
   @Expose()
   @Type(() => ReqData)
   @ValidateNested()
   data: ReqData;
 }
 
-class GetTrainingTemplatesRes extends TrainingTemplateRes {}
+class GetOneTemplateRes extends TrainingTemplateWithExercisesResSingle {}
 
-export { GetTrainingTemplatesReq, GetTrainingTemplatesRes };
+export { GetOneTemplateReq, GetOneTemplateRes };

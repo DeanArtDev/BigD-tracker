@@ -3,28 +3,17 @@ import {
   IsArray,
   IsEnum,
   IsInt,
+  IsISO8601,
   IsOptional,
   IsString,
   IsUrl,
   ValidateNested,
 } from 'class-validator';
 import { ExerciseType } from '../../exercises';
-import { RepetitionFinishType } from '../../repetitions';
-import { TrainingType } from '../../trainings';
-import { TrainingTemplateWithExercisesResSingle } from './shared/training-templates-response.dto';
+import { TrainingType } from './shared/training.dto';
+import { TrainingWithExercisesResSingle } from './shared/trainings-response.dto';
 
 class Repetition {
-  @IsString()
-  @Expose()
-  @IsOptional()
-  description?: string;
-
-  @Type(() => String)
-  @IsEnum(RepetitionFinishType)
-  @IsOptional()
-  @Expose()
-  finishType?: RepetitionFinishType;
-
   @IsInt()
   @Expose()
   targetCount: number;
@@ -77,13 +66,18 @@ class ReqData {
   type: TrainingType;
 
   @Expose()
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @Expose()
   @IsString()
   name: string;
 
   @Expose()
-  @IsOptional()
+  @IsISO8601()
   @IsString()
-  description?: string;
+  startDate: string;
 
   @Expose()
   @IsOptional()
@@ -95,20 +89,20 @@ class ReqData {
   @IsInt()
   postTrainingDuration?: number;
 
-  @IsArray()
   @Expose()
   @ValidateNested({ each: true })
   @Type(() => Exercise)
+  @IsArray()
   exercises: Exercise[];
 }
 
-class CreateTemplateReq {
+class CreateTrainingReq {
   @Expose()
   @ValidateNested()
   @Type(() => ReqData)
   data: ReqData;
 }
 
-class CreateTemplateRes extends TrainingTemplateWithExercisesResSingle {}
+class CreateTrainingRes extends TrainingWithExercisesResSingle {}
 
-export { CreateTemplateReq, CreateTemplateRes };
+export { CreateTrainingReq, CreateTrainingRes };
