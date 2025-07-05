@@ -1,3 +1,4 @@
+import { Generated } from '@big-d/database';
 import { describe, it, expect, vi } from 'vitest';
 import { SyncCollectionRepository } from '../../src/repository/sync-collections.repository';
 
@@ -21,10 +22,10 @@ function createTrx(rows: Array<{ id: number }>) {
 describe('SyncCollectionRepository', () => {
   it('deletes outdated ids and returns delta', async () => {
     const trx = createTrx([{ id: 1 }, { id: 2 }]);
-    const repo = new SyncCollectionRepository();
+    const repo = new SyncCollectionRepository<{ table: { id: Generated<number> } }>();
     const delta = await repo.execute({
-      trx: trx as any,
-      tableName: 'table' as any,
+      trx,
+      tableName: 'table',
       parent: { field: 'parent', id: 1 },
       newRowsIds: [2, 3],
     });
@@ -35,10 +36,10 @@ describe('SyncCollectionRepository', () => {
 
   it('skips delete if nothing to remove', async () => {
     const trx = createTrx([{ id: 1 }]);
-    const repo = new SyncCollectionRepository();
+    const repo = new SyncCollectionRepository<{ table: { id: Generated<number> } }>();
     const delta = await repo.execute({
-      trx: trx as any,
-      tableName: 'table' as any,
+      trx: trx,
+      tableName: 'table',
       parent: { field: 'parent', id: 1 },
       newRowsIds: [1],
     });
