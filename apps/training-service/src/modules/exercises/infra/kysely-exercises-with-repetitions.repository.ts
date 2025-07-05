@@ -1,16 +1,19 @@
-import { ExercisesWithRepetitionsRepository } from '@modules/exercises/application';
-import { REPETITIONS_REPOSITORY, RepetitionsRepository } from '@modules/repetitions';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
-import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
-import { EXERCISE_REPOSITORY, ExercisesRepository } from '@modules/exercises/application';
-import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
 import {
   BaseRepository,
   ISyncCollectionMethods,
   SyncCollectionRepository,
   SyncCollectionRepositoryHelper,
 } from '@big-d/api-utils';
+import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import {
+  EXERCISE_REPOSITORY,
+  ExercisesRepository,
+  ExercisesWithRepetitionsRepository,
+} from '@modules/exercises/application';
+import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
+import { REPETITIONS_REPOSITORY, RepetitionsRepository } from '@modules/repetitions';
+import { Inject, Injectable } from '@nestjs/common';
+import { Transaction } from 'kysely';
 
 @Injectable()
 export class KyselyExercisesWithRepetitionsRepository
@@ -36,11 +39,10 @@ export class KyselyExercisesWithRepetitionsRepository
     this.syncCollection = new SyncCollectionRepositoryHelper<ExerciseWithRepetitionsEntity, DB>({
       upsertRoot: this.upsertRoot.bind(this),
       sync: this.sync.bind(this),
-      db: this.database,
     });
   }
 
-  async save(aggregate: ExerciseWithRepetitionsEntity, trx?: Transaction<DB>): Promise<void> {
+  async save(aggregate: ExerciseWithRepetitionsEntity, trx: Transaction<DB>): Promise<void> {
     await this.syncCollection.save(aggregate, trx);
   }
 

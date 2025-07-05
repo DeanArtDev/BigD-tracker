@@ -12,6 +12,7 @@ import { Transaction } from 'kysely';
 
 interface UpdateExerciseWithRepetitionsInput {
   readonly id: number;
+  readonly position?: number;
   readonly userId?: number;
   readonly name: string;
   readonly type: ExerciseType;
@@ -43,7 +44,7 @@ class UpdateExercisesWithRepetitionsCommand extends KyselyUnitOfWork<DB> {
     input: UpdateExerciseWithRepetitionsInput,
     trx?: Transaction<DB>,
   ): Promise<ExerciseWithRepetitionsEntity> {
-    const { userId, type, name, repetitions, id, exampleUrl, description } = input;
+    const { userId, type, name, repetitions, id, exampleUrl, description, position } = input;
 
     const currentExercise = await this.getExercisesWithRepetitions.one({ id, userId });
 
@@ -51,6 +52,7 @@ class UpdateExercisesWithRepetitionsCommand extends KyselyUnitOfWork<DB> {
       .update({
         name,
         type,
+        position,
         exampleUrl,
         description,
       })

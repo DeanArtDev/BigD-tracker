@@ -5,6 +5,7 @@ import { RepetitionsModule } from '@/modules/repetitions';
 import { DatabaseModule } from '@big-d/database';
 import { dbConfigFactory } from '@infrastructure/configs';
 import { TrainingTemplatesModule } from '@modules/traning-templates';
+import { TrainingsModule } from '@modules/tranings';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
 
     RepetitionsModule,
     ExercisesModule,
+    TrainingsModule,
     TrainingTemplatesModule,
   ],
 })

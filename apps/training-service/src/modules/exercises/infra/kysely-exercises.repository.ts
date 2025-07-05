@@ -1,8 +1,8 @@
-import { ExerciseRawData, ExercisesRepository } from '@modules/exercises/application';
 import { ExerciseType } from '@big-d/api-contracts';
-import { ExerciseEntity } from '@modules/exercises/domain';
 import { BaseRepository } from '@big-d/api-utils';
 import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { ExerciseRawData, ExercisesRepository } from '@modules/exercises/application';
+import { ExerciseEntity } from '@modules/exercises/domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { ExpressionBuilder, Transaction } from 'kysely';
 

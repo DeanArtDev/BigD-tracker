@@ -67,7 +67,6 @@ class UpdateTrainingTemplateWithExercisesCommand
     >({
       upsertRoot: this.upsertRoot.bind(this),
       sync: this.sync.bind(this),
-      db: this.database,
     });
   }
 

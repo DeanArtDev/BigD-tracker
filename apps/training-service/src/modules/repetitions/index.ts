@@ -11,6 +11,3 @@ export {
   RepetitionsRepository,
   REPETITIONS_REPOSITORY,
 } from './application/repetitions.repository';
-export { CreateRepetitionsUseCase } from './application/use-cases/create-repetitions.use-case';
-export { DeleteRepetitionsUseCase } from './application/use-cases/delete-repetitions.use-case';
-export { FinishRepetitionsUseCase } from './application/use-cases/finish-repetitions.use-case';
