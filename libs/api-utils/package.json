@@ -15,7 +15,7 @@
     "=== BUILD ===": "",
     "build": "tsc --build",
     "=== LINK ===": "",
-    "test": "echo \"Error: no test specified , just skip\" && exit 0",
+    "test": "vitest run",
     "format": "npx prettier . --check",
     "format:fix": "npx prettier . --write",
     "lint": "pnpm format && eslint \"./src/**/*.ts\"",
@@ -24,31 +24,34 @@
   "dependencies": {
     "@big-d/api-contracts": "workspace:*",
     "@big-d/database": "workspace:*",
-    "rxjs": "catalog:",
-    "kysely": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/microservices": "catalog:",
+    "class-transformer": "catalog:",
     "express": "catalog:",
-    "validator": "catalog:",
+    "kysely": "catalog:",
     "lodash-es": "catalog:",
-    "class-transformer": "catalog:"
+    "rxjs": "catalog:",
+    "validator": "catalog:"
   },
   "devDependencies": {
-    "globals": "catalog:",
-    "typescript": "catalog:",
-    "@types/node": "catalog:",
+    "@big-d/linter": "workspace:*",
+    "@eslint/js": "catalog:",
     "@types/express": "catalog:",
     "@types/lodash-es": "catalog:",
+    "@types/node": "catalog:",
     "@types/validator": "catalog:",
-    "@big-d/linter": "workspace:*",
-    "prettier": "catalog:",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
     "typescript-eslint": "catalog:",
-    "@eslint/js": "catalog:"
+    "vitest": "^3.2.4"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "packageManager": "pnpm@10.10.0",
   "engines": {
