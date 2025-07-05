@@ -10,7 +10,7 @@
     "lint:all:fix": "turbo lint:fix",
     "deploy:to:prod": "bash ./deploy-scripts/bootstrap.sh",
     "--DEV--": "",
-    "agi-gateway:dev": "turbo dev --F=@big-d/tracker-api...",
+    "agi-gateway:dev": "turbo dev -F=@big-d/api-gateway...",
     "account-service:dev": "turbo dev -F=@big-d/account-service...",
     "training-service:dev": "turbo dev -F=@big-d/training-service...",
     "tracker-client:dev": "turbo dev -F=@big-d/tracker-client...",
@@ -20,21 +20,31 @@
     "compose:prod:up": "docker-compose --profile prod --env-file ./.env -f docker-compose.prod.yml up -d --wait",
     "compose:prod:down": "docker-compose --profile prod --env-file ./.env -f docker-compose.prod.yml down",
     "build:all": "turbo build",
-    "migrate:tracker-api": "turbo migrate -- lts -F=@big-d/tracker-api"
+    "--TOOLS--": "",
+    "migrate:all": "ts-node tools/migrator.ts",
+    "seed:all": "turbo seed -F=@big-d/account-service && turbo seed -F=@big-d/*-service -F=!@big-d/account-service"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "workspaces": [
-    "libs/*",
-    "apps/*",
-    "configs/**"
-  ],
   "devDependencies": {
     "@big-d/linter": "workspace:*",
     "@big-d/tsconfig": "workspace:*",
+    "@big-d/database": "workspace:*",
     "turbo": "^2.5.3",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "dotenv": "catalog:",
+    "kysely": "catalog:",
+    "ts-node": "catalog:",
+    "ts-loader": "catalog:",
+    "@types/node": "catalog:",
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "globals": "catalog:",
+    "typescript-eslint": "catalog:",
+    "prettier": "catalog:"
   },
   "packageManager": "pnpm@10.10.0",
   "engines": {

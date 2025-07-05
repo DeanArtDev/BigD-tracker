@@ -5,9 +5,7 @@ import * as dotenv from 'dotenv';
 import { join } from 'node:path';
 import * as process from 'node:process';
 
-dotenv.config({
-  path: [join(process.cwd(), '.env.test-user')],
-});
+dotenv.config({ path: [join(process.cwd(), '.env.test-user')] });
 
 export const testUserConfig = {
   TEST_USER_LOGIN: process.env.TEST_USER_LOGIN ?? '',

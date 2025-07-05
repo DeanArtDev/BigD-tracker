@@ -25,7 +25,9 @@ catalog:
   "@types/express": "^5.0.0"
   "@types/qs": "^6.9.18"
 
+  "ts-loader": "^9.5.2"
   "ts-node": "^10.9.2"
+  "dotenv": "^16.5.0"
   "reflect-metadata": "^0.2.2"
   "express": "^5.0.1"
   "globals": "^16.0.0"
