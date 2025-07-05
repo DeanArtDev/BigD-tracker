@@ -1,24 +1,71 @@
 services:
-  tracker_api:
+  rabbitmq:
+    profiles: [ 'prod' ]
+    platform: linux/amd64
+    image: rabbitmq:4.1.1-management
+    container_name: rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "${RMQ_PORT}:${RMQ_PORT}"
+      - "${RMQ_MANAGER_PORT}:${RMQ_MANAGER_PORT}"
+    networks:
+      - tracker_net
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  account_service:
     platform: linux/amd64
     profiles: [ 'prod' ]
-    container_name: tracker_api
-    image: tracker_api_image:lts
+    container_name: account_service
+    image: account_service_image:lts
     depends_on:
+      rabbitmq:
+        condition: service_healthy
       tracker_db:
         condition: service_healthy
     build:
       context: .
-      dockerfile: ./apps/tracker-api/Dockerfile
+      dockerfile: ./apps/account-service/Dockerfile
     env_file:
       - .env
     ports:
-      - ${API_PORT}:${API_PORT}
-    volumes:
-      - ./apps/tracker-api/db/dumps:/db-dumps
+      - ${ACCOUNT_SERVICE_PORT}:${ACCOUNT_SERVICE_PORT}
     networks:
       - tracker_net
 
+#
+#  tracker_api:
+#    platform: linux/amd64
+#    profiles: [ 'prod' ]
+#    container_name: tracker_api
+#    image: tracker_api_image:lts
+#    depends_on:
+#      rabbitmq:
+#        condition: service_healthy
+#      tracker_db:
+#        condition: service_healthy
+#    build:
+#      context: .
+#      dockerfile: ./apps/tracker-api/Dockerfile
+#    env_file:
+#      - .env
+#    ports:
+#      - ${API_PORT}:${API_PORT}
+#    volumes:
+#      - ./apps/tracker-api/db/dumps:/db-dumps
+#    networks:
+#      - tracker_net
+#
 
   tracker_db:
     platform: linux/amd64
@@ -52,13 +99,15 @@ services:
       - .env
     build:
       context: .
-      dockerfile: ./apps/tracker-client/Dockerfile
+      dockerfile: ./clients/tracker-client/Dockerfile
       args:
         VITE_CLIENT_PORT: ${VITE_CLIENT_PORT:-3000}
         VITE_BASE_API_URL: ${VITE_BASE_API_URL:-/api}
         HUSKY: 0
 
 volumes:
+  rabbitmq_data:
+    name: rabbitmq_data
   db_data:
     name: tracker_db_data
 

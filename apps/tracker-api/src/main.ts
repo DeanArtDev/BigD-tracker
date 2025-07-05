@@ -1,14 +1,13 @@
 import { APP_ENV } from '@/infrastructure/configs';
-import { AuthService } from '@/modules/auth/auth.service';
-import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
-import { UsersService } from '@/modules/users/users.service';
-import { testUserConfig } from '@db/seeds/test-user';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ACCESS_TOKEN_KEY } from '@/modules/auth';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { RpcToHttpExceptionInterceptor } from '@shared/interceptors';
 import { LoggerMiddleware } from '@shared/middlewares/logger.middleware';
-import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
+import { REFRESH_TOKEN_FIELD } from '@shared/services/cookies';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as path from 'node:path';
@@ -16,20 +15,6 @@ import { AppModule } from './app.module';
 
 const DOCUMENTATION_URL = 'documentation';
 const SWAGGER_URL = 'swagger/json';
-
-const getTestUserToken = async (app: INestApplication, login: string) => {
-  const authService = app.get<AuthService>(AuthService);
-  const userService = app.get<UsersService>(UsersService);
-  const testUser = await userService.findUser({ email: login });
-  try {
-    const { accessToken = 'there is no any test users' } = await authService.createTestUserSession({
-      userId: testUser.id,
-    });
-    return accessToken;
-  } catch (err) {
-    console.info(`При создании токена для тестового пользователя что то отъебнуло`, err);
-  }
-};
 
 const connectSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -60,6 +45,7 @@ const connectSwagger = (app: INestApplication) => {
 };
 
 async function bootstrap() {
+  const logger = new Logger('API gateway main');
   const app = await NestFactory.create(AppModule);
 
   app.use(LoggerMiddleware);
@@ -71,6 +57,8 @@ async function bootstrap() {
       transform: true, // включает class-transformer (plainToInstance)
     }),
   );
+
+  app.useGlobalInterceptors(new RpcToHttpExceptionInterceptor());
 
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
   const port = configService.get('API_PORT');
@@ -84,18 +72,28 @@ async function bootstrap() {
     credentials: true,
   });
 
-  let documentationMessage = `📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}`;
-  if (configService.get('IS_DEV')) {
-    const testUserToken = await getTestUserToken(app, testUserConfig.TEST_USER_LOGIN);
-    documentationMessage = `📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}?token=${testUserToken}`;
-  }
-
   connectSwagger(app);
+
+  app.connectMicroservice<MicroserviceOptions>(
+    {
+      transport: Transport.RMQ,
+      options: {
+        urls: ['amqp://devuser:devpassword@localhost:5672'],
+        queue: 'web-gateway_queue',
+        queueOptions: { durable: false, autoDelete: true },
+        exchange: 'web-gateway_exchange',
+        exchangeType: 'topic',
+        wildcards: true,
+      },
+    },
+    { inheritAppConfig: true },
+  );
+
   await app.listen(port, '0.0.0.0', () => {
-    console.info(`
+    logger.log(`
     🚀 Application is running at port http://localhost:${port}
     ----------------------------------------------------------------
-    ${documentationMessage}
+    📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}
     ----------------------------------------------------------------
     📜 To get open api string schema at http://localhost:${port}/${SWAGGER_URL}
     `);

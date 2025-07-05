@@ -1,0 +1,46 @@
+{
+  "name": "@big-d/database",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.js"
+  },
+  "scripts": {
+    "=== BUILD ===": "",
+    "build": "tsc -p tsconfig.json",
+    "=== LINK ===": "",
+    "test": "echo \"Error: no test specified , just skip\" && exit 0",
+    "format": "npx prettier . --check",
+    "format:fix": "npx prettier . --write",
+    "lint": "pnpm format && eslint \"./src/**/*.ts\"",
+    "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "@nestjs/common": "catalog:",
+    "@nestjs/config": "catalog:",
+    "pg": "catalog:",
+    "kysely": "catalog:"
+  },
+  "devDependencies": {
+    "globals": "catalog:",
+    "@types/pg": "catalog:",
+    "typescript": "catalog:",
+    "@types/node": "catalog:",
+    "@big-d/linter": "workspace:*",
+    "prettier": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "sideEffects": false,
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
+  }
+}

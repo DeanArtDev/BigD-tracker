@@ -1,41 +1,52 @@
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import {
+  ACCOUNT_SERVICE_RMQ_KEY,
+  AccountLogin,
+  AccountLogout,
+  AccountRefresh,
+  AccountRegister,
+} from '@big-d/api-contracts';
 import {
   Body,
   Controller,
+  HttpCode,
   HttpStatus,
-  InternalServerErrorException,
+  Inject,
   Post,
-  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
-import { CookieService, REFRESH_TOKEN_FIELD } from '@shared/services/cookies.service';
-import { Request, Response } from 'express';
-import { AuthService } from './auth.service';
+import { CookieService, RefreshToken } from '@shared/services/cookies';
+import { Response } from 'express';
+import { firstValueFrom } from 'rxjs';
 import { Public, TokenPayload } from './decorators';
 import { AccessTokenPayload } from './dto/access-token.dto';
 import { LoginRequest, LoginResponse } from './dto/login.dto';
 import { LogoutResponse } from './dto/logout.dto';
 import { RefreshResponse } from './dto/refresh.dto';
 import { RegisterRequest, RegisterResponse } from './dto/register.dto';
-import { ACCESS_TOKEN_KEY } from './lib';
+import { ACCESS_TOKEN_KEY } from './constants';
 
-@ApiTags('Auth.')
+@ApiTags('Account')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly cookieService: CookieService,
-    private readonly authService: AuthService,
+
+    @Inject(ACCOUNT_SERVICE_RMQ_KEY)
+    private readonly accountClient: ClientProxy,
   ) {}
-  /* TODO:
-   *   [] кроном удаляем каждый день просроченные
-   * */
+
   @Post('register')
   @Public()
   @ApiOperation({
     summary: 'Регистрация пользователя',
-    description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
+    description:
+      'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly) strict',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -48,13 +59,15 @@ export class AuthController {
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
   ): Promise<RegisterResponse> {
-    const { accessToken, sessionToken } = await this.authService.register({
-      ...data,
-      ip,
-      userAgent,
-    });
+    const response = await firstValueFrom(
+      this.accountClient.send<AccountRegister.Response, AccountRegister.Request>(
+        AccountRegister.pattern,
+        { data: { ip, userAgent, login: data.login, password: data.password } },
+      ),
+    );
+    const { accessToken, refreshToken } = response.data;
 
-    this.cookieService.setRefreshToken(res, sessionToken);
+    this.cookieService.setRefreshToken(res, refreshToken);
     return { data: { token: accessToken } };
   }
 
@@ -70,21 +83,22 @@ export class AuthController {
     type: RefreshResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @UseGuards(RefreshTokenGuard)
   async refresh(
-    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
+    @RefreshToken() refreshToken: string,
   ) {
-    const refreshToken = req.cookies[REFRESH_TOKEN_FIELD];
     try {
-      const { accessToken, sessionToken } = await this.authService.refreshToken({
-        ip,
-        userAgent,
-        sessionToken: refreshToken,
-      });
-      this.cookieService.setRefreshToken(res, sessionToken);
-      return { data: { token: accessToken } };
+      const { data } = await firstValueFrom(
+        this.accountClient.send<AccountRefresh.Response, AccountRefresh.Request>(
+          AccountRefresh.pattern,
+          { data: { ip, userAgent, refreshToken } },
+        ),
+      );
+      this.cookieService.setRefreshToken(res, data.refreshToken);
+      return { data: { token: data.accessToken } };
     } catch (e) {
       this.cookieService.setRefreshToken(res, undefined);
       throw e;
@@ -96,27 +110,27 @@ export class AuthController {
     summary: 'Выход пользователя из системы',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: HttpStatus.NO_CONTENT,
     description: 'Выход совершен успешно',
     type: LogoutResponse,
   })
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async logout(
     @Res({ passthrough: true }) res: Response,
-    @TokenPayload() tokenPayload: AccessTokenPayload,
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @UserAgent() userAgent: string,
   ): Promise<LogoutResponse> {
     this.cookieService.setRefreshToken(res, undefined);
 
-    const isLogout = await this.authService.logout({
-      userId: tokenPayload.uid,
-      sessionUuid: tokenPayload.sid,
-    });
+    const { data } = await firstValueFrom(
+      this.accountClient.send<AccountLogout.Response, AccountLogout.Request>(
+        AccountLogout.pattern,
+        { data: { userAgent, userId: uid } },
+      ),
+    );
 
-    if (!isLogout) {
-      throw new InternalServerErrorException('Failed to logout, try again later');
-    }
-
-    return { data: true };
+    return { data: Boolean(data.stats) };
   }
 
   @Post('login')
@@ -135,18 +149,15 @@ export class AuthController {
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
   ): Promise<LoginResponse> {
-    const user = await this.authService.checkUserAuth({
-      email: data.login,
-      password: data.password,
-    });
+    const {
+      data: { refreshToken, accessToken },
+    } = await firstValueFrom(
+      this.accountClient.send<AccountLogin.Response, AccountLogin.Request>(AccountLogin.pattern, {
+        data: { ip, userAgent, login: data.login, password: data.password },
+      }),
+    );
 
-    const { accessToken, session } = await this.authService.createSession({
-      userId: user.id,
-      ip,
-      userAgent,
-    });
-
-    this.cookieService.setRefreshToken(res, session.token);
+    this.cookieService.setRefreshToken(res, refreshToken);
     return { data: { token: accessToken } };
   }
 }

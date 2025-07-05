@@ -1,8 +1,26 @@
 services:
+  rabbitmq_dev:
+    profiles: ['dev']
+    image: rabbitmq:4.1.1-management
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+    ports:
+      - ${RMQ_PORT}:${RMQ_PORT}
+      - ${RMQ_MANAGER_PORT}:${RMQ_MANAGER_PORT}
+    volumes:
+      - rabbitmq_data_dev:/var/lib/rabbitmq
+
+
   tracker_db_dev:
     profiles: ['dev']
-    platform: linux/amd64
-    image: postgres:15
+    image: postgres:17.5
     env_file:
       - .env.development
     container_name: tracker_db_dev
@@ -18,5 +36,7 @@ services:
 
 
 volumes:
+  rabbitmq_data_dev:
+    name: rabbitmq_data_dev
   db_data_dev:
     name: tracker_db_dev_data

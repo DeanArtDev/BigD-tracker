@@ -1,20 +1,28 @@
+import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { Public, TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
 import { UsersService } from '@/modules/users/users.service';
-import { Controller, Get, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { mapEntity } from '@shared/lib/map-entity';
-import { MeDto, MeDtoResponse } from './dtos/me.dto';
+import { ACCOUNT_SERVICE_RMQ_KEY, AccountGetMe } from '@big-d/api-contracts';
+import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { firstValueFrom } from 'rxjs';
 import { User } from './users.entity';
 
+@ApiTags('Account')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+
+    @Inject(ACCOUNT_SERVICE_RMQ_KEY) private readonly accountClient: ClientProxy,
+  ) {}
 
   @Get()
   @Public()
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ApiOperation({
+    summary: 'Тестовый публичный метод, на проде закроется',
+  })
   async getUsers(): Promise<{ data: User[] }> {
     const data = await this.usersService.getAll();
     return { data };
@@ -27,21 +35,13 @@ export class UsersController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: MeDtoResponse,
+    type: AccountGetMe.Response,
   })
-  async me(@TokenPayload() tokenPayload: AccessTokenPayload): Promise<{ data: MeDto }> {
-    const user = await this.usersService.findUser({ id: tokenPayload.uid });
-    if (user == null) throw new UnauthorizedException('User is not found');
-    return {
-      data: mapEntity(MeDto, {
-        id: user.id,
-        email: user.email,
-        avatar: user.avatar,
-        screenName: user.screenName,
-        roles: [],
-        createdAt: user.createdAt,
-        isVerified: false,
+  async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AccountGetMe.Response> {
+    return await firstValueFrom(
+      this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(AccountGetMe.pattern, {
+        data: { id: uid },
       }),
-    };
+    );
   }
 }

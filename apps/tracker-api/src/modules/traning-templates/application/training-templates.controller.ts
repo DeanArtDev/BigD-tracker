@@ -1,6 +1,14 @@
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { ACCESS_TOKEN_KEY } from '@/modules/auth/lib';
+import { ACCESS_TOKEN_KEY } from '@/modules/auth';
+import {
+  TRAINING_SERVICE_RMQ_KEY,
+  TrainingCreateTemplate,
+  TrainingDeleteTemplate,
+  TrainingGetOneTemplate,
+  TrainingUpdateTemplate,
+} from '@big-d/api-contracts';
+import { TrainingGetTrainingTemplates } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -8,13 +16,16 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { firstValueFrom } from 'rxjs';
 import { TrainingTemplatesService } from '../domain/training-templates.service';
 import {
   GetTrainingTemplatesDto,
@@ -31,6 +42,9 @@ import {
 @Controller('trainings-templates')
 export class TrainingTemplatesController {
   constructor(
+    @Inject(TRAINING_SERVICE_RMQ_KEY)
+    private readonly trainingClient: ClientProxy,
+
     private readonly trainingTemplatesService: TrainingTemplatesService,
     private readonly createTrainingTemplateCommand: CreateTrainingTemplateCommand,
   ) {}
@@ -44,13 +58,16 @@ export class TrainingTemplatesController {
     type: TrainingTemplateResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getTrainings(
+  async getTrainingTemplates(
     @Query() { my = false }: GetTrainingTemplatesDto,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingTemplateResponse> {
-    return {
-      data: await this.trainingTemplatesService.all({ userId: uid, my }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<
+        TrainingGetTrainingTemplates.Response,
+        TrainingGetTrainingTemplates.Request
+      >(TrainingGetTrainingTemplates.pattern, { data: { my, userId: uid } }),
+    );
   }
 
   @Get('/:templateId')
@@ -64,10 +81,14 @@ export class TrainingTemplatesController {
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getOneTrainingsWithExercises(
     @Param('templateId', ParseIntPipe) templateId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingTemplateWithExercisesResponseSingle> {
-    return {
-      data: await this.trainingTemplatesService.oneWithExercises({ id: templateId }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<TrainingGetOneTemplate.Response, TrainingGetOneTemplate.Request>(
+        TrainingGetOneTemplate.pattern,
+        { data: { id: templateId, userId: uid } },
+      ),
+    );
   }
 
   @Post()
@@ -83,9 +104,12 @@ export class TrainingTemplatesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingTemplateWithExercisesRequest,
   ): Promise<TrainingTemplateWithExercisesResponseSingle> {
-    return {
-      data: await this.trainingTemplatesService.createOneWithExercises({ ...data, userId: uid }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<TrainingCreateTemplate.Response, TrainingCreateTemplate.Request>(
+        TrainingCreateTemplate.pattern,
+        { data: { ...data, userId: uid } },
+      ),
+    );
   }
 
   @Put('/:templateId')
@@ -103,13 +127,23 @@ export class TrainingTemplatesController {
     @Param('templateId', ParseIntPipe) templateId: number,
     @Body() { data }: UpdateTrainingTemplateWithExerciseRequest,
   ): Promise<TrainingTemplateWithExercisesResponseSingle> {
-    return {
-      data: await this.trainingTemplatesService.updateOneWithExercises({
-        id: templateId,
-        userId: uid,
-        ...data,
-      }),
-    };
+    return await firstValueFrom(
+      this.trainingClient.send<TrainingUpdateTemplate.Response, TrainingUpdateTemplate.Request>(
+        TrainingUpdateTemplate.pattern,
+        {
+          data: {
+            id: templateId,
+            userId: uid,
+            type: data.type,
+            name: data.name,
+            description: data.description,
+            postTrainingDuration: data.postTrainingDuration,
+            wormUpDuration: data.wormUpDuration,
+            exercises: data.exercises,
+          },
+        },
+      ),
+    );
   }
 
   @Delete(':templateId')
@@ -126,7 +160,12 @@ export class TrainingTemplatesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('templateId', ParseIntPipe) templateId: number,
   ): Promise<void> {
-    await this.createTrainingTemplateCommand.execute({ id: templateId, userId: uid });
+    await firstValueFrom(
+      this.trainingClient.send<TrainingDeleteTemplate.Response, TrainingDeleteTemplate.Request>(
+        TrainingDeleteTemplate.pattern,
+        { data: { id: templateId, userId: uid } },
+      ),
+    );
     return;
   }
 }
