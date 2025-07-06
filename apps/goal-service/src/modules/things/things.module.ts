@@ -54,15 +54,6 @@ const queries = [
 ];
 const events = [];
 
-/*TODO:
- * [x] создание
- * [x] создание повторяемого
- * [x] удаление
- * [x] обновление
- * [] завершение
- * [x] обновление повторяемого
- * [x] поиск
- * */
 @Module({
   providers: [
     { provide: THING_REPOSITORY, useClass: KyselyThingsRepository },
