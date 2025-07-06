@@ -3,12 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 export function dbConfigFactory(): Parameters<typeof DatabaseModule.forRootAsync>[0] {
   return {
-    imports: [
-      ConfigModule.forRoot({
-        load: [dbConfigFactory],
-        envFilePath: ['.env.production', '.env.development'],
-      }),
-    ],
+    imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService<DB_ENV>) => {
       return {

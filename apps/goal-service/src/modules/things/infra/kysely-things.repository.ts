@@ -1,18 +1,169 @@
-import { BaseRepository } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { DB } from '@/infrastructure/types';
+import { Priority, Result, WeekDays } from '@/modules/things/domain';
+import { AppDate, BaseRepository, Name } from '@big-d/api-utils';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { set } from 'date-fns';
+import { Transaction } from 'kysely';
 import { ThingRawData, ThingsRepository } from '../application';
 import { ThingEntity } from '../domain/thing.entity';
 
 @Injectable()
 export class KyselyThingsRepository extends BaseRepository<DB> implements ThingsRepository {
+  #tableName = 'things' as const;
   constructor(@Inject(DATABASE_CONNECTION) private readonly database: Database<DB>) {
     super(database);
+  }
+
+  async findById(input: { id: number; userId: number }): Promise<ThingEntity | null> {
+    const result = await this.db()
+      .selectFrom(this.#tableName)
+      .where('id', '=', input.id)
+      .where('user_id', '=', input.userId)
+      .selectAll()
+      .executeTakeFirst();
+    if (result == null) return null;
+
+    return this.#map(result);
+  }
+
+  async findTodays(input: { userId: number }): Promise<ThingEntity[]> {
+    const now = new Date().toISOString();
+    const startToday = set(now, {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    });
+
+    const endToday = set(now, {
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+    });
+
+    let query = this.db().selectFrom(this.#tableName).selectAll();
+
+    query = query.where((eb) => {
+      const conditions = [
+        eb('user_id', '=', input.userId),
+        eb('end_date', 'is', null),
+        eb('start_date', '>=', startToday),
+        eb('start_date', '<=', endToday),
+      ];
+
+      return eb.and(conditions);
+    });
+    const result = await query.execute();
+
+    return result.map(this.#map);
+  }
+
+  async findRepeatable(input: { userId: number }): Promise<ThingEntity[]> {
+    let query = this.db().selectFrom(this.#tableName).selectAll();
+
+    query = query.where((eb) => {
+      const conditions = [
+        eb('user_id', '=', input.userId),
+        eb('end_date', 'is', null),
+        eb('start_date', 'is', null),
+        eb('description', 'is', null),
+      ];
+      return eb.and(conditions);
+    });
+
+    const result = await query.execute();
+    return result.map(this.#map);
+  }
+
+  async findByGroupId(input: { groupId: number; userId: number }): Promise<ThingEntity[]> {
+    const result = await this.db()
+      .selectFrom(this.#tableName)
+      .where('user_id', '=', input.userId)
+      .where('group_id', '=', input.groupId)
+      .selectAll()
+      .execute();
+
+    return result.map(this.#map);
+  }
+
+  async create(entity: ThingEntity, trx?: Transaction<DB>): Promise<ThingEntity | null> {
+    const result = await this.db(trx)
+      .insertInto(this.#tableName)
+      .values({
+        user_id: entity.userId,
+        comment: entity.comment,
+        deadline: entity.deadline,
+        week_days: entity.weekDays,
+        description: entity.description,
+        name: entity.name,
+        end_date: entity.endDate,
+        group_id: entity.groupId,
+        priority: entity.priority,
+        result: entity.result,
+        start_date: entity.startDate,
+      })
+      .returningAll()
+      .executeTakeFirst();
+    if (result == null) return null;
+
+    return this.#map(result);
+  }
+
+  async update(
+    entity: ThingEntity,
+    options: { replace: boolean } = { replace: false },
+    trx?: Transaction<DB>,
+  ): Promise<ThingEntity | null> {
+    const { replace } = options;
+
+    const result = await this.db(trx)
+      .updateTable(this.#tableName)
+      .where('id', '=', entity.id)
+      .set({
+        name: entity.name,
+        group_id: entity.groupId,
+        comment: entity.comment ?? (replace ? null : undefined),
+        deadline: entity.deadline ?? (replace ? null : undefined),
+        week_days: entity.weekDays ?? (replace ? null : undefined),
+        description: entity.description ?? (replace ? null : undefined),
+        end_date: entity.endDate ?? (replace ? null : undefined),
+        priority: entity.priority ?? (replace ? null : undefined),
+        result: entity.result ?? (replace ? null : undefined),
+        start_date: entity.startDate ?? (replace ? null : undefined),
+        updated_at: new Date().toISOString(),
+      })
+      .returningAll()
+      .executeTakeFirst();
+    if (result == null) return null;
+
+    return this.#map(result);
+  }
+
+  async delete(input: { id: number; userId: number }, trx?: Transaction<DB>): Promise<boolean> {
+    const result = await this.db(trx)
+      .deleteFrom(this.#tableName)
+      .where('id', '=', input.id)
+      .where('user_id', '=', input.userId)
+      .executeTakeFirst();
+
+    return result.numDeletedRows > 0;
   }
 
   #map = (raw: ThingRawData['selectable']): ThingEntity => {
     return ThingEntity.restore({
       id: raw.id,
+      userId: raw.user_id,
+      groupId: raw.group_id,
+      name: Name.restore(raw.name),
+      comment: raw.comment ?? undefined,
+      result: raw.result ? Result.restore(raw.result) : undefined,
+      weekDays: raw.week_days ? WeekDays.restore(raw.week_days) : undefined,
+      deadline: raw.deadline ? AppDate.restore(raw.deadline.toISOString()) : undefined,
+      endDate: raw.end_date ? AppDate.restore(raw.end_date.toISOString()) : undefined,
+      startDate: raw.start_date ? AppDate.restore(raw.start_date.toISOString()) : undefined,
+      description: raw.description ?? undefined,
+      priority: raw.priority ? Priority.restore(raw.priority) : undefined,
     });
   };
 }

@@ -33,6 +33,8 @@ type ReturnHandlerType<Handler extends new (...args: any) => any> = ReturnType<
   InstanceType<Handler>['execute']
 >;
 
+type MaybePromise<T> = T | Promise<T>;
+
 export type {
   Constructor,
   AbstractConstructor,
@@ -43,4 +45,5 @@ export type {
   Undefinedable,
   OmitCreateFields,
   ReturnHandlerType,
+  MaybePromise,
 };

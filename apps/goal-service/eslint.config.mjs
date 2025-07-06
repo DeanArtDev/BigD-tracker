@@ -3,7 +3,7 @@ import { getServiceApiEslintConfig } from '@big-d/linter';
 
 export default getServiceApiEslintConfig(
   {
-    ignores: ['eslint.config.mjs', './src/shared/modules/db/types.d.ts'],
+    ignores: ['eslint.config.mjs', './src/infrastructure/types.d.ts'],
   },
 
   {
@@ -17,6 +17,12 @@ export default getServiceApiEslintConfig(
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+
+  {
+    rules: {
+      '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
 );

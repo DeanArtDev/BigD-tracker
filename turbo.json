@@ -27,6 +27,8 @@
       "cache": false
     },
 
+    "db:typegen": {},
+
     "test": {},
 
     "format": {},

@@ -1,0 +1,10 @@
+{
+  "camelCase": false,
+  "dateParser": "timestamp",
+  "defaultSchemas": ["public"],
+  "dialect": "postgres",
+  "envFile": ".env.development",
+  "logLevel": "warn",
+  "outFile": "./kysely-codegen/db.d.ts",
+  "includePattern": "public.+(sessions)"
+}
