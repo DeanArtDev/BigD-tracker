@@ -1,0 +1,16 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "../../../",
+  "testRegex": "apps/account-service/test/.*\\.e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": ["ts-jest", { "tsconfig": "<rootDir>/apps/account-service/test/tsconfig.json" }]
+  },
+  "moduleNameMapper": {
+    "^@big-d/(.*)$": "<rootDir>/libs/$1/src",
+    "^@/(.*)$": "<rootDir>/apps/account-service/src/$1",
+    "^@shared/(.*)$": "<rootDir>/apps/account-service/src/shared/$1",
+    "^@db/(.*)$": "<rootDir>/apps/account-service/db/$1"
+  },
+  "coverageDirectory": "apps/account-service/coverage",
+  "testEnvironment": "node"
+}
