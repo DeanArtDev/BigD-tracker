@@ -15,7 +15,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "sourceMap": false,
-    "rootDir": "./src"
   },
   "include": ["./src/**/*.ts"]
 }
