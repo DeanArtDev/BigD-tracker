@@ -92,7 +92,7 @@ class DomainValidator {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `${field} must not be grater than ${max}`,
+        message: `${field} must not be greater than ${max}`,
       });
     }
   }
@@ -102,7 +102,7 @@ class DomainValidator {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `${field} must not be grater than ${max}`,
+        message: `${field} must not be greater than ${max}`,
       });
     }
   }
@@ -132,7 +132,7 @@ class DomainValidator {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: `${field}: must not be a valid email address`,
+        message: `${field}: must be a valid email address`,
       });
     }
   }

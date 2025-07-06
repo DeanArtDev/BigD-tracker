@@ -21,7 +21,7 @@
     "format:fix": "prettier --write \"src/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
     "lint": "pnpm format && eslint \"{src,tools,db}/**/*.ts\"",
     "lint:fix": "pnpm format:fix && eslint \"{src,tools,db}/**/*.ts\" --fix",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
