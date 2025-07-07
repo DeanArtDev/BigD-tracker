@@ -1,6 +1,6 @@
 import { THING_REPOSITORY, ThingsRepository } from '@/modules/things/application';
 import { Priority, ThingCreatedEntity, ThingEntity } from '@/modules/things/domain';
-import { AppDate, Name } from '@big-d/api-utils';
+import { DateVo, Name } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { CreateThingCommand } from './create-thing.command';
@@ -20,8 +20,8 @@ export class CreateThingHandler implements ICommandHandler<CreateThingCommand> {
       groupId,
       userId,
       description: description,
-      deadline: deadline != null ? AppDate.create(deadline) : undefined,
-      startDate: startDate != null ? AppDate.create(startDate) : undefined,
+      deadline: deadline != null ? DateVo.create(deadline) : undefined,
+      startDate: startDate != null ? DateVo.create(startDate) : undefined,
       priority: priority != null ? Priority.create(priority) : undefined,
     });
 

@@ -1,6 +1,6 @@
 import { THING_REPOSITORY, ThingsRepository } from '@/modules/things/application';
 import { Result, ThingFinishedEvent } from '@/modules/things/domain';
-import { AppDate } from '@big-d/api-utils';
+import { DateVo } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { FinishThingCommand } from './finish-thing.command';
@@ -23,7 +23,7 @@ export class FinishThingHandler implements ICommandHandler<FinishThingCommand> {
     existed
       .finish({
         comment,
-        endDate: AppDate.create(endDate),
+        endDate: DateVo.create(endDate),
         result: Result.create(result),
       })
       .validate();

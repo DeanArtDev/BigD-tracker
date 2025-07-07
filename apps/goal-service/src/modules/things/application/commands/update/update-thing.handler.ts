@@ -1,6 +1,6 @@
 import { THING_REPOSITORY, ThingsRepository } from '@/modules/things/application';
 import { Priority, ThingUpdatedEvent } from '@/modules/things/domain';
-import { AppDate, Name } from '@big-d/api-utils';
+import { DateVo, Name } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateThingCommand } from './update-thing.command';
@@ -26,8 +26,8 @@ export class UpdateThingHandler implements ICommandHandler<UpdateThingCommand> {
 
     existed.changeGroup(groupId);
     existed.changeName(Name.create(name));
-    startDate != null && existed.changeStartDate(AppDate.create(startDate));
-    deadline != null && existed.changeDeadline(AppDate.create(deadline));
+    startDate != null && existed.changeStartDate(DateVo.create(startDate));
+    deadline != null && existed.changeDeadline(DateVo.create(deadline));
     priority != null && existed.changePriority(Priority.create(priority));
     description != null && existed.changeDescription(description);
     existed.validate();

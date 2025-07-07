@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { Priority, Result, WeekDays } from '@/modules/things/domain';
-import { AppDate, BaseRepository, Name } from '@big-d/api-utils';
+import { DateVo, BaseRepository, Name } from '@big-d/api-utils';
 import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { set } from 'date-fns';
@@ -159,9 +159,9 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
       comment: raw.comment ?? undefined,
       result: raw.result ? Result.restore(raw.result) : undefined,
       weekDays: raw.week_days ? WeekDays.restore(raw.week_days) : undefined,
-      deadline: raw.deadline ? AppDate.restore(raw.deadline.toISOString()) : undefined,
-      endDate: raw.end_date ? AppDate.restore(raw.end_date.toISOString()) : undefined,
-      startDate: raw.start_date ? AppDate.restore(raw.start_date.toISOString()) : undefined,
+      deadline: raw.deadline ? DateVo.restore(raw.deadline.toISOString()) : undefined,
+      endDate: raw.end_date ? DateVo.restore(raw.end_date.toISOString()) : undefined,
+      startDate: raw.start_date ? DateVo.restore(raw.start_date.toISOString()) : undefined,
       description: raw.description ?? undefined,
       priority: raw.priority ? Priority.restore(raw.priority) : undefined,
     });

@@ -2,7 +2,7 @@ import { Priority } from './vo/priority';
 import { Result } from './vo/result';
 import { WeekDays } from './vo/week-days';
 import { DomainValidator } from '@big-d/api-utils';
-import { AppDate, Name } from '@big-d/api-utils';
+import { DateVo, Name } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { randomInt } from 'node:crypto';
 
@@ -15,9 +15,9 @@ interface ThingData {
   name: Name;
   description?: string;
   priority?: Priority;
-  startDate?: AppDate;
-  endDate?: AppDate;
-  deadline?: AppDate;
+  startDate?: DateVo;
+  endDate?: DateVo;
+  deadline?: DateVo;
   weekDays?: WeekDays;
   result?: Result;
   comment?: string;
@@ -29,8 +29,8 @@ interface CreateThingData {
   readonly name: Name;
   readonly description?: string;
   readonly priority?: Priority;
-  readonly startDate?: AppDate;
-  readonly deadline?: AppDate;
+  readonly startDate?: DateVo;
+  readonly deadline?: DateVo;
 }
 
 interface CreateRepeatableThingData {
@@ -67,12 +67,12 @@ class ThingEntity extends AggregateRoot {
     return new ThingEntity(data);
   }
 
-  public changeStartDate(value: AppDate) {
+  public changeStartDate(value: DateVo) {
     this.#data.startDate = value;
     return this;
   }
 
-  public changeDeadline(value: AppDate) {
+  public changeDeadline(value: DateVo) {
     this.#data.deadline = value;
     return this;
   }
@@ -107,7 +107,7 @@ class ThingEntity extends AggregateRoot {
     return this;
   }
 
-  public finish(input: { endDate: AppDate; comment?: string; result: Result }) {
+  public finish(input: { endDate: DateVo; comment?: string; result: Result }) {
     this.#data.endDate = input.endDate;
     this.#data.result = input.result;
     this.#data.comment = input.comment;

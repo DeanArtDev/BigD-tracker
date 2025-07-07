@@ -3,7 +3,7 @@ import { BaseValueObject } from './base-value-object';
 
 type AppDateValue = string | Date;
 
-class AppDate implements BaseValueObject<AppDate> {
+class DateVo implements BaseValueObject<DateVo> {
   #value: string;
   private constructor(date: string) {
     this.#value = date;
@@ -14,7 +14,7 @@ class AppDate implements BaseValueObject<AppDate> {
     return this.#value;
   }
 
-  public static create(date: AppDateValue): AppDate {
+  public static create(date: AppDateValue): DateVo {
     const normalized =
       typeof date === 'string' ? date.trim() : isDate(date.toString()) ? date.toString() : '';
 
@@ -22,14 +22,14 @@ class AppDate implements BaseValueObject<AppDate> {
       throw new Error(`Date: ${normalized} must be ISO8601 format`);
     }
 
-    return new AppDate(normalized);
+    return new DateVo(normalized);
   }
 
-  public static restore(date: string): AppDate {
-    return new AppDate(date);
+  public static restore(date: string): DateVo {
+    return new DateVo(date);
   }
 
-  public equals(other: AppDate): boolean {
+  public equals(other: DateVo): boolean {
     return this.value === other.value;
   }
 
@@ -42,4 +42,4 @@ class AppDate implements BaseValueObject<AppDate> {
   }
 }
 
-export { AppDate };
+export { DateVo };

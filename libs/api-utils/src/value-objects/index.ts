@@ -1,4 +1,4 @@
 export * from './email';
-export * from './app-date';
+export * from './date-vo';
 export * from './name';
 export * from './base-value-object';
