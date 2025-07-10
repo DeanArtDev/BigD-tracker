@@ -2,9 +2,9 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { GetInBoxRes } from '@/modules/goal-service/application/dtos/groups/get-in-box.dto';
+import { CreateGroupSage } from '@/modules/goal-service/application/sages';
 import {
   GOAL_SERVICE_RMQ_KEY,
-  GoalCreateGroup,
   GoalDeleteGroup,
   GoalGetGroupInBox,
   GoalUpdateGroup,
@@ -30,7 +30,10 @@ import { CreateGroupReq, CreateGroupRes, UpdateGroupReq, UpdateGroupRes } from '
 @ApiTags('Groups')
 @Controller('/groups')
 export class GroupsController {
-  constructor(@Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy) {}
+  constructor(
+    @Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy,
+    private readonly createGroupSage: CreateGroupSage,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Получение  IN BOX юзера' })
@@ -60,20 +63,13 @@ export class GroupsController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateGroupReq,
   ): Promise<CreateGroupRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalCreateGroup.Response, GoalCreateGroup.Request>(
-        GoalCreateGroup.pattern,
-        {
-          data: {
-            name: data.name,
-            description: data.description,
-            userId: uid,
-            goalId: data.goalId,
-            things: data.things,
-          },
-        },
-      ),
-    );
+    return this.createGroupSage.execute({
+      userId: uid,
+      name: data.name,
+      description: data.description,
+      goalId: data.goalId,
+      things: data.things,
+    });
   }
 
   @Put(':groupId')

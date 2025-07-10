@@ -10,6 +10,8 @@ import {
   CreateGroupWithThingsHandler,
   UpdateGroupWithThingsCommand,
   UpdateGroupWithThingsHandler,
+  CreateGroupHandler,
+  CreateGroupCommand,
 } from '@/modules/groups/application/commands';
 import {
   GetGroupByGoalIdHandler,
@@ -32,7 +34,7 @@ const commands = [
   CreateGroupWithThingsCommand,
   UpdateGroupWithThingsCommand,
   CreateInBoxGroupCommand,
-  GetGroupUserInboxQuery,
+  CreateGroupCommand,
 ];
 const handlers = [
   UpdateGroupHandler,
@@ -44,6 +46,7 @@ const handlers = [
   CreateGroupWithThingsHandler,
   UpdateGroupWithThingsHandler,
   CreateInBoxGroupHandler,
+  CreateGroupHandler,
 ];
 const queries = [GetGroupByIdQuery, GetGroupByGoalIdQuery, GetGroupUserInboxQuery];
 const events = [GroupUpdatedEvent, GroupCreatedEvent, GroupDeletedEvent];
