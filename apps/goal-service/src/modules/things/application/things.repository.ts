@@ -6,7 +6,7 @@ interface ThingRawData {
   readonly selectable: Omit<Selectable<DB['things']>, 'updated_at' | 'created_at'>;
 }
 
-const THING_REPOSITORY = Symbol('THING_REPOSITORY');
+const THINGS_REPOSITORY = Symbol('THING_REPOSITORY');
 
 interface ThingsRepository {
   findById(input: { id: number; userId: number }): Promise<ThingEntity | null>;
@@ -20,6 +20,10 @@ interface ThingsRepository {
     trx?: Transaction<DB>,
   ): Promise<ThingEntity | null>;
   delete(input: { id: number; userId: number }, trx?: Transaction<DB>): Promise<boolean>;
+  deleteByGroupId(
+    input: { groupIds: number[]; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<number>;
 }
 
-export { ThingRawData, ThingsRepository, THING_REPOSITORY };
+export { ThingRawData, ThingsRepository, THINGS_REPOSITORY };

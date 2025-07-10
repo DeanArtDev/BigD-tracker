@@ -11,6 +11,8 @@ import {
   FinishThingHandler,
   UpdateRepeatableThingCommand,
   UpdateRepeatableThingHandler,
+  DeleteThingByGroupIdCommand,
+  DeleteThingByGroupIdHandler,
 } from '@/modules/things/application/commands';
 import {
   GetRepeatableThingsQuery,
@@ -22,13 +24,15 @@ import {
   GetThingsByGroupIdHandler,
   GetTodaysThingsHandler,
 } from '@/modules/things/application/queries';
+import { FinishThingUseCase } from '@/modules/things/application/use-cases';
 import { Module } from '@nestjs/common';
-import { THING_REPOSITORY } from './application';
+import { THINGS_REPOSITORY, ThingsController, ThingsMapper } from './application';
 import { KyselyThingsRepository } from './infra/kysely-things.repository';
 
 const commands = [
   CreateRepeatableThingCommand,
   DeleteThingCommand,
+  DeleteThingByGroupIdCommand,
   CreateThingCommand,
   UpdateThingCommand,
   FinishThingCommand,
@@ -38,6 +42,7 @@ const handlers = [
   CreateThingHandler,
   CreateRepeatableThingHandler,
   DeleteThingHandler,
+  DeleteThingByGroupIdHandler,
   UpdateThingHandler,
   FinishThingHandler,
   UpdateRepeatableThingHandler,
@@ -53,14 +58,18 @@ const queries = [
   GetRepeatableThingsQuery,
 ];
 const events = [];
+const useCases = [FinishThingUseCase];
 
 @Module({
+  controllers: [ThingsController],
   providers: [
-    { provide: THING_REPOSITORY, useClass: KyselyThingsRepository },
+    ThingsMapper,
+    { provide: THINGS_REPOSITORY, useClass: KyselyThingsRepository },
     ...commands,
     ...handlers,
     ...queries,
     ...events,
+    ...useCases,
   ],
 })
 export class ThingsModule {}

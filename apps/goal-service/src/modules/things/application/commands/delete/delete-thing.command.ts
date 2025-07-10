@@ -6,3 +6,12 @@ export class DeleteThingCommand {
     },
   ) {}
 }
+
+export class DeleteThingByGroupIdCommand {
+  constructor(
+    readonly input: {
+      readonly groupId: number;
+      readonly userId: number;
+    },
+  ) {}
+}

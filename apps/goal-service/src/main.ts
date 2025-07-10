@@ -22,8 +22,8 @@ async function bootstrap() {
       user: config.RMQ_USER,
       password: config.RMQ_PASSWORD,
       isProd: config.IS_PROD,
-      deserializer: new RmqLoggerDeserializer(),
-      serializer: new RmqLoggerSerializer(),
+      deserializer: new RmqLoggerDeserializer({ fullLog: true }),
+      serializer: new RmqLoggerSerializer({ fullLog: true }),
     }),
   );
 

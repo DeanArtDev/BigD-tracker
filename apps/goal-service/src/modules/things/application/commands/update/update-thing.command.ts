@@ -3,8 +3,8 @@ export class UpdateThingCommand {
     readonly input: {
       readonly id: number;
       readonly userId: number;
-      readonly groupId: number;
       readonly name: string;
+      readonly position: number;
       readonly description?: string;
       readonly priority?: number;
       readonly startDate?: string;

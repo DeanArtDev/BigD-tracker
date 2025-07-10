@@ -1,6 +1,6 @@
-import { THING_REPOSITORY, ThingsRepository } from '@/modules/things/application';
-import { Result, ThingFinishedEvent } from '@/modules/things/domain';
-import { DateVo } from '@big-d/api-utils';
+import { THINGS_REPOSITORY, ThingsRepository } from '@/modules/things/application';
+import { ThingFinishedEvent } from '@/modules/things/domain';
+import { DateVo, Result } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { FinishThingCommand } from './finish-thing.command';
@@ -8,7 +8,7 @@ import { FinishThingCommand } from './finish-thing.command';
 @CommandHandler(FinishThingCommand)
 export class FinishThingHandler implements ICommandHandler<FinishThingCommand> {
   constructor(
-    @Inject(THING_REPOSITORY) private readonly thingsRepo: ThingsRepository,
+    @Inject(THINGS_REPOSITORY) private readonly thingsRepo: ThingsRepository,
     private readonly eventBus: EventBus,
   ) {}
 

@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
-import { Priority, Result, WeekDays } from '@/modules/things/domain';
-import { DateVo, BaseRepository, Name } from '@big-d/api-utils';
+import { Priority, WeekDays } from '@/modules/things/domain';
+import { BaseRepository, DateVo, Name, Result } from '@big-d/api-utils';
 import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { set } from 'date-fns';
@@ -97,6 +97,7 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
         week_days: entity.weekDays,
         description: entity.description,
         name: entity.name,
+        position: entity.position,
         end_date: entity.endDate,
         group_id: entity.groupId,
         priority: entity.priority,
@@ -123,13 +124,14 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
       .set({
         name: entity.name,
         group_id: entity.groupId,
+        position: entity.position,
         comment: entity.comment ?? (replace ? null : undefined),
         deadline: entity.deadline ?? (replace ? null : undefined),
         week_days: entity.weekDays ?? (replace ? null : undefined),
         description: entity.description ?? (replace ? null : undefined),
         end_date: entity.endDate ?? (replace ? null : undefined),
         priority: entity.priority ?? (replace ? null : undefined),
-        result: entity.result ?? (replace ? null : undefined),
+        result: entity.result,
         start_date: entity.startDate ?? (replace ? null : undefined),
         updated_at: new Date().toISOString(),
       })
@@ -150,14 +152,28 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
     return result.numDeletedRows > 0;
   }
 
+  async deleteByGroupId(
+    input: { groupIds: number[]; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<number> {
+    const result = await this.db(trx)
+      .deleteFrom(this.#tableName)
+      .where('group_id', 'in', input.groupIds)
+      .where('user_id', '=', input.userId)
+      .executeTakeFirst();
+
+    return Number(result.numDeletedRows ?? 0);
+  }
+
   #map = (raw: ThingRawData['selectable']): ThingEntity => {
     return ThingEntity.restore({
       id: raw.id,
       userId: raw.user_id,
       groupId: raw.group_id,
       name: Name.restore(raw.name),
+      position: raw.position,
       comment: raw.comment ?? undefined,
-      result: raw.result ? Result.restore(raw.result) : undefined,
+      result: Result.restore(raw.result),
       weekDays: raw.week_days ? WeekDays.restore(raw.week_days) : undefined,
       deadline: raw.deadline ? DateVo.restore(raw.deadline.toISOString()) : undefined,
       endDate: raw.end_date ? DateVo.restore(raw.end_date.toISOString()) : undefined,

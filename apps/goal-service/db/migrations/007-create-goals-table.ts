@@ -12,7 +12,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('start_date', 'timestamp')
     .addColumn('end_date', 'timestamp')
     .addColumn('deadline', 'timestamp')
-    .addColumn('result', 'integer', (col) => col.notNull().check(sql`result BETWEEN 0 AND 100`))
+    .addColumn('result', 'integer', (col) =>
+      col
+        .defaultTo(0)
+        .check(sql`result BETWEEN 0 AND 100`)
+        .notNull(),
+    )
+    .addColumn('position', 'integer', (col) => col.notNull().defaultTo(0))
 
     .addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamp', (col) => col.defaultTo(sql`now()`))

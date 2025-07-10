@@ -6,11 +6,17 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
     .addColumn('description', 'text')
-    .addColumn('goal_id', 'integer', (col) =>
-      col.references('goals.id').onDelete('cascade').notNull(),
+    .addColumn('goal_id', 'integer', (col) => col.references('goals.id').onDelete('cascade'))
+    .addColumn('user_id', 'integer', (col) =>
+      col.references('users.id').onDelete('cascade').notNull(),
     )
-    .addColumn('user_id', 'integer', (col) => col.references('users.id').onDelete('cascade'))
-    .addColumn('result', 'integer', (col) => col.defaultTo(0).check(sql`result BETWEEN 0 AND 100`))
+    .addColumn('result', 'integer', (col) =>
+      col
+        .defaultTo(0)
+        .check(sql`result BETWEEN 0 AND 100`)
+        .notNull(),
+    )
+    .addColumn('position', 'integer', (col) => col.notNull().defaultTo(0))
 
     .addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamp', (col) => col.defaultTo(sql`now()`))

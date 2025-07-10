@@ -1,2 +1,2 @@
-export * from './create-thing.handler';
-export * from './create-thing.command';
+export * from './create-repeatable-thing.handler';
+export * from './create-repeatable-thing.command';

@@ -1,4 +1,4 @@
-import { BaseValueObject } from '@big-d/api-utils';
+import { BaseValueObject } from './base-value-object';
 
 class Result implements BaseValueObject<Result> {
   #value: number;

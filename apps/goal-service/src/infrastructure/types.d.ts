@@ -18,7 +18,8 @@ export interface Goals {
   end_date: Timestamp | null;
   id: Generated<number>;
   name: string;
-  result: number;
+  position: Generated<number>;
+  result: Generated<number>;
   start_date: Timestamp | null;
   updated_at: Generated<Timestamp | null>;
   user_id: number;
@@ -27,12 +28,13 @@ export interface Goals {
 export interface Groups {
   created_at: Generated<Timestamp | null>;
   description: string | null;
-  goal_id: number;
+  goal_id: number | null;
   id: Generated<number>;
   name: string;
-  result: Generated<number | null>;
+  position: Generated<number>;
+  result: Generated<number>;
   updated_at: Generated<Timestamp | null>;
-  user_id: number | null;
+  user_id: number;
 }
 
 export interface Tags {
@@ -50,8 +52,9 @@ export interface Things {
   group_id: number;
   id: Generated<number>;
   name: string;
+  position: Generated<number>;
   priority: number | null;
-  result: number | null;
+  result: Generated<number>;
   start_date: Timestamp | null;
   updated_at: Generated<Timestamp | null>;
   user_id: number;

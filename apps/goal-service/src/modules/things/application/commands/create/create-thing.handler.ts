@@ -1,4 +1,4 @@
-import { THING_REPOSITORY, ThingsRepository } from '@/modules/things/application';
+import { THINGS_REPOSITORY, ThingsRepository } from '@/modules/things/application';
 import { Priority, ThingCreatedEntity, ThingEntity } from '@/modules/things/domain';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
@@ -8,18 +8,19 @@ import { CreateThingCommand } from './create-thing.command';
 @CommandHandler(CreateThingCommand)
 export class CreateThingHandler implements ICommandHandler<CreateThingCommand> {
   constructor(
-    @Inject(THING_REPOSITORY) private readonly thingsRepo: ThingsRepository,
+    @Inject(THINGS_REPOSITORY) private readonly thingsRepo: ThingsRepository,
     private readonly eventBus: EventBus,
   ) {}
 
   async execute({ input }: CreateThingCommand): Promise<void> {
-    const { name, description, userId, deadline, startDate, groupId, priority } = input;
+    const { name, description, userId, deadline, position, startDate, groupId, priority } = input;
 
     const draftThing = ThingEntity.create({
       name: Name.create(name),
       groupId,
       userId,
-      description: description,
+      description,
+      position,
       deadline: deadline != null ? DateVo.create(deadline) : undefined,
       startDate: startDate != null ? DateVo.create(startDate) : undefined,
       priority: priority != null ? Priority.create(priority) : undefined,

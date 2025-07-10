@@ -8,6 +8,7 @@
     "format:all:fix": "turbo format:fix",
     "lint:all": "turbo lint",
     "lint:all:fix": "turbo lint:fix",
+    "test:all": "turbo test",
     "deploy:to:prod": "bash ./deploy-scripts/bootstrap.sh",
     "--DEV--": "",
     "agi-gateway:dev": "turbo dev -F=@big-d/api-gateway...",

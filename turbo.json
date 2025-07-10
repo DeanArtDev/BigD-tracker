@@ -29,7 +29,9 @@
 
     "db:typegen": {},
 
-    "test": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
 
     "format": {},
 

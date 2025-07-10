@@ -38,7 +38,7 @@ class DateVo implements BaseValueObject<DateVo> {
   }
 
   public isAfter(data: AppDateValue) {
-    return isAfter(data.toString(), this.#value);
+    return isAfter(this.#value, data.toString());
   }
 }
 

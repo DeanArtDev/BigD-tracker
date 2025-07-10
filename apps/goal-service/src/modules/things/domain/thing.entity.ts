@@ -1,7 +1,6 @@
 import { Priority } from './vo/priority';
-import { Result } from './vo/result';
 import { WeekDays } from './vo/week-days';
-import { DomainValidator } from '@big-d/api-utils';
+import { DomainValidator, Result } from '@big-d/api-utils';
 import { DateVo, Name } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { randomInt } from 'node:crypto';
@@ -13,20 +12,24 @@ interface ThingData {
   readonly userId: number;
   groupId: number;
   name: Name;
+  isDraft: boolean;
+  position: number;
   description?: string;
   priority?: Priority;
   startDate?: DateVo;
   endDate?: DateVo;
   deadline?: DateVo;
   weekDays?: WeekDays;
-  result?: Result;
+  result: Result;
   comment?: string;
 }
 
 interface CreateThingData {
+  readonly id?: number;
   readonly groupId: number;
   readonly userId: number;
   readonly name: Name;
+  position: number;
   readonly description?: string;
   readonly priority?: Priority;
   readonly startDate?: DateVo;
@@ -44,6 +47,7 @@ interface CreateRepeatableThingData {
 
 class ThingEntity extends AggregateRoot {
   #data: ThingData;
+
   protected constructor(init: ThingData) {
     super();
     this.#data = init;
@@ -51,7 +55,9 @@ class ThingEntity extends AggregateRoot {
 
   static create(data: CreateThingData) {
     return new ThingEntity({
-      id: randomInt(0, Date.now()),
+      id: data.id ?? randomInt(0, Date.now()),
+      result: Result.create(0),
+      isDraft: true,
       ...data,
     }).validate();
   }
@@ -59,26 +65,27 @@ class ThingEntity extends AggregateRoot {
   static createRepeatable(data: CreateRepeatableThingData) {
     return new ThingEntity({
       id: randomInt(0, Date.now()),
+      result: Result.create(0),
+      position: 0,
+      isDraft: true,
       ...data,
     }).validate();
   }
 
-  static restore(data: ThingData) {
-    return new ThingEntity(data);
+  static restore(data: Omit<ThingData, 'isDraft'>) {
+    return new ThingEntity({
+      isDraft: false,
+      ...data,
+    });
   }
 
-  public changeStartDate(value: DateVo) {
+  public changeStartDate(value?: DateVo) {
     this.#data.startDate = value;
     return this;
   }
 
-  public changeDeadline(value: DateVo) {
+  public changeDeadline(value?: DateVo) {
     this.#data.deadline = value;
-    return this;
-  }
-
-  public changeResult(value: Result) {
-    this.#data.result = value;
     return this;
   }
 
@@ -92,22 +99,40 @@ class ThingEntity extends AggregateRoot {
     return this;
   }
 
-  public changePriority(value: Priority) {
+  public changePriority(value?: Priority) {
     this.#data.priority = value;
     return this;
   }
 
-  public changeDescription(value: string) {
+  public changeDescription(value?: string) {
     this.#data.description = value;
     return this;
   }
 
   public changeWeekDays(value: WeekDays) {
+    if (
+      this.#data.endDate != null ||
+      this.#data.result != null ||
+      this.#data.startDate != null ||
+      this.#data.comment != null
+    ) {
+      validator.throwError(`Thing is not repeatable`, 'weekDays');
+    }
+
     this.#data.weekDays = value;
     return this;
   }
 
+  public changePosition(value: number) {
+    this.#data.position = value;
+    return this;
+  }
+
   public finish(input: { endDate: DateVo; comment?: string; result: Result }) {
+    if (this.#data.endDate != null || this.#data.result.value > 0 || this.#data.comment != null) {
+      validator.throwError(`Thing has already finished`, 'finish');
+    }
+
     this.#data.endDate = input.endDate;
     this.#data.result = input.result;
     this.#data.comment = input.comment;
@@ -131,15 +156,6 @@ class ThingEntity extends AggregateRoot {
         validator.throwError(
           `startDate:${startDate.value} must not be after deadline: ${deadline.value}`,
           'startDate',
-        );
-      }
-    }
-
-    if (endDate != null && deadline != null) {
-      if (endDate.isAfter(deadline.value)) {
-        validator.throwError(
-          `endDate:${endDate.value} must not be after deadline: ${deadline.value}`,
-          'endDate',
         );
       }
     }
@@ -190,8 +206,17 @@ class ThingEntity extends AggregateRoot {
   get comment() {
     return this.#data.comment;
   }
+  get position() {
+    return this.#data.position;
+  }
   get isRepeatable() {
     return this.#data.weekDays != null;
+  }
+  get isFinalized() {
+    return this.#data.endDate != null && this.#data.result?.value != null;
+  }
+  get isDraft(): boolean {
+    return this.#data.isDraft;
   }
 }
 

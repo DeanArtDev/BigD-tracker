@@ -7,7 +7,7 @@ import { DeleteUserCommand } from './delete-user.command';
 export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
   constructor(@Inject(USER_REPOSITORY) private readonly usersRepository: UsersRepository) {}
 
-  async execute(input: DeleteUserCommand) {
+  async execute(input: DeleteUserCommand): Promise<{ id: number }> {
     const existedUser = await this.usersRepository.findUserById({ id: input.id });
     if (existedUser == null) {
       throw new NotFoundException(`User ${input.id} is not found`);
@@ -17,6 +17,6 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
       throw new InternalServerErrorException('Failed to delete training template');
     }
 
-    return { userId: input.id };
+    return { id: input.id };
   }
 }

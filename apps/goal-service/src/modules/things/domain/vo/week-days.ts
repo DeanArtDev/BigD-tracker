@@ -1,5 +1,5 @@
 import { BaseValueObject } from '@big-d/api-utils';
-import { isEqual } from 'lodash-es';
+import { isEqual } from 'lodash';
 
 class WeekDays implements BaseValueObject<WeekDays> {
   #value: number[];

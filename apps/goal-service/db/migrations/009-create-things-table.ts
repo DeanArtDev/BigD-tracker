@@ -23,8 +23,14 @@ export async function up(db: Kysely<any>): Promise<void> {
           OR week_days <@ ARRAY[0,1,2,3,4,5,6]::smallint[]
       `),
     )
-    .addColumn('result', 'integer', (col) => col.check(sql`result BETWEEN 0 AND 100`))
+    .addColumn('result', 'integer', (col) =>
+      col
+        .defaultTo(0)
+        .check(sql`result BETWEEN 0 AND 100`)
+        .notNull(),
+    )
     .addColumn('comment', 'text')
+    .addColumn('position', 'integer', (col) => col.notNull().defaultTo(0))
 
     .addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamp', (col) => col.defaultTo(sql`now()`))

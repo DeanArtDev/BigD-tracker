@@ -1,4 +1,4 @@
-import { THING_REPOSITORY, ThingsRepository } from '@/modules/things/application';
+import { THINGS_REPOSITORY, ThingsRepository } from '@/modules/things/application';
 import {
   Priority,
   ThingEntity,
@@ -13,7 +13,7 @@ import { CreateRepeatableThingCommand } from './create-repeatable-thing.command'
 @CommandHandler(CreateRepeatableThingCommand)
 export class CreateRepeatableThingHandler implements ICommandHandler<CreateRepeatableThingCommand> {
   constructor(
-    @Inject(THING_REPOSITORY) private readonly thingsRepo: ThingsRepository,
+    @Inject(THINGS_REPOSITORY) private readonly thingsRepo: ThingsRepository,
     private readonly eventBus: EventBus,
   ) {}
 

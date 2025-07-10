@@ -1,5 +1,5 @@
 import { DomainValidationError } from '@big-d/api-contracts';
-import { toFinite } from 'lodash-es';
+import { toFinite } from 'lodash';
 import { isAfter, isInt, isURL, isFloat, isEmail } from 'validator';
 import isISO8601 from 'validator/lib/isISO8601';
 
