@@ -1,5 +1,5 @@
 export class CalculateResult {
-  static execute(list: { isFinalized: boolean; result?: number }[]) {
+  static execute(list: { result?: number }[]) {
     const totalParts = list.length;
 
     const partCost = 100 / totalParts;

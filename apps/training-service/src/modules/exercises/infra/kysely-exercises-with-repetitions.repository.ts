@@ -4,7 +4,8 @@ import {
   SyncCollectionRepository,
   SyncCollectionRepositoryHelper,
 } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import {
   EXERCISE_REPOSITORY,
   ExercisesRepository,

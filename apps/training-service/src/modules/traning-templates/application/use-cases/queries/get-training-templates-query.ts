@@ -1,4 +1,4 @@
-import { DB } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { GetExercisesWithRepetitionsQuery } from '@modules/exercises/application';
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Transaction } from 'kysely';

@@ -10,6 +10,7 @@ import {
   GoalGetGroupByUserId,
   GoalStartGoal,
 } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -50,6 +51,7 @@ export class GoalsController {
     type: GoalResSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GoalResSingle)
   async getGoalById(
     @Param('goalId', ParseIntPipe) goalId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -69,6 +71,7 @@ export class GoalsController {
     type: GoalRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GoalRes)
   async getUsersGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GoalRes> {
     return await firstValueFrom(
       this.goalClient.send<GoalGetGroupByUserId.Response, GoalGetGroupByUserId.Request>(
@@ -86,6 +89,7 @@ export class GoalsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.CREATED)
+  @ValidateRpcResponse(CreateGoalRes)
   async createGoal(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateGoalReq,
@@ -112,6 +116,7 @@ export class GoalsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(StartGoalRes)
   async startGoal(
     @Param('goalId', ParseIntPipe) goalId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -137,6 +142,7 @@ export class GoalsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(FinishGoalRes)
   async finishGoal(
     @Param('goalId', ParseIntPipe) goalId: number,
     @TokenPayload() { uid }: AccessTokenPayload,

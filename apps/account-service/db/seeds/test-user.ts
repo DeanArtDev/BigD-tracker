@@ -1,5 +1,5 @@
 import { Kysely } from 'kysely';
-import { DB } from '@big-d/database';
+import { DB } from '../../src/infrastructure/types';
 import * as bcrypt from 'bcrypt';
 import * as dotenv from 'dotenv';
 import { join } from 'node:path';

@@ -2,9 +2,9 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { GetInBoxRes } from '@/modules/goal-service/application/dtos/groups/get-in-box.dto';
+import { CreateGroupSage } from '@/modules/goal-service/application/sages';
 import {
   GOAL_SERVICE_RMQ_KEY,
-  GoalCreateGroup,
   GoalDeleteGroup,
   GoalGetGroupInBox,
   GoalUpdateGroup,
@@ -26,11 +26,15 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { CreateGroupReq, CreateGroupRes, UpdateGroupReq, UpdateGroupRes } from './dtos';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 
 @ApiTags('Groups')
 @Controller('/groups')
 export class GroupsController {
-  constructor(@Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy) {}
+  constructor(
+    @Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy,
+    private readonly createGroupSage: CreateGroupSage,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Получение  IN BOX юзера' })
@@ -38,6 +42,7 @@ export class GroupsController {
     status: HttpStatus.OK,
     type: GetInBoxRes,
   })
+  @ValidateRpcResponse(GetInBoxRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getUsersGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetInBoxRes> {
     return await firstValueFrom(
@@ -56,24 +61,18 @@ export class GroupsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.CREATED)
+  @ValidateRpcResponse(CreateGroupRes)
   async createGroup(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateGroupReq,
   ): Promise<CreateGroupRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalCreateGroup.Response, GoalCreateGroup.Request>(
-        GoalCreateGroup.pattern,
-        {
-          data: {
-            name: data.name,
-            description: data.description,
-            userId: uid,
-            goalId: data.goalId,
-            things: data.things,
-          },
-        },
-      ),
-    );
+    return this.createGroupSage.execute({
+      userId: uid,
+      name: data.name,
+      description: data.description,
+      goalId: data.goalId,
+      things: data.things,
+    });
   }
 
   @Put(':groupId')
@@ -84,6 +83,7 @@ export class GroupsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(UpdateGroupRes)
   async updateGroup(
     @Param('groupId', ParseIntPipe) groupId: number,
     @TokenPayload() { uid }: AccessTokenPayload,

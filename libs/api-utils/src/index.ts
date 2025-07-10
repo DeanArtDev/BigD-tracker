@@ -7,3 +7,4 @@ export * from './interceptors';
 export * from './uow';
 export * from './repository';
 export * from './loggers';
+export * from './rpc-response-validation';

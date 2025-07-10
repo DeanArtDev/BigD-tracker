@@ -1,6 +1,6 @@
 import { ExerciseEntity } from '@modules/exercises/domain';
 import { OmitCreateFields, Override } from '@big-d/api-utils';
-import { DB } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
 
 interface ExerciseRawData {

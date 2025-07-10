@@ -16,6 +16,7 @@ import {
   TrainingStartTraining,
   TrainingUpdateTraining,
 } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -61,6 +62,7 @@ export class TrainingsController {
     type: TrainingWithExercisesResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingWithExercisesResponseSingle)
   async getActiveTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingWithExercisesResponseSingle> {
@@ -81,6 +83,7 @@ export class TrainingsController {
     type: TrainingResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingResponse)
   async getTrainings(
     @Query() { from, to }: GetTrainingsQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -102,6 +105,7 @@ export class TrainingsController {
     type: TrainingWithExercisesResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingWithExercisesResponseSingle)
   async getOneTrainingsWithExercises(
     @Param('trainingId', ParseIntPipe) trainingId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -124,6 +128,7 @@ export class TrainingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.CREATED)
+  @ValidateRpcResponse(TrainingWithExercisesResponseSingle)
   async createTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingWithExercisesRequest,
@@ -146,6 +151,7 @@ export class TrainingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.CREATED)
+  @ValidateRpcResponse(TrainingWithExercisesResponse)
   async createTrainingByTemplate(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingByTemplateRequest,
@@ -170,6 +176,7 @@ export class TrainingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(TrainingWithExercisesResponseSingle)
   async putTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('trainingId', ParseIntPipe) trainingId: number,

@@ -1,4 +1,4 @@
-import { DB } from '@big-d/database';
+import { DB } from '@/infrastructure/types';
 import { Transaction } from 'kysely';
 import { Selectable } from 'kysely/dist/esm';
 import { UserEntity } from '../domain/user.entity';

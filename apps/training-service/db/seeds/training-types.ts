@@ -1,5 +1,5 @@
 import { Kysely } from 'kysely';
-import { DB } from '@big-d/database';
+import { DB } from '../../src/infrastructure/types';
 
 export default {
   key: 'training-types',

@@ -1,6 +1,6 @@
+import { DB } from '@infrastructure/types';
 import { ExerciseEntity, ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
 import { REPETITIONS_REPOSITORY, RepetitionsRepository } from '@modules/repetitions';
-import { DB } from '@big-d/database';
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { EXERCISE_REPOSITORY, ExercisesRepository } from '../../repositories/exercises.repository';

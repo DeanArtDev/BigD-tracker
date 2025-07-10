@@ -1,0 +1,11 @@
+{
+  "camelCase": false,
+  "defaultSchemas": ["public"],
+  "dialect": "postgres",
+  "domains": true,
+  "envFile": ".env.development",
+  "logLevel": "warn",
+  "outFile": "./src/infrastructure/types.d.ts",
+  "includePattern": "public.+(repetitions|exercises|trainings|trainings_templates|exercise_types|trainings_types|repetitions_types)",
+  "verify": false
+}

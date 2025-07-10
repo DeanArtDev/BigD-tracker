@@ -22,7 +22,7 @@
     "format:fix": "prettier --write \"src/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
     "lint": "pnpm format && eslint \"{src,tools,db}/**/*.ts\"",
     "lint:fix": "pnpm format:fix && eslint \"{src,tools,db}/**/*.ts\" --fix",
-    "test": "jest",
+    "test": "jest --config jest.config.js",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -35,7 +35,7 @@
     "@big-d/database": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.1.1",
+    "@nestjs/core": "catalog:",
     "@nestjs/cqrs": "catalog:",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/microservices": "catalog:",
@@ -89,27 +89,6 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "catalog:",
     "typescript-eslint": "^8.20.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/$1",
-      "^@shared/(.*)$": "<rootDir>/shared/$1"
-    }
   },
   "packageManager": "pnpm@10.10.0",
   "engines": {

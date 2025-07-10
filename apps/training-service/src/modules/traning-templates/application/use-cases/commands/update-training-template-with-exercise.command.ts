@@ -1,3 +1,7 @@
+import {
+  CreateExercisesWithRepetitionsCommand,
+  UpdateExercisesWithRepetitionsCommand,
+} from '@/modules/exercises/application/use-cases';
 import { TrainingTemplateWithExercisesEntity } from '@/modules/traning-templates/domain/entities';
 import { ExerciseType, TrainingType } from '@big-d/api-contracts';
 import {
@@ -6,15 +10,12 @@ import {
   SyncCollectionRepository,
   SyncCollectionRepositoryHelper,
 } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { TRAINING_TEMPLATES_REPOSITORY, TrainingTemplatesRepository } from '../../repositories';
 import { GetTrainingTemplatesQuery } from '../queries/get-training-templates-query';
-import {
-  CreateExercisesWithRepetitionsCommand,
-  UpdateExercisesWithRepetitionsCommand,
-} from '@/modules/exercises/application/use-cases';
 
 interface UpdateTrainingTemplateWithExercisesInput {
   readonly id: number;

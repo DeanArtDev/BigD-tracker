@@ -3,7 +3,8 @@ import { RepetitionEntity } from '@/modules/repetitions';
 import { TrainingTemplateWithExercisesEntity } from '@/modules/traning-templates/domain/entities';
 import { ExerciseType, TrainingType } from '@big-d/api-contracts';
 import { KyselyUnitOfWork } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
 import {
   TRAINING_TEMPLATES_REPOSITORY,

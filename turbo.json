@@ -30,7 +30,8 @@
     "db:typegen": {},
 
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "cache": false
     },
 
     "format": {},

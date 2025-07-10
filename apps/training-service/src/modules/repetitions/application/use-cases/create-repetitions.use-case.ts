@@ -1,4 +1,4 @@
-import { DB } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import {

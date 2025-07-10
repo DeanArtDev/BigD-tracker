@@ -1,4 +1,4 @@
-import { DB } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { TrainingEntity } from '@modules/tranings/domain';
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Transaction } from 'kysely';

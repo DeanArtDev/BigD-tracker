@@ -1,12 +1,11 @@
 import { Kysely } from 'kysely';
-import { DB } from '../db-types';
 import { getDb } from './get-db';
 
-async function runSeeds(
+async function runSeeds<DB>(
   seeds: { key: string; target: string; seed: (db: Kysely<DB>) => Promise<void> }[],
   scriptKey?: string,
 ) {
-  const db = getDb();
+  const db = getDb<DB>();
 
   if (scriptKey) {
     const script = seeds.find(({ key }) => key === scriptKey);
@@ -26,7 +25,7 @@ async function runSeeds(
       process.exit(1);
     }
 
-    await runSeed(script, db);
+    await runSeed<DB>(script, db);
 
     console.info(`✅ Сид ${scriptKey} был успешно загружен!`);
   } else {
@@ -52,7 +51,7 @@ async function runSeeds(
   await db.destroy();
 }
 
-async function runSeed(script: any, db: Kysely<DB>) {
+async function runSeed<DB>(script: any, db: Kysely<DB>) {
   const { target, seed } = script;
 
   try {
