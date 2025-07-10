@@ -1,11 +1,11 @@
-import { RepetitionEntity } from '@/modules/repetitions';
+import { RepetitionEntity } from '@modules/repetitions';
 import { ExerciseType } from '@big-d/api-contracts';
 import { TrainingTemplateEntity, TrainingTemplateEntityData } from './training-template.entity';
 import { DomainValidator } from '@big-d/api-utils';
 import {
   ExerciseWithRepetitionsEntity,
   UpdateExerciseRepetitionsInput,
-} from '@/modules/exercises/domain';
+} from '@modules/exercises/domain';
 
 const validator = new DomainValidator('training-templates-with-exercises');
 
