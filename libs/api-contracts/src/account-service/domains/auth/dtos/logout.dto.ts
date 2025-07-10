@@ -12,10 +12,9 @@ class ReqData {
 }
 
 class ResData {
-  @Type(() => Number)
   @IsEnum(RpcStatus)
-  @IsString()
-  stats: number;
+  @Type(() => Number)
+  stats: RpcStatus;
 }
 
 class LogoutRes {

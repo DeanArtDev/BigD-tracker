@@ -29,7 +29,7 @@
     "class-transformer": "catalog:",
     "express": "catalog:",
     "kysely": "catalog:",
-    "lodash-es": "catalog:",
+    "lodash": "catalog:",
     "rxjs": "catalog:",
     "validator": "catalog:"
   },
@@ -37,7 +37,7 @@
     "@big-d/linter": "workspace:*",
     "@eslint/js": "catalog:",
     "@types/express": "catalog:",
-    "@types/lodash-es": "catalog:",
+    "@types/lodash": "catalog:",
     "@types/node": "catalog:",
     "@types/validator": "catalog:",
     "eslint": "catalog:",

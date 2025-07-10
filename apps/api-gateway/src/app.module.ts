@@ -2,6 +2,7 @@ import { appConfigFactory } from '@/infrastructure/configs/app-config-factory';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { ExercisesModule } from '@/modules/exercises';
 import { RmqClientsModule } from '@/infrastructure/rmq-clients';
+import { GoalServiceModule } from '@/modules/goal-service';
 import { TrainingTemplatesModule } from '@/modules/traning-templates';
 import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
@@ -44,6 +45,7 @@ import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
     TrainingTemplatesModule,
     ExercisesModule,
     RmqClientsModule,
+    GoalServiceModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],
 })

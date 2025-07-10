@@ -1,9 +1,11 @@
 import { isEmail } from 'validator';
+import { BaseValueObject } from './base-value-object';
 
-class Email {
+class Email implements BaseValueObject<Email> {
   #value: string;
   private constructor(email: string) {
     this.#value = email;
+    Object.freeze(this);
   }
 
   get value(): string {
@@ -31,10 +33,6 @@ class Email {
 
   public equals(other: Email): boolean {
     return this.value === other.value;
-  }
-
-  public toString(): string {
-    return this.value;
   }
 }
 

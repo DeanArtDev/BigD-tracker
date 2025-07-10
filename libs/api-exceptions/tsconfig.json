@@ -14,8 +14,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "sourceMap": false,
-    "rootDir": "./src"
+    "sourceMap": false
   },
   "include": ["./src/**/*.ts"]
 }

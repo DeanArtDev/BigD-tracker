@@ -1,3 +1,4 @@
+import { RegisterSage } from '@/modules/auth/application';
 import { AuthGuard } from './guards/auth.guard';
 import { UsersModule } from '@/modules/users/users.module';
 import { Module } from '@nestjs/common';
@@ -10,6 +11,6 @@ import { jwtConfigFabrica } from './configs';
 @Module({
   imports: [UsersModule, JwtModule.registerAsync(jwtConfigFabrica())],
   controllers: [AuthController],
-  providers: [CookieService, { provide: APP_GUARD, useClass: AuthGuard }],
+  providers: [CookieService, RegisterSage, { provide: APP_GUARD, useClass: AuthGuard }],
 })
 export class AuthModule {}

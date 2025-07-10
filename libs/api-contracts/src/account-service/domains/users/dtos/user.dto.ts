@@ -1,22 +1,24 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
 
 class UserDto {
-  @IsInt()
   @Expose()
+  @IsInt()
   id: number;
 
-  @IsString()
-  @IsOptional()
   @Expose()
+  @IsOptional()
+  @IsString()
   screenName?: string;
 
-  @IsEmail()
   @Expose()
+  @IsEmail()
+  @IsString()
   email: string;
 
   @Expose()
   @IsOptional()
+  @IsUrl()
   @IsString()
   avatar?: string;
 }

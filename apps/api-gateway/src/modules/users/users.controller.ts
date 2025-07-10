@@ -1,12 +1,16 @@
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
+import { MeRes } from '@/modules/users/me.dto';
 import { ACCOUNT_SERVICE_RMQ_KEY, AccountGetMe } from '@big-d/api-contracts';
 import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 
+/* TODO:
+     При удалении юзера не забыть удалить IN BOX
+  */
 @ApiTags('Account')
 @Controller('users')
 export class UsersController {
@@ -19,7 +23,7 @@ export class UsersController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: AccountGetMe.Response,
+    type: MeRes,
   })
   async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AccountGetMe.Response> {
     return await firstValueFrom(

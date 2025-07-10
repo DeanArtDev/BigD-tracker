@@ -1,10 +1,9 @@
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { RegisterSage } from '@/modules/auth/application';
 import {
   ACCOUNT_SERVICE_RMQ_KEY,
   AccountLogin,
   AccountLogout,
   AccountRefresh,
-  AccountRegister,
 } from '@big-d/api-contracts';
 import {
   Body,
@@ -23,22 +22,22 @@ import { UserAgent } from '@shared/decorators/user-agent.decorator';
 import { CookieService, RefreshToken } from '@shared/services/cookies';
 import { Response } from 'express';
 import { firstValueFrom } from 'rxjs';
+import { ACCESS_TOKEN_KEY } from './constants';
 import { Public, TokenPayload } from './decorators';
 import { AccessTokenPayload } from './dto/access-token.dto';
 import { LoginRequest, LoginResponse } from './dto/login.dto';
 import { LogoutResponse } from './dto/logout.dto';
 import { RefreshResponse } from './dto/refresh.dto';
 import { RegisterRequest, RegisterResponse } from './dto/register.dto';
-import { ACCESS_TOKEN_KEY } from './constants';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @ApiTags('Account')
 @Controller('auth')
 export class AuthController {
   constructor(
+    @Inject(ACCOUNT_SERVICE_RMQ_KEY) private readonly accountClient: ClientProxy,
     private readonly cookieService: CookieService,
-
-    @Inject(ACCOUNT_SERVICE_RMQ_KEY)
-    private readonly accountClient: ClientProxy,
+    private readonly registerSage: RegisterSage,
   ) {}
 
   @Post('register')
@@ -59,13 +58,12 @@ export class AuthController {
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
   ): Promise<RegisterResponse> {
-    const response = await firstValueFrom(
-      this.accountClient.send<AccountRegister.Response, AccountRegister.Request>(
-        AccountRegister.pattern,
-        { data: { ip, userAgent, login: data.login, password: data.password } },
-      ),
-    );
-    const { accessToken, refreshToken } = response.data;
+    const { accessToken, refreshToken } = await this.registerSage.execute({
+      login: data.login,
+      password: data.password,
+      userAgent,
+      ip,
+    });
 
     this.cookieService.setRefreshToken(res, refreshToken);
     return { data: { token: accessToken } };

@@ -16,8 +16,8 @@ type SyncCollectionParam<DB, TId extends IdType = number> = {
 };
 
 interface ISyncCollectionMethods<TAggregate, DB> {
-  upsertRoot: (aggregate: TAggregate, trx: Transaction<DB>) => Promise<void>;
-  sync: (aggregate: TAggregate, trx: Transaction<DB>) => Promise<void>;
+  upsertRoot: (aggregate: TAggregate, trx?: Transaction<DB>) => Promise<void>;
+  sync: (aggregate: TAggregate, trx?: Transaction<DB>) => Promise<void>;
 }
 
 class SyncCollectionRepositoryHelper<TAggregate, DB> {

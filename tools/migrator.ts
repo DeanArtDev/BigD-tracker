@@ -9,6 +9,7 @@ dotenv.config({ path: [join(process.cwd(), '.env.development')] });
 const migrationsPath = [
   join(__dirname, '../apps/account-service/db/migrations'),
   join(__dirname, '../apps/training-service/db/migrations'),
+  join(__dirname, '../apps/goal-service/db/migrations'),
 ];
 
 async function collectMigrations(): Promise<Record<string, Migration>> {

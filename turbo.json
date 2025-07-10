@@ -27,7 +27,11 @@
       "cache": false
     },
 
-    "test": {},
+    "db:typegen": {},
+
+    "test": {
+      "dependsOn": ["^build"]
+    },
 
     "format": {},
 
