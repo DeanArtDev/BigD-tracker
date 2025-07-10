@@ -2,6 +2,7 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { GOAL_SERVICE_RMQ_KEY, GoalFinishThing } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -30,6 +31,7 @@ export class ThingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(FinishThingRes)
   async createGroup(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('thingId', ParseIntPipe) thingId: number,

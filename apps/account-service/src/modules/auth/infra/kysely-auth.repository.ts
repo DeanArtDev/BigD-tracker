@@ -1,5 +1,6 @@
+import { DB } from '@/infrastructure/types';
 import { BaseRepository } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { set } from 'date-fns';
 import { Transaction } from 'kysely';

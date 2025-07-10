@@ -1,10 +1,11 @@
 import { TrainingType } from '@big-d/api-contracts';
+import { BaseRepository } from '@big-d/api-utils';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ExpressionBuilder, Transaction } from 'kysely';
 import { TrainingTemplateRawData, TrainingTemplatesRepository } from '../application/repositories';
 import { TrainingTemplateEntity } from '../domain/entities';
-import { BaseRepository } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
 
 @Injectable()
 export class KyselyTrainingTemplatesRepository

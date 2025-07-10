@@ -42,7 +42,9 @@ describe('DomainValidator', () => {
 
   it('validates date after', () => {
     expect(() => validator.isDateAfter('2024-01-02', '2024-01-01', 'date')).not.toThrow();
-    expect(() => validator.isDateAfter('2023-01-01', '2024-01-01', 'date')).toThrow(DomainValidationError);
+    expect(() => validator.isDateAfter('2023-01-01', '2024-01-01', 'date')).toThrow(
+      DomainValidationError,
+    );
   });
 
   it('validates int greater than', () => {

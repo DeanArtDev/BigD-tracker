@@ -1,6 +1,5 @@
-import { Generated } from '@big-d/database';
 import { Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
+import { Generated, Transaction } from 'kysely';
 import { CollectionDelta, CollectionDeltaCalculator } from './collection-delta-calculator';
 import { IdType } from './types';
 

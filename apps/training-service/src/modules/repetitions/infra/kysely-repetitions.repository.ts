@@ -1,8 +1,8 @@
 import { BaseRepository } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { Inject, Injectable } from '@nestjs/common';
-import { ExpressionBuilder } from 'kysely';
-import { Transaction } from 'kysely';
+import { ExpressionBuilder, Transaction } from 'kysely';
 import {
   RepetitionFinishType,
   RepetitionRawData,

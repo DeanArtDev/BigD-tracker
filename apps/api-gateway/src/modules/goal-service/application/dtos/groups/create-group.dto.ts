@@ -50,11 +50,6 @@ class Thing {
 }
 
 class ReqData {
-  @ApiProperty({ example: 1 })
-  @Expose()
-  @IsInt()
-  userId: number;
-
   @ApiProperty({ example: 'Название группы' })
   @Expose()
   @MaxLength(255)

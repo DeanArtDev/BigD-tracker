@@ -9,6 +9,7 @@ import {
   TrainingGetOneExercise,
   TrainingUpdateExercise,
 } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -52,6 +53,7 @@ export class ExercisesController {
     type: ExerciseWithRepetitionsResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(ExerciseWithRepetitionsResponse)
   async getExercises(
     @Query() { my = false }: GetExerciseQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -73,6 +75,7 @@ export class ExercisesController {
     type: ExerciseWithRepetitionsResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(ExerciseWithRepetitionsResponse)
   async getOneExerciseWithRepetitions(
     @Param('exerciseId', ParseIntPipe) exerciseId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -94,6 +97,7 @@ export class ExercisesController {
     type: ExerciseWithRepetitionsResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(ExerciseWithRepetitionsResponseSingle)
   async createExerciseWithRepetitions(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateExerciseWithRepetitionsRequest,
@@ -116,6 +120,7 @@ export class ExercisesController {
     type: ExerciseWithRepetitionsResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(ExerciseWithRepetitionsResponseSingle)
   async updateExerciseWithRepetitions(
     @Param('exerciseId', ParseIntPipe) exerciseId: number,
     @TokenPayload() { uid }: AccessTokenPayload,

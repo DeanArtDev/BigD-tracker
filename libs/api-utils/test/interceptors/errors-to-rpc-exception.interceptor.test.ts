@@ -10,12 +10,16 @@ describe('ErrorsToRpcExceptionInterceptor', () => {
 
   it('maps DomainValidationError to RpcDomainValidationError', async () => {
     const error = new DomainValidationError({ domain: 'd', field: 'f', message: 'm' });
-    await expect(firstValueFrom(interceptor.intercept({} as any, { handle: () => throwError(() => error) }))).rejects.toBeInstanceOf(RpcDomainValidationError);
+    await expect(
+      firstValueFrom(interceptor.intercept({} as any, { handle: () => throwError(() => error) })),
+    ).rejects.toBeInstanceOf(RpcDomainValidationError);
   });
 
   it('maps BadRequestException to RpcException', async () => {
     const error = new BadRequestException('bad');
-    await expect(firstValueFrom(interceptor.intercept({} as any, { handle: () => throwError(() => error) }))).rejects.toBeInstanceOf(RpcException);
+    await expect(
+      firstValueFrom(interceptor.intercept({} as any, { handle: () => throwError(() => error) })),
+    ).rejects.toBeInstanceOf(RpcException);
   });
 
   it('passes through successful value', async () => {

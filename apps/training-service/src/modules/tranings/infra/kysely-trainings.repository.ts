@@ -1,14 +1,15 @@
 import { BaseRepository } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
-import { Inject, Injectable } from '@nestjs/common';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { TrainingEntity } from '@modules/tranings/domain';
+import { Inject, Injectable } from '@nestjs/common';
+import { set } from 'date-fns';
+import { Transaction } from 'kysely';
 import {
   TrainingRawData,
   TrainingsRepository,
   TrainingType,
 } from '../application/trainings.repository';
-import { set } from 'date-fns';
-import { Transaction } from 'kysely';
 
 @Injectable()
 export class KyselyTrainingsRepository extends BaseRepository<DB> implements TrainingsRepository {

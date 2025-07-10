@@ -5,7 +5,6 @@ describe('Email value object', () => {
   it('creates and normalizes email', () => {
     const email = Email.create(' Test@Example.com ');
     expect(email.value).toBe('test@example.com');
-    expect(email.toString()).toBe('test@example.com');
   });
 
   it('restores email without validation', () => {

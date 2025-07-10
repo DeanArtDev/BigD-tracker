@@ -1,5 +1,5 @@
+import { DB } from '@infrastructure/types';
 import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
-import { DB } from '@big-d/database';
 import { Transaction } from 'kysely';
 
 interface ExercisesWithRepetitionsRepository {

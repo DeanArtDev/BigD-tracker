@@ -1,4 +1,4 @@
-import { DB } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { REPETITIONS_REPOSITORY, RepetitionsRepository } from '../repetitions.repository';
