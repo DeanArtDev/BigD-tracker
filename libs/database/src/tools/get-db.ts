@@ -1,9 +1,8 @@
 import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
 import { getDBEnv } from '../config';
-import { DB } from '../db-types';
 
-function getDb() {
+function getDb<DB>() {
   const dbConfig = getDBEnv();
   const pool = new Pool({
     host: dbConfig['DB_HOST'],

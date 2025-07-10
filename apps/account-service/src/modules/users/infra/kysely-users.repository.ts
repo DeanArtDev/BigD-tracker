@@ -1,6 +1,7 @@
+import { DB } from '@/infrastructure/types';
 import { UserPassword } from '@/modules/users/domain';
 import { BaseRepository, Email } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { UserRawData, UsersRepository } from '../application';

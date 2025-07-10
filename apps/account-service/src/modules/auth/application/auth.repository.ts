@@ -1,5 +1,5 @@
+import { DB } from '@/infrastructure/types';
 import { SessionEntity } from '@/modules/auth/domain';
-import { DB } from '@big-d/database';
 import { Selectable, Transaction } from 'kysely';
 
 interface AuthRawData {

@@ -2,7 +2,8 @@ import { CreateExercisesWithRepetitionsCommand } from '@/modules/exercises/appli
 import { RepetitionEntity } from '@/modules/repetitions';
 import { ExerciseType, TrainingType } from '@big-d/api-contracts';
 import { KyselyUnitOfWork } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
 import { TrainingWithExercisesEntity } from '@modules/tranings/domain';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';

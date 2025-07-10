@@ -1,7 +1,7 @@
 import { OmitCreateFields, Override } from '@big-d/api-utils';
-import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
+import { DB } from '@infrastructure/types';
 import { TrainingEntity } from '@modules/tranings/domain';
-import { DB } from '@big-d/database';
+import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
 
 interface TrainingRawData {
   readonly selectable: Omit<Selectable<DB['trainings']>, 'updated_at' | 'created_at'>;

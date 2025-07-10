@@ -27,6 +27,7 @@
     "@nestjs/core": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/microservices": "catalog:",
+    "class-validator": "catalog:",
     "class-transformer": "catalog:",
     "reflect-metadata": "catalog:",
     "express": "catalog:",

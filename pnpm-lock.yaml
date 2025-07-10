@@ -1278,6 +1278,9 @@ importers:
       class-transformer:
         specifier: 'catalog:'
         version: 0.5.1
+      class-validator:
+        specifier: 'catalog:'
+        version: 0.14.2
       express:
         specifier: 'catalog:'
         version: 5.0.1

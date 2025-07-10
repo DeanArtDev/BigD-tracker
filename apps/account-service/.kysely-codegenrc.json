@@ -1,0 +1,11 @@
+{
+  "camelCase": false,
+  "defaultSchemas": ["public"],
+  "dialect": "postgres",
+  "domains": true,
+  "envFile": ".env.development",
+  "logLevel": "warn",
+  "outFile": "./src/infrastructure/types.d.ts",
+  "includePattern": "public.+(users|sessions)",
+  "verify": false
+}

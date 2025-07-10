@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "types": ["jest", "node"],
+    "strict": true
+  },
+  "include": ["src/**/*.spec.ts"],
+  "exclude": ["node_modules", "dist"]
+}

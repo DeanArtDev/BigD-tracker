@@ -1,14 +1,15 @@
 import { ExerciseType } from '@big-d/api-contracts';
-import { GetExercisesWithRepetitionsQuery } from '../../queries';
+import { KyselyUnitOfWork } from '@big-d/api-utils';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import {
   EXERCISE_WITH_REPETITIONS_REPOSITORY,
   ExercisesWithRepetitionsRepository,
 } from '@modules/exercises/application/repositories';
 import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
-import { KyselyUnitOfWork } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
+import { GetExercisesWithRepetitionsQuery } from '../../queries';
 
 interface UpdateExerciseWithRepetitionsInput {
   readonly id: number;

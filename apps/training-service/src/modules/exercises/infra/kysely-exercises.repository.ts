@@ -1,6 +1,7 @@
 import { ExerciseType } from '@big-d/api-contracts';
 import { BaseRepository } from '@big-d/api-utils';
-import { Database, DATABASE_CONNECTION, DB } from '@big-d/database';
+import { Database, DATABASE_CONNECTION } from '@big-d/database';
+import { DB } from '@infrastructure/types';
 import { ExerciseRawData, ExercisesRepository } from '@modules/exercises/application';
 import { ExerciseEntity } from '@modules/exercises/domain';
 import { Inject, Injectable } from '@nestjs/common';

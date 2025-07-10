@@ -16,6 +16,7 @@
     "=== TOOLS ===": "",
     "migrate": "ts-node tools/migrator.ts lts",
     "seed": "ts-node tools/run-seeds.ts",
+    "db:typegen": "kysely-codegen --config-file .kysely-codegenrc.json",
     "=== CI ===": "",
     "format": "prettier \"src/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
     "format:fix": "prettier --write \"src/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
