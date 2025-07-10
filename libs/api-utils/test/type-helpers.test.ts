@@ -9,16 +9,28 @@ import type {
   HasId,
 } from '../src/type-helpers';
 
-interface Entity { id: number; name: string; created_at: string; updated_at: string; }
+interface Entity {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
 
 class Handler {
-  async execute(): Promise<number> { return 1; }
+  async execute(): Promise<number> {
+    return 1;
+  }
 }
 
 describe('type-helpers', () => {
   it('Override replaces field type', () => {
     type Result = Override<Entity, 'name', number>;
-    expectTypeOf<Result>().toEqualTypeOf<{ id: number; name: number; created_at: string; updated_at: string }>();
+    expectTypeOf<Result>().toEqualTypeOf<{
+      id: number;
+      name: number;
+      created_at: string;
+      updated_at: string;
+    }>();
   });
 
   it('ValueOf resolves union of values', () => {
