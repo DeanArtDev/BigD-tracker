@@ -34,7 +34,7 @@
     "@big-d/database": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.1.1",
+    "@nestjs/core": "catalog:",
     "@nestjs/cqrs": "catalog:",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/microservices": "catalog:",

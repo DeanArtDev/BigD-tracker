@@ -5,6 +5,7 @@ import {
   AccountLogout,
   AccountRefresh,
 } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -52,6 +53,7 @@ export class AuthController {
     description: 'Пользователь успешно зарегистрирован',
     type: RegisterResponse,
   })
+  @ValidateRpcResponse(RegisterResponse)
   async register(
     @Body() { data }: RegisterRequest,
     @Res({ passthrough: true }) res: Response,
@@ -82,6 +84,7 @@ export class AuthController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @UseGuards(RefreshTokenGuard)
+  @ValidateRpcResponse(RefreshResponse)
   async refresh(
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
@@ -114,6 +117,7 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(LogoutResponse)
   async logout(
     @Res({ passthrough: true }) res: Response,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -141,6 +145,7 @@ export class AuthController {
     description: 'Вход совершен успешно',
     type: LoginResponse,
   })
+  @ValidateRpcResponse(LoginResponse)
   async login(
     @Res({ passthrough: true }) res: Response,
     @Body() { data }: LoginRequest,

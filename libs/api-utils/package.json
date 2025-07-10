@@ -24,6 +24,7 @@
   "dependencies": {
     "@big-d/api-contracts": "workspace:*",
     "@big-d/database": "workspace:*",
+    "@nestjs/core": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/microservices": "catalog:",
     "class-transformer": "catalog:",

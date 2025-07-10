@@ -9,6 +9,7 @@ import {
   TrainingGetTrainingTemplates,
   TrainingUpdateTemplate,
 } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -50,6 +51,7 @@ export class TrainingTemplatesController {
     type: TrainingTemplateResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingTemplateResponse)
   async getTrainingTemplates(
     @Query() { my = false }: GetTrainingTemplatesDto,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -71,6 +73,7 @@ export class TrainingTemplatesController {
     type: TrainingTemplateWithExercisesResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingTemplateWithExercisesResponseSingle)
   async getOneTrainingsWithExercises(
     @Param('templateId', ParseIntPipe) templateId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
@@ -92,6 +95,7 @@ export class TrainingTemplatesController {
     type: TrainingTemplateWithExercisesResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingTemplateWithExercisesResponseSingle)
   async createTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingTemplateWithExercisesRequest,
@@ -114,6 +118,7 @@ export class TrainingTemplatesController {
     type: TrainingTemplateWithExercisesResponseSingle,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TrainingTemplateWithExercisesResponseSingle)
   async putTraining(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('templateId', ParseIntPipe) templateId: number,

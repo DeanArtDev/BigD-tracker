@@ -6,10 +6,11 @@ import { GoalServiceModule } from '@/modules/goal-service';
 import { TrainingTemplatesModule } from '@/modules/traning-templates';
 import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
+import { RpcResponseValidationInterceptor } from '@big-d/api-utils';
 import { DatabaseModule, DB_ENV, dbConfigFactory } from '@big-d/database';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
 
 @Module({
@@ -47,6 +48,12 @@ import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
     RmqClientsModule,
     GoalServiceModule,
   ],
-  providers: [{ provide: APP_FILTER, useClass: DomainErrorFilter }],
+  providers: [
+    { provide: APP_FILTER, useClass: DomainErrorFilter },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RpcResponseValidationInterceptor,
+    },
+  ],
 })
 export class AppModule {}

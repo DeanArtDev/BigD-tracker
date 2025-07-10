@@ -26,6 +26,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { CreateGroupReq, CreateGroupRes, UpdateGroupReq, UpdateGroupRes } from './dtos';
+import { ValidateRpcResponse } from '@big-d/api-utils';
 
 @ApiTags('Groups')
 @Controller('/groups')
@@ -41,6 +42,7 @@ export class GroupsController {
     status: HttpStatus.OK,
     type: GetInBoxRes,
   })
+  @ValidateRpcResponse(GetInBoxRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getUsersGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetInBoxRes> {
     return await firstValueFrom(
@@ -59,6 +61,7 @@ export class GroupsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.CREATED)
+  @ValidateRpcResponse(CreateGroupRes)
   async createGroup(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateGroupReq,
@@ -80,6 +83,7 @@ export class GroupsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(UpdateGroupRes)
   async updateGroup(
     @Param('groupId', ParseIntPipe) groupId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
