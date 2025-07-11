@@ -11,19 +11,17 @@ class TrainingTemplateDto {
 
   @ApiProperty({ example: 1 })
   @Expose()
-  @IsInt()
   @IsOptional()
+  @IsInt()
   userId?: number;
 
   @ApiProperty({ example: 'MEDIUM', enum: TrainingType })
+  @Expose()
   @Type(() => String)
   @IsEnum(TrainingType)
-  @Expose()
   type: TrainingType;
 
-  @ApiProperty({
-    example: 'Понедельничная',
-  })
+  @ApiProperty({ example: 'Понедельничная' })
   @Expose()
   @IsString()
   name: string;

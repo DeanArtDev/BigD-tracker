@@ -5,55 +5,56 @@ import { IsEnum, IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
 
 class ExerciseDto {
   @ApiProperty({ example: 1 })
-  @IsInt()
   @Expose()
+  @IsInt()
   id: number;
 
   @ApiPropertyOptional({ example: 1 })
-  @IsInt()
   @Expose()
   @IsOptional()
+  @IsInt()
   userId?: number;
 
   @ApiProperty({ example: 'ANAEROBIC', enum: ExerciseType })
+  @Expose()
   @Type(() => String)
   @IsEnum(ExerciseType)
-  @Expose()
   type: ExerciseType;
 
   @ApiProperty({
     example: 'Жим лежа',
   })
-  @IsString()
   @Expose()
+  @IsString()
   name: string;
 
   @ApiPropertyOptional({
     example: 'свести лопатки',
   })
-  @IsString()
   @Expose()
   @IsOptional()
+  @IsString()
   description?: string;
 
   @ApiPropertyOptional({
     example: 'https://youtube.com',
   })
   @IsUrl({ protocols: ['https'] })
-  @Expose()
   @IsOptional()
+  @Expose()
+  @IsString()
   exampleUrl?: string;
 
   @ApiPropertyOptional({ example: 1 })
-  @IsInt()
   @Expose()
   @IsOptional()
+  @IsInt()
   trainingId?: number;
 
   @ApiPropertyOptional({ example: 1 })
-  @IsInt()
   @Expose()
   @IsOptional()
+  @IsInt()
   templateId?: number;
 }
 

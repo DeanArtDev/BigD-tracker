@@ -59,9 +59,9 @@ class UpdateExercisesWithRepetitionsCommand extends KyselyUnitOfWork<DB> {
       })
       .updateRepetitions(repetitions);
 
-    await this.useTransaction(trx).runTransaction(async (transaction) => {
+    await this.runTransaction(async (transaction) => {
       await this.kyselyExercisesWithRepetitionsRepo.save(updatedDraftedExercise, transaction);
-    });
+    }, trx);
 
     const exercise = await this.getExercisesWithRepetitions.one({ id, userId });
     if (exercise.isTemplate) {

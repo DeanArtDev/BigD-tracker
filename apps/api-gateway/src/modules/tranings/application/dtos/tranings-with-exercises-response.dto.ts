@@ -1,6 +1,6 @@
 import { TrainingWithExercisesDto } from './training-with-exercises.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsArray, ValidateNested } from 'class-validator';
 
 class TrainingWithExercisesResponse {
@@ -9,6 +9,7 @@ class TrainingWithExercisesResponse {
     type: TrainingWithExercisesDto,
     isArray: true,
   })
+  @Expose()
   @Type(() => TrainingWithExercisesDto)
   @ValidateNested({ each: true })
   @IsArray()
@@ -20,6 +21,7 @@ class TrainingWithExercisesResponseSingle {
     description: 'Ответ сервера',
     type: TrainingWithExercisesDto,
   })
+  @Expose()
   @ValidateNested()
   @Type(() => TrainingWithExercisesDto)
   data: TrainingWithExercisesDto;

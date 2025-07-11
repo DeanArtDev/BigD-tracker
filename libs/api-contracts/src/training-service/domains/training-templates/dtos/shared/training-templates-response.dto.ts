@@ -5,9 +5,9 @@ import { TrainingTemplateDto } from './training-template.dto';
 
 class TrainingTemplateRes {
   @Expose()
-  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TrainingTemplateDto)
+  @IsArray()
   data: TrainingTemplateDto[];
 }
 

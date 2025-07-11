@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import { IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 class RefreshDto {
@@ -12,6 +13,9 @@ class RefreshResponse {
     description: 'Ответ сервера',
     type: RefreshDto,
   })
+  @Expose()
+  @ValidateNested()
+  @Type(() => RefreshDto)
   data: RefreshDto;
 }
 

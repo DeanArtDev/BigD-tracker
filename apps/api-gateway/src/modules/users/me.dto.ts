@@ -22,8 +22,8 @@ class UserDto {
 
   @ApiPropertyOptional({ example: '/some-url.png' })
   @Expose()
-  @IsOptional()
   @IsUrl()
+  @IsOptional()
   @IsString()
   avatar?: string;
 }

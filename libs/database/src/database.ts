@@ -24,7 +24,7 @@ class PostgresDatabase<DB> extends Database<DB> {
     this.pool = pool;
   }
 
-  public async onModuleDestroy(): Promise<void> {
+  public async onApplicationShutdown(): Promise<void> {
     await this.pool.end();
   }
 }

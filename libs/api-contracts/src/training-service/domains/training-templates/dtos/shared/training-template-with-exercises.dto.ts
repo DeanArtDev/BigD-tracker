@@ -2,7 +2,15 @@ import { ExerciseType } from '../../../exercises';
 import { RepetitionDto } from '../../../repetitions';
 import { TrainingTemplateDto } from './training-template.dto';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
+  ValidateNested,
+} from 'class-validator';
 
 class Exercise {
   @IsInt()
@@ -31,6 +39,7 @@ class Exercise {
   @Expose()
   @Type(() => RepetitionDto)
   @ValidateNested({ each: true })
+  @IsArray()
   repetitions: RepetitionDto[];
 }
 
@@ -38,6 +47,7 @@ class TrainingTemplateWithExercisesDto extends TrainingTemplateDto {
   @Expose()
   @Type(() => Exercise)
   @ValidateNested({ each: true })
+  @IsArray()
   exercises: Exercise[];
 }
 

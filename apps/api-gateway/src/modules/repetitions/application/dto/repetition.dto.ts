@@ -5,58 +5,59 @@ import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 class RepetitionDto {
   @ApiProperty({ example: 1 })
-  @IsInt()
   @Expose()
+  @IsInt()
   id: number;
 
   @ApiPropertyOptional({ example: 1 })
-  @IsInt()
+  @Expose()
   @IsOptional()
+  @IsInt()
   userId?: number;
 
   @ApiProperty({ example: 1 })
-  @IsInt()
   @Expose()
+  @IsInt()
   exerciseId: number;
 
   @ApiPropertyOptional({ example: 'SKIP', enum: RepetitionFinishType })
-  @Type(() => String)
+  @Expose()
   @IsEnum(RepetitionFinishType)
   @IsOptional()
-  @Expose()
+  @Type(() => String)
   finishType?: RepetitionFinishType;
 
   @ApiProperty({ example: 1, description: 'Желаемое количество повторений' })
-  @IsInt()
   @Expose()
+  @IsInt()
   targetCount: number;
 
   @ApiPropertyOptional({ example: 1, description: 'Фактическое количество повторений' })
   @IsInt()
-  @Expose()
   @IsOptional()
+  @Expose()
   factCount?: number;
 
   @ApiProperty({ example: '20.5', description: 'Желаемый вec' })
-  @IsString()
   @Expose()
+  @IsString()
   targetWeight: string;
 
   @ApiPropertyOptional({ example: '100.7', description: 'Фактический вec' })
-  @IsString()
   @Expose()
   @IsOptional()
+  @IsString()
   factWeight?: string;
 
   @ApiProperty({ example: 1, description: 'Желаемый перерыв, значение в секундах' })
-  @IsInt()
   @Expose()
+  @IsInt()
   targetBreak: number;
 
   @ApiPropertyOptional({ example: 1, description: 'Фактический перерыв, значение в секундах' })
-  @IsInt()
   @Expose()
   @IsOptional()
+  @IsInt()
   factBreak?: number;
 }
 
