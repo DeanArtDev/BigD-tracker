@@ -4,22 +4,6 @@
  */
 
 export interface paths {
-    "/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["UsersController_getUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/me": {
         parameters: {
             query?: never;
@@ -48,7 +32,7 @@ export interface paths {
         put?: never;
         /**
          * Регистрация пользователя
-         * @description Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)
+         * @description Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly) strict
          */
         post: operations["AuthController_register"];
         delete?: never;
@@ -119,7 +103,7 @@ export interface paths {
             cookie?: never;
         };
         /** Получение активной тренировки на текущий день */
-        get: operations["TrainingsController_getActiveTrainings"];
+        get: operations["TrainingsController_getActiveTraining"];
         put?: never;
         post?: never;
         delete?: never;
@@ -195,7 +179,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Назначение тренировки на дату */
-        post: operations["TrainingsController_assignTraining"];
+        post: operations["TrainingsController_assignTrainings"];
         delete?: never;
         options?: never;
         head?: never;
@@ -263,8 +247,48 @@ export interface paths {
         get?: never;
         put?: never;
         /** Установить факт отдыха в повторении */
-        post: operations["TrainingsController_finishRepetition"];
+        post: operations["TrainingsController_setBrakFact"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trainings-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение шаблонов тренировок */
+        get: operations["TrainingTemplatesController_getTrainingTemplates"];
+        put?: never;
+        /** Создание шаблона тренировки */
+        post: operations["TrainingTemplatesController_createTraining"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trainings-templates/{templateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение одного шаблона тренировки с упражнениями */
+        get: operations["TrainingTemplatesController_getOneTrainingsWithExercises"];
+        /**
+         * Обновление шаблона тренировки с упражнениями
+         * @description nullable поля очищают значения
+         */
+        put: operations["TrainingTemplatesController_putTraining"];
+        post?: never;
+        /** Удаление тренировки */
+        delete: operations["TrainingTemplatesController_deleteTraining"];
         options?: never;
         head?: never;
         patch?: never;
@@ -294,10 +318,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получение одного упражнения */
+        /** Получение одного упражнения с повторениями */
         get: operations["ExercisesController_getOneExerciseWithRepetitions"];
         /**
-         * Обновление упражнения
+         * Обновление упражнения с повторениями
          * @description nullable поля очищают значения
          */
         put: operations["ExercisesController_updateExerciseWithRepetitions"];
@@ -342,41 +366,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings-templates": {
+    "/goals/{goalId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Получение шаблонов тренировок */
-        get: operations["TrainingTemplatesController_getTrainings"];
+        /** Получение цели по id */
+        get: operations["GoalsController_getGoalById"];
         put?: never;
-        /** Создание шаблона тренировки */
-        post: operations["TrainingTemplatesController_createTraining"];
+        post?: never;
+        /** Удаление цели */
+        delete: operations["GoalsController_deleteGroup"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение целей юзера */
+        get: operations["GoalsController_getUsersGoals"];
+        put?: never;
+        /** Создание цели */
+        post: operations["GoalsController_createGoal"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/trainings-templates/{templateId}": {
+    "/goals/{goalId}/start": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Получение одного шаблона тренировки с упражнениями */
-        get: operations["TrainingTemplatesController_getOneTrainingsWithExercises"];
-        /**
-         * Обновление шаблона тренировки с упражнениями
-         * @description nullable поля очищают значения
-         */
-        put: operations["TrainingTemplatesController_putTraining"];
+        get?: never;
+        put?: never;
+        /** Начать цель */
+        post: operations["GoalsController_startGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/goals/{goalId}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Закончить цель */
+        post: operations["GoalsController_finishGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение  IN BOX юзера */
+        get: operations["GroupsController_getUsersGoals"];
+        put?: never;
+        /** Создание группы */
+        post: operations["GroupsController_createGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{groupId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Обновление группы */
+        put: operations["GroupsController_updateGroup"];
         post?: never;
-        /** Удаление тренировки */
-        delete: operations["TrainingTemplatesController_deleteTraining"];
+        /** Удаление группы */
+        delete: operations["GroupsController_deleteGroup"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/things/{thingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Завершение дела */
+        post: operations["ThingsController_createGroup"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -386,28 +493,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        MeDto: {
+        UserDto: {
+            /** @example 1 */
             id: number;
+            /** @example Крутой ник */
             screenName?: string;
+            /** @example test@email.com */
             email: string;
-            /** @example /some-hash.png */
+            /** @example /some-url.png */
             avatar?: string;
-            /** @example [
-             *       "admin",
-             *       "user",
-             *       "moderator"
-             *     ] */
-            roles?: string[];
-            /**
-             * @description ISO String
-             * @example 2025-05-24T13:01:02.471Z
-             */
-            createdAt?: string;
-            isVerified: boolean;
         };
-        MeDtoResponse: {
+        MeRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["MeDto"];
+            data: components["schemas"]["UserDto"];
         };
         RequestDto: {
             /** @example example@example.com */
@@ -454,8 +552,6 @@ export interface components {
             userId?: number;
             /** @example 1 */
             exerciseId: number;
-            /** @example описание как прошел подход */
-            description?: string;
             /**
              * @example SKIP
              * @enum {string}
@@ -580,8 +676,6 @@ export interface components {
             data: components["schemas"]["TrainingDto"][];
         };
         CreateRepetition: {
-            /** @example описание как прошел подход */
-            description?: string;
             /**
              * @description Желаемое количество повторений
              * @example 1
@@ -656,8 +750,6 @@ export interface components {
             data: components["schemas"]["TrainingWithExercisesDto"][];
         };
         UpdateRepetition: {
-            /** @example описание как прошел подход */
-            description?: string;
             /**
              * @description Желаемое количество повторений
              * @example 1
@@ -760,60 +852,6 @@ export interface components {
         SetRepetitionBreakRequest: {
             /** @description Ответ сервера */
             data: components["schemas"]["SetBreakRequestData"];
-        };
-        ExerciseWithRepetitionsDto: {
-            /** @example 1 */
-            id: number;
-            /** @example 1 */
-            userId?: number;
-            /**
-             * @example ANAEROBIC
-             * @enum {string}
-             */
-            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
-            /** @example Жим лежа */
-            name: string;
-            /** @example свести лопатки */
-            description?: string;
-            /** @example https://youtube.com */
-            exampleUrl?: string;
-            /** @example 1 */
-            trainingId?: number;
-            /** @example 1 */
-            templateId?: number;
-            /** @description Повторения */
-            repetitions: components["schemas"]["RepetitionDto"][];
-        };
-        ExerciseWithRepetitionsResponse: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["ExerciseWithRepetitionsDto"][];
-        };
-        CreateExerciseWithRepetitionsRequest: {
-            /** @description Данные для запроса */
-            data: components["schemas"]["CreateExerciseWithRepetitionsData"];
-        };
-        ExerciseWithRepetitionsResponseSingle: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["ExerciseWithRepetitionsDto"];
-        };
-        UpdateExerciseWithRepetitionsData: {
-            /**
-             * @example ANAEROBIC
-             * @enum {string}
-             */
-            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
-            /** @example Жим лежа */
-            name: string;
-            /** @example свести лопатки */
-            description?: string;
-            /** @example https://youtube.com */
-            exampleUrl?: string;
-            /** @description Повторения */
-            repetitions: components["schemas"]["UpdateRepetition"][];
-        };
-        UpdateExerciseWithRepetitionsRequest: {
-            /** @description Данные для запроса */
-            data: components["schemas"]["UpdateExerciseWithRepetitionsData"];
         };
         TrainingTemplateDto: {
             /** @example 1 */
@@ -961,6 +999,250 @@ export interface components {
             /** @description Данные для запроса */
             data: components["schemas"]["UpdateTrainingTemplateWithExerciseRequestData"];
         };
+        ExerciseWithRepetitionsDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 1 */
+            userId?: number;
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+            /** @example 1 */
+            trainingId?: number;
+            /** @example 1 */
+            templateId?: number;
+            /** @description Повторения */
+            repetitions: components["schemas"]["RepetitionDto"][];
+        };
+        ExerciseWithRepetitionsResponse: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ExerciseWithRepetitionsDto"][];
+        };
+        CreateExerciseWithRepetitionsRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["CreateExerciseWithRepetitionsData"];
+        };
+        ExerciseWithRepetitionsResponseSingle: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ExerciseWithRepetitionsDto"];
+        };
+        UpdateExerciseWithRepetitionsData: {
+            /**
+             * @example ANAEROBIC
+             * @enum {string}
+             */
+            type: "WORM-UP" | "POST-TRAINING" | "AEROBIC" | "ANAEROBIC";
+            /** @example Жим лежа */
+            name: string;
+            /** @example свести лопатки */
+            description?: string;
+            /** @example https://youtube.com */
+            exampleUrl?: string;
+            /** @description Повторения */
+            repetitions: components["schemas"]["UpdateRepetition"][];
+        };
+        UpdateExerciseWithRepetitionsRequest: {
+            /** @description Данные для запроса */
+            data: components["schemas"]["UpdateExerciseWithRepetitionsData"];
+        };
+        ThingDto: {
+            /** @example 1 */
+            id: number;
+            /** @example Имя дела */
+            name: string;
+            /** @example Описание */
+            description?: string;
+            /** @example 1 */
+            userId: number;
+            /** @example 1 */
+            groupId: number;
+            /**
+             * @description От 0 до 4
+             * @example 2
+             */
+            priority?: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            endDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
+            /**
+             * @description От 0 до 100
+             * @example 40
+             */
+            result: number;
+            /** @example Комментарий по завершению дела */
+            comment?: string;
+        };
+        GroupDto: {
+            /** @example 1 */
+            id: number;
+            /** @example Группа дел */
+            name: string;
+            /** @example Описание */
+            description?: string;
+            /** @example 1 */
+            userId: number;
+            /** @example 1 */
+            goalId: number;
+            /**
+             * @description От 0 до 100
+             * @example 40
+             */
+            result: number;
+            /** @description Список дел */
+            things: components["schemas"]["ThingDto"][];
+        };
+        GoalDto: {
+            /** @example 1 */
+            id: number;
+            /** @example Имя цели */
+            name: string;
+            /** @example Описание */
+            description?: string;
+            /** @example 1 */
+            userId: number;
+            /**
+             * @description От 0 до 100
+             * @example 40
+             */
+            result: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            endDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
+            /** @description Список групп */
+            groups: components["schemas"]["GroupDto"][];
+        };
+        GoalResSingle: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GoalDto"];
+        };
+        GoalRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GoalDto"];
+        };
+        CreateGoalReqData: {
+            /** @example 1 */
+            userId: number;
+            /** @example Название цели */
+            name: string;
+            /** @example Описание */
+            description?: string;
+        };
+        CreateGoalReq: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["CreateGoalReqData"];
+        };
+        CreateGoalRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GoalDto"];
+        };
+        StartGoalReqData: {
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate: string;
+        };
+        StartGoalReq: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["StartGoalReqData"];
+        };
+        StartGoalRes: Record<string, never>;
+        FinishGoalReqData: {
+            /** @example 2025-05-24T13:01:02.471Z */
+            endDate: string;
+        };
+        FinishGoalReq: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["FinishGoalReqData"];
+        };
+        FinishGoalRes: Record<string, never>;
+        GroupInBoxDto: {
+            /** @example 1 */
+            id: number;
+            /** @example Имя цели */
+            name: string;
+            /** @example 1 */
+            userId: number;
+            /** @description Список дел */
+            things: components["schemas"]["ThingDto"][];
+        };
+        GetInBoxRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupInBoxDto"];
+        };
+        Thing: {
+            /** @example Название дела */
+            name: string;
+            /** @example Описание */
+            description?: string;
+            /**
+             * @description От 0 до 4
+             * @example 2
+             */
+            priority?: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
+        };
+        ReqData: {
+            /** @example Название группы */
+            name: string;
+            /** @example 1 */
+            goalId: number;
+            /** @example Описание */
+            description?: string;
+            /** @description Список дел */
+            things: components["schemas"]["Thing"][];
+        };
+        CreateGroupReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["ReqData"];
+        };
+        CreateGroupRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupDto"];
+        };
+        UpdateGroupReq: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ReqData"];
+        };
+        UpdateGroupRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupDto"];
+        };
+        FinishThingReqData: {
+            /** @example 2025-05-24T13:01:02.471Z */
+            endDate?: string;
+            /** @example Комментарий к завершению дела */
+            comment?: string;
+            /**
+             * @description От 0 до 100
+             * @example 40
+             */
+            result: number;
+        };
+        FinishThingReq: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["FinishThingReqData"];
+        };
+        FinishThingRes: {
+            /** @description Ответ сервера */
+            data: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -970,23 +1252,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    UsersController_getUsers: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     UsersController_me: {
         parameters: {
             query?: never;
@@ -1001,7 +1266,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MeDtoResponse"];
+                    "application/json": components["schemas"]["MeRes"];
                 };
             };
         };
@@ -1060,7 +1325,7 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Выход совершен успешно */
-            201: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1094,7 +1359,7 @@ export interface operations {
             };
         };
     };
-    TrainingsController_getActiveTrainings: {
+    TrainingsController_getActiveTraining: {
         parameters: {
             query?: never;
             header?: never;
@@ -1250,7 +1515,7 @@ export interface operations {
             };
         };
     };
-    TrainingsController_assignTraining: {
+    TrainingsController_assignTrainings: {
         parameters: {
             query?: never;
             header?: never;
@@ -1263,7 +1528,7 @@ export interface operations {
             };
         };
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1282,7 +1547,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1301,7 +1566,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1325,7 +1590,7 @@ export interface operations {
             };
         };
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1333,7 +1598,7 @@ export interface operations {
             };
         };
     };
-    TrainingsController_finishRepetition: {
+    TrainingsController_setBrakFact: {
         parameters: {
             query?: never;
             header?: never;
@@ -1349,7 +1614,117 @@ export interface operations {
             };
         };
         responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TrainingTemplatesController_getTrainingTemplates: {
+        parameters: {
+            query?: {
+                my?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateResponse"];
+                };
+            };
+        };
+    };
+    TrainingTemplatesController_createTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTrainingTemplateWithExercisesRequest"];
+            };
+        };
+        responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateWithExercisesResponseSingle"];
+                };
+            };
+        };
+    };
+    TrainingTemplatesController_getOneTrainingsWithExercises: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                templateId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateWithExercisesResponseSingle"];
+                };
+            };
+        };
+    };
+    TrainingTemplatesController_putTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                templateId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTrainingTemplateWithExerciseRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingTemplateWithExercisesResponseSingle"];
+                };
+            };
+        };
+    };
+    TrainingTemplatesController_deleteTraining: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                templateId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Тренировка удалена */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1466,11 +1841,49 @@ export interface operations {
             };
         };
     };
-    TrainingTemplatesController_getTrainings: {
+    GoalsController_getGoalById: {
         parameters: {
-            query?: {
-                my?: boolean;
+            query?: never;
+            header?: never;
+            path: {
+                goalId: number;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalResSingle"];
+                };
+            };
+        };
+    };
+    GoalsController_deleteGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goalId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GoalsController_getUsersGoals: {
+        parameters: {
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1482,12 +1895,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TrainingTemplateResponse"];
+                    "application/json": components["schemas"]["GoalRes"];
                 };
             };
         };
     };
-    TrainingTemplatesController_createTraining: {
+    GoalsController_createGoal: {
         parameters: {
             query?: never;
             header?: never;
@@ -1496,7 +1909,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateTrainingTemplateWithExercisesRequest"];
+                "application/json": components["schemas"]["CreateGoalReq"];
             };
         };
         responses: {
@@ -1505,44 +1918,23 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TrainingTemplateWithExercisesResponseSingle"];
+                    "application/json": components["schemas"]["CreateGoalRes"];
                 };
             };
         };
     };
-    TrainingTemplatesController_getOneTrainingsWithExercises: {
+    GoalsController_startGoal: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                templateId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TrainingTemplateWithExercisesResponseSingle"];
-                };
-            };
-        };
-    };
-    TrainingTemplatesController_putTraining: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                templateId: number;
+                goalId: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateTrainingTemplateWithExerciseRequest"];
+                "application/json": components["schemas"]["StartGoalReq"];
             };
         };
         responses: {
@@ -1551,28 +1943,144 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TrainingTemplateWithExercisesResponseSingle"];
+                    "application/json": components["schemas"]["StartGoalRes"];
                 };
             };
         };
     };
-    TrainingTemplatesController_deleteTraining: {
+    GoalsController_finishGoal: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                templateId: number;
+                goalId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinishGoalReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinishGoalRes"];
+                };
+            };
+        };
+    };
+    GroupsController_getUsersGoals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetInBoxRes"];
+                };
+            };
+        };
+    };
+    GroupsController_createGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGroupReq"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateGroupRes"];
+                };
+            };
+        };
+    };
+    GroupsController_updateGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateGroupReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdateGroupRes"];
+                };
+            };
+        };
+    };
+    GroupsController_deleteGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: number;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Тренировка удалена */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ThingsController_createGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinishThingReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinishThingRes"];
+                };
             };
         };
     };

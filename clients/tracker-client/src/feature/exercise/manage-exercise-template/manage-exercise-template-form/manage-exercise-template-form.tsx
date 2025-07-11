@@ -42,7 +42,6 @@ function ManageExerciseTemplateForm({
             url: exerciseTemplate.exampleUrl ?? undefined,
             repetitions: exerciseTemplate.repetitions.map((rep) => ({
               id: rep.id ?? undefined,
-              description: rep.description ?? undefined,
               targetWeight: +rep.targetWeight,
               targetCount: rep.targetCount,
               targetBreak: rep.targetBreak,
