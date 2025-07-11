@@ -29,7 +29,6 @@ function ExerciseAddingBlock() {
             exampleUrl: exercise.exampleUrl,
             repetitions: exercise.repetitions.map((rep) => ({
               id: rep.id,
-              description: rep.description,
               targetCount: rep.targetCount,
               targetBreak: rep.targetBreak,
               targetWeight: +rep.targetWeight,

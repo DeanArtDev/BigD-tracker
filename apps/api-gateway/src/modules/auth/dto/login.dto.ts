@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 
 class RequestDto {
   @ApiProperty({ example: 'example@example.com' })
@@ -10,9 +10,9 @@ class RequestDto {
   login: string;
 
   @ApiProperty({ example: '1234567A' })
-  @IsString()
   @IsNotEmpty()
   @MinLength(6)
+  @IsString()
   password: string;
 }
 
@@ -28,6 +28,7 @@ class LoginRequest {
 
 class ResponseDto {
   @ApiProperty({ example: 'jwt token is here' })
+  @Expose()
   @IsString()
   token: string;
 }
@@ -37,6 +38,7 @@ class LoginResponse {
     description: 'Ответ сервера',
     type: ResponseDto,
   })
+  @Expose()
   @ValidateNested()
   @Type(() => ResponseDto)
   data: ResponseDto;

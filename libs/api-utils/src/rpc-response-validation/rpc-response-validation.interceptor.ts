@@ -27,13 +27,14 @@ export class RpcResponseValidationInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map(async (data) => {
+        console.log(data);
         const instance = plainToInstance(schema, data, {
-          enableImplicitConversion: true,
+          excludeExtraneousValues: true,
         });
 
         const errors = await validate(instance, {
           whitelist: true,
-          forbidNonWhitelisted: true,
+          forbidNonWhitelisted: false,
         });
 
         if (errors.length > 0) {

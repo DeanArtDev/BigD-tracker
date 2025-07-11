@@ -4,16 +4,19 @@ import {
   useTrainingFinish,
   useTrainingStart,
 } from '@/entity/trainings';
-import { routes } from '@/shared/lib/routes';
-import { useNavigate } from 'react-router-dom';
-import { FinishStep } from './finish-step';
 import type { ApiDto } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
+import { routes } from '@/shared/lib/routes';
+import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
+import { PersonStanding } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useToggle } from 'usehooks-ts';
 import { ActiveTrainingController } from '../model/active-training-controller';
+import { FinishStep } from './finish-step';
+import { WarmUpStep } from './warm-up-step';
 
 const TrainingProgressLazy = withLazy(() =>
   import('./training-progress').then((m) => ({ default: m.TrainingProgress })),
@@ -52,6 +55,16 @@ function ActiveTraining({ training }: ActiveTrainingProps) {
         isFactPending || isBreakPending || isStartTrainingPending || isFinishTrainingPending
       }
     >
+      {trainingController.currentStep === 'warm-up' && (
+        <WarmUpStep
+          duration={(trainingController.activeTraining.wormUpDuration ?? 0) * 60}
+          onFinish={() => {
+            trainingController.start();
+            forceSync();
+          }}
+        />
+      )}
+
       {trainingController.currentStep === 'start' && (
         <FirstStepLazy
           trainingName={trainingController.activeTraining.name}
@@ -85,6 +98,15 @@ function ActiveTraining({ training }: ActiveTrainingProps) {
                 {trainingController.currentStep === 'repetition' ? (
                   <RepetitionStepLazy
                     repetition={trainingController.activeRepetition}
+                    renderControls={() => (
+                      <WarmUpAction
+                        show={trainingController.warmUpAvailable}
+                        onClick={() => {
+                          trainingController.doWormUp();
+                          forceSync();
+                        }}
+                      />
+                    )}
                     canFinish={trainingController.canFinishRepetition}
                     onSuccess={(formData) => {
                       if (trainingController.activeRepetition == null) {
@@ -178,6 +200,20 @@ function ActiveTraining({ training }: ActiveTrainingProps) {
         />
       )}
     </DataLoader>
+  );
+}
+
+function WarmUpAction({ show, onClick }: { show: boolean; onClick: () => void }) {
+  if (!show) return null;
+  return (
+    <Button
+      className="rounded-full h-12 w-12 shadow hover:bg-green-500 bg-green-600"
+      size="icon"
+      type="button"
+      onClick={onClick}
+    >
+      <PersonStanding className="size-6" />
+    </Button>
   );
 }
 

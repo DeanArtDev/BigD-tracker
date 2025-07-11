@@ -41,7 +41,6 @@ function TrainingTemplateManageForm({
               exampleUrl: i.exampleUrl,
               repetitions: i.repetitions.map((i) => ({
                 id: i.id,
-                description: i.description,
                 targetCount: i.targetCount,
                 targetWeight: +i.targetWeight,
                 targetBreak: i.targetBreak,

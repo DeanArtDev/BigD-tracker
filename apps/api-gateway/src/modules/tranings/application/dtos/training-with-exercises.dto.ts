@@ -1,7 +1,7 @@
 import { ExerciseWithRepetitionsDto } from '@/modules/exercises';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested } from 'class-validator';
 import { TrainingDto } from './training.dto';
 
 class TrainingExerciseWithRepetitionsDto extends OmitType(ExerciseWithRepetitionsDto, [
@@ -19,6 +19,7 @@ class TrainingWithExercisesDto extends TrainingDto {
   @Expose()
   @Type(() => TrainingExerciseWithRepetitionsDto)
   @ValidateNested({ each: true })
+  @IsArray()
   exercises: TrainingExerciseWithRepetitionsDto[];
 }
 

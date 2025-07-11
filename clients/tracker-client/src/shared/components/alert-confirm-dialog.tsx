@@ -12,6 +12,7 @@ import {
 import type { PropsWithChildren, ReactNode } from 'react';
 
 interface AlertConfirmDialogProps {
+  readonly skip?: boolean;
   readonly title: string;
   readonly content?: ReactNode;
   readonly onConfirm: () => void;
@@ -19,6 +20,7 @@ interface AlertConfirmDialogProps {
 }
 
 function AlertConfirmDialog({
+  skip = false,
   title,
   content,
   children,
@@ -27,7 +29,13 @@ function AlertConfirmDialog({
 }: PropsWithChildren<AlertConfirmDialogProps>) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      {skip ? (
+        <AlertDialogAction asChild onClick={onConfirm}>
+          {children}
+        </AlertDialogAction>
+      ) : (
+        <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      )}
 
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -1,3 +1,4 @@
+import { Play } from 'lucide-react';
 import { type JSX, useState } from 'react';
 import { useStopwatch, useTimer } from 'react-timer-hook';
 import { DialView } from './dial-view';
@@ -63,10 +64,25 @@ function CountdownStopwatch({
         },
       })}
       contentSlot={
-        <>
-          {String(isExpired ? stopwatch.minutes : minutes).padStart(2, '0')}:
-          {String(isExpired ? stopwatch.seconds : seconds).padStart(2, '0')}
-        </>
+        <button
+          className="text-[length:inherit] cursor-pointer"
+          onClick={() => {
+            if (isExpired) {
+              stopwatch.isRunning ? stopwatch.pause() : stopwatch.start();
+            } else {
+              isRunning ? pause() : start();
+            }
+          }}
+        >
+          {isRunning || stopwatch.isRunning ? (
+            <span>
+              {String(isExpired ? stopwatch.minutes : minutes).padStart(2, '0')}:
+              {String(isExpired ? stopwatch.seconds : seconds).padStart(2, '0')}
+            </span>
+          ) : (
+            <Play className="size-18" color="var(--color-primary)" />
+          )}
+        </button>
       }
     />
   );

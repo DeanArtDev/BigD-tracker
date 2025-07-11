@@ -12,7 +12,6 @@ export class RmqLoggerSerializer {
     }
 
     console.dir(result, { depth: this.options.fullLog ? null : 2, colors: true });
-    console.log('----------------------------------------');
     return result;
   }
 }

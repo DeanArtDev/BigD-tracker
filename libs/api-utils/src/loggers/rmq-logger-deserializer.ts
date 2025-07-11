@@ -5,7 +5,6 @@ export class RmqLoggerDeserializer {
   constructor(private readonly options: { fullLog?: boolean } = { fullLog: false }) {}
 
   deserialize(value: any) {
-    console.log('----------------------------------------');
     console.dir(value, {
       depth: this.options.fullLog ? null : 2,
       colors: true,

@@ -83,7 +83,7 @@ class CreateExercisesWithRepetitionsCommand extends KyselyUnitOfWork<DB> {
     input: { userId: number; exercise: ExerciseWithRepetitionsEntity },
     trx?: Transaction<DB>,
   ): Promise<ExerciseWithRepetitionsEntity> {
-    return await this.useTransaction(trx).runTransaction(async (transaction) => {
+    return await this.runTransaction(async (transaction) => {
       const exercise = await this.exercisesRepo.create(
         {
           position: input.exercise.position,
@@ -117,7 +117,7 @@ class CreateExercisesWithRepetitionsCommand extends KyselyUnitOfWork<DB> {
       );
 
       return ExerciseWithRepetitionsEntity.restore(exercise).setRepetitions(repetitions);
-    });
+    }, trx);
   }
 }
 

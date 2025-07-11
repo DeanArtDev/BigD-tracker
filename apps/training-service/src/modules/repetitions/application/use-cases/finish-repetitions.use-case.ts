@@ -36,7 +36,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
     { userId, factBreak, repetitionId }: FinishRepetitionInput,
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity> {
-    return await this.useTransaction(trx).runTransaction(async (transaction) => {
+    return await this.runTransaction(async (transaction) => {
       const restoredRepetition = await this.#findRepo({ userId, repetitionId }, transaction);
 
       restoredRepetition.setDuration({ factBreak });
@@ -56,7 +56,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
       }
 
       return updatedRepetition;
-    });
+    }, trx);
   }
 
   constructor(
@@ -71,7 +71,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
     { userId, factWeight, factCount, repetitionId, finishType, description }: SetFactInput,
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity> {
-    return await this.useTransaction(trx).runTransaction(async (transaction) => {
+    return await this.runTransaction(async (transaction) => {
       const restoredRepetition = await this.#findRepo(
         { userId, repetitionId: repetitionId },
         transaction,
@@ -102,7 +102,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
       }
 
       return updatedRepetition;
-    });
+    }, trx);
   }
 
   async #findRepo(

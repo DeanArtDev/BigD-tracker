@@ -26,8 +26,8 @@ describe('Priority', () => {
 
 describe('WeekDays', () => {
   it('creates and compares', () => {
-    const w = WeekDays.create([1,2]);
-    const r = WeekDays.restore([1,2]);
+    const w = WeekDays.create([1, 2]);
+    const r = WeekDays.restore([1, 2]);
     expect(w.equals(r)).toBe(true);
   });
 });

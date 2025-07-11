@@ -1,6 +1,6 @@
 import type { ApiDto } from '@/shared/api/types';
 
-type Step = 'repetition' | 'break' | 'finish' | 'start';
+type Step = 'warm-up' | 'repetition' | 'break' | 'finish' | 'start';
 
 interface IActiveTrainingController {
   currentStep: Step;
@@ -9,6 +9,7 @@ interface IActiveTrainingController {
   activeTraining: ApiDto['TrainingWithExercisesDto'];
   repetitions: ActiveRepetition[];
 
+  doWormUp(): void;
   canFinishRepetition(totalSeconds: number): boolean;
   setRepetitionDuration(id: number, seconds: number): void;
   setRepetitionFact(data: {
@@ -58,6 +59,14 @@ class ActiveTrainingController implements IActiveTrainingController {
   public start() {
     this.#training.inProgress = true;
     this.#goToRepetition();
+  }
+
+  public doWormUp() {
+    this.#goToWormingUp();
+  }
+
+  #goToWormingUp(): void {
+    this.#currentStep = 'warm-up';
   }
 
   #goToRepetition(): void {
@@ -124,6 +133,10 @@ class ActiveTrainingController implements IActiveTrainingController {
 
   get currentStep(): Step {
     return this.#currentStep;
+  }
+
+  get warmUpAvailable(): boolean {
+    return this.exercises?.[0].stage === 'active' && this.repetitions?.[0].stage === 'active';
   }
 
   #recalculate() {

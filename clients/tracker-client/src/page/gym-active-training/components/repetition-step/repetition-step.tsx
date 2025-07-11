@@ -1,15 +1,17 @@
 import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { debounce } from 'lodash-es';
+import type { ReactNode } from 'react';
 import { toast } from 'sonner';
 import { RepetitionFactDialog, type RepetitionFactFormProps } from '../repetition-fact-form';
 import { RepetitionStopwatch } from './repetition-stopwatch';
 
 interface RepetitionStepProps extends RepetitionFactFormProps {
   readonly canFinish: (totalSeconds: number) => boolean;
+  readonly renderControls?: () => ReactNode;
 }
 
-function RepetitionStep({ repetition, onSuccess, canFinish }: RepetitionStepProps) {
+function RepetitionStep({ repetition, onSuccess, canFinish, renderControls }: RepetitionStepProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -39,19 +41,22 @@ function RepetitionStep({ repetition, onSuccess, canFinish }: RepetitionStepProp
               );
 
               return (
-                <Button
-                  className="rounded-full mt-10 min-h-[60px] shadow text-3xl hover:bg-green-500 bg-green-600"
-                  onClick={() => {
-                    pause();
-                    if (!canFinish(totalSeconds)) {
-                      debouncedToast();
-                      return;
-                    }
-                    open();
-                  }}
-                >
-                  Готово!
-                </Button>
+                <div className="flex gap-4 mt-10 max-h-[60px]">
+                  <Button
+                    className="rounded-full h-auto shadow text-3xl hover:bg-green-500 bg-green-600"
+                    onClick={() => {
+                      pause();
+                      if (!canFinish(totalSeconds)) {
+                        debouncedToast();
+                        return;
+                      }
+                      open();
+                    }}
+                  >
+                    Готово!
+                  </Button>
+                  {renderControls?.()}
+                </div>
               );
             }}
           />

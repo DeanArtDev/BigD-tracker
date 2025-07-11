@@ -12,9 +12,9 @@ describe('KyselyUnitOfWork', () => {
   it('uses provided transaction if set', async () => {
     const trx = {} as any;
     const db = { transaction: vi.fn() } as any;
-    const uow = new Uow(db).useTransaction(trx);
+    const uow = new Uow(db);
     const work = vi.fn(async () => 1);
-    const result = await uow.runTransaction(work);
+    const result = await uow.runTransaction(work, trx);
     expect(result).toBe(1);
     expect(work).toHaveBeenCalledWith(trx);
     expect(db.transaction).not.toHaveBeenCalled();
