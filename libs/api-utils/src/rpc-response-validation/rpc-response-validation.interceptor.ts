@@ -33,7 +33,7 @@ export class RpcResponseValidationInterceptor implements NestInterceptor {
 
         const errors = await validate(instance, {
           whitelist: true,
-          forbidNonWhitelisted: true,
+          forbidNonWhitelisted: false,
         });
 
         if (errors.length > 0) {

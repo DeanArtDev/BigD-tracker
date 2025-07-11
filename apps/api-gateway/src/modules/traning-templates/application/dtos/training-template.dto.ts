@@ -5,14 +5,15 @@ import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 class TrainingTemplateDto {
   @ApiProperty({ example: 1 })
-  @IsInt()
   @Expose()
+  @IsInt()
   id: number;
 
   @ApiProperty({ example: 1 })
-  @IsInt()
   @Expose()
-  userId: number;
+  @IsInt()
+  @IsOptional()
+  userId?: number;
 
   @ApiProperty({ example: 'MEDIUM', enum: TrainingType })
   @Type(() => String)
@@ -23,34 +24,34 @@ class TrainingTemplateDto {
   @ApiProperty({
     example: 'Понедельничная',
   })
-  @IsString()
   @Expose()
+  @IsString()
   name: string;
 
   @ApiPropertyOptional({
     example: 'описание (какие цели на тренировку, на что сделать упор и т.п)',
   })
-  @IsString()
   @Expose()
   @IsOptional()
+  @IsString()
   description?: string;
 
   @ApiPropertyOptional({
     example: 30,
     description: 'измеряется в минутах',
   })
-  @IsInt()
   @Expose()
   @IsOptional()
+  @IsInt()
   wormUpDuration?: number;
 
   @ApiPropertyOptional({
     example: 30,
     description: 'измеряется в минутах',
   })
-  @IsInt()
   @Expose()
   @IsOptional()
+  @IsInt()
   postTrainingDuration?: number;
 }
 
