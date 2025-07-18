@@ -45,7 +45,6 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/planner'),
 
-
   plannerInBox: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),

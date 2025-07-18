@@ -39,8 +39,7 @@ function InputForm<FormValues extends FieldValues = FieldValues>({
                 {...inputProps}
                 {...context.register(name, {
                   setValueAs: (v) => (v == '' || v == null ? undefined : v),
-                  onChange: (evt) =>
-                    evt.target.value.trim() === '' ? null : evt.target.value,
+                  onChange: (evt) => (evt.target.value.trim() === '' ? null : evt.target.value),
                 })}
               />
             </FormControl>

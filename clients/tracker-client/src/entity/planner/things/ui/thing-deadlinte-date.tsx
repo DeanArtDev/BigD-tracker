@@ -14,7 +14,11 @@ function ThingDeadlineDate({ deadline, showDate = false, ...svgProps }: ThingDea
 
   const isWarning = isDateInTodayAndTomorrow(deadline);
   return (
-    <span className={cn('flex flex-wrap gap-1.5 items-center', { [`text-destructive font-bold`]: isWarning })}>
+    <span
+      className={cn('flex flex-wrap gap-1.5 items-center', {
+        [`text-destructive font-bold`]: isWarning,
+      })}
+    >
       <CalendarClock color={isWarning ? 'var(--destructive)' : undefined} {...svgProps} />
       {showDate && format(deadline, 'd MMM')}
     </span>

@@ -4,7 +4,6 @@ import {
   GetSessionHandler,
   GetSessionQuery,
 } from '@/modules/auth/application';
-import { CreateUserCommand, CreateUserHandler } from '@/modules/users/application';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';

@@ -4,7 +4,6 @@ import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   GOAL_SERVICE_RMQ_KEY,
   GoalCreateThingIntoInBoxGroup,
-  GoalDeleteGoal,
   GoalDeleteThing,
   GoalFinishThing,
   GoalUpdateThing,

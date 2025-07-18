@@ -30,8 +30,7 @@ export class CreateSessionHandler implements ICommandHandler<CreateSessionComman
     const expirationDate = addMilliseconds(
       new Date(),
       this.config.get<number>('SESSION_REFRESH_TIME', 0),
-    ).toISOString()
-    ;
+    ).toISOString();
     const draftSession = SessionEntity.create({
       uuid: randomUUID(),
       ip: input.ip,

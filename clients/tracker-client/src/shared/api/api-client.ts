@@ -10,7 +10,6 @@ const apiPublicClient = createClient<ApiEndpoints>({
 const apiPrivateClient = createClient<ApiEndpoints>({
   baseUrl: APP_CONFIG.API_BASE_URL,
   credentials: 'include',
-
 });
 
 const $publicQueryClient = createOpenapiReactQueryClient(apiPublicClient);

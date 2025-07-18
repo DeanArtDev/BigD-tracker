@@ -3,7 +3,8 @@ import { FinishThingUseCase } from '@/modules/things/application/use-cases';
 import {
   GoalCreateThingIntoInBoxGroup,
   GoalDeleteThing,
-  GoalFinishThing, GoalUpdateThing,
+  GoalFinishThing,
+  GoalUpdateThing,
 } from '@big-d/api-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
