@@ -1,3 +1,4 @@
+import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
 import {
   AccountLogin,
   AccountLogout,
@@ -6,6 +7,7 @@ import {
   RpcStatus,
 } from '@big-d/api-contracts';
 import { Controller } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { LoginUseCase, LogoutUseCase, RefreshUseCase, RegisterUseCase } from './use-cases';
 
@@ -16,6 +18,7 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly logoutUseCase: LogoutUseCase,
     private readonly loginUseCase: LoginUseCase,
+    private readonly config: ConfigService<ACCOUNT_APP_ENV>,
   ) {}
 
   @MessagePattern(AccountRegister.pattern)
@@ -27,7 +30,13 @@ export class AuthController {
       password: data.password,
     });
 
-    return { data: { refreshToken: sessionToken, accessToken } };
+    return {
+      data: {
+        refreshToken: sessionToken,
+        accessToken,
+        maxAge: this.config.get<number>('SESSION_REFRESH_TIME', 0),
+      },
+    };
   }
 
   @MessagePattern(AccountRefresh.pattern)
@@ -39,7 +48,14 @@ export class AuthController {
       ip: data.ip,
       userAgent: data.userAgent,
     });
-    return { data: { refreshToken: sessionToken, accessToken } };
+
+    return {
+      data: {
+        refreshToken: sessionToken,
+        accessToken,
+        maxAge: this.config.get<number>('SESSION_REFRESH_TIME', 0),
+      },
+    };
   }
 
   @MessagePattern(AccountLogin.pattern)
@@ -51,7 +67,13 @@ export class AuthController {
       userAgent: data.userAgent,
     });
 
-    return { data: { refreshToken: sessionToken, accessToken } };
+    return {
+      data: {
+        refreshToken: sessionToken,
+        accessToken,
+        maxAge: this.config.get<number>('SESSION_REFRESH_TIME', 0),
+      },
+    };
   }
 
   @MessagePattern(AccountLogout.pattern)

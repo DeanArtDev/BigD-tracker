@@ -1,0 +1,24 @@
+services:
+  migrator:
+    profiles: ['migrations']
+    container_name: migrator
+    image: migrator:lts
+    restart: "no"
+    build:
+      context: .
+      dockerfile: ./tools/migrator.Dockerfile
+    depends_on:
+      tracker_db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    networks:
+      - tracker_net
+
+networks:
+  tracker_net:
+    name: tracker_net

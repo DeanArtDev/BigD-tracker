@@ -16,7 +16,7 @@ RUN apt-get update && \
 WORKDIR /usr/src/app
 COPY package.json pnpm-lock.yaml* ./
 COPY . .
-RUN turbo prune --scope=@big-d/account-service --docker
+RUN turbo prune --scope=@big-d/goal-service --docker
 
 
 FROM base AS installer
@@ -27,7 +27,7 @@ COPY --from=builder /usr/src/app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=builder /usr/src/app/out/full/ .
 COPY turbo.json turbo.json
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo run build --filter=@big-d/account-service
+RUN pnpm turbo run build --filter=@big-d/goal-service
 
 
 FROM node:22.15.0-slim AS runner
@@ -48,9 +48,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/package.json ./package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/node_modules ./node_modules
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/account-service/package.json ./apps/account-service/package.json
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/account-service/dist ./apps/account-service/dist
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/account-service/node_modules ./apps/account-service/node_modules
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/goal-service/package.json ./apps/goal-service/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/goal-service/dist ./apps/goal-service/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/goal-service/node_modules ./apps/goal-service/node_modules
 
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/dist ./libs/api-exceptions/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/package.json ./libs/api-exceptions/package.json
@@ -68,10 +68,10 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/dist ./l
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/package.json ./libs/api-utils/package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/node_modules ./libs/api-utils/node_modules
 
-ARG API_PORT=4033
+ARG API_PORT=4055
 ENV API_PORT=${API_PORT}
 EXPOSE ${API_PORT}
 
 USER nodejs
-WORKDIR /usr/src/app/apps/account-service
+WORKDIR /usr/src/app/apps/goal-service
 CMD node dist/src/main.js

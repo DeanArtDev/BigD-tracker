@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "$#" -lt 1 ]; then
-  echo "Usage: $0 <migrator-script> [args]" >&2
-  exit 1
-fi
-
 echo "⏳ Ждем пока база будет готова..."
 until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME"; do
   sleep 1
@@ -33,13 +28,3 @@ if [ "$TAB_COUNT" -eq 0 ]; then
     echo "❌ Дамп не найден по пути $DUMP_PATH, пропускаем заливку"
   fi
 fi
-
-
-MIGRATOR_SCRIPT="$1"
-shift
-echo "📦 Запуск миграций..."
-node "$MIGRATOR_SCRIPT" lts
-echo "✅ Миграция залита"
-
-echo "🚀 Запуск приложения от nodejs пользователя..."
-exec gosu nodejs "$@"

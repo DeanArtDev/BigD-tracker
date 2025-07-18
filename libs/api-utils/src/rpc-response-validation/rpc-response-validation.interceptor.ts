@@ -27,7 +27,6 @@ export class RpcResponseValidationInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map(async (data) => {
-        console.log(data);
         const instance = plainToInstance(schema, data, {
           excludeExtraneousValues: true,
         });

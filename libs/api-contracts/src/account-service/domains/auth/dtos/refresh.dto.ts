@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsIP, IsJWT, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsIP, IsJWT, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class ReqData {
   @IsOptional()
@@ -22,6 +22,9 @@ class ResData {
 
   @IsString()
   refreshToken: string;
+
+  @IsInt()
+  maxAge: number;
 }
 
 class RefreshRes {

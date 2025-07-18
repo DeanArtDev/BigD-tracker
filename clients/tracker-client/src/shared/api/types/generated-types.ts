@@ -436,6 +436,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение IN BOX юзера */
+        get: operations["GroupsController_getUsersGoals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups": {
         parameters: {
             query?: never;
@@ -443,8 +460,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получение  IN BOX юзера */
-        get: operations["GroupsController_getUsersGoals"];
+        get?: never;
         put?: never;
         /** Создание группы */
         post: operations["GroupsController_createGroup"];
@@ -472,6 +488,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/things/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Создание дела в IN BOX */
+        post: operations["ThingsController_createIntoInbox"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/things/{thingId}": {
         parameters: {
             query?: never;
@@ -481,8 +514,26 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Обновление дела */
+        post: operations["ThingsController_updateThing"];
+        /** Удаление дела */
+        delete: operations["ThingsController_deleteGroup"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/things/{thingId}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /** Завершение дела */
-        post: operations["ThingsController_createGroup"];
+        post: operations["ThingsController_finishThing"];
         delete?: never;
         options?: never;
         head?: never;
@@ -507,7 +558,7 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["UserDto"];
         };
-        RequestDto: {
+        RegisterReqData: {
             /** @example example@example.com */
             login: string;
             /** @example 12345678 */
@@ -515,7 +566,7 @@ export interface components {
         };
         RegisterRequest: {
             /** @description Данные для запроса */
-            data: components["schemas"]["RequestDto"];
+            data: components["schemas"]["RegisterReqData"];
         };
         ResponseDto: {
             /** @example jwt token is here */
@@ -536,6 +587,12 @@ export interface components {
         LogoutResponse: {
             /** @description Ответ сервера */
             data: boolean;
+        };
+        RequestDto: {
+            /** @example email2@mail.com */
+            login: string;
+            /** @example 1234567890 */
+            password: string;
         };
         LoginRequest: {
             /** @description Данные для запроса */
@@ -1065,7 +1122,7 @@ export interface components {
             /** @example 1 */
             groupId: number;
             /**
-             * @description От 0 до 4
+             * @description От 1 до 4
              * @example 2
              */
             priority?: number;
@@ -1189,7 +1246,7 @@ export interface components {
             /** @example Описание */
             description?: string;
             /**
-             * @description От 0 до 4
+             * @description От 1 до 4
              * @example 2
              */
             priority?: number;
@@ -1223,6 +1280,52 @@ export interface components {
         UpdateGroupRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["GroupDto"];
+        };
+        CreateThingIntoInboxReqData: {
+            /** @example Имя дела */
+            name: string;
+            /**
+             * @description От 1 до 4
+             * @example 2
+             */
+            priority?: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
+            /** @example Описание дела */
+            description?: string;
+        };
+        CreateThingIntoInboxReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["CreateThingIntoInboxReqData"];
+        };
+        CreateThingIntoInboxRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ThingDto"];
+        };
+        UpdateThingReqData: {
+            /** @example Имя дела */
+            name: string;
+            /**
+             * @description От 1 до 4
+             * @example 2
+             */
+            priority?: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
+            /** @example Описание дела */
+            description?: string;
+        };
+        UpdateThingReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["UpdateThingReqData"];
+        };
+        UpdateThingRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ThingDto"];
         };
         FinishThingReqData: {
             /** @example 2025-05-24T13:01:02.471Z */
@@ -2059,7 +2162,74 @@ export interface operations {
             };
         };
     };
-    ThingsController_createGroup: {
+    ThingsController_createIntoInbox: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateThingIntoInboxReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateThingIntoInboxRes"];
+                };
+            };
+        };
+    };
+    ThingsController_updateThing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateThingReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdateThingRes"];
+                };
+            };
+        };
+    };
+    ThingsController_deleteGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ThingsController_finishThing: {
         parameters: {
             query?: never;
             header?: never;

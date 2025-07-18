@@ -2,7 +2,11 @@ import { $privetQueryClient } from '@/shared/api/api-client';
 import { authQueryKeys } from './query';
 
 function useMeSuspense() {
-  const { data, ...others } = $privetQueryClient.useSuspenseQuery(...authQueryKeys.me());
+  const { data, ...others } = $privetQueryClient.useSuspenseQuery(
+    ...authQueryKeys.me(),
+    undefined,
+    { retry: 1 },
+  );
   return { me: data.data, ...others };
 }
 

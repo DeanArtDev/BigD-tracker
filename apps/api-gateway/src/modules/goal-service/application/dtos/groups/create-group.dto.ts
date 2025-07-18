@@ -26,9 +26,9 @@ class Thing {
   @IsOptional()
   description?: string;
 
-  @ApiPropertyOptional({ example: 2, description: 'От 0 до 4' })
+  @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
   @Expose()
-  @Min(0)
+  @Min(1)
   @Max(4)
   @IsOptional()
   @IsInt()

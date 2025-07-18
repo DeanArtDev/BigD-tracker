@@ -9,14 +9,16 @@ export const REFRESH_TOKEN_FIELD = 'refresh_token';
 export class CookieService {
   constructor(private readonly config: ConfigService<APP_ENV>) {}
 
-  setRefreshToken(res: Response, token: string | undefined) {
+  setRefreshToken(res: Response, params: { token: string | undefined; maxAge?: number }) {
+    const { maxAge, token } = params;
+
     if (token == null) {
       res.clearCookie(REFRESH_TOKEN_FIELD, {
         httpOnly: true,
         secure: this.config.get<boolean>('IS_PROD'),
         sameSite: 'strict',
         path: '/auth/refresh',
-        maxAge: this.config.get<number>('SESSION_REFRESH_TIME'),
+        maxAge,
       });
       return;
     }
@@ -26,7 +28,7 @@ export class CookieService {
       secure: this.config.get<boolean>('IS_PROD'),
       sameSite: 'strict',
       path: '/auth/refresh',
-      maxAge: this.config.get<number>('SESSION_REFRESH_TIME'),
+      maxAge,
     });
   }
 }

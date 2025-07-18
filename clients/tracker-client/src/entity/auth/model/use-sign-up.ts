@@ -22,7 +22,7 @@ function useSignUp() {
       if (data.data != null) {
         setAccessToken(data.data.token);
         setIsAuth(true);
-        navigate(routes.gymActiveTraining.path);
+        navigate(routes.plannerInBox.path);
       }
     },
   });

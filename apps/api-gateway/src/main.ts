@@ -65,10 +65,13 @@ async function bootstrap() {
 
   const httpAdapter = app.getHttpAdapter();
   httpAdapter.getInstance().set('trust proxy', true);
-
   app.use(cookieParser());
   app.enableCors({
-    origin: configService.get<string>('ORIGIN').split(',').filter(Boolean),
+    origin: configService
+      .get<string>('ORIGIN', '')
+      .split(',')
+      .map((i) => i.trim())
+      .filter(Boolean),
     credentials: true,
   });
 

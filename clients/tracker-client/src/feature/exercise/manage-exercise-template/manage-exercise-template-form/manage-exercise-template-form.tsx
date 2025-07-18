@@ -1,7 +1,7 @@
 import { useExerciseCreate, useExerciseUpdate } from '@/entity/exercises';
 import { ExerciseTypeSelectForm } from '@/entity/exercises/ui';
 import type { ApiDto } from '@/shared/api/types';
-import { ErrorMessageForm, InputForm, TextAreaForm } from '@/shared/components/form';
+import { ErrorMessageForm, InputForm, TextareaForm } from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
@@ -111,7 +111,7 @@ function ManageExerciseTemplateForm({
 
         <ExerciseTypeSelectForm required />
 
-        <TextAreaForm
+        <TextareaForm
           name="description"
           label="Описание"
           placeholder="Опиши особенности выполнения"

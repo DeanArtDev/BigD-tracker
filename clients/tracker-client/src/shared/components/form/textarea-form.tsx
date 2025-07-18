@@ -12,7 +12,7 @@ interface TextAreaFormProps<FormValues extends FieldValues = FieldValues>
   readonly isErrorMessage?: boolean;
 }
 
-function TextAreaForm<FormValues extends FieldValues = FieldValues>({
+function TextareaForm<FormValues extends FieldValues = FieldValues>({
   name,
   label,
   isErrorMessage = true,
@@ -37,9 +37,9 @@ function TextAreaForm<FormValues extends FieldValues = FieldValues>({
               <Textarea
                 {...textAreaProps}
                 {...context.register(name, {
-                  setValueAs: (v) => (v === '' ? undefined : v),
+                  setValueAs: (v) => (v === '' || v == null ? undefined : v),
                   onChange: (evt) =>
-                    evt.target.value.trim() === '' ? undefined : evt.target.value,
+                    evt.target.value.trim() === '' ? null : evt.target.value,
                 })}
               />
             </FormControl>
@@ -52,4 +52,4 @@ function TextAreaForm<FormValues extends FieldValues = FieldValues>({
   );
 }
 
-export { TextAreaForm, type TextAreaFormProps };
+export { TextareaForm, type TextAreaFormProps };

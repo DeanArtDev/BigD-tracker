@@ -1,0 +1,101 @@
+import {
+  GetGroupUserInboxHandler,
+  GetGroupUserInboxQuery,
+} from '@/modules/groups/application/queries';
+import {
+  CreateThingCommand,
+  CreateThingHandler,
+  DeleteThingCommand,
+  DeleteThingHandler,
+  UpdateThingCommand,
+  UpdateThingHandler,
+} from '@/modules/things/application/commands';
+import {
+  GetThingByIdHandler,
+  GetThingByIdQuery,
+  GetThingsByGroupIdHandler,
+  GetThingsByGroupIdQuery,
+} from '@/modules/things/application/queries';
+import { ThingDto } from '@big-d/api-contracts';
+import { ReturnHandlerType } from '@big-d/api-utils';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ThingsMapper } from './things.mapper';
+
+@Injectable()
+export class ThingsService {
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+    private readonly mapper: ThingsMapper,
+  ) {}
+
+  async createIntoInBoxGroup(input: {
+    userId: number;
+    name: string;
+    description?: string;
+    priority?: number;
+    startDate?: string;
+    deadline?: string;
+  }): Promise<ThingDto> {
+    const inbox = await this.queryBus.execute<
+      GetGroupUserInboxQuery,
+      ReturnHandlerType<typeof GetGroupUserInboxHandler>
+    >(new GetGroupUserInboxQuery({ userId: input.userId }));
+    if (inbox == null) {
+      throw new InternalServerErrorException(`There is no inbox group for user: ${input.userId}`);
+    }
+
+    const things = await this.queryBus.execute<
+      GetThingsByGroupIdQuery,
+      ReturnHandlerType<typeof GetThingsByGroupIdHandler>
+    >(new GetThingsByGroupIdQuery({ groupId: inbox.id, userId: input.userId }));
+
+    const { id } = await this.commandBus.execute<
+      CreateThingCommand,
+      ReturnHandlerType<typeof CreateThingHandler>
+    >(new CreateThingCommand({ ...input, groupId: inbox.id, position: things.length + 1 }));
+
+    const thing = await this.queryBus.execute<
+      GetThingByIdQuery,
+      ReturnHandlerType<typeof GetThingByIdHandler>
+    >(new GetThingByIdQuery({ id, userId: input.userId }));
+    if (thing == null) {
+      throw new InternalServerErrorException('Error occurred while creating thing');
+    }
+
+    return this.mapper.fromEntityToDTO(thing);
+  }
+
+  async updateThing(input: {
+    id: number;
+    userId: number;
+    name: string;
+    description?: string;
+    priority?: number;
+    startDate?: string;
+    deadline?: string;
+  }): Promise<ThingDto> {
+    const { id } = await this.commandBus.execute<
+      UpdateThingCommand,
+      ReturnHandlerType<typeof UpdateThingHandler>
+    >(new UpdateThingCommand(input));
+
+    const thing = await this.queryBus.execute<
+      GetThingByIdQuery,
+      ReturnHandlerType<typeof GetThingByIdHandler>
+    >(new GetThingByIdQuery({ id, userId: input.userId }));
+    if (thing == null) {
+      throw new InternalServerErrorException('Error occurred while creating thing');
+    }
+
+    return this.mapper.fromEntityToDTO(thing);
+  }
+
+  async delete(input: { id: number; userId: number }): Promise<boolean> {
+    return await this.commandBus.execute<
+      DeleteThingCommand,
+      ReturnHandlerType<typeof DeleteThingHandler>
+    >(new DeleteThingCommand(input));
+  }
+}

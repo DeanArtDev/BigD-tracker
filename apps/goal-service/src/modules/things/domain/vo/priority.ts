@@ -9,8 +9,8 @@ class Priority {
   }
 
   public static create(value: number): Priority {
-    if (value < 0 || value > 4) {
-      throw new Error('Priority available value range is from 0 to 4');
+    if (value < 1 || value > 4) {
+      throw new Error('Priority available value range is from 1 to 4');
     }
 
     return new Priority(value);

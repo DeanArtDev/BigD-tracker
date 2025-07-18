@@ -29,27 +29,30 @@ class ThingDto {
   @IsInt()
   groupId: number;
 
-  @ApiPropertyOptional({ example: 2, description: 'От 0 до 4' })
+  @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
   @Expose()
   @IsOptional()
-  @Min(0)
+  @Min(1)
   @Max(4)
   @IsInt()
   priority?: number;
 
   @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @Expose()
   @IsISO8601()
   @IsOptional()
   @IsString()
   startDate?: string;
 
   @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @Expose()
   @IsISO8601()
   @IsOptional()
   @IsString()
   endDate?: string;
 
   @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @Expose()
   @IsISO8601()
   @IsOptional()
   @IsString()

@@ -12,7 +12,7 @@ export class CreateThingHandler implements ICommandHandler<CreateThingCommand> {
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute({ input }: CreateThingCommand): Promise<void> {
+  async execute({ input }: CreateThingCommand): Promise<{ id: number }> {
     const { name, description, userId, deadline, position, startDate, groupId, priority } = input;
 
     const draftThing = ThingEntity.create({
@@ -32,5 +32,7 @@ export class CreateThingHandler implements ICommandHandler<CreateThingCommand> {
     }
 
     this.eventBus.publish(new ThingCreatedEntity(thing.id));
+
+    return { id: thing.id };
   }
 }

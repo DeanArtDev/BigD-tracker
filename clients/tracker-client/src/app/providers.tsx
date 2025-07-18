@@ -1,5 +1,5 @@
 import { queryClient } from '@/shared/api/query-client';
-import { useSidebarStore } from '@/shared/ui-kit/hooks/use-sidebar-storage';
+import { useSidebarStore } from '@/shared/ui-kit/helpers/use-sidebar-storage';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { Toaster } from '@/shared/ui-kit/ui/sonner';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools client={queryClient} />
+      <ReactQueryDevtools client={queryClient} buttonPosition="bottom-left" />
       <SidebarProvider className="bg-sidebar" open={sidebarState} defaultOpen={sidebarState}>
         {children}
       </SidebarProvider>

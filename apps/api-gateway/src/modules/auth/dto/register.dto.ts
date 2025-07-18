@@ -2,7 +2,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength, ValidateNested } from 'class-
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
-class RequestDto {
+class RegisterReqData {
   @ApiProperty({ example: 'example@example.com' })
   @IsEmail()
   @IsNotEmpty()
@@ -19,12 +19,12 @@ class RequestDto {
 class RegisterRequest {
   @ApiProperty({
     description: 'Данные для запроса',
-    type: RequestDto,
+    type: RegisterReqData,
   })
   @Expose()
   @ValidateNested()
-  @Type(() => RequestDto)
-  data: RequestDto;
+  @Type(() => RegisterReqData)
+  data: RegisterReqData;
 }
 
 class ResponseDto {

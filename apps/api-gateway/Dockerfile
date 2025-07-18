@@ -68,7 +68,7 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/dist ./l
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/package.json ./libs/api-utils/package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/node_modules ./libs/api-utils/node_modules
 
-COPY scripts/bootstrap.sh /usr/src/app/bootstrap.sh
+#COPY scripts/bootstrap.sh /usr/src/app/bootstrap.sh
 COPY ./apps/api-gateway/swagger /usr/src/app/apps/api-gateway/swagger
 
 
@@ -76,8 +76,9 @@ ARG API_PORT=4002
 ENV API_PORT=${API_PORT}
 EXPOSE ${API_PORT}
 
-USER root
-RUN chmod +x /usr/src/app/bootstrap.sh
-ENTRYPOINT ["/usr/src/app/bootstrap.sh", "dist/tools/migrator.js"]
+#USER root
+#RUN chmod +x /usr/src/app/bootstrap.sh
+#ENTRYPOINT ["/usr/src/app/bootstrap.sh"]
+USER nodejs
 WORKDIR /usr/src/app/apps/api-gateway
-CMD node dist/src/main.js
+CMD node dist/main.js

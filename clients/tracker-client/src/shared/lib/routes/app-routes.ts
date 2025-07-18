@@ -7,6 +7,7 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/'),
 
+  /* GYM */
   gym: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
@@ -37,6 +38,20 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/gym/programs'),
 
+  /* PLANNER */
+
+  planner: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/planner'),
+
+
+  plannerInBox: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/planner/inbox'),
+
+  /* SYSTEM */
   signUp: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),

@@ -36,6 +36,7 @@ export default tseslint.config(
       ...prettierConfig.rules,
       ...getClientEslintConfig().rules,
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': 'warn',
     },
   },
 );

@@ -12,7 +12,7 @@ export class UpdateThingHandler implements ICommandHandler<UpdateThingCommand> {
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute({ input }: UpdateThingCommand): Promise<void> {
+  async execute({ input }: UpdateThingCommand): Promise<{ id: number }> {
     const { id, name, description, userId, priority, position, startDate, deadline } = input;
 
     const existed = await this.thingsRepo.findById({ id, userId });
@@ -25,7 +25,7 @@ export class UpdateThingHandler implements ICommandHandler<UpdateThingCommand> {
     }
 
     existed.changeName(Name.create(name));
-    existed.changePosition(position);
+    existed.changePosition(position ?? existed.position);
     existed.changeDescription(description);
     existed.changeStartDate(startDate != null ? DateVo.create(startDate) : undefined);
     existed.changeDeadline(deadline != null ? DateVo.create(deadline) : undefined);
@@ -38,5 +38,7 @@ export class UpdateThingHandler implements ICommandHandler<UpdateThingCommand> {
     }
 
     this.eventBus.publish(new ThingUpdatedEvent(thing.id));
+
+    return { id: thing.id };
   }
 }

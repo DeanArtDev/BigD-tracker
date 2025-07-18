@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: routes.home.path,
-            loader: () => redirect(routes.gymActiveTraining.path),
+            loader: () => redirect(routes.plannerInBox.path),
           },
           {
             path: routes.gymTrainings.path,
@@ -53,9 +53,15 @@ export const router = createBrowserRouter([
             path: routes.gymPrograms.path,
             lazy: () => import('@/page/gym-programs.page'),
           },
+
+          {
+            path: routes.plannerInBox.path,
+            lazy: () => import('@/page/planner/inbox/inbox.page'),
+          },
+
           {
             path: '*',
-            loader: () => redirect(routes.gymActiveTraining.path),
+            loader: () => redirect(routes.plannerInBox.path),
           },
         ],
       },
@@ -78,7 +84,7 @@ export const router = createBrowserRouter([
 
           {
             path: '*',
-            loader: () => redirect(routes.gymActiveTraining.path),
+            loader: () => redirect(routes.plannerInBox.path),
           },
         ],
       },

@@ -48,7 +48,7 @@ const validationSchema = z.object({
     .lte(999.99, { message: 'Значение не может быть больше 999.99' }),
 });
 
-type RepetitionFactFormData = z.output<typeof validationSchema>;
+type RepetitionFactFormData = z.input<typeof validationSchema>;
 type SubmitFormData = z.output<typeof validationSchema>;
 
 function RepetitionFactForm({ repetition, onSuccess }: RepetitionFactFormProps) {

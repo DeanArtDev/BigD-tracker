@@ -57,7 +57,10 @@ const trainingManageValidationSchema = z.object({
     .array(
       z.object({
         id: z.number({ message: requiredMessage }),
-        name: z.string({ message: requiredMessage }),
+        name: z
+          .string({ message: requiredMessage })
+          .min(4, { message: 'Не меньше 4 символов' })
+          .max(254, { message: 'Слишком длинное имя' }),
         type: z.enum(['WORM-UP', 'POST-TRAINING', 'AEROBIC', 'ANAEROBIC'], {
           message: requiredMessage,
         }),

@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { BaseRepository } from '@big-d/api-utils';
+import { BaseRepository, DateVo } from '@big-d/api-utils';
 import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { set } from 'date-fns';
@@ -112,7 +112,7 @@ export class KyselyAuthRepository extends BaseRepository<DB> implements AuthRepo
       token: raw.token,
       revoked: raw.revoked,
       userId: raw.user_id,
-      expiresAt: raw.expires_at.toISOString(),
+      expiresAt: DateVo.restore(raw.expires_at.toISOString()),
       ip: raw.ip ?? undefined,
       userAgent: raw.user_agent ?? undefined,
     });

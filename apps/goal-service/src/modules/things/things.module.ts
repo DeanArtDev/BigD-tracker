@@ -24,6 +24,7 @@ import {
   GetThingsByGroupIdHandler,
   GetTodaysThingsHandler,
 } from '@/modules/things/application/queries';
+import { ThingsService } from '@/modules/things/application';
 import { FinishThingUseCase } from '@/modules/things/application/use-cases';
 import { Module } from '@nestjs/common';
 import { THINGS_REPOSITORY, ThingsController, ThingsMapper } from './application';
@@ -64,6 +65,7 @@ const useCases = [FinishThingUseCase];
   controllers: [ThingsController],
   providers: [
     ThingsMapper,
+    ThingsService,
     { provide: THINGS_REPOSITORY, useClass: KyselyThingsRepository },
     ...commands,
     ...handlers,

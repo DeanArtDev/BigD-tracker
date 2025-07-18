@@ -1,5 +1,5 @@
 import { TrainingTypeSelectForm } from '@/entity/trainings';
-import { InputForm, InputNumberForm, TextAreaForm } from '@/shared/components/form';
+import { InputForm, InputNumberForm, TextareaForm } from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -61,7 +61,7 @@ function TrainingTemplateManageForm({
       >
         <InputForm required name="name" label="Название" placeholder="Мошная тренировка ног" />
 
-        <TextAreaForm
+        <TextareaForm
           name="description"
           label="Описание"
           placeholder="Опиши на что обратить внимание"

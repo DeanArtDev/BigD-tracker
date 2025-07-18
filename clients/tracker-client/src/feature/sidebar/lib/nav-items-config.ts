@@ -1,5 +1,5 @@
 import { routes } from '@/shared/lib/routes';
-import { Dumbbell } from 'lucide-react';
+import { Dumbbell, Notebook } from 'lucide-react';
 import type { NavMenuItem } from '../nav-menu';
 
 const navMenuItems: NavMenuItem[] = [
@@ -28,6 +28,19 @@ const navMenuItems: NavMenuItem[] = [
       {
         title: 'Программы',
         to: routes.gymPrograms.path,
+      },
+    ],
+  },
+
+  {
+    title: 'Planner',
+    to: routes.planner.path,
+    icon: Notebook,
+    defaultOpen: false,
+    items: [
+      {
+        title: 'IN BOX',
+        to: routes.plannerInBox.path,
       },
     ],
   },

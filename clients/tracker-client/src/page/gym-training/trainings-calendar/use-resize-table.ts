@@ -1,5 +1,5 @@
-import { useOrientation } from '@/shared/ui-kit/hooks/use-orientation';
-import { useSidebarStore } from '@/shared/ui-kit/hooks/use-sidebar-storage';
+import { useOrientation } from '@/shared/ui-kit/helpers/use-orientation';
+import { useSidebarStore } from '@/shared/ui-kit/helpers/use-sidebar-storage';
 import { debounce } from 'lodash-es';
 import { useEffect, useRef } from 'react';
 
