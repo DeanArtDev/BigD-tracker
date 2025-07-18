@@ -81,6 +81,7 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
       .selectFrom(this.#tableName)
       .where('user_id', '=', input.userId)
       .where('group_id', '=', input.groupId)
+      .orderBy('position', 'asc')
       .selectAll()
       .execute();
 

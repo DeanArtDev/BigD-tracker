@@ -8,7 +8,6 @@ const jwtConfigFabrica = (): JwtModuleAsyncOptions => ({
     return {
       global: true,
       secret: configService.get('AUTH_SECRET_KEY'),
-      signOptions: { expiresIn: configService.get('ACCESS_TOKEN_TIME') },
     };
   },
 });

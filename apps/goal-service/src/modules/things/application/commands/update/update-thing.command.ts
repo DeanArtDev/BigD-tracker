@@ -4,7 +4,7 @@ export class UpdateThingCommand {
       readonly id: number;
       readonly userId: number;
       readonly name: string;
-      readonly position: number;
+      readonly position?: number;
       readonly description?: string;
       readonly priority?: number;
       readonly startDate?: string;

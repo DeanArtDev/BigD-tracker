@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsInt,
   IsIP,
   IsJWT,
   IsNotEmpty,
@@ -43,6 +44,9 @@ class ResData {
   @IsString()
   @IsJWT()
   accessToken: string;
+
+  @IsInt()
+  maxAge: number;
 }
 
 class RegisterRes {

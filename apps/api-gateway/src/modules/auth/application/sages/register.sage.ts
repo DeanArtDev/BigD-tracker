@@ -26,7 +26,7 @@ export class RegisterSage {
     password: string;
     ip?: string;
     userAgent?: string;
-  }): Promise<{ accessToken: string; refreshToken: string }> {
+  }): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
     const { ip, userAgent, login, password } = input;
 
     const response = await firstValueFrom(

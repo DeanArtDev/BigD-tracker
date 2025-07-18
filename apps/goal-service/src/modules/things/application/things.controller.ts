@@ -1,11 +1,19 @@
+import { ThingsService } from '@/modules/things/application/things.service';
 import { FinishThingUseCase } from '@/modules/things/application/use-cases';
-import { GoalFinishThing } from '@big-d/api-contracts';
+import {
+  GoalCreateThingIntoInBoxGroup,
+  GoalDeleteThing,
+  GoalFinishThing, GoalUpdateThing,
+} from '@big-d/api-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller()
 export class ThingsController {
-  constructor(private readonly finishThingUC: FinishThingUseCase) {}
+  constructor(
+    private readonly finishThingUC: FinishThingUseCase,
+    private readonly thingsService: ThingsService,
+  ) {}
 
   @MessagePattern(GoalFinishThing.pattern)
   async finishThing(
@@ -20,5 +28,47 @@ export class ThingsController {
     });
 
     return { data: true };
+  }
+
+  @MessagePattern(GoalCreateThingIntoInBoxGroup.pattern)
+  async createThingIntoInBox(
+    @Payload() { data }: GoalCreateThingIntoInBoxGroup.Request,
+  ): Promise<GoalCreateThingIntoInBoxGroup.Response> {
+    return {
+      data: await this.thingsService.createIntoInBoxGroup({
+        userId: data.userId,
+        deadline: data.deadline,
+        name: data.name,
+        description: data.description,
+        priority: data.priority,
+        startDate: data.startDate,
+      }),
+    };
+  }
+
+  @MessagePattern(GoalUpdateThing.pattern)
+  async updateThing(
+    @Payload() { data }: GoalUpdateThing.Request,
+  ): Promise<GoalUpdateThing.Response> {
+    return {
+      data: await this.thingsService.updateThing({
+        id: data.id,
+        userId: data.userId,
+        deadline: data.deadline,
+        name: data.name,
+        description: data.description,
+        priority: data.priority,
+        startDate: data.startDate,
+      }),
+    };
+  }
+
+  @MessagePattern(GoalDeleteThing.pattern)
+  async deleteThing(
+    @Payload() { data }: GoalDeleteThing.Request,
+  ): Promise<GoalDeleteThing.Response> {
+    await this.thingsService.delete({ id: data.id, userId: data.userId });
+
+    return { data: { id: data.id } };
   }
 }

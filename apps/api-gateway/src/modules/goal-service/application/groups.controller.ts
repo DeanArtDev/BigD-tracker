@@ -36,8 +36,8 @@ export class GroupsController {
     private readonly createGroupSage: CreateGroupSage,
   ) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Получение  IN BOX юзера' })
+  @Get('inbox')
+  @ApiOperation({ summary: 'Получение IN BOX юзера' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: GetInBoxRes,

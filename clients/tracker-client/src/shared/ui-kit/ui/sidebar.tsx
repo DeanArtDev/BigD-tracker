@@ -1,4 +1,4 @@
-import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
+import { useIsMobile } from '@/shared/ui-kit/helpers/use-mobile';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Input } from '@/shared/ui-kit/ui/input';
 import { Separator } from '@/shared/ui-kit/ui/separator';
@@ -181,7 +181,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-sidebar top-[env(safe-area-inset-top)] text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,

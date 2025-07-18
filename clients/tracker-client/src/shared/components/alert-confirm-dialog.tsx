@@ -13,22 +13,26 @@ import type { PropsWithChildren, ReactNode } from 'react';
 
 interface AlertConfirmDialogProps {
   readonly skip?: boolean;
+  readonly open?: boolean;
   readonly title: string;
   readonly content?: ReactNode;
   readonly onConfirm: () => void;
+  readonly onOpenChange?: (open: boolean) => void;
   readonly onDecline?: () => void;
 }
 
 function AlertConfirmDialog({
+  open,
   skip = false,
   title,
   content,
   children,
   onConfirm,
   onDecline,
+  onOpenChange,
 }: PropsWithChildren<AlertConfirmDialogProps>) {
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       {skip ? (
         <AlertDialogAction asChild onClick={onConfirm}>
           {children}
@@ -45,8 +49,23 @@ function AlertConfirmDialog({
         <AlertDialogDescription>{content}</AlertDialogDescription>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onDecline}>Нет</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Да</AlertDialogAction>
+          <AlertDialogCancel
+            onClick={(evt) => {
+              evt.stopPropagation();
+              onDecline?.();
+            }}
+          >
+            Нет
+          </AlertDialogCancel>
+          <AlertDialogAction
+            autoFocus
+            onClick={(evt) => {
+              evt.stopPropagation();
+              onConfirm?.();
+            }}
+          >
+            Да
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,7 +1,7 @@
 import { type NavMenuItem, navMenuItems } from '@/feature/sidebar';
 import { routes } from '@/shared/lib/routes';
-import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
-import { useSidebarStore } from '@/shared/ui-kit/hooks/use-sidebar-storage';
+import { useIsMobile } from '@/shared/ui-kit/helpers/use-mobile';
+import { useSidebarStore } from '@/shared/ui-kit/helpers/use-sidebar-storage';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { SidebarTrigger } from '@/shared/ui-kit/ui/sidebar';
 import { useLocation } from 'react-router-dom';

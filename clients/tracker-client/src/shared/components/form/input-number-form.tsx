@@ -43,7 +43,7 @@ function InputNumberForm<FormValues extends FieldValues = FieldValues>({
                 {...context.register(name, {
                   setValueAs: (v) => (v === '' || v == null ? undefined : Number(v)),
                   onChange: (evt) =>
-                    evt.target.value.trim() === '' ? undefined : evt.target.value,
+                    evt.target.value.trim() === '' ? null : evt.target.value,
                 })}
               />
             </FormControl>

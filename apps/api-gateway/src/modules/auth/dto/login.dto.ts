@@ -3,13 +3,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
 class RequestDto {
-  @ApiProperty({ example: 'example@example.com' })
+  @ApiProperty({ example: 'email2@mail.com' })
   @IsEmail()
   @IsNotEmpty()
   @IsString()
   login: string;
 
-  @ApiProperty({ example: '1234567A' })
+  @ApiProperty({ example: '1234567890' })
   @IsNotEmpty()
   @MinLength(6)
   @IsString()

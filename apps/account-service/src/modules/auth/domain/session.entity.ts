@@ -1,4 +1,4 @@
-import { DomainValidator } from '@big-d/api-utils';
+import { DateVo, DomainValidator } from '@big-d/api-utils';
 import { randomBytes } from 'crypto';
 
 const validator = new DomainValidator('sessions');
@@ -7,7 +7,7 @@ interface SessionEntityData {
   readonly uuid: string;
   readonly userId: number;
   readonly token: string;
-  expiresAt: string;
+  readonly expiresAt: DateVo;
   readonly ip?: string;
   readonly revoked: boolean;
   readonly userAgent?: string;
@@ -18,9 +18,8 @@ interface CreateSessionEntityData {
   readonly ip?: string;
   readonly userId: number;
   readonly userAgent?: string;
+  readonly expiresAt: DateVo;
 }
-
-const EMPTY_EXPIRED_DATE = '';
 
 class SessionEntity {
   #data: SessionEntityData;
@@ -32,9 +31,9 @@ class SessionEntity {
       revoked: false,
       ip: data.ip,
       userId: data.userId,
-      expiresAt: EMPTY_EXPIRED_DATE,
+      expiresAt: data.expiresAt,
       userAgent: data.userAgent,
-    });
+    }).validate();
   }
 
   static restore(data: SessionEntityData) {
@@ -45,20 +44,14 @@ class SessionEntity {
     this.#data = data;
   }
 
-  public setExpirationDate(date: Date) {
-    if (this.#data.expiresAt !== EMPTY_EXPIRED_DATE) {
-      validator.throwError(
-        `Session: ${this.#data.uuid} has already an expire date`,
-        'setExpirationDate',
-      );
-    }
-    validator.isDateAfter(date.toISOString(), new Date().toISOString(), 'setExpirationDate');
-    this.#data.expiresAt = date.toISOString();
+  public validate() {
+    const { expiresAt } = this.#data;
+    validator.isDateAfter(expiresAt.value, new Date().toISOString(), 'setExpirationDate');
     return this;
   }
 
   get isExpired() {
-    return new Date() > new Date(this.#data.expiresAt);
+    return new Date() > new Date(this.#data.expiresAt.value);
   }
 
   get uuid() {
@@ -71,7 +64,7 @@ class SessionEntity {
     return this.#data.token;
   }
   get expiresAt() {
-    return this.#data.expiresAt;
+    return this.#data.expiresAt.value;
   }
   get ip() {
     return this.#data.ip;

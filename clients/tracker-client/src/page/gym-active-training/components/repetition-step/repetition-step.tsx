@@ -1,4 +1,4 @@
-import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
+import { useIsMobile } from '@/shared/ui-kit/helpers/use-mobile';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { debounce } from 'lodash-es';
 import type { ReactNode } from 'react';

@@ -32,11 +32,7 @@ export class GroupsController {
     const inBox = await this.queryBus.execute<
       GetGroupUserInboxQuery,
       ReturnHandlerType<typeof GetGroupUserInboxHandler>
-    >(
-      new GetGroupUserInboxQuery({
-        userId: data.userId,
-      }),
-    );
+    >(new GetGroupUserInboxQuery({ userId: data.userId }));
     if (inBox == null) {
       throw new NotFoundException(`IN BOX for user: ${data.userId} is not found`);
     }

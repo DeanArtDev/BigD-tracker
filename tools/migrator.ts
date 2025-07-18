@@ -1,10 +1,7 @@
 import { getDb } from '@big-d/database';
-import * as dotenv from 'dotenv';
 import { promises as fs } from 'fs';
 import { FileMigrationProvider, Migration, Migrator } from 'kysely';
 import { join } from 'node:path';
-
-dotenv.config({ path: [join(process.cwd(), '.env.development')] });
 
 const migrationsPath = [
   join(__dirname, '../apps/account-service/db/migrations'),

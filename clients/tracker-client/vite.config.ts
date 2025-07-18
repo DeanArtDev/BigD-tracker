@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
           description: 'Трекинг всего и вся',
           name: 'Tracker',
           short_name: 'Planner',
-          start_url: '/gym/active?source=pwa',
+          start_url: '/?source=pwa',
           display: 'standalone',
           orientation: 'portrait',
           background_color: '#fff',

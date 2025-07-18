@@ -17,6 +17,7 @@ function InputForm<FormValues extends FieldValues = FieldValues>({
   label,
   isErrorMessage = true,
   required = false,
+  className,
   ...inputProps
 }: InputFormProps<FormValues>) {
   const context = useFormContext<FormValues>();
@@ -26,7 +27,7 @@ function InputForm<FormValues extends FieldValues = FieldValues>({
       name={name}
       render={() => {
         return (
-          <FormItem>
+          <FormItem className={className}>
             {label && (
               <FormLabel>
                 <RequiredSign on={required}>{label}</RequiredSign>
@@ -37,9 +38,9 @@ function InputForm<FormValues extends FieldValues = FieldValues>({
               <Input
                 {...inputProps}
                 {...context.register(name, {
-                  setValueAs: (v) => (v === '' ? undefined : v),
+                  setValueAs: (v) => (v == '' || v == null ? undefined : v),
                   onChange: (evt) =>
-                    evt.target.value.trim() === '' ? undefined : evt.target.value,
+                    evt.target.value.trim() === '' ? null : evt.target.value,
                 })}
               />
             </FormControl>

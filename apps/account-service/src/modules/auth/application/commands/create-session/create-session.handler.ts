@@ -2,11 +2,12 @@ import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
 import { AUTH_REPOSITORY, AuthRepository } from '@/modules/auth/application';
 import { SessionEntity } from '@/modules/auth/domain';
 import { GetUserHandler, GetUserQuery } from '@/modules/users/application';
-import { ReturnHandlerType } from '@big-d/api-utils';
+import { DateVo, ReturnHandlerType } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { randomUUID } from 'crypto';
+import { addMilliseconds } from 'date-fns';
 import { CreateSessionCommand } from './create-session.command';
 
 @CommandHandler(CreateSessionCommand)
@@ -26,15 +27,18 @@ export class CreateSessionHandler implements ICommandHandler<CreateSessionComman
       throw new NotFoundException(`There is no user: ${input.userId}`);
     }
 
-    const expirationDate = new Date(
-      Date.now() + this.config.get<number>('SESSION_REFRESH_TIME', 0),
-    );
+    const expirationDate = addMilliseconds(
+      new Date(),
+      this.config.get<number>('SESSION_REFRESH_TIME', 0),
+    ).toISOString()
+    ;
     const draftSession = SessionEntity.create({
       uuid: randomUUID(),
       ip: input.ip,
       userId: input.userId,
       userAgent: input.userAgent,
-    }).setExpirationDate(expirationDate);
+      expiresAt: DateVo.create(expirationDate),
+    });
 
     const session = await this.authRepository.create(draftSession);
     if (session == null) {

@@ -1,11 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { getRefreshTokenCookie } from '@shared/services/cookies';
 import { Request } from 'express';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor() {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
