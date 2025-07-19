@@ -1,5 +1,6 @@
 import { withLazy } from '@/shared/lib/react/with-lazy';
-import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
+import { cn } from '@/shared/ui-kit/utils';
 import { type JSX, useState } from 'react';
 import type { RepetitionFactFormProps } from './repetition-fact-form';
 
@@ -16,12 +17,13 @@ function RepetitionFactDialog({ repetition, childRender, onSuccess }: Repetition
 
   return (
     <>
-      <AdoptedDialog
+      <AppDialog
         open={open}
-        slotsProps={{
-          content: { className: 'sm:min-w-[450px] h-fit w-fit p-4' },
-          header: { element: 'Так че по факту?' },
-        }}
+        title="Так че по факту?"
+        className={cn(
+          'min-w-full sm:min-w-[450px] h-fit w-fit p-4',
+          '[&_.bottom-mobile-space]:hidden [&_.top-mobile-space]:hidden',
+        )}
         onOpenChange={setOpen}
       >
         <RepetitionFactFormLazy
@@ -31,7 +33,7 @@ function RepetitionFactDialog({ repetition, childRender, onSuccess }: Repetition
             setOpen(false);
           }}
         />
-      </AdoptedDialog>
+      </AppDialog>
 
       {childRender({ open: setOpen.bind(null, true), close: setOpen.bind(null, false) })}
     </>

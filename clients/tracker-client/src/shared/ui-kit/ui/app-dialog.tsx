@@ -1,3 +1,4 @@
+import { Button } from '@/shared/ui-kit/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,13 +10,14 @@ import {
 } from '@/shared/ui-kit/ui/dialog';
 import { cn } from '@/shared/ui-kit/utils';
 import { isFunction } from 'lodash-es';
+import { XIcon } from 'lucide-react';
+import * as React from 'react';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
 interface AppDialogProps {
   readonly open: boolean;
-  readonly showCloseButton?: boolean;
-  readonly title?: string;
-  readonly description?: string;
+  readonly title?: ReactNode;
+  readonly description?: ReactNode;
   readonly className?: string;
   readonly trigger?: ReactNode;
   readonly footer?: ReactNode | (() => ReactNode);
@@ -23,54 +25,79 @@ interface AppDialogProps {
 }
 
 function AppDialog(props: PropsWithChildren<AppDialogProps>) {
-  const {
-    open,
-    title,
-    description,
-    trigger,
-    className,
-    footer,
-    children,
-    showCloseButton,
-    onOpenChange,
-  } = props;
+  const { open, title, description, trigger, className, footer, children, onOpenChange } = props;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
       <DialogContent
-        showCloseButton={showCloseButton}
+        showCloseButton={false}
         className={cn(
-          'h-[calc(100%-env(safe-area-inset-top)+env(safe-area-inset-bottom))] sm:h-auto sm:max-h-[95vh]',
-          'max-w-auto gap-0 flex flex-col grow items-start overflow-x-scroll pb-[env(safe-area-inset-bottom)] p-0 sm:p-0',
+          'p-0 sm:p-0',
+          'h-full sm:h-auto sm:max-h-[95vh]',
+          'max-w-auto gap-0 flex flex-col grow items-start overflow-x-scroll',
           className,
         )}
       >
-        <div className="w-full height-[env(safe-area-inset-top)]]" />
+        <div className="top-mobile-space w-full min-h-(--mobile-top-space)" />
 
-        <DialogHeader
-          className={cn('w-full p-2.5 pb-0 sm:p-4 sm:pb-0', {
-            hidden: title == null && description == null,
-          })}
-        >
-          <DialogTitle className={cn('mt-1.5 sm:mt-0 w-[95%] pr-2', { hidden: title == null })}>
-            {title}
-          </DialogTitle>
-
-          <DialogDescription className={description == null ? 'hidden' : undefined}>
-            {description}
-          </DialogDescription>
-        </DialogHeader>
+        <AppDialogHeader
+          title={title}
+          description={description}
+          onClose={() => void onOpenChange?.(false)}
+        />
 
         <div className="flex flex-col grow flex-wrap w-full">{children}</div>
 
-        {footer && <DialogFooter>{isFunction(footer) ? footer() : footer}</DialogFooter>}
+        {footer && (
+          <DialogFooter className="w-full">{isFunction(footer) ? footer() : footer}</DialogFooter>
+        )}
 
-        <div className="w-full height-[env(safe-area-inset-bottom)]]" />
+        <div className="bottom-mobile-space w-full min-h-(--mobile-bottom-space)" />
       </DialogContent>
     </Dialog>
   );
 }
 
-export { AppDialog, type AppDialogProps };
+function AppDialogHeader(props: {
+  className?: string;
+  title?: ReactNode;
+  description?: ReactNode;
+  showClose?: boolean;
+  onClose?: React.ComponentProps<'button'>['onClick'];
+}) {
+  const { className, onClose, showClose = true, description, title } = props;
+
+  return (
+    <DialogHeader
+      className={cn(
+        'flex-row w-full p-2.5 sm:p-4 pb-0 sm:pb-0',
+        { hidden: title == null && description == null },
+        className,
+      )}
+    >
+      <div className="flex flex-col w-[95%] gap-2 justify-center">
+        <DialogTitle className={cn({ hidden: title == null })}>{title}</DialogTitle>
+
+        <DialogDescription className={description == null ? 'hidden' : undefined}>
+          {description}
+        </DialogDescription>
+      </div>
+
+      {showClose && (
+        <Button
+          className="mb-auto ml-auto mt-0.5 relative -right-2 -top-2"
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onClose}
+        >
+          <XIcon />
+        </Button>
+      )}
+    </DialogHeader>
+  );
+}
+
+export { AppDialog, AppDialogHeader, type AppDialogProps };

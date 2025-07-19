@@ -34,13 +34,13 @@ function ThingOverviewHeader({ onOk, onCancel }: ThingOverviewHeaderProps) {
   return (
     <DialogHeader className="flex-row w-full gap-0 justify-between">
       <DialogTitle
-        className={cn('p-2.5 sm:p-4 flex text-left items-center', [
+        className={cn('p-2.5 sm:p-4 flex items-center', [
           showCloseButton ? 'w-[95%] pr-0 sm:pr-0' : 'w-full',
         ])}
       >
         {showCloseButton && (
           <Button
-            className="size-4 mt-0.5 mb-auto mr-2"
+            className="size-4 mt-0.5 mb-auto mr-3"
             size="icon"
             variant="ghost"
             onClick={toggleSidebar}
@@ -87,7 +87,7 @@ function ThingOverviewHeader({ onOk, onCancel }: ThingOverviewHeaderProps) {
           </div>
         ) : (
           <span
-            className="grow flex items-center break-words break-all"
+            className="grow text-center md:text-left break-words break-all"
             onClick={() => void setEditName(true)}
           >
             {name}

@@ -1,6 +1,6 @@
 import type { ApiDto } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
-import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import { Button } from '@/shared/ui-kit/ui/button';
 
 type CreateExerciseTemplateProps = Parameters<typeof Button>[0] & {
@@ -33,20 +33,14 @@ function ManageExerciseTemplate({
         }}
       />
 
-      <AdoptedDialog
+      <AppDialog
         open={open}
+        title={exerciseTemplate == null ? 'Создание упражнения' : 'Редактирование упражнения'}
+        className="overflow-x-scroll sm:min-w-[650px]"
         onOpenChange={onOpenChange}
-        slotsProps={{
-          header: {
-            element: exerciseTemplate == null ? 'Создание упражнения' : 'Редактирование упражнения',
-          },
-          content: {
-            className: 'overflow-x-scroll',
-          },
-        }}
       >
         <ManageExerciseTemplateFormLazy exerciseTemplate={exerciseTemplate} onSuccess={onSuccess} />
-      </AdoptedDialog>
+      </AppDialog>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { withLazy } from '@/shared/lib/react/with-lazy';
-import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 
 const TrainingTemplateManageFormLazy = withLazy(() =>
   import('./training-template-manage-form').then((m) => ({
@@ -21,20 +21,16 @@ function TrainingTemplateManageDialog({
   onOpenChange,
 }: TrainingTemplateCreateDialogProps) {
   return (
-    <AdoptedDialog
+    <AppDialog
       open={open}
+      title={templateId == null ? 'Создание тренировки' : 'Редактирование тренировки'}
       onOpenChange={onOpenChange}
-      slotsProps={{
-        header: {
-          element: templateId == null ? 'Создание тренировки' : 'Редактирование тренировки',
-        },
-        content: {
-          className: 'overflow-x-scroll',
-        },
-      }}
+      className="overflow-x-scroll"
     >
-      <TrainingTemplateManageFormLazy templateId={templateId} onSuccess={onSuccess} />
-    </AdoptedDialog>
+      <div className="p-2.5 sm:p-4">
+        <TrainingTemplateManageFormLazy templateId={templateId} onSuccess={onSuccess} />
+      </div>
+    </AppDialog>
   );
 }
 

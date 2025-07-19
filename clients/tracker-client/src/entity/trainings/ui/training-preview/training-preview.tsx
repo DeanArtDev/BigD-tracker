@@ -1,9 +1,8 @@
 import { useTrainingByIdQuery } from '@/entity/trainings';
-import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
-import { DialogHeader, DialogTitle } from '@/shared/ui-kit/ui/dialog';
 import type { ReactNode } from 'react';
 import { ExerciseItemPreview } from './exercise-item-preview';
 
@@ -17,27 +16,19 @@ function TrainingPreview({ trainingId, appendContentSlot, onOpenChange }: Traini
   const { data: training, isLoading } = useTrainingByIdQuery({ id: trainingId });
 
   return (
-    <AdoptedDialog
+    <AppDialog
       open={trainingId != null}
-      slotsProps={{
-        content: {
-          className: 'overflow-x-scroll',
-        },
-      }}
+      className="overflow-x-scroll"
+      title={training?.name}
+      description={
+        <Badge variant="secondary" className="ml-auto h-min">
+          {training?.type}
+        </Badge>
+      }
       onOpenChange={onOpenChange}
     >
       <DataLoader loadingElement={<AppLoader />} parallelMount isLoading={isLoading}>
-        <div className="flex flex-col grow w-full gap-2 md:gap-4">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <span>{training?.name}</span>
-
-              <Badge variant="secondary" className="ml-auto h-min">
-                {training?.type}
-              </Badge>
-            </DialogTitle>
-          </DialogHeader>
-
+        <div className="flex flex-col p-2.5 sm:p-4 gap-2 md:gap-4">
           <div className="text-xs flex gap-4">
             {training?.wormUpDuration && (
               <span>{`Разминка: ${training?.wormUpDuration} мин.`}</span>
@@ -68,11 +59,11 @@ function TrainingPreview({ trainingId, appendContentSlot, onOpenChange }: Traini
               );
             })}
           </ul>
-        </div>
 
-        {appendContentSlot}
+          {appendContentSlot}
+        </div>
       </DataLoader>
-    </AdoptedDialog>
+    </AppDialog>
   );
 }
 

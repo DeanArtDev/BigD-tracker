@@ -30,7 +30,6 @@ function ThingOverviewDialog({
 
   return (
     <AppDialog
-      showCloseButton={false}
       open={thing != null}
       className="sm:max-w-[1000px] sm:h-full sm:max-h-[70vh] p-0 sm:p-0"
       onOpenChange={(value) => {

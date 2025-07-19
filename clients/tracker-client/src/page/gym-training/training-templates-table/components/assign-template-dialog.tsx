@@ -1,9 +1,9 @@
-import { AdoptedDialog } from '@/shared/ui-kit/ui/adopted-dialog';
+import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
-import { Calendar } from '@/shared/ui-kit/ui/calendar';
-import { useEffect, useState } from 'react';
-import { ru } from 'date-fns/locale';
 import { Button } from '@/shared/ui-kit/ui/button';
+import { Calendar } from '@/shared/ui-kit/ui/calendar';
+import { ru } from 'date-fns/locale';
+import { useEffect, useState } from 'react';
 
 interface AssignTemplateDialogProps {
   readonly templateId?: number;
@@ -23,9 +23,21 @@ function AssignTemplateDialog({
   useEffect(() => () => void setDate(undefined), []);
 
   return (
-    <AdoptedDialog
-      slotsProps={{ content: { className: 'w-auto h-auto' } }}
+    <AppDialog
+      className="w-auto p-2.5 sm:p-4"
       open={templateId != null}
+      footer={
+        <Button
+          className="ml-auto mt-2.5 sm:mt-4"
+          disabled={loading}
+          onClick={() => {
+            onAssignDates(date);
+          }}
+        >
+          {loading && <AppLoader inverse />}
+          Назначить
+        </Button>
+      }
       onOpenChange={onOpenChange}
     >
       <Calendar
@@ -35,18 +47,7 @@ function AssignTemplateDialog({
         onSelect={setDate}
         className="rounded-md border"
       />
-
-      <Button
-        className="ml-auto"
-        disabled={loading}
-        onClick={() => {
-          onAssignDates(date);
-        }}
-      >
-        {loading && <AppLoader inverse />}
-        Назначить
-      </Button>
-    </AdoptedDialog>
+    </AppDialog>
   );
 }
 

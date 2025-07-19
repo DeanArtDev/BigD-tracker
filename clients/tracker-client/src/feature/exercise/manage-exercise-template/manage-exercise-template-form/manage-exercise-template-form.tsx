@@ -61,7 +61,7 @@ function ManageExerciseTemplateForm({
     <Form {...form}>
       <form
         noValidate
-        className="space-y-8 flex flex-col grow w-full justify-start"
+        className="space-y-8 flex flex-col grow w-full justify-start p-2.5 sm:p-4"
         onSubmit={form.handleSubmit((formData) => {
           if (isCreating) {
             create(
