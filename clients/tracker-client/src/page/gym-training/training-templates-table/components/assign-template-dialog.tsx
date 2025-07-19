@@ -24,7 +24,7 @@ function AssignTemplateDialog({
 
   return (
     <AppDialog
-      className="w-auto p-2.5 sm:p-4"
+      className="w-auto p-2.5 sm:p-4 h-fit"
       open={templateId != null}
       footer={
         <Button
