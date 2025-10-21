@@ -68,7 +68,7 @@ catalogs:
       version: 4.1.0
     dotenv:
       specifier: ^16.5.0
-      version: 16.5.0
+      version: 16.6.1
     eslint:
       specifier: 9.25.0
       version: 9.25.0
@@ -83,7 +83,7 @@ catalogs:
       version: 5.0.1
     globals:
       specifier: ^16.0.0
-      version: 16.2.0
+      version: 16.3.0
     kysely:
       specifier: ^0.28.2
       version: 0.28.2
@@ -154,7 +154,7 @@ importers:
         version: 7.0.3
       dotenv:
         specifier: 'catalog:'
-        version: 16.5.0
+        version: 16.6.1
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -172,7 +172,7 @@ importers:
         version: 5.4.0(@types/eslint@9.6.1)(eslint-config-prettier@10.1.5(eslint@9.25.0(jiti@2.4.2)))(eslint@9.25.0(jiti@2.4.2))(prettier@3.5.3)
       globals:
         specifier: 'catalog:'
-        version: 16.2.0
+        version: 16.3.0
       kysely:
         specifier: 'catalog:'
         version: 0.28.2
@@ -516,7 +516,7 @@ importers:
         version: 5.4.0(@types/eslint@9.6.1)(eslint-config-prettier@10.1.5(eslint@9.25.0(jiti@2.4.2)))(eslint@9.25.0(jiti@2.4.2))(prettier@3.5.3)
       globals:
         specifier: 'catalog:'
-        version: 16.2.0
+        version: 16.3.0
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.15.17)(ts-node@10.9.2(@swc/core@1.12.14)(@types/node@22.15.17)(typescript@5.8.3))
@@ -1237,7 +1237,7 @@ importers:
         version: 5.4.0(@types/eslint@9.6.1)(eslint-config-prettier@10.1.5(eslint@9.25.0(jiti@2.4.2)))(eslint@9.25.0(jiti@2.4.2))(prettier@3.5.3)
       globals:
         specifier: 'catalog:'
-        version: 16.2.0
+        version: 16.3.0
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
@@ -1341,7 +1341,7 @@ importers:
         version: 5.4.0(@types/eslint@9.6.1)(eslint-config-prettier@10.1.5(eslint@9.25.0(jiti@2.4.2)))(eslint@9.25.0(jiti@2.4.2))(prettier@3.5.3)
       globals:
         specifier: 'catalog:'
-        version: 16.2.0
+        version: 16.3.0
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
@@ -1390,7 +1390,7 @@ importers:
         version: 5.4.0(@types/eslint@9.6.1)(eslint-config-prettier@10.1.5(eslint@9.25.0(jiti@2.4.2)))(eslint@9.25.0(jiti@2.4.2))(prettier@3.5.3)
       globals:
         specifier: 'catalog:'
-        version: 16.2.0
+        version: 16.3.0
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
@@ -5263,10 +5263,6 @@ packages:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
-  dotenv@16.5.0:
-    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
-    engines: {node: '>=12'}
-
   dotenv@16.6.1:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
@@ -5828,10 +5824,6 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
-    engines: {node: '>=18'}
-
-  globals@16.2.0:
-    resolution: {integrity: sha512-O+7l9tPdHCU320IigZZPj5zmRCFG9xHmx9cU8FqU2Rp+JN714seHV+2S9+JslCpY4gJwU2vOGox0wzgae/MCEg==}
     engines: {node: '>=18'}
 
   globals@16.3.0:
@@ -7619,6 +7611,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
@@ -11370,7 +11363,7 @@ snapshots:
 
   '@types/eslint@9.6.1':
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       '@types/json-schema': 7.0.15
 
   '@types/estree@0.0.39': {}
@@ -12844,8 +12837,6 @@ snapshots:
 
   dotenv@16.4.7: {}
 
-  dotenv@16.5.0: {}
-
   dotenv@16.6.1: {}
 
   dunder-proto@1.0.1:
@@ -13657,8 +13648,6 @@ snapshots:
   globals@11.12.0: {}
 
   globals@14.0.0: {}
-
-  globals@16.2.0: {}
 
   globals@16.3.0: {}
 

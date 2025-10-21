@@ -1,6 +1,7 @@
 import { ThingsService } from '@/modules/things/application/things.service';
 import { FinishThingUseCase } from '@/modules/things/application/use-cases';
 import {
+  GoalCreateThing,
   GoalCreateThingIntoInBoxGroup,
   GoalDeleteThing,
   GoalFinishThing,
@@ -37,6 +38,23 @@ export class ThingsController {
   ): Promise<GoalCreateThingIntoInBoxGroup.Response> {
     return {
       data: await this.thingsService.createIntoInBoxGroup({
+        userId: data.userId,
+        deadline: data.deadline,
+        name: data.name,
+        description: data.description,
+        priority: data.priority,
+        startDate: data.startDate,
+      }),
+    };
+  }
+
+  @MessagePattern(GoalCreateThing.pattern)
+  async createThing(
+    @Payload() { data }: GoalCreateThing.Request,
+  ): Promise<GoalCreateThing.Response> {
+    return {
+      data: await this.thingsService.createThing({
+        groupId: data.groupId,
         userId: data.userId,
         deadline: data.deadline,
         name: data.name,

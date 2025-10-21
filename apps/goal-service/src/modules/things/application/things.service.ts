@@ -1,4 +1,6 @@
 import {
+  GetGroupByIdHandler,
+  GetGroupByIdQuery,
   GetGroupUserInboxHandler,
   GetGroupUserInboxQuery,
 } from '@/modules/groups/application/queries';
@@ -55,6 +57,44 @@ export class ThingsService {
       CreateThingCommand,
       ReturnHandlerType<typeof CreateThingHandler>
     >(new CreateThingCommand({ ...input, groupId: inbox.id, position: things.length + 1 }));
+
+    const thing = await this.queryBus.execute<
+      GetThingByIdQuery,
+      ReturnHandlerType<typeof GetThingByIdHandler>
+    >(new GetThingByIdQuery({ id, userId: input.userId }));
+    if (thing == null) {
+      throw new InternalServerErrorException('Error occurred while creating thing');
+    }
+
+    return this.mapper.fromEntityToDTO(thing);
+  }
+
+  async createThing(input: {
+    groupId: number;
+    userId: number;
+    name: string;
+    description?: string;
+    priority?: number;
+    startDate?: string;
+    deadline?: string;
+  }): Promise<ThingDto> {
+    const group = await this.queryBus.execute<
+      GetGroupByIdQuery,
+      ReturnHandlerType<typeof GetGroupByIdHandler>
+    >(new GetGroupByIdQuery({ id: input.groupId, userId: input.userId }));
+    if (group == null) {
+      throw new InternalServerErrorException(`There is no such a group: ${input.groupId}`);
+    }
+
+    const things = await this.queryBus.execute<
+      GetThingsByGroupIdQuery,
+      ReturnHandlerType<typeof GetThingsByGroupIdHandler>
+    >(new GetThingsByGroupIdQuery({ groupId: group.id, userId: input.userId }));
+
+    const { id } = await this.commandBus.execute<
+      CreateThingCommand,
+      ReturnHandlerType<typeof CreateThingHandler>
+    >(new CreateThingCommand({ ...input, groupId: group.id, position: things.length + 1 }));
 
     const thing = await this.queryBus.execute<
       GetThingByIdQuery,

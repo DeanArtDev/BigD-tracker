@@ -1,11 +1,12 @@
 import { RepetitionForm } from '@/entity/exercises/ui';
 import { Button } from '@/shared/ui-kit/ui/button';
+import { ButtonChevron } from '@/shared/ui-kit/ui/button-chevron';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/shared/ui-kit/ui/collapsible';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import type { TrainingManageFormData } from '../training-template-manage-form';
@@ -44,16 +45,12 @@ function ExerciseElements({
         <span className="text-sm">{name}</span>
 
         <CollapsibleTrigger asChild>
-          <Button
+          <ButtonChevron
+            open={open}
             className="ml-auto"
-            type="button"
-            variant="ghost"
-            size="sm"
             disabled={disabled}
             onClick={() => void setOpen((prev) => !prev)}
-          >
-            {open ? <ChevronUp /> : <ChevronDown />}
-          </Button>
+          />
         </CollapsibleTrigger>
 
         <Button

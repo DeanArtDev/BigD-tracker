@@ -49,6 +49,17 @@ export class KyselyGroupsRepository extends BaseRepository<DB> implements Groups
     return result.map(this.#map);
   }
 
+  async findByUserId(input: { userId: number }): Promise<GroupEntity[]> {
+    const result = await this.db()
+      .selectFrom(this.#tableName)
+      .where('user_id', '=', input.userId)
+      .where('name', '!=', IN_BOX_NAME)
+      .selectAll()
+      .execute();
+
+    return result.map(this.#map);
+  }
+
   async create(entity: GroupEntity, trx?: Transaction<DB>): Promise<GroupEntity | null> {
     const result = await this.db(trx)
       .insertInto(this.#tableName)

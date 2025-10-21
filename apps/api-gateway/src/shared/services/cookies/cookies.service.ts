@@ -12,11 +12,13 @@ export class CookieService {
   setRefreshToken(res: Response, params: { token: string | undefined; maxAge?: number }) {
     const { maxAge, token } = params;
 
+    const isProd = this.config.get<boolean>('IS_PROD');
+
     if (token == null) {
       res.clearCookie(REFRESH_TOKEN_FIELD, {
         httpOnly: true,
-        secure: this.config.get<boolean>('IS_PROD'),
-        sameSite: 'strict',
+        secure: isProd,
+        sameSite: isProd ? 'strict' : 'lax',
         path: '/auth/refresh',
         maxAge,
       });
@@ -25,8 +27,8 @@ export class CookieService {
 
     res.cookie(REFRESH_TOKEN_FIELD, token, {
       httpOnly: true,
-      secure: this.config.get<boolean>('IS_PROD'),
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'strict' : 'lax',
       path: '/auth/refresh',
       maxAge,
     });

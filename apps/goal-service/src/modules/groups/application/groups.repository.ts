@@ -12,6 +12,7 @@ interface GroupsRepository {
   findById(input: { id: number; userId: number }): Promise<GroupEntity | null>;
   findUserInbox(input: { userId: number }): Promise<GroupEntity | null>;
   findByGoalId(input: { goalId: number; userId: number }): Promise<GroupEntity[]>;
+  findByUserId(input: { userId: number }): Promise<GroupEntity[]>;
   create(entity: GroupEntity, trx?: Transaction<DB>): Promise<GroupEntity | null>;
   update(
     entity: GroupEntity,

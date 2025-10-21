@@ -1,6 +1,6 @@
 import { useInboxQuery, useInvalidateInbox } from '@/entity/planner/groups';
 import { useUpdateThing } from '@/entity/planner/things';
-import { DeleteTemplate } from '@/entity/planner/things/ui';
+import { ThingDelete } from '@/entity/planner/things/ui';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -55,7 +55,7 @@ function InboxList() {
                     evt.stopPropagation();
                   }}
                 >
-                  <DeleteTemplate thingId={i.id} onSuccess={invalidateInbox}>
+                  <ThingDelete thingId={i.id} onSuccess={invalidateInbox}>
                     {({ isLoading }) => (
                       <Button
                         size="icon"
@@ -67,7 +67,7 @@ function InboxList() {
                         <Trash />
                       </Button>
                     )}
-                  </DeleteTemplate>
+                  </ThingDelete>
                 </div>
               }
               onClick={({ id }) => void setThingId(id)}

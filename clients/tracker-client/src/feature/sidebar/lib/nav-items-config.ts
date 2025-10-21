@@ -42,6 +42,10 @@ const navMenuItems: NavMenuItem[] = [
         title: 'IN BOX',
         to: routes.plannerInBox.path,
       },
+      {
+        title: 'Группы',
+        to: routes.plannerGroupList.path,
+      },
     ],
   },
 ];

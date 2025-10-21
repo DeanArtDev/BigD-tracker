@@ -1,4 +1,4 @@
-import { DeleteTemplate } from '@/entity/planner/things/ui';
+import { ThingDelete } from '@/entity/planner/things/ui';
 import type { ApiDto } from '@/shared/api/types';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { LeftSwiper } from '@/shared/ui-kit/ui/left-swiper';
@@ -17,7 +17,7 @@ function ThingCardMobile({ thing, onClick, onSuccess }: ThingCardMobileProps) {
       actionsSpace={40}
       actions={
         <div className="flex items-center h-full">
-          <DeleteTemplate thingId={thing.id} onSuccess={onSuccess}>
+          <ThingDelete thingId={thing.id} onSuccess={onSuccess}>
             {({ isLoading }) => (
               <Button
                 size="icon"
@@ -28,7 +28,7 @@ function ThingCardMobile({ thing, onClick, onSuccess }: ThingCardMobileProps) {
                 <Trash />
               </Button>
             )}
-          </DeleteTemplate>
+          </ThingDelete>
         </div>
       }
     >

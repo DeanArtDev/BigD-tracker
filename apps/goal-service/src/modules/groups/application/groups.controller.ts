@@ -1,6 +1,8 @@
 import { DeleteGroupCommand, DeleteGroupHandler } from '@/modules/groups/application/commands';
-import { InBoxGroupMapper } from '@/modules/groups/application/groups.mapper';
+import { GroupsMapper, InBoxGroupMapper } from '@/modules/groups/application/groups.mapper';
 import {
+  GetGroupsByUserIdHandler,
+  GetGroupsByUserIdQuery,
   GetGroupUserInboxHandler,
   GetGroupUserInboxQuery,
 } from '@/modules/groups/application/queries';
@@ -9,6 +11,7 @@ import {
   GoalCreateInBoxGroup,
   GoalDeleteGroup,
   GoalGetGroupInBox,
+  GoalGetGroupsByUserId,
   GoalUpdateGroup,
 } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
@@ -23,6 +26,7 @@ export class GroupsController {
     private readonly groupsService: GroupsService,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly mapper: GroupsMapper,
   ) {}
 
   @MessagePattern(GoalGetGroupInBox.pattern)
@@ -39,6 +43,20 @@ export class GroupsController {
 
     return {
       data: new InBoxGroupMapper().fromEntityToDTO(inBox),
+    };
+  }
+
+  @MessagePattern(GoalGetGroupsByUserId.pattern)
+  async getByUserId(
+    @Payload() { data }: GoalGetGroupsByUserId.Request,
+  ): Promise<GoalGetGroupsByUserId.Response> {
+    const groups = await this.queryBus.execute<
+      GetGroupsByUserIdQuery,
+      ReturnHandlerType<typeof GetGroupsByUserIdHandler>
+    >(new GetGroupsByUserIdQuery({ userId: data.userId }));
+
+    return {
+      data: groups.map(this.mapper.fromEntityToDTO),
     };
   }
 

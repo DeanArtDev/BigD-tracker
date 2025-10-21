@@ -23,3 +23,11 @@ export class GetGroupByGoalIdQuery {
     },
   ) {}
 }
+
+export class GetGroupsByUserIdQuery {
+  constructor(
+    readonly input: {
+      readonly userId: number;
+    },
+  ) {}
+}

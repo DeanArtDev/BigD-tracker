@@ -5,3 +5,4 @@ export * from './dtos/shared/group.dto';
 export * from './dtos/shared/group-in-box.dto';
 export * from './create-in-box';
 export * from './get-in-box';
+export * from './get-by-user-id';

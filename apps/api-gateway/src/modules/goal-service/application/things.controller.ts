@@ -3,6 +3,7 @@ import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   GOAL_SERVICE_RMQ_KEY,
+  GoalCreateThing,
   GoalCreateThingIntoInBoxGroup,
   GoalDeleteThing,
   GoalFinishThing,
@@ -26,6 +27,8 @@ import { firstValueFrom } from 'rxjs';
 import {
   CreateThingIntoInboxReq,
   CreateThingIntoInboxRes,
+  CreateThingReq,
+  CreateThingRes,
   FinishThingReq,
   FinishThingRes,
   UpdateThingReq,
@@ -64,6 +67,37 @@ export class ThingsController {
           deadline: data.deadline,
         },
       }),
+    );
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Создание дела' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: CreateThingRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(CreateThingRes)
+  async createThing(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: CreateThingReq,
+  ): Promise<CreateThingRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalCreateThing.Response, GoalCreateThing.Request>(
+        GoalCreateThing.pattern,
+        {
+          data: {
+            userId: uid,
+            groupId: data.groupId,
+            priority: data.priority,
+            description: data.description,
+            name: data.name,
+            startDate: data.startDate,
+            deadline: data.deadline,
+          },
+        },
+      ),
     );
   }
 

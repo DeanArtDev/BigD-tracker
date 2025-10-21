@@ -1,10 +1,10 @@
 import { AlertConfirmDialog } from '@/shared/components/alert-confirm-dialog';
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 
 function useConfirmDialog() {
   const [confirmProps, setConfirmProps] = useState<null | {
-    title: string;
-    content?: string;
+    title: ReactNode;
+    content?: ReactNode;
     onConfirm: () => void;
     onDecline?: () => void;
   }>(null);

@@ -2,11 +2,13 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { GetInBoxRes } from '@/modules/goal-service/application/dtos/groups/get-in-box.dto';
+import { GetMyGroupsRes } from '@/modules/goal-service/application/dtos/groups/get-my-groups.dto';
 import { CreateGroupSage } from '@/modules/goal-service/application/sages';
 import {
   GOAL_SERVICE_RMQ_KEY,
   GoalDeleteGroup,
   GoalGetGroupInBox,
+  GoalGetGroupsByUserId,
   GoalUpdateGroup,
 } from '@big-d/api-contracts';
 import {
@@ -48,6 +50,23 @@ export class GroupsController {
     return await firstValueFrom(
       this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
         GoalGetGroupInBox.pattern,
+        { data: { userId: uid } },
+      ),
+    );
+  }
+
+  @Get('my')
+  @ApiOperation({ summary: 'Получение групп юзера' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetMyGroupsRes,
+  })
+  @ValidateRpcResponse(GetMyGroupsRes)
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async getMyGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetMyGroupsRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalGetGroupsByUserId.Response, GoalGetGroupsByUserId.Request>(
+        GoalGetGroupsByUserId.pattern,
         { data: { userId: uid } },
       ),
     );

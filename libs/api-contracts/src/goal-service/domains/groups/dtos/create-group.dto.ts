@@ -45,8 +45,9 @@ class ReqData {
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsInt()
-  goalId: number;
+  goalId?: number;
 
   @IsString()
   @IsOptional()
