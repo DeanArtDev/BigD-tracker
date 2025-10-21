@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { isExceptionWrongLoginOrPasswordBody } from '@big-d/api-exceptions';
-import { useAuthStore } from './use-auth-store';
-import { useAccessTokenStore } from './use-access-token-store';
+import { useAuthStore } from './store/use-auth-store';
+import { useAccessTokenStore } from './store/use-access-token-store';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';

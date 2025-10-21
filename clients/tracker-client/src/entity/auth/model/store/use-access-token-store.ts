@@ -63,7 +63,6 @@ const useAccessTokenStore = create<AccessTokenStore>()(
           awaiter = apiPublicClient
             .POST('/auth/refresh')
             .then(({ data }) => data?.data.token ?? null)
-            .then((newToken) => (newToken != null ? newToken : null))
             .finally(() => {
               awaiter = null;
             });
