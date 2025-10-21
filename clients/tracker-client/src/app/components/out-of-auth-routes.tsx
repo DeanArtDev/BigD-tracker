@@ -6,8 +6,7 @@ function OutOfAuthRoutes() {
   const isAuth = useAuthStore((state) => state.isAuth);
   const accessToken = useAccessTokenStore((state) => state.accessToken);
   const drop = useDropEverything();
-  console.warn('OutOfAuthRoutes', { isAuth, accessToken });
-  if (isAuth || accessToken != null) return <Navigate to={routes.plannerInBox.path} />;
+  if (isAuth || accessToken != null) return <Navigate to={routes.home.path} />;
   drop();
   return <Outlet />;
 }

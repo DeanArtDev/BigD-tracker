@@ -25,7 +25,7 @@ function useLogin() {
       if (data.data != null) {
         setAccessToken(data.data.token);
         setIsAuth(true);
-        navigate(routes.plannerInBox.path);
+        navigate(routes.home.path);
       }
     },
   });

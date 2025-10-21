@@ -12,6 +12,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <NavUser user={{ email, avatar, name: screenName }} />
       </SidebarHeader>
+
       <SidebarContent>
         <NavMenu />
       </SidebarContent>
