@@ -31,7 +31,13 @@ export const router = createBrowserRouter([
         children: [
           {
             path: routes.home.path,
-            loader: () => redirect(routes.plannerInBox.path),
+            loader: () => redirect(routes.planner.path),
+          },
+
+          /* GYM */
+          {
+            path: routes.gym.path,
+            lazy: () => import('@/page/gym/gym.page'),
           },
           {
             path: routes.gymTrainings.path,
@@ -54,6 +60,11 @@ export const router = createBrowserRouter([
             lazy: () => import('@/page/gym-programs.page'),
           },
 
+          /* PLANNER */
+          {
+            path: routes.planner.path,
+            lazy: () => import('@/page/planner/planner.page'),
+          },
           {
             path: routes.plannerInBox.path,
             lazy: () => import('@/page/planner/inbox/inbox.page'),
@@ -62,11 +73,6 @@ export const router = createBrowserRouter([
           {
             path: routes.plannerGroupList.path,
             lazy: () => import('@/page/planner/group-list/group-list.page'),
-          },
-
-          {
-            path: '*',
-            loader: () => redirect(routes.plannerInBox.path),
           },
         ],
       },
@@ -89,7 +95,7 @@ export const router = createBrowserRouter([
 
           {
             path: '*',
-            loader: () => redirect(routes.plannerInBox.path),
+            loader: () => redirect(routes.home.path),
           },
         ],
       },

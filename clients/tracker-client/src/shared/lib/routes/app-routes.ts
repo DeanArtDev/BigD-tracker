@@ -78,4 +78,6 @@ const routes = {
   }))('/error'),
 } as const;
 
-export { routes };
+type RoutePaths = (typeof routes)[keyof typeof routes]['path'];
+
+export { routes, type RoutePaths };
