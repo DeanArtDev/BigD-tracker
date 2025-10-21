@@ -8,4 +8,11 @@ function useInvalidateInbox() {
     });
 }
 
-export { useInvalidateInbox };
+function useGroupInvalidate() {
+  return () =>
+    queryClient.invalidateQueries({
+      queryKey: groupsQueryKeys.getGroups(),
+    });
+}
+
+export { useInvalidateInbox, useGroupInvalidate };

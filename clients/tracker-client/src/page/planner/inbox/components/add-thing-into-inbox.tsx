@@ -1,3 +1,5 @@
+import { useInvalidateInbox } from '@/entity/planner/groups';
+import { useCreateThingIntoInbox } from '@/entity/planner/things';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
@@ -15,6 +17,9 @@ function AddThingIntoInbox() {
   const [openThingManager, setOpenThingManager] = useState(false);
   const { formEmitterState, formStateEmitterProps } = useFormStateEmitter();
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
+
+  const { createThing, isPending: isCreatePending } = useCreateThingIntoInbox();
+  const invalidateInbox = useInvalidateInbox();
 
   return (
     <>
@@ -41,10 +46,21 @@ function AddThingIntoInbox() {
           });
         }}
       >
-        <div className="flex flex-col p-2.5 sm:p-4">
+        <div className="flex flex-col p-2.5 sm:p-4 grow md:grow-0">
           <ThingManagerFormLazy
             {...formStateEmitterProps}
-            onSuccess={() => void setOpenThingManager(false)}
+            isLoading={isCreatePending}
+            onSubmit={(formResult) => {
+              createThing(
+                { body: { data: formResult } },
+                {
+                  onSuccess: async () => {
+                    await invalidateInbox();
+                    setOpenThingManager(false);
+                  },
+                },
+              );
+            }}
           />
         </div>
       </AppDialog>

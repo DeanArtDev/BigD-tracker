@@ -60,6 +60,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       open: false,
       port: parseInt(env.VITE_CLIENT_PORT ?? '', 10) || 5173,
+      strictPort: true,
     },
   };
 });

@@ -60,6 +60,11 @@ export const router = createBrowserRouter([
           },
 
           {
+            path: routes.plannerGroupList.path,
+            lazy: () => import('@/page/planner/group-list/group-list.page'),
+          },
+
+          {
             path: '*',
             loader: () => redirect(routes.plannerInBox.path),
           },

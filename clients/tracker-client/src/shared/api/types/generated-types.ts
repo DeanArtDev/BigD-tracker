@@ -453,6 +453,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение групп юзера */
+        get: operations["GroupsController_getMyGoals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups": {
         parameters: {
             query?: never;
@@ -499,6 +516,23 @@ export interface paths {
         put?: never;
         /** Создание дела в IN BOX */
         post: operations["ThingsController_createIntoInbox"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/things": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Создание дела */
+        post: operations["ThingsController_createThing"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1240,6 +1274,10 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["GroupInBoxDto"];
         };
+        GetMyGroupsRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupDto"][];
+        };
         Thing: {
             /** @example Название дела */
             name: string;
@@ -1255,7 +1293,27 @@ export interface components {
             /** @example 2025-05-24T13:01:02.471Z */
             deadline?: string;
         };
+        CreateGroupReqData: {
+            /** @example Название группы */
+            name: string;
+            /** @example 1 */
+            goalId?: number;
+            /** @example Описание */
+            description?: string;
+            /** @description Список дел */
+            things: components["schemas"]["Thing"][];
+        };
+        CreateGroupReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["CreateGroupReqData"];
+        };
+        CreateGroupRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupDto"];
+        };
         ReqData: {
+            /** @example 1 */
+            userId: number;
             /** @example Название группы */
             name: string;
             /** @example 1 */
@@ -1264,14 +1322,6 @@ export interface components {
             description?: string;
             /** @description Список дел */
             things: components["schemas"]["Thing"][];
-        };
-        CreateGroupReq: {
-            /** @description Запрос сервера */
-            data: components["schemas"]["ReqData"];
-        };
-        CreateGroupRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GroupDto"];
         };
         UpdateGroupReq: {
             /** @description Ответ сервера */
@@ -1301,6 +1351,31 @@ export interface components {
             data: components["schemas"]["CreateThingIntoInboxReqData"];
         };
         CreateThingIntoInboxRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ThingDto"];
+        };
+        CreateThingReqData: {
+            /** @example 1 */
+            groupId: number;
+            /** @example Имя дела */
+            name: string;
+            /**
+             * @description От 1 до 4
+             * @example 2
+             */
+            priority?: number;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
+            /** @example Описание дела */
+            description?: string;
+        };
+        CreateThingReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["CreateThingReqData"];
+        };
+        CreateThingRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["ThingDto"];
         };
@@ -2095,6 +2170,25 @@ export interface operations {
             };
         };
     };
+    GroupsController_getMyGoals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetMyGroupsRes"];
+                };
+            };
+        };
+    };
     GroupsController_createGroup: {
         parameters: {
             query?: never;
@@ -2181,6 +2275,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateThingIntoInboxRes"];
+                };
+            };
+        };
+    };
+    ThingsController_createThing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateThingReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateThingRes"];
                 };
             };
         };

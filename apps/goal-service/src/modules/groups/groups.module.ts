@@ -20,6 +20,8 @@ import {
   GetGroupByIdQuery,
   GetGroupUserInboxHandler,
   GetGroupUserInboxQuery,
+  GetGroupsByUserIdHandler,
+  GetGroupsByUserIdQuery,
 } from '@/modules/groups/application/queries';
 import { GroupCreatedEvent, GroupDeletedEvent, GroupUpdatedEvent } from '@/modules/groups/domain';
 import { SyncCollectionRepository } from '@big-d/api-utils';
@@ -47,8 +49,14 @@ const handlers = [
   UpdateGroupWithThingsHandler,
   CreateInBoxGroupHandler,
   CreateGroupHandler,
+  GetGroupsByUserIdHandler,
 ];
-const queries = [GetGroupByIdQuery, GetGroupByGoalIdQuery, GetGroupUserInboxQuery];
+const queries = [
+  GetGroupByIdQuery,
+  GetGroupByGoalIdQuery,
+  GetGroupUserInboxQuery,
+  GetGroupsByUserIdQuery,
+];
 const events = [GroupUpdatedEvent, GroupCreatedEvent, GroupDeletedEvent];
 
 @Module({

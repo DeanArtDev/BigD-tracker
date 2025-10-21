@@ -49,17 +49,18 @@ class Thing {
   deadline?: string;
 }
 
-class ReqData {
+class CreateGroupReqData {
   @ApiProperty({ example: 'Название группы' })
   @Expose()
   @MaxLength(255)
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
   @Expose()
+  @IsOptional()
   @IsInt()
-  goalId: number;
+  goalId?: number;
 
   @ApiPropertyOptional({ example: 'Описание' })
   @Expose()
@@ -82,12 +83,12 @@ class ReqData {
 class CreateGroupReq {
   @ApiProperty({
     description: 'Запрос сервера',
-    type: ReqData,
+    type: CreateGroupReqData,
   })
   @Expose()
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => CreateGroupReqData)
+  data: CreateGroupReqData;
 }
 
 class CreateGroupRes extends GroupResSingle {}

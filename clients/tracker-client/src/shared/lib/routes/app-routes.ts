@@ -50,6 +50,17 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/planner/inbox'),
 
+  plannerGroupList: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/planner/group-list'),
+
+  plannerGroup: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: ({ id }: { id: string }, query?: UrlQueryParams) =>
+      buildLink(path, { urlParams: { id }, queryObject: query }),
+  }))('/planner/group/:id'),
+
   /* SYSTEM */
   signUp: (<Path extends string = string>(path: Path) => ({
     path,

@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs';
 interface CreateGroupSageInput {
   name: string;
   userId: number;
-  goalId: number;
+  goalId?: number;
   description?: string;
   things: {
     name: string;
@@ -25,14 +25,16 @@ export class CreateGroupSage {
   async execute(input: CreateGroupSageInput): Promise<CreateGroupRes> {
     const { userId, things, goalId, description, name } = input;
 
-    const existedGoal = await firstValueFrom(
-      this.goalClient.send<GoalGetGroupById.Response, GoalGetGroupById.Request>(
-        GoalGetGroupById.pattern,
-        { data: { id: goalId, userId } },
-      ),
-    );
-    if (existedGoal == null) {
-      throw new NotFoundException(`Goal: ${goalId} is not found`);
+    if (goalId != null) {
+      const existedGoal = await firstValueFrom(
+        this.goalClient.send<GoalGetGroupById.Response, GoalGetGroupById.Request>(
+          GoalGetGroupById.pattern,
+          { data: { id: goalId, userId } },
+        ),
+      );
+      if (existedGoal == null) {
+        throw new NotFoundException(`Goal: ${goalId} is not found`);
+      }
     }
 
     return await firstValueFrom(

@@ -1,5 +1,4 @@
-import { useInvalidateInbox } from '@/entity/planner/groups';
-import { useCreateThingIntoInbox } from '@/entity/planner/things';
+import type { ApiDto } from '@/shared/api/types';
 import {
   DatePickerForm,
   FormStateEmitter,
@@ -21,19 +20,18 @@ import { validationSchema } from './validation-schema';
 type ThingManagerFormData = z.input<typeof validationSchema>;
 type SubmitFormData = z.output<typeof validationSchema>;
 
+type SubmitResponse = Omit<ApiDto['CreateThingReq']['data'], 'groupId'>;
+
 interface ThingManagerFormProps {
+  readonly isLoading: boolean;
   readonly emitIsLoading?: (value: boolean) => void;
   readonly emitIsDirty?: (value: boolean) => void;
-  readonly onSuccess: () => void;
+  readonly onSubmit: (thing: SubmitResponse) => void;
 }
 
 function ThingManagerForm(props: ThingManagerFormProps) {
-  const { emitIsDirty, emitIsLoading, onSuccess } = props;
+  const { isLoading, emitIsDirty, emitIsLoading, onSubmit } = props;
   const isCreating = true;
-
-  const { createThing, isPending: isCreatePending } = useCreateThingIntoInbox();
-  const invalidateInbox = useInvalidateInbox();
-  const isLoading = isCreatePending;
 
   const form = useForm<ThingManagerFormData, any, SubmitFormData>({
     resolver: zodResolver(validationSchema),
@@ -54,28 +52,23 @@ function ThingManagerForm(props: ThingManagerFormProps) {
         noValidate
         className="space-y-8 flex flex-col grow w-full justify-start"
         onSubmit={form.handleSubmit((formData) => {
-          createThing(
-            {
-              body: {
-                data: {
-                  name: formData.name,
-                  deadline: formData.deadline,
-                  description: formData.description,
-                  priority: formData.priority != null ? +formData.priority : undefined,
-                  startDate: formData.startDate,
-                },
-              },
-            },
-            {
-              onSuccess: async () => {
-                await invalidateInbox();
-                onSuccess();
-              },
-            },
-          );
+          onSubmit({
+            name: formData.name,
+            deadline: formData.deadline,
+            description: formData.description,
+            priority: formData.priority != null ? +formData.priority : undefined,
+            startDate: formData.startDate,
+          });
         })}
       >
-        <InputForm<ThingManagerFormData> required name="name" label="Название" placeholder="Имя" />
+        <InputForm<ThingManagerFormData> autoFocus required name="name" label="Название" placeholder="Имя" />
+
+        <TextareaForm<ThingManagerFormData>
+          name="description"
+          label="Описание"
+          placeholder="Опиши свое дело"
+          className="min-h-[200px]"
+        />
 
         <div className="grid gap-4 grid-cols-2">
           <DatePickerForm<ThingManagerFormData>
@@ -92,14 +85,8 @@ function ThingManagerForm(props: ThingManagerFormProps) {
           />
         </div>
 
-        <TextareaForm<ThingManagerFormData>
-          name="description"
-          label="Описание"
-          placeholder="Опиши свое дело"
-          className="min-h-[200px]"
-        />
 
-        <div className="flex gap-4 justify-between">
+        <div className="flex gap-4 justify-between mt-auto">
           <ToggleGroupForm name="priority">
             <ToggleGroupItem value="1" className="w-[50px]">
               <Circle strokeWidth={3} color="var(--priority-1)" />

@@ -7,7 +7,12 @@ import { ReturnHandlerType } from '@big-d/api-utils';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { IQueryHandler, QueryBus, QueryHandler } from '@nestjs/cqrs';
 import { GROUPS_REPOSITORY, GroupsRepository } from '../groups.repository';
-import { GetGroupByGoalIdQuery, GetGroupByIdQuery, GetGroupUserInboxQuery } from './groups.query';
+import {
+  GetGroupByGoalIdQuery,
+  GetGroupByIdQuery,
+  GetGroupsByUserIdQuery,
+  GetGroupUserInboxQuery,
+} from './groups.query';
 
 @QueryHandler(GetGroupByIdQuery)
 export class GetGroupByIdHandler implements IQueryHandler<GetGroupByIdQuery> {
@@ -57,6 +62,28 @@ export class GetGroupByGoalIdHandler implements IQueryHandler<GetGroupByGoalIdQu
 
   async execute({ input }: GetGroupByGoalIdQuery): Promise<GroupEntity[]> {
     const groups = await this.groupsRepo.findByGoalId(input);
+
+    for (const group of groups) {
+      const things = await this.queryBus.execute<
+        GetThingsByGroupIdQuery,
+        ReturnHandlerType<typeof GetThingsByGroupIdHandler>
+      >(new GetThingsByGroupIdQuery({ groupId: group.id, userId: input.userId }));
+      group.setThings(things);
+    }
+
+    return groups;
+  }
+}
+
+@QueryHandler(GetGroupsByUserIdQuery)
+export class GetGroupsByUserIdHandler implements IQueryHandler<GetGroupsByUserIdQuery> {
+  constructor(
+    @Inject(GROUPS_REPOSITORY) private readonly groupsRepo: GroupsRepository,
+    private readonly queryBus: QueryBus,
+  ) {}
+
+  async execute({ input }: GetGroupsByUserIdQuery): Promise<GroupEntity[]> {
+    const groups = await this.groupsRepo.findByUserId(input);
 
     for (const group of groups) {
       const things = await this.queryBus.execute<

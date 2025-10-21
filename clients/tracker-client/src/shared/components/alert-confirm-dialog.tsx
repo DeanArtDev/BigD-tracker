@@ -14,7 +14,7 @@ import type { PropsWithChildren, ReactNode } from 'react';
 interface AlertConfirmDialogProps {
   readonly skip?: boolean;
   readonly open?: boolean;
-  readonly title: string;
+  readonly title: ReactNode;
   readonly content?: ReactNode;
   readonly onConfirm: () => void;
   readonly onOpenChange?: (open: boolean) => void;

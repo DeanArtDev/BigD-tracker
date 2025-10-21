@@ -1,5 +1,5 @@
 import { Badge } from '@/shared/ui-kit/ui/badge';
-import { Button } from '@/shared/ui-kit/ui/button';
+import { ButtonChevron } from '@/shared/ui-kit/ui/button-chevron';
 import {
   Collapsible,
   CollapsibleContent,
@@ -13,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/ui-kit/ui/table';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
 interface ExerciseItemPreviewProps {
@@ -45,15 +44,11 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
         </Badge>
 
         <CollapsibleTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
+          <ButtonChevron
+            open={isOpen}
             className="ml-auto sm:ml-0"
             onClick={() => void setIsOpen((prev) => !prev)}
-          >
-            {isOpen ? <ChevronUp /> : <ChevronDown />}
-          </Button>
+          />
         </CollapsibleTrigger>
       </div>
 

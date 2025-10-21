@@ -3,7 +3,7 @@ export class CreateGroupWithThingsCommand {
     readonly input: {
       readonly userId: number;
       readonly name: string;
-      readonly goalId: number;
+      readonly goalId?: number;
       readonly position?: number;
       readonly description?: string;
       readonly things: {

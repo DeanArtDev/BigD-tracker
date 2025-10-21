@@ -1,24 +1,24 @@
 import { AlertConfirmDialog } from '@/shared/components/alert-confirm-dialog';
 import type { ReactNode } from 'react';
-import { useDeleteThing } from '../model';
+import { useGroupDelete } from '../model';
 
-interface DeleteThingProps {
+interface GroupDeleteProps {
+  readonly groupId: number;
   readonly children: (props: { isLoading: boolean }) => ReactNode;
-  readonly thingId: number;
   readonly onSuccess?: () => void;
 }
 
-function DeleteTemplate({ thingId, onSuccess, children }: DeleteThingProps) {
-  const { deleteThing, isPending } = useDeleteThing();
+function GroupDelete({ groupId, onSuccess, children }: GroupDeleteProps) {
+  const { deleteGroup, isPending } = useGroupDelete();
 
   return (
     <AlertConfirmDialog
       title="Ты уверен что хочешь удалить?"
-      onConfirm={() => void deleteThing({ params: { path: { thingId } } }, { onSuccess })}
+      onConfirm={() => void deleteGroup({ params: { path: { groupId } } }, { onSuccess })}
     >
       {children({ isLoading: isPending })}
     </AlertConfirmDialog>
   );
 }
 
-export { DeleteTemplate, type DeleteThingProps };
+export { GroupDelete, type GroupDeleteProps };

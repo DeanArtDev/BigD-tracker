@@ -3,7 +3,7 @@ export class CreateGroupCommand {
     readonly input: {
       readonly userId: number;
       readonly name: string;
-      readonly goalId: number;
+      readonly goalId?: number;
       readonly position: number;
       readonly description?: string;
     },

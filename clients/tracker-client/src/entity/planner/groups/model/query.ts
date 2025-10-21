@@ -1,8 +1,8 @@
 const groupsQueryKeys = {
-  mainKey: ['get', '/groups/inbox'] as const,
-  getInbox: () => {
-    return [...groupsQueryKeys.mainKey] as const;
-  },
+  mainKey: ['get', '/groups/my'] as const,
+  inboxKey: ['get', '/groups/inbox'] as const,
+  getInbox: () => [...groupsQueryKeys.inboxKey] as const,
+  getGroups: () => [...groupsQueryKeys.mainKey] as const,
 };
 
 export { groupsQueryKeys };
