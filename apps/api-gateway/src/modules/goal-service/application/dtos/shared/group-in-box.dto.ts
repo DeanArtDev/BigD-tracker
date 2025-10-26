@@ -9,7 +9,7 @@ class GroupInBoxDto {
   @IsInt()
   id: number;
 
-  @ApiProperty({ example: 'Имя цели' })
+  @ApiProperty({ example: 'IN BOX' })
   @Expose()
   @IsString()
   name: string;

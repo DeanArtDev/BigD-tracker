@@ -31,8 +31,9 @@ class GroupDto {
   userId: number;
 
   @Expose()
+  @IsOptional()
   @IsInt()
-  goalId: number;
+  goalId?: number;
 
   @Expose()
   @IsInt()

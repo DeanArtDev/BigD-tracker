@@ -25,11 +25,11 @@ class GroupDto {
   @IsInt()
   userId: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
   @Expose()
   @IsOptional()
   @IsInt()
-  goalId: number;
+  goalId?: number;
 
   @ApiProperty({ example: 40, description: 'От 0 до 100' })
   @Expose()
