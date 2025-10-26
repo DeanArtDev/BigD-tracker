@@ -18,13 +18,13 @@ function ExercisePreviewContent({ exercise }: ExercisePreviewContentProps) {
         {token && <YoutubeViewFrame token={token} />}
 
         <div>
-          <h4 className="mb-1 text-md font-semibold">Описание</h4>
+          <h4 className="mb-1 text-base font-semibold">Описание</h4>
           <p className="whitespace-pre-line text-sm leading-5">{exercise?.description}</p>
         </div>
 
         <Separator />
 
-        <h4 className="mb-1 text-md font-semibold">Подходы</h4>
+        <h4 className="mb-1 text-base font-semibold">Подходы</h4>
         <ul className="space-y-2">
           {exercise?.repetitions.map((rep, index) => {
             return (

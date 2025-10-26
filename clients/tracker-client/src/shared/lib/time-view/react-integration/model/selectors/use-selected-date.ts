@@ -12,7 +12,13 @@ function useSelectedDate() {
     [controller],
   );
 
-  return useSyncExternalStore(subscribe, () => controller.state.selectedDate);
+  const isToday =
+    controller.state.selectedDate.get('date') === controller.state.currentTime().get('date');
+
+  return {
+    isToday,
+    selectedDate: useSyncExternalStore(subscribe, () => controller.state.selectedDate),
+  };
 }
 
 export { useSelectedDate };

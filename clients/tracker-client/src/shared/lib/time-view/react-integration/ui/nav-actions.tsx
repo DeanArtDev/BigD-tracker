@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui-kit/ui/button';
-import type { Dayjs } from 'dayjs';
+import type { Dayjs } from '@/shared/lib/time';
 import { ChevronLeft, ChevronRight, Crosshair } from 'lucide-react';
 import { useTimeViewController } from '../model';
 

@@ -1,7 +1,7 @@
 import type { TimeViewControllerOptions } from '@/shared/lib/time-view/core';
 import { NavBar } from './ui/nav-bar';
 import type { DeepPartial } from '@/shared/lib/type-helpers';
-import type { Dayjs } from 'dayjs';
+import type { Dayjs } from '@/shared/lib/time';
 import { TimeViewControllerProvider } from './model';
 import { EventList, TimeLineList } from './ui';
 

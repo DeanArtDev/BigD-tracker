@@ -61,6 +61,11 @@ const routes = {
       buildLink(path, { urlParams: { id }, queryObject: query }),
   }))('/planner/group/:id'),
 
+  plannerDailyPlanner: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: () => buildLink(path),
+  }))('/planner/daily-planner'),
+
   /* SYSTEM */
   signUp: (<Path extends string = string>(path: Path) => ({
     path,

@@ -8,12 +8,12 @@ interface ApplicationPanelProps {
 
 function ApplicationPanel({ routes }: ApplicationPanelProps) {
   return (
-    <ul className="gap-x-6 gap-y-12 w-full grid auto-rows-[80px] grid-cols-[repeat(auto-fill,80px)] justify-center max-w-[600px]">
+    <ul className="gap-6 w-full grid grid-cols-[repeat(auto-fit,80px)] justify-center max-w-[600px]">
       {routes.map((route) => {
         return (
           <li key={route.title}>
             <Link to={route.to}>
-              <Card className="w-full h-full flex justify-center items-center p-0!">
+              <Card className="h-[80px] flex justify-center items-center p-0!">
                 <CardContent className="p-0">{route.icon?.({ size: 45 })}</CardContent>
               </Card>
             </Link>

@@ -1,4 +1,4 @@
-import type { Dayjs } from 'dayjs';
+import type { Dayjs } from '@/shared/lib/time';
 import { upperFirst } from 'lodash-es';
 import { useMemo } from 'react';
 import { NavActions } from './nav-actions';
@@ -9,7 +9,7 @@ interface NavBarProps {
 }
 
 function NavBar({ onDateChange }: NavBarProps) {
-  const selectedDate = useSelectedDate();
+  const { selectedDate } = useSelectedDate();
 
   const date = useMemo(() => {
     return `${selectedDate.format('DD')} ${upperFirst(selectedDate.format('MMMM'))} ${selectedDate.format('YYYY')}`;

@@ -1,5 +1,5 @@
 import { useContainerSizeObserver } from '@/shared/ui-kit/helpers';
-import dayjs from 'dayjs';
+import dayjs from '@/shared/lib/time';
 import { useMemo } from 'react';
 import { useEvents } from '../model/selectors';
 import { useTimeViewController } from '../model';

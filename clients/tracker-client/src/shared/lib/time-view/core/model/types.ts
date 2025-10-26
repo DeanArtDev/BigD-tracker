@@ -11,6 +11,7 @@ interface TimeLineEvent<TExtra = any> {
 }
 
 interface TimeViewControllerOptions {
+  readonly locale?: string;
   readonly view: {
     readonly lineCount: number;
     readonly timeColumnOffset: number;

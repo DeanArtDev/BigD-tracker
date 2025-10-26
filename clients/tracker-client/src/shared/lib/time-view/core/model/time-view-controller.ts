@@ -1,14 +1,8 @@
-import {
-  createDate,
-  toMidnight,
-  toNextDay,
-  toPrevDay,
-} from '@/shared/lib/time-view/core/helpers/date-and-time';
+import { DateAndTime } from '../helpers/date-and-time';
 import { LineEventView } from './line-event-view';
 import type { DeepPartial } from '@/shared/lib/type-helpers';
-import { type Dayjs } from 'dayjs';
+import { type Dayjs } from '@/shared/lib/time';
 import { merge } from 'lodash-es';
-import { getDayTimeLine } from '../helpers/get-day-time-line';
 import { getPercentFromPercent, getPercentByValue } from '../helpers/math';
 import type { TimeLineEvent, TimeViewControllerEventMap, TimeViewControllerOptions } from './types';
 import { EventEmitter } from '../utils/event-emitter';
@@ -26,39 +20,46 @@ interface TimeViewControllerApi {
   readonly today: () => Dayjs;
 }
 
-const defaultOptions = {
-  view: {
-    lineCount: 25,
-    timeColumnOffset: 50,
-  },
-};
-
 class TimeViewController<TExtra = any> {
-  #state: TimeViewControllerState<TExtra> = {
-    events: [],
-    dayTimeLine: [],
-    selectedDate: createDate(),
-    currentTime: createDate,
-  };
+  constructor(options?: DeepPartial<TimeViewControllerOptions>) {
+    if (options != null) {
+      this.#options = merge(this.#defaultOptions, options);
+    }
+    this.#time = new DateAndTime({ locale: this.#options.locale });
+    this.#state = this.#defaultState
+  }
 
-  #options: TimeViewControllerOptions = defaultOptions;
+  #state!: TimeViewControllerState<TExtra>;
+  #options!: TimeViewControllerOptions;
+  #time!: DateAndTime;
   #eventEmitter = new EventEmitter<TimeViewControllerEventMap>({ listenersLimit: 20 });
 
-  #getDefaultState(): TimeViewControllerState<TExtra> {
+  #defaultOptions: TimeViewControllerOptions = {
+    view: {
+      lineCount: 25,
+      timeColumnOffset: 50,
+    },
+  };
+
+  get #defaultState(): TimeViewControllerState<TExtra> {
     return {
       events: [],
-      dayTimeLine: getDayTimeLine(),
-      selectedDate: createDate(),
-      currentTime: createDate,
+      dayTimeLine: this.#createDayTimeLine(),
+      selectedDate: this.#time.createDate(),
+      currentTime: this.#time.createDate,
     };
   }
 
-  constructor(options?: DeepPartial<TimeViewControllerOptions>) {
-    if (options != null) {
-      this.#options = merge(this.#options, options);
-    }
+  #createDayTimeLine(): Dayjs[] {
+    let buffer: Dayjs[] = [];
 
-    this.#state = this.#getDefaultState();
+    buffer = new Array(24).fill(0).map((_, index) => {
+      return this.#time.createDate().startOf('date').add(index, 'hour');
+    });
+
+    buffer.push(this.#time.createDate().startOf('date').add(1, 'day'));
+
+    return buffer;
   }
 
   get state() {
@@ -82,19 +83,28 @@ class TimeViewController<TExtra = any> {
   public get api(): TimeViewControllerApi {
     return {
       next: () => {
-        this.#state = { ...this.#state, selectedDate: toNextDay(this.#state.selectedDate) };
+        this.#state = {
+          ...this.#state,
+          selectedDate: this.#time.toNextDay(this.#state.selectedDate),
+        };
         this.#emitUpdate();
         return this.#state.selectedDate;
       },
 
       prev: () => {
-        this.#state = { ...this.#state, selectedDate: toPrevDay(this.#state.selectedDate) };
+        this.#state = {
+          ...this.#state,
+          selectedDate: this.#time.toPrevDay(this.#state.selectedDate),
+        };
         this.#emitUpdate();
         return this.#state.selectedDate;
       },
 
       today: () => {
-        this.#state = { ...this.#state, selectedDate: toMidnight(this.#state.currentTime()) };
+        this.#state = {
+          ...this.#state,
+          selectedDate: this.#time.toMidnight(this.#state.currentTime()),
+        };
         this.#emitUpdate();
         return this.#state.selectedDate;
       },
@@ -102,8 +112,8 @@ class TimeViewController<TExtra = any> {
   }
 
   public destroy = (): void => {
-    this.#state = this.#getDefaultState();
-    this.#options = defaultOptions;
+    this.#state = this.#defaultState,
+    this.#options = this.#defaultOptions;
     this.#eventEmitter.offAll();
   };
 
@@ -185,7 +195,10 @@ class TimeViewController<TExtra = any> {
         ++j;
         i = j;
 
-        const isBetween = createDate(e.from).isBetween(event.from, event.to, 'minutes', '[]');
+        const isBetween = this.#time
+          .createDate(e.from)
+          .isBetween(event.from, event.to, 'minutes', '[]');
+
         if (isBetween) {
           const set =
             map.get(hashKey) ?? map.set(hashKey, new Set<LineEventView<TExtra>>()).get(hashKey);
@@ -211,8 +224,8 @@ class TimeViewController<TExtra = any> {
     readonly width: number | string;
     readonly height: number | string;
   } {
-    const { hours: fromHours, minutes: fromMinutes } = createDate(event.from).toObject();
-    const { hours: toHours, minutes: toMinutes } = createDate(event.to).toObject();
+    const { hours: fromHours, minutes: fromMinutes } = this.#time.createDate(event.from).toObject();
+    const { hours: toHours, minutes: toMinutes } = this.#time.createDate(event.to).toObject();
 
     const yHourPart = plane.height / this.#options.view.lineCount;
 
