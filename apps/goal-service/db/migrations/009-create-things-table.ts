@@ -8,9 +8,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('group_id', 'integer', (col) =>
       col.notNull().references('groups.id').onDelete('cascade'),
     )
-    .addColumn('user_id', 'integer', (col) =>
-      col.notNull().references('users.id').onDelete('cascade'),
-    )
+    .addColumn('user_id', 'integer', (col) => col.notNull())
     .addColumn('description', 'text')
     .addColumn('priority', 'smallint', (col) => col.check(sql`priority IN (1,2,3,4)`))
     .addColumn('start_date', 'timestamp')
