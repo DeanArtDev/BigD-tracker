@@ -13,9 +13,10 @@ import {
 import { ThingDto } from '../shared';
 
 class CreateThingReqData {
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
+  @IsOptional()
   @IsInt()
-  groupId: number;
+  groupId?: number;
 
   @ApiProperty({ example: 'Имя дела' })
   @MaxLength(255)
