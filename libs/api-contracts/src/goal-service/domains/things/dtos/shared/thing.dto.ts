@@ -21,8 +21,9 @@ class ThingDto {
   userId: number;
 
   @Expose()
+  @IsOptional()
   @IsInt()
-  groupId: number;
+  groupId?: number;
 
   @Expose()
   @IsOptional()

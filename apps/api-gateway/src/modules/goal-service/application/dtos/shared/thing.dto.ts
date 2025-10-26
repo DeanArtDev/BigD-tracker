@@ -24,10 +24,11 @@ class ThingDto {
   @IsInt()
   userId: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
   @Expose()
+  @IsOptional()
   @IsInt()
-  groupId: number;
+  groupId?: number;
 
   @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
   @Expose()

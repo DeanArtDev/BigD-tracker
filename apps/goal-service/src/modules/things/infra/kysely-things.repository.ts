@@ -170,7 +170,7 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
     return ThingEntity.restore({
       id: raw.id,
       userId: raw.user_id,
-      groupId: raw.group_id,
+      groupId: raw.group_id ?? undefined,
       name: Name.restore(raw.name),
       position: raw.position,
       comment: raw.comment ?? undefined,

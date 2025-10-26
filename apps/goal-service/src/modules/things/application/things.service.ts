@@ -18,6 +18,7 @@ import {
   GetThingsByGroupIdHandler,
   GetThingsByGroupIdQuery,
 } from '@/modules/things/application/queries';
+import { ThingEntity } from '@/modules/things/domain';
 import { ThingDto } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -70,6 +71,36 @@ export class ThingsService {
   }
 
   async createThing(input: {
+    userId: number;
+    name: string;
+    groupId?: number;
+    description?: string;
+    priority?: number;
+    startDate?: string;
+    deadline?: string;
+  }): Promise<ThingDto> {
+    if (input.groupId != null) {
+      const thing = await this.#createThingToGroup({ ...input, groupId: input.groupId });
+      return this.mapper.fromEntityToDTO(thing);
+    }
+
+    const { id } = await this.commandBus.execute<
+      CreateThingCommand,
+      ReturnHandlerType<typeof CreateThingHandler>
+    >(new CreateThingCommand({ ...input, position: 0 }));
+
+    const thing = await this.queryBus.execute<
+      GetThingByIdQuery,
+      ReturnHandlerType<typeof GetThingByIdHandler>
+    >(new GetThingByIdQuery({ id, userId: input.userId }));
+    if (thing == null) {
+      throw new InternalServerErrorException('Error occurred while creating thing');
+    }
+
+    return this.mapper.fromEntityToDTO(thing);
+  }
+
+  async #createThingToGroup(input: {
     groupId: number;
     userId: number;
     name: string;
@@ -77,7 +108,7 @@ export class ThingsService {
     priority?: number;
     startDate?: string;
     deadline?: string;
-  }): Promise<ThingDto> {
+  }): Promise<ThingEntity> {
     const group = await this.queryBus.execute<
       GetGroupByIdQuery,
       ReturnHandlerType<typeof GetGroupByIdHandler>
@@ -104,7 +135,7 @@ export class ThingsService {
       throw new InternalServerErrorException('Error occurred while creating thing');
     }
 
-    return this.mapper.fromEntityToDTO(thing);
+    return thing;
   }
 
   async updateThing(input: {

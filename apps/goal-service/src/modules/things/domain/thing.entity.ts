@@ -10,7 +10,7 @@ const validator = new DomainValidator('things');
 interface ThingData {
   readonly id: number;
   readonly userId: number;
-  groupId: number;
+  groupId?: number;
   name: Name;
   isDraft: boolean;
   position: number;
@@ -26,7 +26,7 @@ interface ThingData {
 
 interface CreateThingData {
   readonly id?: number;
-  readonly groupId: number;
+  readonly groupId?: number;
   readonly userId: number;
   readonly name: Name;
   position: number;
@@ -140,7 +140,7 @@ class ThingEntity extends AggregateRoot {
   }
 
   public validate() {
-    const { startDate, endDate, deadline, weekDays } = this.#data;
+    const { startDate, endDate, deadline, weekDays, groupId, position } = this.#data;
 
     if (startDate != null && endDate != null) {
       if (startDate.isAfter(endDate.value)) {
@@ -165,6 +165,10 @@ class ThingEntity extends AggregateRoot {
         `Repeatable thing cannot have fields [startDate, endDate, deadline]`,
         'startDate',
       );
+    }
+
+    if (groupId != null && position <= 0) {
+      validator.throwError(`[position] has to be more than 0 if [groupId] existed`, 'position');
     }
 
     return this;
