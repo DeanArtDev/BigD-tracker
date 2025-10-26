@@ -1,6 +1,6 @@
 import type { PageApplicationRote } from '@/page/lib/types';
 import { routes } from '@/shared/lib/routes';
-import { Inbox, ListOrdered,BookMarked, type LucideProps } from 'lucide-react';
+import { Inbox, ListOrdered, BookMarked, type LucideProps } from 'lucide-react';
 
 const plannerRoutesMap: Record<string, PageApplicationRote> = {
   [routes.plannerInBox.path]: {

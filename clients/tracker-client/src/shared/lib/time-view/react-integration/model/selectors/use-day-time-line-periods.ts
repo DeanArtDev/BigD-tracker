@@ -15,10 +15,7 @@ function useDayTimeLinePeriod() {
     [controller],
   );
 
-  return useSyncExternalStore(
-    subscribe,
-    () => controller.state.dayTimeLine,
-  );
+  return useSyncExternalStore(subscribe, () => controller.state.dayTimeLine);
 }
 
 export { useDayTimeLinePeriod };

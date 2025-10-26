@@ -2,7 +2,7 @@ import { Deserializer, RmqOptions, Serializer, Transport } from '@nestjs/microse
 
 const GOAL_SERVICE_RMQ_KEY = Symbol('GOAL_SERVICE_RMQ_KEY');
 
-const   goalServiceRmqConfig = (params: {
+const goalServiceRmqConfig = (params: {
   user?: string;
   password?: string;
   host?: string;

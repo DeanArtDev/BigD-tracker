@@ -9,7 +9,7 @@ type ButtonChevronProps = ComponentProps<typeof Button> & {
 function ButtonChevron({ open = false, ...buttonProps }: ButtonChevronProps) {
   return (
     <Button type="button" variant="ghost" size="sm" {...buttonProps}>
-      {open ? <ChevronUp /> : <ChevronDown /> }
+      {open ? <ChevronUp /> : <ChevronDown />}
     </Button>
   );
 }

@@ -4,7 +4,7 @@ interface LineEventViewData extends LineEventData {
   readonly style: {
     readonly width: number | string;
     readonly height: number | string;
-    readonly zIndex?: number
+    readonly zIndex?: number;
   };
 }
 
@@ -21,7 +21,7 @@ class LineEventView<TExtra = any> extends LineEvent {
   }
 
   setStyle(style: Partial<LineEventViewData['style']>) {
-    this.#style = {...this.#style, ...style};
+    this.#style = { ...this.#style, ...style };
   }
 }
 

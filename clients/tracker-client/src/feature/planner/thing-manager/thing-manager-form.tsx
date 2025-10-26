@@ -61,7 +61,13 @@ function ThingManagerForm(props: ThingManagerFormProps) {
           });
         })}
       >
-        <InputForm<ThingManagerFormData> autoFocus required name="name" label="Название" placeholder="Имя" />
+        <InputForm<ThingManagerFormData>
+          autoFocus
+          required
+          name="name"
+          label="Название"
+          placeholder="Имя"
+        />
 
         <TextareaForm<ThingManagerFormData>
           name="description"
@@ -84,7 +90,6 @@ function ThingManagerForm(props: ThingManagerFormProps) {
             min={new Date(form.getValues('startDate') ?? '')}
           />
         </div>
-
 
         <div className="flex gap-4 justify-between mt-auto">
           <ToggleGroupForm name="priority">

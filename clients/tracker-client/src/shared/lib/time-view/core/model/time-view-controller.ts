@@ -26,7 +26,7 @@ class TimeViewController<TExtra = any> {
       this.#options = merge(this.#defaultOptions, options);
     }
     this.#time = new DateAndTime({ locale: this.#options.locale });
-    this.#state = this.#defaultState
+    this.#state = this.#defaultState;
   }
 
   #state!: TimeViewControllerState<TExtra>;
@@ -112,7 +112,7 @@ class TimeViewController<TExtra = any> {
   }
 
   public destroy = (): void => {
-    this.#state = this.#defaultState,
+    this.#state = this.#defaultState;
     this.#options = this.#defaultOptions;
     this.#eventEmitter.offAll();
   };

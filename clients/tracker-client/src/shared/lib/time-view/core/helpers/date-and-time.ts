@@ -7,7 +7,7 @@ interface DateAndTimeOptions {
 }
 
 const defaultOptions: DateAndTimeOptions = {
-  locale: 'ru'
+  locale: 'ru',
 };
 
 class DateAndTime {
