@@ -1,25 +1,38 @@
+import { useGetThings } from '@/entity/planner/things';
 import { PageWrapper } from '@/page/ui/page-wrapper';
 import { TimeView } from '@/shared/lib/time-view';
+import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
+import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
+import { useMemo, useState } from 'react';
+import { AddDailyThing } from './components/add-daily-thing';
 
 function DailyPlannerPage() {
+  const [dateSet, setDateSet] = useState<{ from?: string; to?: string }>();
+  const { things, isLoading } = useGetThings({ filters: dateSet });
+
+  const events = useMemo(() => {
+    return things.map((thing) => {
+      return {
+        name: thing.name,
+        from: thing.startDate != null ? new Date(thing.startDate) : 0,
+        to: thing.deadline != null ? new Date(thing.deadline) : 0,
+        extra: { id: thing.id },
+      };
+    });
+  }, [things]);
+
   return (
-    <PageWrapper className="grow min-h-0" title="Ежедневник">
-      <TimeView<{ id: number }>
-        options={{
-          view: {
-            timeColumnOffset: 55,
-          },
-        }}
-        events={[
-          { name: 'Ранний эвент', from: 1761210902471, to: 1761219542471, extra: { id: 4 } },
-          { name: 'Ранний эвент2', from: 1761214992471, to: 1761227002471, extra: { id: 6 } },
-          { name: 'Ранний эвент3', from: 1761212902471, to: 1761225002471, extra: { id: 5 } },
-          { name: 'Ранний эвент4', from: 1761225002471, to: 1762527002471, extra: { id: 7 } },
-        ]}
-        onDateChange={(date) => {
-          console.log(44, date.toISOString());
-        }}
-      />
+    <PageWrapper className="relative grow min-h-0" title="Ежедневник">
+      <DataLoader loadingElement={<AppLoader />} blur isLoading={isLoading}>
+        <TimeView<{ id: number }>
+          events={events}
+          onDateChange={(dateSet) =>
+            void setDateSet({ from: dateSet.from.toISOString(), to: dateSet.to.toISOString() })
+          }
+        />
+      </DataLoader>
+
+      <AddDailyThing thingFilters={dateSet} />
     </PageWrapper>
   );
 }

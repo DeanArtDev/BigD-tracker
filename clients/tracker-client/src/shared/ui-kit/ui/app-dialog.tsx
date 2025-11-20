@@ -36,7 +36,8 @@ function AppDialog(props: PropsWithChildren<AppDialogProps>) {
         className={cn(
           'p-0 sm:p-0',
           'h-full sm:h-auto sm:max-h-[95vh]',
-          'max-w-auto gap-0 flex flex-col grow items-start overflow-x-scroll',
+          'w-full max-w-[100vw] sm:max-w-[80vw] md:max-w-[70vw] lg:max-w-[60vw]',
+          'gap-0 flex flex-col grow items-start overflow-x-scroll',
           className,
         )}
       >

@@ -1,26 +1,21 @@
 import { useForceRender } from '@/shared/lib/react/use-force-render';
-import type { PropsWithChildren } from 'react';
 import { useInterval } from 'usehooks-ts';
 import { useTimeViewController } from '../model';
-import { useCurrentTime } from '../model/selectors';
+import { useCurrentTimeState } from '../model/selectors';
 
-interface CurrentTimeIndicatorProps {
-  readonly container: { width: number; height: number };
-}
-
-function CurrentTimeIndicator({ container }: PropsWithChildren<CurrentTimeIndicatorProps>) {
+function CurrentTimeIndicator() {
   const controller = useTimeViewController();
 
   const { forceRender } = useForceRender();
   useInterval(forceRender, 1000 * 5);
 
-  const { y } = controller.calculateCurrentTimePosition(container);
-  const currentTime = useCurrentTime();
+  const { top, right, left, bottom } = controller.calculateTimeIndicator();
+  const currentTime = useCurrentTimeState();
 
   return (
     <div
       className="absolute h-[4px] bg-red-400 rounded-lg z-1"
-      style={{ left: 0, right: 0, top: y }}
+      style={{ left, right, top, bottom }}
     >
       <div className="relative text-sm text-center w-[50px] top-[-8px] bg-red-400 rounded-md">
         {currentTime().format('HH:mm')}
@@ -29,4 +24,4 @@ function CurrentTimeIndicator({ container }: PropsWithChildren<CurrentTimeIndica
   );
 }
 
-export { CurrentTimeIndicator, type CurrentTimeIndicatorProps };
+export { CurrentTimeIndicator };

@@ -7,19 +7,28 @@ import { cn } from '@/shared/ui-kit/utils';
 import { format, isDate } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { type FieldValues, type Path } from 'react-hook-form';
 
-interface DatePickerFormProps<FormValues extends FieldValues = FieldValues> {
+type CalendarFormProps = Omit<
+  ComponentProps<typeof Calendar>,
+  'className' | 'classNames' | 'onSelect' | 'disabled'
+>;
+
+type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = CalendarFormProps & {
   readonly name: Path<FormValues>;
   readonly required?: boolean;
+  readonly disabled?: boolean;
   readonly label?: string;
+  readonly classNames?: {
+    readonly container?: string;
+  };
   readonly isErrorMessage?: boolean;
   readonly max?: Date;
   readonly min?: Date;
   readonly renderInput?: (props: { value: Date }) => ReactNode;
   readonly onChange?: () => void;
-}
+};
 
 function DatePickerForm<FormValues extends FieldValues = FieldValues>({
   name,
@@ -28,11 +37,14 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
   min,
   isErrorMessage = true,
   required = false,
+  disabled = false,
+  classNames,
   onChange,
   renderInput,
+  ...props
 }: DatePickerFormProps<FormValues>) {
   return (
-    <FormField
+    <FormField<Record<string, Date>>
       name={name}
       render={({ field }) => {
         if (field.value != null && !isDate(field.value)) {
@@ -40,7 +52,7 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
         }
 
         return (
-          <FormItem>
+          <FormItem className={classNames?.container}>
             {label && (
               <FormLabel>
                 <RequiredSign on={required}>{label}</RequiredSign>
@@ -55,6 +67,7 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
                   ) : (
                     <Button
                       variant="outline"
+                      disabled={disabled || field.disabled}
                       className={cn(
                         'f-full pl-3 text-left font-normal',
                         !field.value && 'text-muted-foreground',
@@ -69,16 +82,16 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
 
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
+                  {...props}
                   mode="single"
                   locale={ru}
                   defaultMonth={field.value}
                   selected={field.value}
+                  disabled={(date) => date > new Date(max ?? '') || date < new Date(min ?? '')}
                   onSelect={(day) => {
                     field.onChange(day ?? null);
                     onChange?.();
                   }}
-                  disabled={(date) => date > new Date(max ?? '') || date < new Date(min ?? '')}
-                  captionLayout="dropdown"
                 />
               </PopoverContent>
             </Popover>

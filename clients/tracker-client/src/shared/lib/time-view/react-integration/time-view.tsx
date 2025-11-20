@@ -1,9 +1,9 @@
-import type { TimeViewControllerOptions } from '@/shared/lib/time-view/core';
-import { NavBar } from './ui/nav-bar';
+import type { TimeViewControllerOptions, TimeViewDateSet } from '@/shared/lib/time-view/core';
 import type { DeepPartial } from '@/shared/lib/type-helpers';
-import type { Dayjs } from '@/shared/lib/time';
+import { useEffect, useRef } from 'react';
 import { TimeViewControllerProvider } from './model';
-import { EventList, TimeLineList } from './ui';
+import { useSelectedDateState } from './model/selectors';
+import { EventList, NavBar, TimeLineList } from './ui';
 
 interface TimeViewEvent<TExtra = any> {
   readonly name: string;
@@ -12,47 +12,45 @@ interface TimeViewEvent<TExtra = any> {
   readonly extra?: TExtra;
 }
 
-/*TODO:
- *  [x] текущая дата
- *  [x] день недели
- *  [x] отображениеэвента на линии
- *  [x] линия на таймлане с текущим временем
- *  [x] даты в UTC
- *  [] метод resize
- *  [] если дата сменилась и это не сегодня, не показывать currentTime
- *  [] подключить запросы реальных данных
- *  [] добавление евента
- *  [] редактирование эвента
- *  [] удаление эвента
- *  [] визуальная группировка если больше 4 эвентов рядом
- * */
+function Component<TExtra extends { id: number }>({
+  events,
+  onDateChange,
+}: {
+  readonly events: TimeViewEvent<TExtra>[];
+  readonly onDateChange?: (date: TimeViewDateSet) => void;
+}) {
+  const { dateSet } = useSelectedDateState();
 
-interface ComponentProps {
-  readonly onDateChange?: (date: Dayjs) => void;
-}
+  const onDateChangeRef = useRef(onDateChange);
+  onDateChangeRef.current = onDateChange;
+  useEffect(() => {
+    onDateChangeRef.current?.(dateSet);
+  }, [dateSet]);
 
-function Component<TExtra>({ onDateChange }: ComponentProps) {
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-      <NavBar onDateChange={onDateChange} />
+    <div className="flex flex-col flex-1 min-h-0 gap-2">
+      <NavBar<TExtra> events={events} />
 
       <div className="flex flex-col flex-1 min-h-0">
-        <TimeLineList afterEndSlot={<EventList<TExtra> />} />
+        <TimeLineList eventsSlot={<EventList<TExtra> events={events} />} />
       </div>
     </div>
   );
 }
 
-interface TimeViewProps<TExtra = any> {
+interface TimeViewProps<TExtra extends { id: number }> {
   readonly events: TimeViewEvent<TExtra>[];
   readonly options?: DeepPartial<TimeViewControllerOptions>;
-  readonly onDateChange?: (date: Dayjs) => void;
+  readonly onDateChange?: (date: TimeViewDateSet) => void;
 }
 
-function TimeView<TExtra = any>({ onDateChange, ...props }: TimeViewProps<TExtra>) {
+function TimeView<TExtra extends { id: number }>({
+  onDateChange,
+  ...props
+}: TimeViewProps<TExtra>) {
   return (
-    <TimeViewControllerProvider events={props.events} options={props.options}>
-      <Component<TExtra> onDateChange={onDateChange} />
+    <TimeViewControllerProvider options={props.options}>
+      <Component<TExtra> events={props.events} onDateChange={onDateChange} />
     </TimeViewControllerProvider>
   );
 }

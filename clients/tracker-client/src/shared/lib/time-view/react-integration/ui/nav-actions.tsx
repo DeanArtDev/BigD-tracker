@@ -1,46 +1,21 @@
 import { Button } from '@/shared/ui-kit/ui/button';
-import type { Dayjs } from '@/shared/lib/time';
 import { ChevronLeft, ChevronRight, Crosshair } from 'lucide-react';
 import { useTimeViewController } from '../model';
 
-interface NavActionsProps {
-  readonly onDateChange?: (date: Dayjs) => void;
-}
-
-function NavActions({ onDateChange }: NavActionsProps) {
+function NavActions() {
   const controller = useTimeViewController();
 
   return (
     <div className="flex gap-2">
-      <Button
-        size="icon"
-        variant="secondary"
-        onClick={() => {
-          const date = controller.api.prev();
-          onDateChange?.(date);
-        }}
-      >
+      <Button size="icon" variant="secondary" onClick={controller.api.prev}>
         <ChevronLeft />
       </Button>
 
-      <Button
-        variant="secondary"
-        onClick={() => {
-          const date = controller.api.today();
-          onDateChange?.(date);
-        }}
-      >
+      <Button variant="secondary" onClick={controller.api.today}>
         <Crosshair />
       </Button>
 
-      <Button
-        size="icon"
-        variant="secondary"
-        onClick={() => {
-          const date = controller.api.next();
-          onDateChange?.(date);
-        }}
-      >
+      <Button size="icon" variant="secondary" onClick={controller.api.next}>
         <ChevronRight />
       </Button>
     </div>

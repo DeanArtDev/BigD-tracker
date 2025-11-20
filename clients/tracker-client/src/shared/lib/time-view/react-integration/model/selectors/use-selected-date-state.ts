@@ -1,7 +1,7 @@
 import { useTimeViewController } from '../context';
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-function useSelectedDate() {
+function useSelectedDateState() {
   const controller = useTimeViewController();
 
   const subscribe = useCallback(
@@ -12,13 +12,18 @@ function useSelectedDate() {
     [controller],
   );
 
+  const dateSet = useMemo(() => {
+    return controller.getFromAndTo(controller.state.selectedDate);
+  }, [controller.state.selectedDate]);
+
   const isToday =
     controller.state.selectedDate.get('date') === controller.state.currentTime().get('date');
 
   return {
     isToday,
+    dateSet,
     selectedDate: useSyncExternalStore(subscribe, () => controller.state.selectedDate),
   };
 }
 
-export { useSelectedDate };
+export { useSelectedDateState };

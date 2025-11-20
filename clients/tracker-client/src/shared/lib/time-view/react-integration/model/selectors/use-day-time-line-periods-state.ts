@@ -1,7 +1,7 @@
 import { useTimeViewController } from '../context';
 import { useCallback, useSyncExternalStore } from 'react';
 
-function useEvents() {
+function useDayTimeLinePeriodsState() {
   const controller = useTimeViewController();
 
   const subscribe = useCallback(
@@ -15,11 +15,7 @@ function useEvents() {
     [controller],
   );
 
-  return useSyncExternalStore(
-    subscribe,
-    () => controller.state.events,
-    () => [],
-  );
+  return useSyncExternalStore(subscribe, () => controller.state.dayTimeLine);
 }
 
-export { useEvents };
+export { useDayTimeLinePeriodsState };

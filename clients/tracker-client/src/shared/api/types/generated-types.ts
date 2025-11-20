@@ -505,6 +505,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/things": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение дел */
+        get: operations["ThingsController_getThings"];
+        put?: never;
+        /** Создание дела */
+        post: operations["ThingsController_createThing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/things/inbox": {
         parameters: {
             query?: never;
@@ -516,23 +534,6 @@ export interface paths {
         put?: never;
         /** Создание дела в IN BOX */
         post: operations["ThingsController_createIntoInbox"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/things": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Создание дела */
-        post: operations["ThingsController_createThing"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1154,7 +1155,7 @@ export interface components {
             /** @example 1 */
             userId: number;
             /** @example 1 */
-            groupId: number;
+            groupId?: number;
             /**
              * @description От 1 до 4
              * @example 2
@@ -1184,7 +1185,7 @@ export interface components {
             /** @example 1 */
             userId: number;
             /** @example 1 */
-            goalId: number;
+            goalId?: number;
             /**
              * @description От 0 до 100
              * @example 40
@@ -1263,7 +1264,7 @@ export interface components {
         GroupInBoxDto: {
             /** @example 1 */
             id: number;
-            /** @example Имя цели */
+            /** @example IN BOX */
             name: string;
             /** @example 1 */
             userId: number;
@@ -1317,7 +1318,7 @@ export interface components {
             /** @example Название группы */
             name: string;
             /** @example 1 */
-            goalId: number;
+            goalId?: number;
             /** @example Описание */
             description?: string;
             /** @description Список дел */
@@ -1330,6 +1331,10 @@ export interface components {
         UpdateGroupRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["GroupDto"];
+        };
+        GetThingsApiGatewayRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ThingDto"][];
         };
         CreateThingIntoInboxReqData: {
             /** @example Имя дела */
@@ -1356,7 +1361,7 @@ export interface components {
         };
         CreateThingReqData: {
             /** @example 1 */
-            groupId: number;
+            groupId?: number;
             /** @example Имя дела */
             name: string;
             /**
@@ -2256,25 +2261,26 @@ export interface operations {
             };
         };
     };
-    ThingsController_createIntoInbox: {
+    ThingsController_getThings: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description ISO String */
+                from?: string;
+                /** @description ISO String */
+                to?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateThingIntoInboxReq"];
-            };
-        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CreateThingIntoInboxRes"];
+                    "application/json": components["schemas"]["GetThingsApiGatewayRes"];
                 };
             };
         };
@@ -2298,6 +2304,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateThingRes"];
+                };
+            };
+        };
+    };
+    ThingsController_createIntoInbox: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateThingIntoInboxReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateThingIntoInboxRes"];
                 };
             };
         };
