@@ -61,7 +61,7 @@ export class GroupsController {
   }
 
   @MessagePattern(GoalCreateInBoxGroup.pattern)
-  async create(
+  async createInBox(
     @Payload() { data }: GoalCreateInBoxGroup.Request,
   ): Promise<GoalCreateInBoxGroup.Response> {
     return {
@@ -72,9 +72,7 @@ export class GroupsController {
   }
 
   @MessagePattern(GoalCreateGroup.pattern)
-  async createInBox(
-    @Payload() { data }: GoalCreateGroup.Request,
-  ): Promise<GoalCreateGroup.Response> {
+  async create(@Payload() { data }: GoalCreateGroup.Request): Promise<GoalCreateGroup.Response> {
     return {
       data: await this.groupsService.createGroupWithThings(data),
     };

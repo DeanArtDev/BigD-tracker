@@ -5,9 +5,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable('goals')
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
-    .addColumn('user_id', 'integer', (col) =>
-      col.notNull().references('users.id').onDelete('cascade'),
-    )
+    .addColumn('user_id', 'integer', (col) => col.notNull())
     .addColumn('description', 'text')
     .addColumn('start_date', 'timestamp')
     .addColumn('end_date', 'timestamp')

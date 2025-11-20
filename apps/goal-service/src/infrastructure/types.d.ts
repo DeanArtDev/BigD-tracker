@@ -49,7 +49,7 @@ export interface Things {
   deadline: Timestamp | null;
   description: string | null;
   end_date: Timestamp | null;
-  group_id: number;
+  group_id: number | null;
   id: Generated<number>;
   name: string;
   position: Generated<number>;

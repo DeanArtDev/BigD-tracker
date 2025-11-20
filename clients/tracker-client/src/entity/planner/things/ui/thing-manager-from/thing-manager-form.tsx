@@ -1,6 +1,5 @@
 import type { ApiDto } from '@/shared/api/types';
 import {
-  DatePickerForm,
   FormStateEmitter,
   InputForm,
   TextareaForm,
@@ -11,31 +10,35 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { ToggleGroupItem } from '@/shared/ui-kit/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { subDays } from 'date-fns';
+import { isFunction } from 'lodash-es';
 import { Circle } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import type { ReactNode } from 'react';
+import { useForm, type UseFormReturn } from 'react-hook-form';
 import { z } from 'zod/v4';
 import { validationSchema } from './validation-schema';
 
 type ThingManagerFormData = z.input<typeof validationSchema>;
 type SubmitFormData = z.output<typeof validationSchema>;
+type ThingManagerFormReturn = UseFormReturn<ThingManagerFormData, any, SubmitFormData>;
 
-type SubmitResponse = Omit<ApiDto['CreateThingReq']['data'], 'groupId'>;
+type ThingManagerSubmitData = Omit<ApiDto['CreateThingReq']['data'], 'groupId'>;
 
 interface ThingManagerFormProps {
-  readonly isLoading: boolean;
+  readonly isLoading?: boolean;
+  readonly dateSlot?: ReactNode | ((form: ThingManagerFormReturn) => ReactNode);
   readonly emitIsLoading?: (value: boolean) => void;
   readonly emitIsDirty?: (value: boolean) => void;
-  readonly onSubmit: (thing: SubmitResponse) => void;
+  readonly onSubmit: (thing: ThingManagerSubmitData) => void;
 }
 
 function ThingManagerForm(props: ThingManagerFormProps) {
-  const { isLoading, emitIsDirty, emitIsLoading, onSubmit } = props;
+  const { isLoading, dateSlot, emitIsDirty, emitIsLoading, onSubmit } = props;
   const isCreating = true;
 
   const form = useForm<ThingManagerFormData, any, SubmitFormData>({
     resolver: zodResolver(validationSchema),
     reValidateMode: 'onChange',
+    mode: "onSubmit",
     disabled: isLoading,
     defaultValues: {
       name: undefined,
@@ -50,7 +53,7 @@ function ThingManagerForm(props: ThingManagerFormProps) {
     <Form {...form}>
       <form
         noValidate
-        className="space-y-8 flex flex-col grow w-full justify-start"
+        className="space-y-3 md:space-y-6 flex flex-col grow w-full justify-start"
         onSubmit={form.handleSubmit((formData) => {
           onSubmit({
             name: formData.name,
@@ -61,30 +64,22 @@ function ThingManagerForm(props: ThingManagerFormProps) {
           });
         })}
       >
-        <InputForm<ThingManagerFormData> autoFocus required name="name" label="Название" placeholder="Имя" />
+        <InputForm<ThingManagerFormData>
+          autoFocus
+          required
+          name="name"
+          label="Название"
+          placeholder="Имя"
+        />
 
         <TextareaForm<ThingManagerFormData>
           name="description"
           label="Описание"
           placeholder="Опиши свое дело"
-          className="min-h-[200px]"
+          className="min-h-[100px] md:min-h-[200px]"
         />
 
-        <div className="grid gap-4 grid-cols-2">
-          <DatePickerForm<ThingManagerFormData>
-            label="Дата начала"
-            name="startDate"
-            min={subDays(new Date(), 1)}
-            onChange={() => void form.setValue('deadline', undefined, { shouldDirty: false })}
-          />
-
-          <DatePickerForm<ThingManagerFormData>
-            label="Дедлайн"
-            name="deadline"
-            min={new Date(form.getValues('startDate') ?? '')}
-          />
-        </div>
-
+        {isFunction(dateSlot) ? dateSlot(form) : dateSlot}
 
         <div className="flex gap-4 justify-between mt-auto">
           <ToggleGroupForm name="priority">
@@ -125,4 +120,10 @@ function ThingManagerForm(props: ThingManagerFormProps) {
   );
 }
 
-export { ThingManagerForm, type ThingManagerFormProps };
+export {
+  ThingManagerForm,
+  type ThingManagerFormProps,
+  type ThingManagerSubmitData,
+  type ThingManagerFormReturn,
+  type ThingManagerFormData,
+};

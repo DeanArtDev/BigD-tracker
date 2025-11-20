@@ -5,11 +5,11 @@ function ContentWrapper({ children, className }: PropsWithChildren<{ className?:
   return (
     <div
       className={cn(
-        'flex flex-col grow h-dvh p-[2px] md:p-[10px] pt-(--mobile-top-space)',
+        'flex flex-col w-full h-dvh p-[2px] md:p-[10px] pt-(--mobile-top-space)',
         className,
       )}
     >
-      <div className="flex flex-col bg-background rounded-lg grow border overflow-hidden shadow-sm pb-(--mobile-bottom-space)">
+      <div className="flex flex-col h-full bg-background rounded-lg border shadow-sm pb-(--mobile-bottom-space)">
         {children}
       </div>
     </div>

@@ -20,8 +20,10 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <AppSidebar />
+
             <ContentWrapper className="md:pl-0">
               <AppHeader />
+
               <AppMain>
                 <Outlet />
               </AppMain>
@@ -69,14 +71,18 @@ export const router = createBrowserRouter([
             path: routes.plannerInBox.path,
             lazy: () => import('@/page/planner/inbox/inbox.page'),
           },
-
           {
             path: routes.plannerGroupList.path,
             lazy: () => import('@/page/planner/group-list/group-list.page'),
           },
+          {
+            path: routes.plannerDailyPlanner.path,
+            lazy: () => import('@/page/planner/daily-planner/daily-planner.page'),
+          },
         ],
       },
 
+      // Public routes
       {
         element: (
           <ContentWrapper>

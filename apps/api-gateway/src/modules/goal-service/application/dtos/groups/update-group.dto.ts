@@ -67,10 +67,11 @@ class ReqData {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 1 })
+  @ApiPropertyOptional({ example: 1 })
   @Expose()
+  @IsOptional()
   @IsInt()
-  goalId: number;
+  goalId?: number;
 
   @ApiPropertyOptional({ example: 'Описание' })
   @Expose()

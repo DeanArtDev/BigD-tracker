@@ -20,7 +20,8 @@ class ReqData {
   userId: number;
 
   @IsInt()
-  groupId: number;
+  @IsOptional()
+  groupId?: number;
 
   @IsOptional()
   @Min(1)

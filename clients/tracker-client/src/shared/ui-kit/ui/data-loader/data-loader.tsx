@@ -3,7 +3,7 @@ import { type PropsWithChildren, type ReactNode } from 'react';
 import { AppLoader } from '../app-loader';
 import './styles.css';
 
-interface DataLoaderProps extends PropsWithChildren {
+type DataLoaderProps = PropsWithChildren & {
   readonly isLoading?: boolean;
   readonly loadingElement?: ReactNode;
 
@@ -13,11 +13,14 @@ interface DataLoaderProps extends PropsWithChildren {
   readonly isError?: boolean;
   readonly errorElement?: ReactNode;
 
-  readonly blur?: boolean;
-  readonly parallelMount?: boolean;
-
   readonly blurContainerClassName?: string;
-}
+} & (
+    | { readonly blur: boolean; readonly parallelMount?: never }
+    | {
+        readonly blur?: never;
+        readonly parallelMount: boolean;
+      }
+  );
 
 function DataLoader(props: DataLoaderProps) {
   const {

@@ -41,7 +41,7 @@ function TrainingPreview({ trainingId, appendContentSlot, onOpenChange }: Traini
 
           {training?.description && (
             <div>
-              <h4 className="mb-1 text-md font-semibold">Описание</h4>
+              <h4 className="mb-1 text-base font-semibold">Описание</h4>
               <p className="whitespace-pre-line text-sm leading-5">{training?.description}</p>
             </div>
           )}

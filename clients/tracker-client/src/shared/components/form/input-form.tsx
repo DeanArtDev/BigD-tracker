@@ -9,6 +9,7 @@ interface InputFormProps<FormValues extends FieldValues = FieldValues>
   readonly name: Path<FormValues>;
   readonly required?: boolean;
   readonly label?: string;
+  readonly inputClassName?: string;
   readonly isErrorMessage?: boolean;
 }
 
@@ -18,6 +19,7 @@ function InputForm<FormValues extends FieldValues = FieldValues>({
   isErrorMessage = true,
   required = false,
   className,
+  inputClassName,
   ...inputProps
 }: InputFormProps<FormValues>) {
   const context = useFormContext<FormValues>();
@@ -36,6 +38,7 @@ function InputForm<FormValues extends FieldValues = FieldValues>({
 
             <FormControl>
               <Input
+                className={inputClassName}
                 {...inputProps}
                 {...context.register(name, {
                   setValueAs: (v) => (v == '' || v == null ? undefined : v),

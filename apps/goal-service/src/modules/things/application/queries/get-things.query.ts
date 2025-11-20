@@ -16,10 +16,12 @@ export class GetThingsByGroupIdQuery {
   ) {}
 }
 
-export class GetTodaysThingsQuery {
+export class GetThingsByFiltersQuery {
   constructor(
     readonly input: {
       readonly userId: number;
+      readonly from?: string;
+      readonly to?: string;
     },
   ) {}
 }
