@@ -18,11 +18,11 @@ import {
   GetRepeatableThingsQuery,
   GetThingByIdQuery,
   GetThingsByGroupIdQuery,
-  GetTodaysThingsQuery,
+  GetThingsByFiltersQuery,
   GetRepeatableThingsHandler,
   GetThingByIdHandler,
   GetThingsByGroupIdHandler,
-  GetTodaysThingsHandler,
+  GetThingsByFiltersHandler,
 } from '@/modules/things/application/queries';
 import { ThingsService } from '@/modules/things/application';
 import { FinishThingUseCase } from '@/modules/things/application/use-cases';
@@ -50,12 +50,12 @@ const handlers = [
   GetRepeatableThingsHandler,
   GetThingByIdHandler,
   GetThingsByGroupIdHandler,
-  GetTodaysThingsHandler,
+  GetThingsByFiltersHandler,
 ];
 const queries = [
   GetThingByIdQuery,
   GetThingsByGroupIdQuery,
-  GetTodaysThingsQuery,
+  GetThingsByFiltersQuery,
   GetRepeatableThingsQuery,
 ];
 const events = [];

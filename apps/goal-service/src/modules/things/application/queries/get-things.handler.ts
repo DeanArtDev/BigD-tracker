@@ -6,7 +6,7 @@ import {
   GetRepeatableThingsQuery,
   GetThingByIdQuery,
   GetThingsByGroupIdQuery,
-  GetTodaysThingsQuery,
+  GetThingsByFiltersQuery,
 } from './get-things.query';
 
 @QueryHandler(GetThingByIdQuery)
@@ -27,12 +27,12 @@ export class GetThingsByGroupIdHandler implements IQueryHandler<GetThingsByGroup
   }
 }
 
-@QueryHandler(GetTodaysThingsQuery)
-export class GetTodaysThingsHandler implements IQueryHandler<GetTodaysThingsQuery> {
+@QueryHandler(GetThingsByFiltersQuery)
+export class GetThingsByFiltersHandler implements IQueryHandler<GetThingsByFiltersQuery> {
   constructor(@Inject(THINGS_REPOSITORY) private readonly thingsRepo: ThingsRepository) {}
 
-  async execute({ input }: GetTodaysThingsQuery): Promise<ThingEntity[]> {
-    return await this.thingsRepo.findTodays(input);
+  async execute({ input }: GetThingsByFiltersQuery): Promise<ThingEntity[]> {
+    return await this.thingsRepo.findByFilters(input);
   }
 }
 

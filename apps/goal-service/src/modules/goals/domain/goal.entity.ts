@@ -120,18 +120,18 @@ class GoalEntity extends AggregateRoot {
     }
 
     if (startDate != null && endDate != null) {
-      if (startDate.isAfter(endDate.value)) {
+      if (startDate.isAfter(endDate.value) || startDate.equals(endDate)) {
         validator.throwError(
-          `startDate:${startDate.value} must not be after endDate: ${endDate.value}`,
+          `startDate:${startDate.value} must not be after or equal endDate: ${endDate.value}`,
           'startDate',
         );
       }
     }
 
     if (startDate != null && deadline != null) {
-      if (startDate.isAfter(deadline.value)) {
+      if (startDate.isAfter(deadline.value) || startDate.equals(deadline)) {
         validator.throwError(
-          `startDate:${startDate.value} must not be after deadline: ${deadline.value}`,
+          `startDate:${startDate.value} must not be after or equal deadline: ${deadline.value}`,
           'startDate',
         );
       }

@@ -2,6 +2,7 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
+  GetThing,
   GOAL_SERVICE_RMQ_KEY,
   GoalCreateThing,
   GoalCreateThingIntoInBoxGroup,
@@ -14,12 +15,14 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Inject,
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -31,6 +34,8 @@ import {
   CreateThingRes,
   FinishThingReq,
   FinishThingRes,
+  GetThingsQuery,
+  GetThingsApiGatewayRes,
   UpdateThingReq,
   UpdateThingRes,
 } from './dtos';
@@ -39,6 +44,30 @@ import {
 @Controller('/things')
 export class ThingsController {
   constructor(@Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Получение дел' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetThingsApiGatewayRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(GetThingsApiGatewayRes)
+  async getThings(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Query() { from, to }: GetThingsQuery,
+  ): Promise<GetThingsApiGatewayRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GetThing.Response, GetThing.Request>(GetThing.pattern, {
+        data: {
+          userId: uid,
+          from,
+          to,
+        },
+      }),
+    );
+  }
 
   @Post('/inbox')
   @ApiOperation({ summary: 'Создание дела в IN BOX' })

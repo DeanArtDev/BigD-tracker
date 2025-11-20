@@ -1,6 +1,7 @@
-import { ThingsService } from '@/modules/things/application/things.service';
-import { FinishThingUseCase } from '@/modules/things/application/use-cases';
+import { ThingsService } from './things.service';
+import { FinishThingUseCase } from './use-cases';
 import {
+  GetThing,
   GoalCreateThing,
   GoalCreateThingIntoInBoxGroup,
   GoalDeleteThing,
@@ -16,6 +17,17 @@ export class ThingsController {
     private readonly finishThingUC: FinishThingUseCase,
     private readonly thingsService: ThingsService,
   ) {}
+
+  @MessagePattern(GetThing.pattern)
+  async getThings(@Payload() { data }: GetThing.Request): Promise<GetThing.Response> {
+    return {
+      data: await this.thingsService.getThingByFilters({
+        userId: data.userId,
+        to: data.to,
+        from: data.from,
+      }),
+    };
+  }
 
   @MessagePattern(GoalFinishThing.pattern)
   async finishThing(

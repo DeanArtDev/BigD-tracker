@@ -10,7 +10,7 @@ const THINGS_REPOSITORY = Symbol('THING_REPOSITORY');
 
 interface ThingsRepository {
   findById(input: { id: number; userId: number }): Promise<ThingEntity | null>;
-  findTodays(input: { userId: number }): Promise<ThingEntity[]>;
+  findByFilters(input: { userId: number; from?: string; to?: string }): Promise<ThingEntity[]>;
   findRepeatable(input: { userId: number }): Promise<ThingEntity[]>;
   findByGroupId(input: { groupId: number; userId: number }): Promise<ThingEntity[]>;
   create(entity: ThingEntity, trx?: Transaction<DB>): Promise<ThingEntity | null>;

@@ -15,6 +15,8 @@ import {
 import {
   GetThingByIdHandler,
   GetThingByIdQuery,
+  GetThingsByFiltersHandler,
+  GetThingsByFiltersQuery,
   GetThingsByGroupIdHandler,
   GetThingsByGroupIdQuery,
 } from '@/modules/things/application/queries';
@@ -32,6 +34,19 @@ export class ThingsService {
     private readonly queryBus: QueryBus,
     private readonly mapper: ThingsMapper,
   ) {}
+
+  async getThingByFilters(input: {
+    userId: number;
+    from?: string;
+    to?: string;
+  }): Promise<ThingDto[]> {
+    const things = await this.queryBus.execute<
+      GetThingsByFiltersQuery,
+      ReturnHandlerType<typeof GetThingsByFiltersHandler>
+    >(new GetThingsByFiltersQuery({ userId: input.userId, to: input.to, from: input.from }));
+
+    return things.map(this.mapper.fromEntityToDTO);
+  }
 
   async createIntoInBoxGroup(input: {
     userId: number;

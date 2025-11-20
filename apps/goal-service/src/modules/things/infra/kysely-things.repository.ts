@@ -3,7 +3,6 @@ import { Priority, WeekDays } from '@/modules/things/domain';
 import { BaseRepository, DateVo, Name, Result } from '@big-d/api-utils';
 import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { set } from 'date-fns';
 import { Transaction } from 'kysely';
 import { ThingRawData, ThingsRepository } from '../application';
 import { ThingEntity } from '../domain/thing.entity';
@@ -27,33 +26,37 @@ export class KyselyThingsRepository extends BaseRepository<DB> implements Things
     return this.#map(result);
   }
 
-  async findTodays(input: { userId: number }): Promise<ThingEntity[]> {
-    const now = new Date().toISOString();
-    const startToday = set(now, {
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      milliseconds: 0,
-    });
-
-    const endToday = set(now, {
-      hours: 23,
-      minutes: 59,
-      seconds: 59,
-    });
-
-    let query = this.db().selectFrom(this.#tableName).selectAll();
+  async findByFilters({
+    userId,
+    from,
+    to,
+  }: {
+    userId: number;
+    from?: string;
+    to?: string;
+  }): Promise<ThingEntity[]> {
+    let query = this.db().selectFrom(this.#tableName).selectAll().orderBy('start_date', 'asc');
 
     query = query.where((eb) => {
-      const conditions = [
-        eb('user_id', '=', input.userId),
-        eb('end_date', 'is', null),
-        eb('start_date', '>=', startToday),
-        eb('start_date', '<=', endToday),
-      ];
+      const conditions = [eb('user_id', '=', userId)];
+
+      if (from != null && to != null) {
+        conditions.push(eb('start_date', '<=', new Date(to)));
+        conditions.push(eb('deadline', '>=', new Date(from)));
+        return eb.and(conditions);
+      }
+
+      if (to != null) {
+        conditions.push(eb('deadline', '<=', new Date(to)));
+      }
+
+      if (from != null) {
+        conditions.push(eb('start_date', '>=', new Date(from)));
+      }
 
       return eb.and(conditions);
     });
+
     const result = await query.execute();
 
     return result.map(this.#map);

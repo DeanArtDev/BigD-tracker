@@ -4,3 +4,4 @@ export * from './create-thing-into-inbox.dto';
 export * from './delete-thing.dto';
 export * from './update-thing';
 export * from './create-thing.dto';
+export * from './get-things.dto';
