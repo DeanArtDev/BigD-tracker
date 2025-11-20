@@ -1,5 +1,6 @@
 import dayjs from '@/shared/lib/time';
 import type { TimeViewEvent } from '@/shared/lib/time-view/core';
+import { Clock } from 'lucide-react';
 import { useEventsState } from '../model/selectors';
 
 function EventList<TExtra extends { id: number }>({ events }: { events: TimeViewEvent<TExtra>[] }) {
@@ -8,12 +9,11 @@ function EventList<TExtra extends { id: number }>({ events }: { events: TimeView
   return (
     <div className="event-list flex flex-col absolute top-0 bottom-0 left-0 right-0">
       {eventList.map((event) => {
-        const range = `${dayjs(event.from).format('DD-MM HH:mm')} | ${dayjs(event.to).format('DD-MM HH:mm')}`;
 
         return (
           <article
             key={event.extra?.id}
-            className="absolute cursor-pointer px-2 min-h-[20px] bg-gray-200 rounded-sm border border-gray-400 shadow-sm"
+            className="absolute cursor-pointer px-2 py-0.5 md:py-0 min-h-[20px] bg-gray-200 rounded-sm border border-gray-400 shadow-sm overflow-hidden"
             style={{
               top: event.position.top,
               left: event.position.left,
@@ -22,12 +22,13 @@ function EventList<TExtra extends { id: number }>({ events }: { events: TimeView
               zIndex: event.style?.zIndex,
             }}
           >
-            <div className="flex w-full items-start gap-4">
-              <span className="flex items-center text-xs md:text-sm font-medium overflow-hidden truncate break-words break-all">
+            <div className="flex flex-col items-start w-full">
+              <span className="w-full truncate text-xs md:text-sm font-medium break-words break-all">
                 {event.name}
               </span>
-              <time className="text-xs md:text-sm overflow-hidden truncate break-words break-all">
-                {range}
+              <time className="flex gap-1 truncate text-gray-600 text-xs items-center break-words break-all">
+                <Clock size={12} />
+                {dayjs(event.to).format('HH:mm')}
               </time>
             </div>
           </article>
