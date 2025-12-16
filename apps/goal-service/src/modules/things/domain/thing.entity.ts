@@ -135,7 +135,7 @@ class ThingEntity extends AggregateRoot {
   }
 
   public validate() {
-    const { startDate, endDate, deadline, weekDays, groupId, position } = this.#data;
+    const { startDate, endDate, deadline, weekDays } = this.#data;
 
     if (startDate != null && endDate != null) {
       if (startDate.isAfter(endDate.value) || startDate.equals(endDate)) {
