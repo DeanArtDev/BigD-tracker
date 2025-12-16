@@ -11,10 +11,7 @@ class PostgresDatabase<DB> extends Database<DB> {
   protected pool: Pool;
 
   constructor(options: PostgresDatabaseOptions) {
-    const pool = new Pool({
-      ...options,
-      options: options.schema ? `-c search_path=${options.schema}` : undefined,
-    });
+    const pool = new Pool(options);
 
     super({
       dialect: new PostgresDialect({ pool }),

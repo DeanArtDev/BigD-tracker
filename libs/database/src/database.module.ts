@@ -1,7 +1,6 @@
-import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
+import { DynamicModule, Global, Module, Provider, OptionalFactoryDependency } from '@nestjs/common';
 import { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
 import { ModuleMetadata } from '@nestjs/common/interfaces/modules/module-metadata.interface';
-import { OptionalFactoryDependency } from '@nestjs/common/interfaces/modules/optional-factory-dependency.interface';
 import { PostgresDatabaseOptions, PostgresDatabase } from './database';
 
 const DATABASE_CONNECTION = Symbol('DATABASE_CONNECTION');
@@ -19,7 +18,6 @@ class DatabaseModule {
           database: options.database,
           user: options.user,
           password: options.password,
-          options: options.schema ? `-c search_path=${options.schema}` : undefined,
           logging: options.logging,
         });
       },
@@ -41,6 +39,7 @@ class DatabaseModule {
       provide: DATABASE_CONNECTION,
       useFactory: async (...args: any[]) => {
         const opts = await options.useFactory(...args);
+
         return new PostgresDatabase({
           host: opts.host,
           port: opts.port,

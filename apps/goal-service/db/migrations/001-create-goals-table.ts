@@ -1,3 +1,4 @@
+import { setUpdateTriggerOnUpdatedAt } from './helpers';
 import { Kysely, sql } from 'kysely';
 
 export async function up(db: Kysely<any>): Promise<void> {
@@ -21,6 +22,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
     .execute();
+
+  await setUpdateTriggerOnUpdatedAt('goals', db);
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

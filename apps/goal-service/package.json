@@ -16,6 +16,7 @@
     "=== TOOLS ===": "",
     "migrate:account": "ts-node tools/migrator.ts lts",
     "seed": "ts-node tools/run-seeds.ts",
+    "migrate": "ts-node tools/migrate.ts",
     "db:typegen": "kysely-codegen --config-file .kysely-codegenrc.json",
     "=== CI ===": "",
     "format": "prettier \"src/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
