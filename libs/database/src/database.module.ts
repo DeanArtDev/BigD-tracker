@@ -1,6 +1,12 @@
-import { DynamicModule, Global, Module, Provider, OptionalFactoryDependency } from '@nestjs/common';
-import { InjectionToken } from '@nestjs/common/interfaces/modules/injection-token.interface';
-import { ModuleMetadata } from '@nestjs/common/interfaces/modules/module-metadata.interface';
+import {
+  DynamicModule,
+  Global,
+  Module,
+  Provider,
+  OptionalFactoryDependency,
+  InjectionToken,
+  ModuleMetadata,
+} from '@nestjs/common';
 import { PostgresDatabaseOptions, PostgresDatabase } from './database';
 
 const DATABASE_CONNECTION = Symbol('DATABASE_CONNECTION');
