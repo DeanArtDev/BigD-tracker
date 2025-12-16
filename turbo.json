@@ -28,6 +28,12 @@
       "env": ["DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"]
     },
 
+    "migrate": {
+      "outputs": [],
+      "cache": false,
+      "env": ["DB_HOST", "DB_PORT", "DB_DATABASE", "DB_USERNAME", "DB_PASSWORD"]
+    },
+
     "db:typegen": {},
 
     "test": {
