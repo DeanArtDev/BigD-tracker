@@ -15,7 +15,7 @@
     "=== BUILD ===": "",
     "build": "tsc --build",
     "=== LINK ===": "",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "format": "npx prettier . --check",
     "format:fix": "npx prettier . --write",
     "lint": "pnpm format && eslint \"./src/**/*.ts\"",

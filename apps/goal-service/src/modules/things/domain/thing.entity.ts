@@ -162,10 +162,6 @@ class ThingEntity extends AggregateRoot {
       );
     }
 
-    if (groupId != null && position <= 0) {
-      validator.throwError(`[position] has to be more than 0 if [groupId] existed`, 'position');
-    }
-
     return this;
   }
 
