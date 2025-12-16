@@ -51,6 +51,7 @@
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",
     "globals": "catalog:",
+    "husky": "^9.1.7",
     "kysely": "catalog:",
     "prettier": "catalog:",
     "ts-loader": "catalog:",
