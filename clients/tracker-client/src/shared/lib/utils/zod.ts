@@ -6,9 +6,11 @@ const zodPlaceholder = {
 };
 
 const transformPlaceholder = {
-  number: (value: number | null | undefined): number => (value == null ? zodPlaceholder.number : value),
+  number: (value: number | null | undefined): number =>
+    value == null ? zodPlaceholder.number : value,
 
-  string: (value: string | null | undefined): string => (value == null ? zodPlaceholder.string : value),
+  string: (value: string | null | undefined): string =>
+    value == null ? zodPlaceholder.string : value,
 
   optional: <T>(value: T): T | undefined => (value == null || value === '' ? undefined : value),
 

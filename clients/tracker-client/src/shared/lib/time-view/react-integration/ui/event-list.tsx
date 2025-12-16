@@ -9,7 +9,6 @@ function EventList<TExtra extends { id: number }>({ events }: { events: TimeView
   return (
     <div className="event-list flex flex-col absolute top-0 bottom-0 left-0 right-0">
       {eventList.map((event) => {
-
         return (
           <article
             key={event.extra?.id}
