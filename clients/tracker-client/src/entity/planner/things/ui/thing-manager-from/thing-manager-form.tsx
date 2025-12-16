@@ -38,7 +38,7 @@ function ThingManagerForm(props: ThingManagerFormProps) {
   const form = useForm<ThingManagerFormData, any, SubmitFormData>({
     resolver: zodResolver(validationSchema),
     reValidateMode: 'onChange',
-    mode: "onSubmit",
+    mode: 'onSubmit',
     disabled: isLoading,
     defaultValues: {
       name: undefined,

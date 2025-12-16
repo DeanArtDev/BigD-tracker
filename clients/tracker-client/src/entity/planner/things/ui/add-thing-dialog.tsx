@@ -31,9 +31,12 @@ function AddThingDialog({ loading, dateSlot, onSubmit }: AddThingDialogProps) {
         trigger={
           <Button
             size="icon"
-            className={cn('absolute bottom-5 sm:bottom-7 right-5 sm:right-5 rounded-full p-6 z-[49]', {
-              'sm:-right-15': open,
-            })}
+            className={cn(
+              'absolute bottom-5 sm:bottom-7 right-5 sm:right-5 rounded-full p-6 z-[49]',
+              {
+                'sm:-right-15': open,
+              },
+            )}
           >
             <Plus className="size-6" />
           </Button>

@@ -9,11 +9,13 @@ const migrateActionMap = {
   lts: 'migrateToLatest',
 };
 
-async function migrate(
-  migrationFolder: string,
-  method: keyof typeof migrateActionMap,
-): Promise<void> {
+async function migrate(options: {
+  migrationFolder: string;
+  method: keyof typeof migrateActionMap;
+}): Promise<void> {
+  const { migrationFolder, method } = options;
   const db = getDb();
+
   const migrator = new Migrator({
     db,
     provider: new FileMigrationProvider({

@@ -6,7 +6,7 @@ services:
     restart: "no"
     build:
       context: .
-      dockerfile: ./tools/migrator.Dockerfile
+      dockerfile: ./tools/data-base/migrator.Dockerfile
     depends_on:
       tracker_db:
         condition: service_healthy

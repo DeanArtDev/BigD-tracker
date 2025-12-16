@@ -4,5 +4,5 @@ export type {
   TimeViewEventMap,
   TimeViewEvent,
   TimeViewControllerOptions,
-  TimeViewDateSet
+  TimeViewDateSet,
 } from './model/types';
