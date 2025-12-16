@@ -52,7 +52,6 @@ class DatabaseModule {
           database: opts.database,
           user: opts.user,
           password: opts.password,
-          options: opts.schema ? `-c search_path=${opts.schema}` : undefined,
         });
       },
       inject: options.inject || [],

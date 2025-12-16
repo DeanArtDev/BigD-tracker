@@ -3,7 +3,7 @@ import { KyselyConfig } from 'kysely/dist/esm/kysely';
 import { Database } from './database.interface';
 import { Pool, PoolConfig } from 'pg';
 
-type PostgresDatabaseOptions = PoolConfig & { schema?: string } & {
+type PostgresDatabaseOptions = PoolConfig & {
   logging?: KyselyConfig['log'];
 };
 
