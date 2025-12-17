@@ -29,9 +29,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Дата к какой дате хотелось бы завершить дело
     .addColumn('deadline', 'timestamptz')
     // Статус дела
-    .addColumn('status_id', 'smallint', (col) => col.notNull().defaultTo(1))
+    .addColumn('status_id', 'smallint', (col) => col.notNull())
     // Тип оверрайда
-    .addColumn('type_id', 'smallint', (col) => col.notNull().defaultTo(1))
+    .addColumn('type_id', 'smallint', (col) => col.notNull())
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
@@ -76,5 +76,5 @@ export async function up(db: Kysely<any>): Promise<void> {
 
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('things_recurrence_overrides').execute();
-  await db.schema.dropTable('things_recurrence_exceptions').execute();
+  await db.schema.dropTable('things_recurrence_override_types').execute();
 }

@@ -12,7 +12,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Настройки этапа
     .addColumn('settings_id', 'integer')
     // Статус этапа
-    .addColumn('status_id', 'smallint', (col) => col.notNull().defaultTo(1))
+    .addColumn('status_id', 'smallint', (col) => col.notNull())
     // Дата фактического начала
     .addColumn('start_date', 'timestamptz', (col) => col.notNull())
     // Дата фактического завершнеия

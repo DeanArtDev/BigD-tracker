@@ -14,7 +14,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Прогресс выполнения всех дел в группе
     .addColumn('progress', 'smallint', (col) => col.notNull().defaultTo(0))
     // Статус группы
-    .addColumn('status_id', 'smallint', (col) => col.notNull().defaultTo(1))
+    .addColumn('status_id', 'smallint', (col) => col.notNull())
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))

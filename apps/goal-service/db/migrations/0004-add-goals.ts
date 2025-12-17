@@ -16,7 +16,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Причина отмены цели
     .addColumn('cancel_reason', 'text')
     // Статус цели
-    .addColumn('status_id', 'smallint', (col) => col.notNull().defaultTo(1))
+    .addColumn('status_id', 'smallint', (col) => col.notNull())
     // Дата фактического начала
     .addColumn('start_date', 'timestamptz', (col) => col.notNull())
     // Дата фактического окончания

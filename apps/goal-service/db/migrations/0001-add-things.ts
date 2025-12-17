@@ -24,7 +24,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Дата к какой дате хотелось бы завершить дело
     .addColumn('deadline', 'timestamptz')
     // Статус дела
-    .addColumn('status_id', 'smallint', (col) => col.notNull().defaultTo(1))
+    .addColumn('status_id', 'smallint', (col) => col.notNull())
     // Паттерн повторяемых задач, стандарт iCalendar https://icalendar.org/
     .addColumn('recurrence', 'text')
 
