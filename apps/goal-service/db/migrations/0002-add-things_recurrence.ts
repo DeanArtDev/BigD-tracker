@@ -30,8 +30,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('deadline', 'timestamptz')
     // Статус дела
     .addColumn('status_id', 'smallint', (col) => col.notNull())
-    // Тип оверрайда
-    .addColumn('type_id', 'smallint', (col) => col.notNull())
+    // Тип оверрайда, по какой причине была перезапись
+    .addColumn('override_type_id', 'smallint', (col) => col.notNull())
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
@@ -47,7 +47,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('things_recurrence_override_types')
     .addColumn('id', 'smallint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
-    .addColumn('name', 'varchar(150)', (col) => col.notNull())
+    .addColumn('name', 'varchar(150)', (col) => col.notNull().unique())
     .execute();
 
   // === Внешние ключи таблиц ===
@@ -65,8 +65,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable('things_recurrence_overrides')
     .addForeignKeyConstraint(
-      'tro_tro_types_type_id_fk',
-      ['type_id'],
+      'tro_tro_types_override_type_id_fk',
+      ['override_type_id'],
       'things_recurrence_override_types',
       ['id'],
       (cb) => cb.onDelete('no action').onUpdate('no action'),
