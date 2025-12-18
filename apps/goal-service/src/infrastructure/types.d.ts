@@ -9,61 +9,162 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Goals {
-  created_at: Generated<Timestamp | null>;
-  deadline: Timestamp | null;
+  cancel_reason: string | null;
+  created_at: Timestamp;
   description: string | null;
   end_date: Timestamp | null;
   id: Generated<number>;
   name: string;
-  position: Generated<number>;
-  result: Generated<number>;
-  start_date: Timestamp | null;
-  updated_at: Generated<Timestamp | null>;
+  progress: Generated<number>;
+  start_date: Timestamp;
+  status_id: number;
+  updated_at: Generated<Timestamp>;
   user_id: number;
+}
+
+export interface GoalStatuses {
+  id: Generated<number>;
+  name: string;
+}
+
+export interface GoalsToGoals {
+  goal_id: number;
+  master_goal_id: number;
+  position: Generated<number>;
+}
+
+export interface GoalsToStages {
+  goal_id: number;
+  position: Generated<number>;
+  stage_id: number;
 }
 
 export interface Groups {
-  created_at: Generated<Timestamp | null>;
+  created_at: Generated<Timestamp>;
   description: string | null;
-  goal_id: number | null;
   id: Generated<number>;
   name: string;
-  position: Generated<number>;
-  result: Generated<number>;
-  updated_at: Generated<Timestamp | null>;
+  progress: Generated<number>;
+  status_id: number;
+  updated_at: Generated<Timestamp>;
   user_id: number;
+}
+
+export interface GroupStatuses {
+  id: Generated<number>;
+  name: string;
+}
+
+export interface GroupsToGoals {
+  goal_id: number;
+  group_id: number;
+  position: Generated<number>;
+}
+
+export interface Stages {
+  created_at: Generated<Timestamp>;
+  description: string | null;
+  end_date: Timestamp;
+  id: Generated<number>;
+  settings_id: number | null;
+  start_date: Timestamp;
+  status_id: number;
+  type_id: number;
+  updated_at: Generated<Timestamp>;
+}
+
+export interface StageStatuses {
+  id: Generated<number>;
+  name: string;
+}
+
+export interface StageTypes {
+  id: Generated<number>;
+  name: string;
 }
 
 export interface Tags {
-  created_at: Generated<Timestamp | null>;
+  id: Generated<number>;
   name: string;
-  updated_at: Generated<Timestamp | null>;
+}
+
+export interface TagsToThings {
+  tag_id: number;
+  thing_id: Int8;
 }
 
 export interface Things {
-  comment: string | null;
-  created_at: Generated<Timestamp | null>;
+  cancel_reason: string | null;
+  created_at: Generated<Timestamp>;
   deadline: Timestamp | null;
   description: string | null;
   end_date: Timestamp | null;
-  group_id: number | null;
+  id: Generated<Int8>;
+  name: string;
+  priority: Generated<number>;
+  recurrence: string | null;
+  start_date: Timestamp | null;
+  status_id: number;
+  updated_at: Generated<Timestamp>;
+  user_id: number;
+  weight: Generated<number>;
+}
+
+export interface ThingsRecurrenceOverrides {
+  cancel_reason: string | null;
+  created_at: Generated<Timestamp>;
+  deadline: Timestamp | null;
+  description: string | null;
+  end_date: Timestamp | null;
+  id: Generated<Int8>;
+  name: string;
+  priority: Generated<number>;
+  start_date: Timestamp;
+  status_id: number;
+  thing_id: Int8;
+  type_id: number;
+  updated_at: Generated<Timestamp>;
+  user_id: number;
+  weight: Generated<number>;
+}
+
+export interface ThingsRecurrenceOverrideTypes {
   id: Generated<number>;
   name: string;
+}
+
+export interface ThingStatuses {
+  id: Generated<number>;
+  name: string;
+}
+
+export interface ThingsToGroups {
+  group_id: number;
   position: Generated<number>;
-  priority: number | null;
-  result: Generated<number>;
-  start_date: Timestamp | null;
-  updated_at: Generated<Timestamp | null>;
-  user_id: number;
-  week_days: number[] | null;
+  thing_id: Int8;
 }
 
 export interface DB {
+  goal_statuses: GoalStatuses;
   goals: Goals;
+  goals_to_goals: GoalsToGoals;
+  goals_to_stages: GoalsToStages;
+  group_statuses: GroupStatuses;
   groups: Groups;
+  groups_to_goals: GroupsToGoals;
+  stage_statuses: StageStatuses;
+  stage_types: StageTypes;
+  stages: Stages;
   tags: Tags;
+  tags_to_things: TagsToThings;
+  thing_statuses: ThingStatuses;
   things: Things;
+  things_recurrence_override_types: ThingsRecurrenceOverrideTypes;
+  things_recurrence_overrides: ThingsRecurrenceOverrides;
+  things_to_groups: ThingsToGroups;
 }

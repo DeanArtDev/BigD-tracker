@@ -4,7 +4,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('tags')
     .addColumn('id', 'integer', (col) => col.primaryKey().generatedByDefaultAsIdentity())
-    .addColumn('name', 'varchar(100)', (col) => col.notNull())
+    .addColumn('name', 'varchar(100)', (col) => col.notNull().unique())
     .addCheckConstraint('tags_name_length_check', sql`char_length(name) <= 25`)
     .execute();
 

@@ -40,7 +40,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('thing_statuses')
     .addColumn('id', 'smallint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
-    .addColumn('name', 'varchar(150)', (col) => col.notNull())
+    .addColumn('name', 'varchar(150)', (col) => col.notNull().unique())
     .execute();
 
   // === Внешние ключи таблиц ===
