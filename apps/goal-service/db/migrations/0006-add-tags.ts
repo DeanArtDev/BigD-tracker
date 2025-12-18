@@ -33,6 +33,6 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable('tags').execute();
   await db.schema.dropTable('tags_to_things').execute();
+  await db.schema.dropTable('tags').execute();
 }
