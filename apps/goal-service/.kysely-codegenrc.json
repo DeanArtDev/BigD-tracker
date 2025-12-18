@@ -6,6 +6,5 @@
   "envFile": ".env.development",
   "logLevel": "warn",
   "outFile": "./src/infrastructure/types.d.ts",
-  "includePattern": "public.+(goals|groups|things|tags)",
   "verify": false
 }
