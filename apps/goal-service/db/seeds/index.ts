@@ -1,14 +1,14 @@
 import goalStatuses from './goal-statuses';
-import thingStatuses from './thing-statuses';
+import taskStatuses from './task-statuses';
 import groupStatuses from './group-statuses';
 import stageStatuses from './stage-statuses';
 import stageTypes from './stage-types';
 import tags from './tags-(temp)';
-import thingRecurrenceOverrideTypes from './things_recurrence_override_types';
+import taskRecurrenceOverrideTypes from './tasks-recurrence-override-types';
 
 export default [
-  thingStatuses,
-  thingRecurrenceOverrideTypes,
+  taskStatuses,
+  taskRecurrenceOverrideTypes,
   groupStatuses,
   goalStatuses,
   stageStatuses,

@@ -5,11 +5,11 @@ export async function up(db: Kysely<any>): Promise<void> {
   // Таблица реальных дел (а не виртуальных) измененных по паттерну
   // хранятся как будущие так прошедшие дела
   await db.schema
-    .createTable('things_recurrence_overrides')
+    .createTable('tasks_recurrence_overrides')
     .addColumn('id', 'bigint', (col) => col.notNull().generatedByDefaultAsIdentity())
     // ID повторяющегося дела (мастер событие, родитель), может существовать без родителя
     // нужно сохранять эти дела даже после удаления мастер события по этому тут нет связи
-    .addColumn('thing_id', 'bigint', (col) => col.notNull())
+    .addColumn('task_id', 'bigint', (col) => col.notNull())
     // Нет связи с сервисом account
     .addColumn('user_id', 'integer', (col) => col.notNull())
     // Имя дела
@@ -39,35 +39,35 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addCheckConstraint('tro_priority_check', sql`priority is null or priority in (1, 2, 3, 4)`)
     .addCheckConstraint('tro_weight_check', sql`weight is null or weight between 0 and 100`)
 
-    .addPrimaryKeyConstraint('tro_pkey', ['id', 'thing_id', 'start_date'])
+    .addPrimaryKeyConstraint('tro_pkey', ['id', 'task_id', 'start_date'])
     .execute();
-  await setUpdateTriggerOnUpdatedAt('things_recurrence_overrides', db);
+  await setUpdateTriggerOnUpdatedAt('tasks_recurrence_overrides', db);
 
   //  === Словари ===
   await db.schema
-    .createTable('things_recurrence_override_types')
+    .createTable('tasks_recurrence_override_types')
     .addColumn('id', 'smallint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
     .addColumn('name', 'varchar(150)', (col) => col.notNull().unique())
     .execute();
 
   // === Внешние ключи таблиц ===
   await db.schema
-    .alterTable('things_recurrence_overrides')
+    .alterTable('tasks_recurrence_overrides')
     .addForeignKeyConstraint(
-      'tro_thing_statuses_status_id_fk',
+      'tro_task_statuses_status_id_fk',
       ['status_id'],
-      'thing_statuses',
+      'task_statuses',
       ['id'],
       (cb) => cb.onDelete('no action').onUpdate('no action'),
     )
     .execute();
 
   await db.schema
-    .alterTable('things_recurrence_overrides')
+    .alterTable('tasks_recurrence_overrides')
     .addForeignKeyConstraint(
       'tro_tro_types_override_type_id_fk',
       ['override_type_id'],
-      'things_recurrence_override_types',
+      'tasks_recurrence_override_types',
       ['id'],
       (cb) => cb.onDelete('no action').onUpdate('no action'),
     )
@@ -75,6 +75,6 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable('things_recurrence_overrides').execute();
-  await db.schema.dropTable('things_recurrence_override_types').execute();
+  await db.schema.dropTable('tasks_recurrence_overrides').execute();
+  await db.schema.dropTable('tasks_recurrence_override_types').execute();
 }

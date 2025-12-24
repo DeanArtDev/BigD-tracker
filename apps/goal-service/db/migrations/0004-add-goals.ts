@@ -37,44 +37,45 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // === Таблицы связей ===
   await db.schema
-    .createTable('groups_to_goals')
+    .createTable('group_to_goals')
     .addColumn('goal_id', 'integer', (col) => col.notNull())
     .addColumn('group_id', 'integer', (col) => col.notNull())
     // Позиция в списке
     .addColumn('position', 'smallint', (col) => col.notNull().defaultTo(0))
-    .addPrimaryKeyConstraint('groups_to_goals_pkey', ['goal_id', 'group_id'])
+    .addPrimaryKeyConstraint('group_to_goals_pkey', ['goal_id', 'group_id'])
+    .addUniqueConstraint('gtg_goal_group_ids_unique', ['goal_id', 'group_id'])
     .execute();
 
   await db.schema
-    .createTable('goals_to_goals')
+    .createTable('goal_to_goals')
     // идентификатор родительской цели в которой goal_id является ребенком
     .addColumn('master_goal_id', 'integer', (col) => col.notNull())
     // идентификатор ребенка мастер цели
     .addColumn('goal_id', 'integer', (col) => col.notNull())
     // Позиция в списке
     .addColumn('position', 'smallint', (col) => col.notNull().defaultTo(0))
-    .addPrimaryKeyConstraint('goals_to_goals_pkey', ['master_goal_id', 'goal_id'])
+    .addPrimaryKeyConstraint('goal_to_goals_pkey', ['master_goal_id', 'goal_id'])
     .execute();
 
   // === Внешние ключи таблиц ===
   await db.schema
-    .alterTable('groups_to_goals')
-    .addForeignKeyConstraint('groups_to_goals_goal_id_fk', ['goal_id'], 'goals', ['id'], (cb) =>
+    .alterTable('group_to_goals')
+    .addForeignKeyConstraint('group_to_goals_goal_id_fk', ['goal_id'], 'goals', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 
   await db.schema
-    .alterTable('groups_to_goals')
-    .addForeignKeyConstraint('groups_to_goals_group_id_fk', ['group_id'], 'groups', ['id'], (cb) =>
+    .alterTable('group_to_goals')
+    .addForeignKeyConstraint('group_to_goals_group_id_fk', ['group_id'], 'groups', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 
   await db.schema
-    .alterTable('goals_to_goals')
+    .alterTable('goal_to_goals')
     .addForeignKeyConstraint(
-      'goals_to_goals_master_goal_id_fk',
+      'goal_to_goals_master_goal_id_fk',
       ['master_goal_id'],
       'goals',
       ['id'],
@@ -83,8 +84,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .alterTable('goals_to_goals')
-    .addForeignKeyConstraint('goals_to_goals_goal_id_fk', ['goal_id'], 'goals', ['id'], (cb) =>
+    .alterTable('goal_to_goals')
+    .addForeignKeyConstraint('goal_to_goals_goal_id_fk', ['goal_id'], 'goals', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
@@ -102,8 +103,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable('groups_to_goals').execute();
-  await db.schema.dropTable('goals_to_goals').execute();
+  await db.schema.dropTable('group_to_goals').execute();
+  await db.schema.dropTable('goal_to_goals').execute();
   await db.schema.dropTable('goals').execute();
   await db.schema.dropTable('goal_statuses').execute();
 }

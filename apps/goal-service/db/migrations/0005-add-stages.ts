@@ -44,6 +44,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Позиция в списке
     .addColumn('position', 'smallint', (col) => col.notNull().defaultTo(0))
     .addPrimaryKeyConstraint('goals_to_stages_pkey', ['goal_id', 'stage_id'])
+    .addUniqueConstraint('gts_goal_stage_ids_unique', ['goal_id', 'stage_id'])
     .execute();
 
   // === Внешние ключи таблиц ===

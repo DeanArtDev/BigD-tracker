@@ -10,29 +10,30 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // === Таблицы связей ===
   await db.schema
-    .createTable('tags_to_things')
-    .addColumn('thing_id', 'bigint', (col) => col.notNull())
+    .createTable('tag_to_tasks')
+    .addColumn('task_id', 'bigint', (col) => col.notNull())
     .addColumn('tag_id', 'integer', (col) => col.notNull())
-    .addPrimaryKeyConstraint('tags_to_things_pkey', ['thing_id', 'tag_id'])
+    .addPrimaryKeyConstraint('tag_to_tasks_pkey', ['task_id', 'tag_id'])
+    .addUniqueConstraint('ttt_task_tag_ids_unique', ['task_id', 'tag_id'])
     .execute();
 
   // === Внешние ключи таблиц ===
   await db.schema
-    .alterTable('tags_to_things')
-    .addForeignKeyConstraint('tags_to_things_thing_id_fk', ['thing_id'], 'things', ['id'], (cb) =>
+    .alterTable('tag_to_tasks')
+    .addForeignKeyConstraint('tag_to_tasks_task_id_fk', ['task_id'], 'tasks', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 
   await db.schema
-    .alterTable('tags_to_things')
-    .addForeignKeyConstraint('tags_to_things_tag_id_fk', ['tag_id'], 'tags', ['id'], (cb) =>
+    .alterTable('tag_to_tasks')
+    .addForeignKeyConstraint('tag_to_tasks_tag_id_fk', ['tag_id'], 'tags', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable('tags_to_things').execute();
+  await db.schema.dropTable('tag_to_tasks').execute();
   await db.schema.dropTable('tags').execute();
 }
