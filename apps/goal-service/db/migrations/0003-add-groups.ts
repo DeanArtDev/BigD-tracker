@@ -15,11 +15,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('progress', 'smallint', (col) => col.notNull().defaultTo(0))
     // Статус группы
     .addColumn('status_id', 'smallint', (col) => col.notNull())
+    // Прогресс выполнения дел в группе
+    .addColumn('progress_result', 'smallint', (col) => col.notNull())
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
 
-    .addCheckConstraint('groups_progress_check', sql`progress between 0 and 100`)
+    .addCheckConstraint('groups_progress_result_check', sql`progress_result between 0 and 100`)
     .execute();
   await setUpdateTriggerOnUpdatedAt('groups', db);
 
@@ -31,13 +33,15 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   // === Таблицы связей ===
+  // одно дело не может быть в разных группах
   await db.schema
-    .createTable('things_to_groups')
+    .createTable('task_to_group')
     .addColumn('group_id', 'integer', (col) => col.notNull())
-    .addColumn('thing_id', 'bigint', (col) => col.notNull())
+    .addColumn('task_id', 'bigint', (col) => col.notNull())
     // Позиция в списке
     .addColumn('position', 'smallint', (col) => col.notNull().defaultTo(0))
-    .addPrimaryKeyConstraint('ttg_pkey', ['group_id', 'thing_id'])
+    .addPrimaryKeyConstraint('ttg_pkey', ['group_id', 'task_id'])
+    .addUniqueConstraint('ttg_group_task_ids_unique', ['group_id', 'task_id'])
     .execute();
 
   // === Внешние ключи таблиц ===
@@ -53,14 +57,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .alterTable('things_to_groups')
-    .addForeignKeyConstraint('ttg_thing_id_fk', ['thing_id'], 'things', ['id'], (cb) =>
+    .alterTable('task_to_group')
+    .addForeignKeyConstraint('ttg_task_id_fk', ['task_id'], 'tasks', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 
   await db.schema
-    .alterTable('things_to_groups')
+    .alterTable('task_to_group')
     .addForeignKeyConstraint('ttg_group_id_fk', ['group_id'], 'groups', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
@@ -68,7 +72,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.dropTable('things_to_groups').execute();
+  await db.schema.dropTable('task_to_group').execute();
   await db.schema.dropTable('groups').execute();
   await db.schema.dropTable('group_statuses').execute();
 }
