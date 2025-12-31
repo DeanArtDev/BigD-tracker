@@ -1,3 +1,6 @@
+/**
+ * @deprecated use BaseException
+ * */
 class DomainValidationError extends Error {
   public domain: string;
   public field: string;
@@ -10,7 +13,6 @@ class DomainValidationError extends Error {
   }) {
     super(data.message, data.options);
     this.domain = data.domain;
-    this.field = data.field;
     this.field = data.field;
     this.message = data.message;
   }

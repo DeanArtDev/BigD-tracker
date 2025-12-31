@@ -1,6 +1,6 @@
 import { BaseValueObject } from './base-value-object';
 
-class Result implements BaseValueObject<Result> {
+class Result implements BaseValueObject {
   #value: number;
   private constructor(value: number) {
     this.#value = value;

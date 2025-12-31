@@ -1,6 +1,6 @@
 import { refreshToken, setIsAuth, useAccessTokenStore } from '@/entity/auth';
+import { isExceptionUnauthorized } from '@/entity/auth/model/errors';
 import { apiPrivateClient } from '@/shared/api/api-client';
-import { isExceptionUnauthorized } from '@big-d/api-exceptions';
 import { useEffect, useRef, useState } from 'react';
 
 function FetchInterceptors({ children }: React.PropsWithChildren) {

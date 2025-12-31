@@ -1,4 +1,4 @@
-import { GOAL_APP_ENV } from '@/infrastructure/configs';
+import { rmqConfig } from '@/infrastructure/configs';
 import { ACCOUNT_SERVICE_RMQ_KEY, goalServiceRmqConfig } from '@big-d/api-contracts';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -10,14 +10,14 @@ import { ClientsModule } from '@nestjs/microservices';
     ClientsModule.registerAsync([
       {
         name: ACCOUNT_SERVICE_RMQ_KEY,
-        imports: [ConfigModule],
+        imports: [ConfigModule.forFeature(rmqConfig)],
         inject: [ConfigService],
-        useFactory: (config: ConfigService<GOAL_APP_ENV>) => {
+        useFactory: (config: ConfigService) => {
           return goalServiceRmqConfig({
-            host: config.get('RMQ_HOST'),
-            port: config.get('RMQ_PORT'),
-            user: config.get('RMQ_USER'),
-            password: config.get('RMQ_PASSWORD'),
+            host: config.get('rmq-client.HOST'),
+            port: config.get('rmq-client.PORT'),
+            user: config.get('rmq-client.USER'),
+            password: config.get('rmq-client.PASSWORD'),
             isProd: config.get('IS_PROD', false),
           });
         },

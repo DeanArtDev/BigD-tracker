@@ -9,8 +9,7 @@ import { UsersModule } from '@/modules/users/users.module';
 import { RpcResponseValidationInterceptor } from '@big-d/api-utils';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
     GoalServiceModule,
   ],
   providers: [
-    { provide: APP_FILTER, useClass: DomainErrorFilter },
     {
       provide: APP_INTERCEPTOR,
       useClass: RpcResponseValidationInterceptor,

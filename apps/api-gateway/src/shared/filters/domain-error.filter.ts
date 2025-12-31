@@ -2,6 +2,9 @@ import { DomainValidationError } from '@big-d/api-contracts';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
 
+/**
+ * @deprecated will be deleted
+ * */
 @Catch(DomainValidationError)
 export class DomainErrorFilter implements ExceptionFilter {
   catch(exception: DomainValidationError, host: ArgumentsHost) {

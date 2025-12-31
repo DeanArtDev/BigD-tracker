@@ -1,28 +1,29 @@
-import { isISO8601, isDate, isBefore, isAfter, isEmpty } from 'validator';
+import { isISO8601, isBefore, isAfter } from 'validator';
 import { BaseValueObject } from './base-value-object';
 
-type AppDateValue = string | Date;
+type DateVoState = string | Date;
 
-class DateVo implements BaseValueObject<DateVo> {
-  #value: string;
-  private constructor(date: string) {
-    this.#value = date;
-    Object.freeze(this);
+class DateVo implements BaseValueObject {
+  #state: string;
+
+  private constructor(state: string) {
+    this.#state = state;
   }
 
   get value(): string {
-    return this.#value;
+    return this.#state;
   }
 
-  public static create(date: AppDateValue): DateVo {
-    const normalized =
-      typeof date === 'string' ? date.trim() : isDate(date.toString()) ? date.toString() : '';
-
-    if (isEmpty(normalized) || !isISO8601(normalized)) {
-      throw new Error(`Date: ${normalized} must be ISO8601 format`);
+  public static create(date: DateVoState): DateVo {
+    if (date instanceof Date) {
+      return new DateVo(date.toISOString());
     }
 
-    return new DateVo(normalized);
+    if (isISO8601(date)) {
+      return new DateVo(date);
+    }
+
+    throw new Error(`Date: ${date} must be ISO8601 format`);
   }
 
   public static restore(date: string): DateVo {
@@ -30,16 +31,16 @@ class DateVo implements BaseValueObject<DateVo> {
   }
 
   public equals(other: DateVo): boolean {
-    return this.value === other.value;
+    return this.#state === other.value;
   }
 
-  public isBefore(data: AppDateValue) {
-    return isBefore(data.toString(), this.#value);
+  public isBefore(data: DateVoState): boolean {
+    return isBefore(this.#state, data.toString());
   }
 
-  public isAfter(data: AppDateValue) {
-    return isAfter(this.#value, data.toString());
+  public isAfter(data: DateVoState): boolean {
+    return isAfter(this.#state, data.toString());
   }
 }
 
-export { DateVo };
+export { DateVo, DateVoState };

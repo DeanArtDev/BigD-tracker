@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { $privetQueryClient } from '@/shared/api/api-client';
-import { isExceptionWrongLoginOrPasswordBody } from '@big-d/api-exceptions';
 import { useAuthStore } from './store/use-auth-store';
 import { useAccessTokenStore } from './store/use-access-token-store';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
+import { isExceptionWrongLoginOrPassword } from './errors';
 
 function useLogin() {
   const { onError } = getDefaultQueryNotifications();
@@ -30,7 +30,7 @@ function useLogin() {
     },
   });
 
-  const isWrongPassOrLogin = useMemo(() => isExceptionWrongLoginOrPasswordBody(error), [error]);
+  const isWrongPassOrLogin = useMemo(() => isExceptionWrongLoginOrPassword(error), [error]);
 
   return { login, isWrongPassOrLogin, error, ...states };
 }

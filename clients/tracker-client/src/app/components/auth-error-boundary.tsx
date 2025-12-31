@@ -1,6 +1,6 @@
+import { isExceptionUnauthorized } from '@/entity/auth/model/errors';
 import { ClientTimeoutError } from '@/shared/api/exceptions';
 import { routes } from '@/shared/lib/routes';
-import { isExceptionUnauthorized } from '@big-d/api-exceptions';
 import { Navigate, useRouteError } from 'react-router-dom';
 
 function AuthErrorBoundary() {

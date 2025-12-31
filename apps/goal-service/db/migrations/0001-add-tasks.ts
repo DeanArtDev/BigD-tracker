@@ -4,7 +4,7 @@ import { Kysely, sql } from 'kysely';
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('tasks')
-    .addColumn('id', 'bigint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
+    .addColumn('id', 'integer', (col) => col.primaryKey().generatedByDefaultAsIdentity())
     // Нет связи с сервисом account
     .addColumn('user_id', 'integer', (col) => col.notNull())
     // Имя дела

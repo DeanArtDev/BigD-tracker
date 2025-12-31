@@ -1,7 +1,7 @@
 import { isEmail } from 'validator';
 import { BaseValueObject } from './base-value-object';
 
-class Email implements BaseValueObject<Email> {
+class Email implements BaseValueObject {
   #value: string;
   private constructor(email: string) {
     this.#value = email;

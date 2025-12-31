@@ -6,10 +6,10 @@ export async function up(db: Kysely<any>): Promise<void> {
   // хранятся как будущие так прошедшие дела
   await db.schema
     .createTable('tasks_recurrence_overrides')
-    .addColumn('id', 'bigint', (col) => col.notNull().generatedByDefaultAsIdentity())
+    .addColumn('id', 'integer', (col) => col.notNull().generatedByDefaultAsIdentity())
     // ID повторяющегося дела (мастер событие, родитель), может существовать без родителя
     // нужно сохранять эти дела даже после удаления мастер события по этому тут нет связи
-    .addColumn('task_id', 'bigint', (col) => col.notNull())
+    .addColumn('task_id', 'integer', (col) => col.notNull())
     // Нет связи с сервисом account
     .addColumn('user_id', 'integer', (col) => col.notNull())
     // Имя дела
