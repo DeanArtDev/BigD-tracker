@@ -4,10 +4,10 @@ import {
   GetSessionHandler,
   GetSessionQuery,
 } from '@/modules/auth/application';
+import { ExceptionWrongLoginOrPassword } from '@/modules/auth/application/errors';
 import { GetUserHandler, GetUserQuery } from '@/modules/users/application';
-import { ExceptionWrongLoginOrPassword } from '@big-d/api-exceptions';
 import { Email, ReturnHandlerType } from '@big-d/api-utils';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 
@@ -33,7 +33,7 @@ export class LoginUseCase {
       ReturnHandlerType<typeof GetUserHandler>
     >(new GetUserQuery({ email }));
     if (user == null) {
-      throw new NotFoundException('User not found!');
+      throw new ExceptionWrongLoginOrPassword({ message: 'Invalid credentials' });
     }
     const isPasswordOk = user.validatePassword(input.password);
     if (!isPasswordOk) {

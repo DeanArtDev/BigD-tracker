@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@big-d/api-contracts": "workspace:*",
-    "@big-d/api-exceptions": "workspace:*",
+    "@big-d/exceptions": "workspace:*",
     "@big-d/api-utils": "workspace:*",
     "@big-d/database": "workspace:*",
     "@nestjs/common": "catalog:",

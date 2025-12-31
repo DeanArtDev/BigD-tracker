@@ -1,4 +1,4 @@
-import { isExceptionUnauthorized } from '@big-d/api-exceptions';
+import { isExceptionUnauthorized } from '@/entity/auth/model/errors';
 import { QueryClient } from '@tanstack/react-query';
 
 export const queryClient = new QueryClient({

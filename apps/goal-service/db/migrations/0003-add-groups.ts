@@ -37,7 +37,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('task_to_group')
     .addColumn('group_id', 'integer', (col) => col.notNull())
-    .addColumn('task_id', 'bigint', (col) => col.notNull())
+    .addColumn('task_id', 'integer', (col) => col.notNull())
     // Позиция в списке
     .addColumn('position', 'smallint', (col) => col.notNull().defaultTo(0))
     .addPrimaryKeyConstraint('ttg_pkey', ['group_id', 'task_id'])

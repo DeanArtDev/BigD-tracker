@@ -1,24 +1,75 @@
-import { ConfigFactory } from '@nestjs/config';
+import { ConfigFactory, registerAs } from '@nestjs/config';
 import * as process from 'node:process';
+import { z } from 'zod';
 
 interface GOAL_APP_ENV {
   readonly API_PORT: number;
   readonly IS_DEV: boolean;
   readonly IS_PROD: boolean;
+
   readonly RMQ_USER: string;
   readonly RMQ_PASSWORD: string;
   readonly RMQ_PORT: number;
   readonly RMQ_HOST: string;
+
+  readonly DB_HOST: string;
+  readonly DB_PORT: number;
+  readonly DB_DATABASE: string;
+  readonly DB_USERNAME: string;
 }
 
-const appConfigFactory: ConfigFactory<GOAL_APP_ENV> = () => ({
-  API_PORT: parseInt(process.env.API_PORT ?? '', 10) || 4033,
-  IS_DEV: process.env.NODE_ENV === 'development',
-  IS_PROD: process.env.NODE_ENV === 'production',
-  RMQ_USER: process.env.RMQ_USER ?? '',
-  RMQ_PASSWORD: process.env.RMQ_PASSWORD ?? '',
-  RMQ_HOST: process.env.RMQ_HOST ?? '',
-  RMQ_PORT: parseInt(process.env.RMQ_PORT ?? '', 10) || 5672,
+const envSchema = z.object({
+  API_PORT: z.coerce.number(),
+  TZ: z.string(),
+  NODE_ENV: z.union([z.literal('production'), z.literal('development')]),
+
+  RMQ_USER: z.string(),
+  RMQ_PASSWORD: z.string(),
+  RMQ_PORT: z.coerce.number(),
+  RMQ_HOST: z.string(),
+
+  DB_HOST: z.string(),
+  DB_PORT: z.coerce.number(),
+  DB_DATABASE: z.string(),
+  DB_USERNAME: z.string(),
+  DB_PASSWORD: z.string(),
 });
 
-export { appConfigFactory, GOAL_APP_ENV };
+const rmqConfig = registerAs('rmq-client', () => ({
+  USER: process.env.RMQ_USER ?? '',
+  PASSWORD: process.env.RMQ_PASSWORD ?? '',
+  HOST: process.env.RMQ_HOST ?? '',
+  PORT: parseInt(process.env.RMQ_PORT ?? '', 10),
+}));
+
+const dbConfig = registerAs('db', () => ({
+  HOST: process.env.DB_HOST ?? '',
+  PORT: parseInt(process.env.DB_PORT ?? '', 10),
+  DATABASE: process.env.DB_DATABASE ?? '',
+  USERNAME: process.env.DB_USERNAME ?? '',
+  PASSWORD: process.env.DB_PASSWORD ?? '',
+}));
+
+const appConfigFactory: ConfigFactory<GOAL_APP_ENV> = () => {
+  const rmq = rmqConfig();
+  const db = dbConfig();
+
+  return {
+    API_PORT: parseInt(process.env.API_PORT ?? '', 10),
+    IS_DEV: process.env.NODE_ENV === 'development',
+    IS_PROD: process.env.NODE_ENV === 'production',
+
+    RMQ_USER: rmq.USER,
+    RMQ_PASSWORD: rmq.PASSWORD,
+    RMQ_PORT: rmq.PORT,
+    RMQ_HOST: rmq.HOST,
+
+    DB_HOST: db.HOST,
+    DB_PORT: db.PORT,
+    DB_DATABASE: db.DATABASE,
+    DB_USERNAME: db.USERNAME,
+    DB_PASSWORD: db.PASSWORD,
+  };
+};
+
+export { appConfigFactory, rmqConfig, dbConfig, envSchema };

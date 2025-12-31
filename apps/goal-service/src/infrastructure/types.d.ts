@@ -9,8 +9,6 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
-export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
-
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Goals {
@@ -32,16 +30,16 @@ export interface GoalStatuses {
   name: string;
 }
 
-export interface GoalsToGoals {
-  goal_id: number;
-  master_goal_id: number;
-  position: Generated<number>;
-}
-
 export interface GoalsToStages {
   goal_id: number;
   position: Generated<number>;
   stage_id: number;
+}
+
+export interface GoalToGoals {
+  goal_id: number;
+  master_goal_id: number;
+  position: Generated<number>;
 }
 
 export interface Groups {
@@ -50,6 +48,7 @@ export interface Groups {
   id: Generated<number>;
   name: string;
   progress: Generated<number>;
+  progress_result: number;
   status_id: number;
   updated_at: Generated<Timestamp>;
   user_id: number;
@@ -60,7 +59,7 @@ export interface GroupStatuses {
   name: string;
 }
 
-export interface GroupsToGoals {
+export interface GroupToGoals {
   goal_id: number;
   group_id: number;
   position: Generated<number>;
@@ -93,18 +92,18 @@ export interface Tags {
   name: string;
 }
 
-export interface TagsToThings {
+export interface TagToTasks {
   tag_id: number;
-  thing_id: Int8;
+  task_id: number;
 }
 
-export interface Things {
+export interface Tasks {
   cancel_reason: string | null;
   created_at: Generated<Timestamp>;
   deadline: Timestamp | null;
   description: string | null;
   end_date: Timestamp | null;
-  id: Generated<Int8>;
+  id: Generated<number>;
   name: string;
   priority: Generated<number>;
   recurrence: string | null;
@@ -115,56 +114,56 @@ export interface Things {
   weight: Generated<number>;
 }
 
-export interface ThingsRecurrenceOverrides {
+export interface TasksRecurrenceOverrides {
   cancel_reason: string | null;
   created_at: Generated<Timestamp>;
   deadline: Timestamp | null;
   description: string | null;
   end_date: Timestamp | null;
-  id: Generated<Int8>;
+  id: Generated<number>;
   name: string;
+  override_type_id: number;
   priority: Generated<number>;
   start_date: Timestamp;
   status_id: number;
-  thing_id: Int8;
-  type_id: number;
+  task_id: number;
   updated_at: Generated<Timestamp>;
   user_id: number;
   weight: Generated<number>;
 }
 
-export interface ThingsRecurrenceOverrideTypes {
+export interface TasksRecurrenceOverrideTypes {
   id: Generated<number>;
   name: string;
 }
 
-export interface ThingStatuses {
+export interface TaskStatuses {
   id: Generated<number>;
   name: string;
 }
 
-export interface ThingsToGroups {
+export interface TaskToGroup {
   group_id: number;
   position: Generated<number>;
-  thing_id: Int8;
+  task_id: number;
 }
 
 export interface DB {
   goal_statuses: GoalStatuses;
+  goal_to_goals: GoalToGoals;
   goals: Goals;
-  goals_to_goals: GoalsToGoals;
   goals_to_stages: GoalsToStages;
   group_statuses: GroupStatuses;
+  group_to_goals: GroupToGoals;
   groups: Groups;
-  groups_to_goals: GroupsToGoals;
   stage_statuses: StageStatuses;
   stage_types: StageTypes;
   stages: Stages;
+  tag_to_tasks: TagToTasks;
   tags: Tags;
-  tags_to_things: TagsToThings;
-  thing_statuses: ThingStatuses;
-  things: Things;
-  things_recurrence_override_types: ThingsRecurrenceOverrideTypes;
-  things_recurrence_overrides: ThingsRecurrenceOverrides;
-  things_to_groups: ThingsToGroups;
+  task_statuses: TaskStatuses;
+  task_to_group: TaskToGroup;
+  tasks: Tasks;
+  tasks_recurrence_override_types: TasksRecurrenceOverrideTypes;
+  tasks_recurrence_overrides: TasksRecurrenceOverrides;
 }

@@ -4,7 +4,8 @@ import { LoggerMiddleware } from '@big-d/api-utils';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { RpcToHttpExceptionInterceptor } from '@shared/interceptors';
+import { RpcToHttpExceptionFilter } from '@shared/filters';
+import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
 import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
@@ -20,7 +21,8 @@ const initApp = async (): Promise<INestApplication> => {
     }),
   );
 
-  app.useGlobalInterceptors(new RpcToHttpExceptionInterceptor());
+  app.useGlobalFilters(new DomainErrorFilter());
+  app.useGlobalFilters(new RpcToHttpExceptionFilter());
 
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
 

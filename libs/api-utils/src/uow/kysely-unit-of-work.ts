@@ -1,6 +1,9 @@
 import { Database } from '@big-d/database';
 import { Transaction } from 'kysely';
 
+/**
+ * @deprecated используй KyselyPostgresDB, databaseToken, PostgresDbModule
+ * */
 export class KyselyUnitOfWork<DB> {
   protected constructor(private readonly db: Database<DB>) {}
 

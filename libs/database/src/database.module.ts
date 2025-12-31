@@ -9,8 +9,14 @@ import {
 } from '@nestjs/common';
 import { PostgresDatabaseOptions, PostgresDatabase } from './database';
 
+/**
+ * @deprecated используй KyselyPostgresDB, databaseToken, PostgresDbModule
+ * */
 const DATABASE_CONNECTION = Symbol('DATABASE_CONNECTION');
 
+/**
+ * @deprecated используй KyselyPostgresDB, databaseToken, PostgresDbModule
+ * */
 @Global()
 @Module({})
 class DatabaseModule {

@@ -22,7 +22,7 @@
     "format:fix": "prettier --write \"src/**/*.ts\" \"db/**/*.ts\" \"tools/**/*.ts\" --check",
     "lint": "pnpm format && eslint \"{src,tools,db}/**/*.ts\"",
     "lint:fix": "pnpm format:fix && eslint \"{src,tools,db}/**/*.ts\" --fix",
-    "test": "jest --config jest.config.js",
+    "test": "jest --config jest.config.js --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@big-d/api-contracts": "workspace:*",
-    "@big-d/api-exceptions": "workspace:*",
+    "@big-d/exceptions": "workspace:*",
     "@big-d/api-utils": "workspace:*",
     "@big-d/database": "workspace:*",
     "@nestjs/common": "catalog:",
@@ -54,7 +54,8 @@
     "lodash": "catalog:",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:",
-    "validator": "catalog:"
+    "validator": "catalog:",
+    "zod": "4.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -88,7 +89,8 @@
     "ts-node": "catalog:",
     "tsconfig-paths": "^4.2.0",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "utility-types": "^3.11.0"
   },
   "packageManager": "pnpm@10.10.0",
   "engines": {

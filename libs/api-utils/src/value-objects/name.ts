@@ -1,16 +1,16 @@
 import { isEmpty } from 'validator';
 import { BaseValueObject } from './base-value-object';
 
-class Name implements BaseValueObject<Name> {
+class Name implements BaseValueObject {
   static CHAR_LIMIT = 256;
-  #value: string;
+
+  #state: string;
   private constructor(date: string) {
-    this.#value = date;
-    Object.freeze(this);
+    this.#state = date;
   }
 
   get value(): string {
-    return this.#value;
+    return this.#state;
   }
 
   public static create(value: string): Name {
@@ -32,7 +32,7 @@ class Name implements BaseValueObject<Name> {
   }
 
   public equals(other: Name): boolean {
-    return this.value === other.value;
+    return this.#state === other.value;
   }
 }
 

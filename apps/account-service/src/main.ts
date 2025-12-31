@@ -1,4 +1,5 @@
 import { appConfigFactory } from '@/infrastructure/configs';
+import { ApplicationExceptionsInterceptor } from '@/modules/auth/application/interceptors';
 import { accountServiceRmqConfig } from '@big-d/api-contracts';
 import {
   ErrorsToRpcExceptionInterceptor,
@@ -38,6 +39,7 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
+  app.useGlobalInterceptors(new ApplicationExceptionsInterceptor());
 
   await app.listen();
   logger.log(`🚀 Account service is running, port: ${config.API_PORT}`);

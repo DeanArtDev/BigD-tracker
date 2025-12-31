@@ -11,7 +11,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   // === Таблицы связей ===
   await db.schema
     .createTable('tag_to_tasks')
-    .addColumn('task_id', 'bigint', (col) => col.notNull())
+    .addColumn('task_id', 'integer', (col) => col.notNull())
     .addColumn('tag_id', 'integer', (col) => col.notNull())
     .addPrimaryKeyConstraint('tag_to_tasks_pkey', ['task_id', 'tag_id'])
     .addUniqueConstraint('ttt_task_tag_ids_unique', ['task_id', 'tag_id'])

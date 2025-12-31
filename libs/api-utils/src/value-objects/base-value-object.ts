@@ -1,7 +1,7 @@
 import { MaybePromise } from '../type-helpers';
 
-abstract class BaseValueObject<TValue> {
-  public abstract equals(value: TValue): MaybePromise<boolean>;
+abstract class BaseValueObject {
+  public abstract equals(value: this): MaybePromise<boolean>;
 }
 
 export { BaseValueObject };

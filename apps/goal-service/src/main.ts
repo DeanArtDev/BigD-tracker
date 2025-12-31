@@ -1,13 +1,10 @@
 import { appConfigFactory } from '@/infrastructure/configs';
 import { goalServiceRmqConfig } from '@big-d/api-contracts';
-import {
-  ErrorsToRpcExceptionInterceptor,
-  RmqLoggerDeserializer,
-  RmqLoggerSerializer,
-} from '@big-d/api-utils';
+import { RmqLoggerDeserializer, RmqLoggerSerializer } from '@big-d/api-utils';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
+import { GoalExceptionToRpc } from '@shared/exception-filters';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -37,9 +34,10 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
+  app.useGlobalFilters(new GoalExceptionToRpc());
 
   await app.listen();
+  app.enableShutdownHooks();
   logger.log(`🚀 Goal service is running, port: ${config.API_PORT}`);
 }
 

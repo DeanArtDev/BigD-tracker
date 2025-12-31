@@ -1,5 +1,5 @@
 import { PostgresDialect } from 'kysely';
-import { KyselyConfig } from 'kysely/dist/esm/kysely';
+import { KyselyConfig } from 'kysely';
 import { Database } from './database.interface';
 import { Pool, PoolConfig } from 'pg';
 
@@ -7,6 +7,9 @@ type PostgresDatabaseOptions = PoolConfig & {
   logging?: KyselyConfig['log'];
 };
 
+/**
+ * @deprecated используй KyselyPostgresDB, databaseToken, PostgresDbModule
+ * */
 class PostgresDatabase<DB> extends Database<DB> {
   protected pool: Pool;
 
@@ -23,6 +26,7 @@ class PostgresDatabase<DB> extends Database<DB> {
 
   public async onApplicationShutdown(): Promise<void> {
     await this.pool.end();
+    await this.destroy();
   }
 }
 

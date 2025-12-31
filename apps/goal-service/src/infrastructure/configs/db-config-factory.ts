@@ -1,17 +1,18 @@
-import { DatabaseModule, DB_ENV } from '@big-d/database';
+import { dbConfig } from './app-config-factory';
+import { PostgresDbModule } from '@big-d/database';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-export function dbConfigFactory(): Parameters<typeof DatabaseModule.forRootAsync>[0] {
+export function dbConfigFactory(): Parameters<typeof PostgresDbModule.forRootAsync>[0] {
   return {
-    imports: [ConfigModule],
+    imports: [ConfigModule.forFeature(dbConfig)],
     inject: [ConfigService],
-    useFactory: (configService: ConfigService<DB_ENV>) => {
+    useFactory: (configService: ConfigService) => {
       return {
-        host: configService.get('DB_HOST'),
-        port: +configService.getOrThrow<number>('DB_PORT'),
-        user: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
+        host: configService.get('db.HOST'),
+        port: configService.get<number>('db.PORT'),
+        user: configService.get('db.USERNAME'),
+        password: configService.get('db.PASSWORD'),
+        database: configService.get('db.DATABASE'),
       };
     },
   };
