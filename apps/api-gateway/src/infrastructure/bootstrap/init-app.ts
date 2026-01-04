@@ -1,10 +1,11 @@
 import { AppModule } from '@/app.module';
 import { APP_ENV } from '@/infrastructure/configs';
 import { LoggerMiddleware } from '@big-d/api-utils';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { RpcToHttpExceptionFilter } from '@shared/filters';
+import { BaseHttpException, ExceptionBadRequest } from '@shared/exceptions';
+import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
 import * as cookieParser from 'cookie-parser';
 
@@ -18,11 +19,16 @@ const initApp = async (): Promise<INestApplication> => {
       whitelist: true, // удаляет лишние поля
       forbidNonWhitelisted: false, // выбрасывает ошибку, если есть лишние поля
       transform: true, // включает class-transformer (plainToInstance)
+      exceptionFactory: (errors) =>
+        BaseHttpException.createFromBase(
+          new ExceptionBadRequest({ issues: errors, message: 'Invalid request data' }),
+          HttpStatus.BAD_REQUEST,
+        ),
     }),
   );
 
   app.useGlobalFilters(new DomainErrorFilter());
-  app.useGlobalFilters(new RpcToHttpExceptionFilter());
+  app.useGlobalFilters(new GateWayExceptionFilter());
 
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
 

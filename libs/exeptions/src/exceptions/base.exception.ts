@@ -9,9 +9,9 @@ interface BaseExceptionState<
 }
 
 class BaseException<
-  TKey extends string,
-  TCode extends string,
-  TDetails extends Record<string, any>,
+  TKey extends string = string,
+  TCode extends string = string,
+  TDetails extends Record<string, any> = Record<string, any>,
 > extends Error {
   public timestamp: string;
   public key: TKey;

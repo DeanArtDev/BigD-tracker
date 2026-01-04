@@ -1,1 +1,2 @@
-export * from './http-exception';
+export * from './base-http-exception';
+export * from './exceptions';

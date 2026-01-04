@@ -1,4 +1,5 @@
 import { Details } from './helpers';
+import { ValidationIssue } from './types';
 
 interface ExceptionConfig {
   [key: string]: {
@@ -37,9 +38,24 @@ const tasks = {
   taskCreationFailed: { code: 'TK-I-0001' },
 } as const satisfies ExceptionConfig;
 
+// SYSTEM
+const system = {
+  // Application
+  invalidRpcResponse: {
+    code: 'S-GW-0001',
+    details: Details.Define<{ issues: ValidationIssue[] }>(),
+  },
+
+  badRequest: {
+    code: 'S-GW-0002',
+    details: Details.Define<{ message: string; issues: ValidationIssue[] }>(),
+  },
+} as const satisfies ExceptionConfig;
+
 const exceptionCode = {
   ...tasks,
   ...account,
+  ...system,
 } as const satisfies ExceptionConfig;
 
 export { exceptionCode };
