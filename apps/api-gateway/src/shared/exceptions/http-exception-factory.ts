@@ -3,8 +3,6 @@ import { HttpStatus } from '@nestjs/common';
 import { BaseHttpException } from './base-http-exception';
 
 class HttpExceptionFactory {
-  private constructor() {}
-
   static createBadRequestException<
     TKey extends string = string,
     TCode extends string = string,
