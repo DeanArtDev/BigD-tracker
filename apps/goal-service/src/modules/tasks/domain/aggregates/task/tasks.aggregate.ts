@@ -1,6 +1,7 @@
+import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
-import { assertThingDates, assertHasCancelReason } from './tasks.invariants';
-import { TaskStatus, TaskRestoreInput, TaskCreateInput, TaskState } from './tasks.types';
+import { assertHasCancelReason, assertThingDates } from './tasks.invariants';
+import { TaskCreateInput, TaskRestoreInput, TaskState } from './tasks.types';
 
 class Task extends AggregateRoot {
   #state: TaskState;

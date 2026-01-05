@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TasksApplicationModule } from './application/tasks-application.module';
-import { TasksDomainModule } from './domain/tasks-domain.module';
-import { TasksInfrastructureModule } from '@/modules/tasks/infrastructure/tasks-infrastructure.module';
+import { TasksInfrastructureModule } from './infrastructure/tasks-infrastructure.module';
 import { TasksPresentationModule } from './presentation/tasks-presentation.module';
 
 /* TODO: use cases
- *   [] создание task (groupId?:)
+ *   [x] создание task (groupId?:)
+ *   [] создание task IN BOX
  *   [] обновление task (не даем менять группу)
  *   [] архивация task (в UI это удаление, под капотом архивация)
  *   [] прикрепление в группу
@@ -25,25 +25,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   []
  * */
 
-/* TODO:
- *   [x] UoW
- *   [x] layer exceptions
- *   [x] request context
- *   [] exception filter для rpc exceptions
- *   [] exception filter для ошибок слоев
- *   [] создать exceptions для presentation layer
- *   [x] обработать все неизвестные ошибки
- *   []
- *   []
- *
- * */
-
 @Module({
-  imports: [
-    TasksPresentationModule,
-    TasksApplicationModule,
-    TasksDomainModule,
-    TasksInfrastructureModule,
-  ],
+  imports: [TasksPresentationModule, TasksApplicationModule, TasksInfrastructureModule],
 })
 export class TasksModule {}

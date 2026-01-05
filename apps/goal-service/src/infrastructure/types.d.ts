@@ -48,7 +48,6 @@ export interface Groups {
   id: Generated<number>;
   name: string;
   progress: Generated<number>;
-  progress_result: number;
   status_id: number;
   updated_at: Generated<Timestamp>;
   user_id: number;

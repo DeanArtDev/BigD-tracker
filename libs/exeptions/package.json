@@ -25,7 +25,7 @@
     "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
   },
   "dependencies": {
-    "lodash": "catalog:"
+    "lodash-es": "catalog:"
   },
   "devDependencies": {
     "@big-d/linter": "workspace:*",

@@ -18,6 +18,9 @@ class BaseException<
   public code: TCode;
   public details: TDetails;
 
+  /**
+   * Не изменять данные в конструкторе
+   * */
   public constructor(state: BaseExceptionState<TKey, TCode, TDetails>) {
     super(state.key);
     this.timestamp = new Date().toISOString();
@@ -43,8 +46,15 @@ class BaseException<
   }
 }
 
-function isBaseException(error: unknown): error is BaseException<string, string, any> {
+function isBaseExceptionInstance(error: unknown): error is BaseException<string, string, any> {
   return error instanceof BaseException;
 }
+function isBaseException<
+  TKey extends string = string,
+  TCode extends string = string,
+  TDetails extends Record<string, any> = Record<string, any>,
+>(error: unknown): error is BaseException<TKey, TCode, TDetails> {
+  return typeof error === 'object' && error != null && 'key' in error && 'code' in error;
+}
 
-export { BaseException, isBaseException, BaseExceptionState };
+export { BaseException, isBaseExceptionInstance, isBaseException, BaseExceptionState };

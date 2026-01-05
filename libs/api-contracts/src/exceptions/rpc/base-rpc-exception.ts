@@ -1,6 +1,18 @@
 import { RpcException } from '@nestjs/microservices';
 import { RmqErrorKind } from './types';
 
+interface BaseRpcExceptionState<
+  TKey extends string,
+  TCode extends string,
+  TKind extends RmqErrorKind,
+  TDetails extends Record<string, unknown>,
+> {
+  readonly key: TKey;
+  readonly code: TCode;
+  readonly kind: TKind;
+  readonly details: TDetails;
+}
+
 /**
  * do not override toString method
  * */
@@ -10,12 +22,7 @@ class BaseRpcException<
   TKind extends RmqErrorKind = RmqErrorKind,
   TDetails extends Record<string, unknown> = Record<string, unknown>,
 > extends RpcException {
-  public constructor(state: {
-    readonly key: TKey;
-    readonly code: TCode;
-    readonly kind: TKind;
-    readonly details: TDetails;
-  }) {
+  public constructor(state: BaseRpcExceptionState<TKey, TCode, TKind, TDetails>) {
     super(state);
   }
 
@@ -35,18 +42,13 @@ class BaseRpcException<
     return this.getError()['details'] as TDetails;
   }
 
-  public toResponse(): {
-    key: TKey;
-    code: TCode;
-    kind: TKind;
-    details: TDetails;
-  } {
-    const { key, code, kind, details } = this.getError() as {
-      key: TKey;
-      code: TCode;
-      kind: TKind;
-      details: TDetails;
-    };
+  public toResponse(): BaseRpcExceptionState<TKey, TCode, TKind, TDetails> {
+    const { key, code, kind, details } = this.getError() as BaseRpcExceptionState<
+      TKey,
+      TCode,
+      TKind,
+      TDetails
+    >;
 
     return {
       key,
@@ -67,4 +69,4 @@ function isBaseRpcException(error: unknown): error is BaseRpcException {
   );
 }
 
-export { BaseRpcException, isBaseRpcException };
+export { BaseRpcException, isBaseRpcException, BaseRpcExceptionState };

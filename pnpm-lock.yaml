@@ -1393,7 +1393,7 @@ importers:
 
   libs/exeptions:
     dependencies:
-      lodash:
+      lodash-es:
         specifier: 'catalog:'
         version: 4.17.21
     devDependencies:

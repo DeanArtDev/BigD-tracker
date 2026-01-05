@@ -1,8 +1,8 @@
 import { DB } from '@/infrastructure/types';
-import { TasksRepository } from '@/modules/tasks/application/ports';
-import { Task, TaskFactory } from '@/modules/tasks/domain';
-import { TasksToken } from '@/modules/tasks/tasks.tokens';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { TasksWriteRepository } from '@/modules/tasks/application/ports';
+import { TaskFactory } from '@/modules/tasks/domain';
+import { TasksToken } from '@/modules/tasks/tokens';
+import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 
 interface CreateTaskInput {
@@ -19,15 +19,13 @@ interface CreateTaskInput {
 
 @Injectable()
 class TaskServices {
-  constructor(@Inject(TasksToken.REPOSITORY) private readonly tasksRepo: TasksRepository) {}
+  constructor(
+    @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
+  ) {}
 
-  async createTask(input: CreateTaskInput, trx?: Transaction<DB>): Promise<Task> {
-    const draftTask = new TaskFactory().create(input);
-    const task = await this.tasksRepo.createTask(draftTask, trx);
-    if (task === null) {
-      throw new NotFoundException();
-    }
-    return task;
+  async createTask(input: CreateTaskInput, trx?: Transaction<DB>): Promise<{ id: number }> {
+    const draftTask = TaskFactory.create(input);
+    return await this.tasksWriteRepo.createTask(draftTask, trx);
   }
 }
 

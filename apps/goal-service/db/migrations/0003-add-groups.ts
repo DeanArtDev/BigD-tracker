@@ -15,13 +15,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('progress', 'smallint', (col) => col.notNull().defaultTo(0))
     // Статус группы
     .addColumn('status_id', 'smallint', (col) => col.notNull())
-    // Прогресс выполнения дел в группе
-    .addColumn('progress_result', 'smallint', (col) => col.notNull())
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
 
-    .addCheckConstraint('groups_progress_result_check', sql`progress_result between 0 and 100`)
+    .addCheckConstraint('groups_progress_check', sql`progress between 0 and 100`)
     .execute();
   await setUpdateTriggerOnUpdatedAt('groups', db);
 

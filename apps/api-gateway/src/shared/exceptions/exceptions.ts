@@ -7,12 +7,12 @@ const GateWayExceptionStateList = {
     details: exceptionCode.invalidRpcResponse.details,
   }),
 
-  BadRequest: defineExceptionState({
-    key: 'BAD_REQUEST',
-    code: exceptionCode.badRequest.code,
-    details: exceptionCode.badRequest.details,
+  RequestDataValidation: defineExceptionState({
+    key: 'INVALID_REQUEST_DATA',
+    code: exceptionCode.requestDateValidation.code,
+    details: exceptionCode.requestDateValidation.details,
   }),
 };
 
-export const { ExceptionWrongRpcResponse, ExceptionBadRequest } =
+export const { ExceptionWrongRpcResponse, ExceptionRequestDataValidation } =
   generateExceptionClasses(GateWayExceptionStateList);

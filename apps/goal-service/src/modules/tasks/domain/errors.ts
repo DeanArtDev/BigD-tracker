@@ -1,4 +1,9 @@
-import { defineExceptionState, exceptionCode, generateExceptionClasses } from '@big-d/exceptions';
+import {
+  defineExceptionState,
+  exceptionCode,
+  generateBaseExceptionsGuards,
+  generateExceptionClasses,
+} from '@big-d/exceptions';
 
 const DomainExceptionStateList = {
   DomainInvalidInvariant: defineExceptionState({
@@ -9,5 +14,9 @@ const DomainExceptionStateList = {
 };
 
 const { ExceptionDomainInvalidInvariant } = generateExceptionClasses(DomainExceptionStateList);
+
+export const { isDomainInvalidInvariant } = generateBaseExceptionsGuards([
+  [`isDomainInvalidInvariant`, ExceptionDomainInvalidInvariant],
+]);
 
 export { ExceptionDomainInvalidInvariant };

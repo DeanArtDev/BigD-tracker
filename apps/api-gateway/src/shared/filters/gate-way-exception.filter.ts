@@ -10,8 +10,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { BaseHttpException } from '@shared/exceptions';
-import { isHttpException, isHttpExceptionPlain, shapePlainToBaseHttpException } from './helpers';
 import { Response } from 'express';
+import { isHttpException, isHttpExceptionPlain, shapePlainToBaseHttpException } from './helpers';
 
 @Catch()
 export class GateWayExceptionFilter implements ExceptionFilter {
@@ -25,16 +25,19 @@ export class GateWayExceptionFilter implements ExceptionFilter {
       if (isBaseRpcException(error)) {
         const httpException = BaseHttpException.createFromRpc(error);
         response.status(httpException.getStatus()).json(httpException.getResponse());
+        return;
       }
     }
 
     // HTTP errors
     if (isHttpException(exception)) {
       response.status(exception.getStatus()).json(exception.getResponse());
+      return;
     }
     if (isHttpExceptionPlain(exception)) {
       const httpException = shapePlainToBaseHttpException(exception);
       response.status(httpException.getStatus()).json(httpException.getResponse());
+      return;
     }
 
     this.#defaultResponse(exception, response);

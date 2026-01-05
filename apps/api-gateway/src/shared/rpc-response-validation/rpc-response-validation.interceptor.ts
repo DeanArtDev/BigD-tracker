@@ -11,8 +11,7 @@ import { RPC_RESPONSE_SCHEMA } from './validate-rpc-response.decorator';
 export class RpcResponseValidationInterceptor implements NestInterceptor {
   constructor(
     private readonly reflector: Reflector,
-    @Inject(RPC_VALIDATOR_ERROR_FACTORY)
-    private readonly errorFactory: RpcResponseErrorFactory,
+    @Inject(RPC_VALIDATOR_ERROR_FACTORY) private readonly errorFactory: RpcResponseErrorFactory,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {

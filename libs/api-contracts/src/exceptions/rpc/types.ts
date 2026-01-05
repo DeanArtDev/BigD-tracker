@@ -20,16 +20,4 @@ enum RmqErrorKind {
   DATA_LOSS = 'DATA_LOSS',
 }
 
-type DefineApiException<
-  TKey extends string,
-  TCode extends number,
-  TKind extends RmqErrorKind,
-  TDetails extends Record<string, any> | undefined = Record<string, any>,
-> = {
-  readonly key: TKey;
-  readonly code: TCode;
-  readonly kind: TKind;
-  readonly details: TDetails;
-};
-
-export { RmqErrorKind, DefineApiException };
+export { RmqErrorKind };
