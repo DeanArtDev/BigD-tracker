@@ -35,7 +35,7 @@ class CreateTaskReqData {
   @Min(0)
   @Max(100)
   @IsInt()
-  weigh?: number;
+  weight?: number;
 
   @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
   @IsISO8601()

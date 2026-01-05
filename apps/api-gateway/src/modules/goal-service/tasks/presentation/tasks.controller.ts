@@ -39,6 +39,8 @@ export class TasksController {
             name: data.name,
             startDate: data.startDate,
             deadline: data.deadline,
+            recurrence: data.recurrence,
+            weight: data.weight,
           },
         },
       ),
