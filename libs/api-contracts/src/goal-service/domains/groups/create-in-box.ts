@@ -1,9 +1,9 @@
-import { CreateInBoxGroupReq, CreateInBoxGroupRes } from './dtos';
+import { CreateInboxGroupReq, CreateInboxGroupRes } from './dtos';
 
-export namespace GoalCreateInBoxGroup {
+export namespace GoalCreateInboxGroup {
   export const pattern = 'goal.create-in-box-group.command';
 
-  export class Request extends CreateInBoxGroupReq {}
+  export class Request extends CreateInboxGroupReq {}
 
-  export class Response extends CreateInBoxGroupRes {}
+  export class Response extends CreateInboxGroupRes {}
 }

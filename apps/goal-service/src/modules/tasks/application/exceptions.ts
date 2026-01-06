@@ -1,19 +1,24 @@
-import {
-  defineExceptionState,
-  exceptionCode,
-  generateBaseExceptionsGuards,
-  generateExceptionClasses,
-} from '@big-d/exceptions';
+import { defineExceptionState, exceptionCode, generateExceptionClasses } from '@big-d/exceptions';
 
 const DomainExceptionStateList = {
-  GroupIsNotExists: defineExceptionState({
-    key: 'GROUP_IS_NOT_EXISTS',
-    code: exceptionCode.groupNotExists.code,
-    details: exceptionCode.groupNotExists.details,
+  GroupNotExist: defineExceptionState({
+    key: 'GROUP_NOT_EXIST',
+    code: exceptionCode.groupNotExist.code,
+    details: exceptionCode.groupNotExist.details,
+  }),
+
+  InboxNotExist: defineExceptionState({
+    key: 'INBOX_NOT_EXIST',
+    code: exceptionCode.inboxNotExist.code,
+    details: exceptionCode.inboxNotExist.details,
+  }),
+
+  InboxAlreadyExist: defineExceptionState({
+    key: 'INBOX_ALREADY_EXIST',
+    code: exceptionCode.inboxAlreadyExist.code,
+    details: exceptionCode.inboxAlreadyExist.details,
   }),
 };
 
-export const { ExceptionGroupIsNotExists } = generateExceptionClasses(DomainExceptionStateList);
-export const { isExceptionGroupIsNotExists } = generateBaseExceptionsGuards([
-  [`isExceptionGroupIsNotExists`, ExceptionGroupIsNotExists],
-]);
+export const { ExceptionGroupNotExist, ExceptionInboxAlreadyExist, ExceptionInboxNotExist } =
+  generateExceptionClasses(DomainExceptionStateList);

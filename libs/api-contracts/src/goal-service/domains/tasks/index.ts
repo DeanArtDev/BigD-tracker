@@ -1,3 +1,4 @@
 export * from './create-task';
+export * from './create-task-in-inbox';
 
-export { TaskStatus } from './dtos/shared/types';
+export * from './dtos/shared/types';

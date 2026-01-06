@@ -12,12 +12,7 @@ import {
 } from 'class-validator';
 import { TaskDto } from './task.dto';
 
-class CreateTaskReqData {
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
-  @IsInt()
-  groupId?: number;
-
+class CreateTaskInINBOXReqData {
   @ApiProperty({ example: 'Имя дела' })
   @MaxLength(255)
   @IsString()
@@ -30,20 +25,13 @@ class CreateTaskReqData {
   @IsInt()
   priority?: number;
 
-  @ApiPropertyOptional({ example: 100, description: 'От 0 до 100' })
-  @IsOptional()
-  @Min(0)
-  @Max(100)
-  @IsInt()
-  weight?: number;
-
   @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
   @IsISO8601()
   @IsOptional()
   @IsString()
   startDate?: string;
 
-  @ApiPropertyOptional({ example: '2025-08-24T13:01:02.471Z' })
+  @ApiPropertyOptional({ example: '2025-06-24T13:01:02.471Z' })
   @IsISO8601()
   @IsOptional()
   @IsString()
@@ -53,28 +41,19 @@ class CreateTaskReqData {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @ApiPropertyOptional({
-    example: '----',
-    description: 'Паттерн повторения дела',
-  })
-  @Expose()
-  @IsOptional()
-  @IsString()
-  recurrence?: string;
 }
 
-class CreateTaskReq {
+class CreateTaskInINBOXReq {
   @ApiProperty({
     description: 'Запрос сервера',
-    type: CreateTaskReqData,
+    type: CreateTaskInINBOXReqData,
   })
   @ValidateNested()
-  @Type(() => CreateTaskReqData)
-  data: CreateTaskReqData;
+  @Type(() => CreateTaskInINBOXReqData)
+  data: CreateTaskInINBOXReqData;
 }
 
-class CreateTaskRes {
+class CreateTaskInINBOXRes {
   @ApiProperty({ description: 'Ответ сервера' })
   @Expose()
   @ValidateNested()
@@ -82,4 +61,4 @@ class CreateTaskRes {
   data: TaskDto;
 }
 
-export { CreateTaskReq, CreateTaskRes };
+export { CreateTaskInINBOXReq, CreateTaskInINBOXRes };

@@ -1,38 +1,33 @@
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsInt, IsString, MaxLength, ValidateNested } from 'class-validator';
 
-class ReqData {
+class CreateInboxGroupReqData {
   @IsInt()
   userId: number;
 }
 
-class CreateInBoxGroupReq {
-  @Expose()
+class CreateInboxGroupReq {
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => CreateInboxGroupReqData)
+  data: CreateInboxGroupReqData;
 }
 
-class ResData {
-  @Expose()
+class CreateInboxGroupResData {
   @IsInt()
   id: number;
 
-  @Expose()
   @MaxLength(255)
   @IsString()
   name: string;
 
-  @Expose()
   @IsInt()
   userId: number;
 }
 
-class CreateInBoxGroupRes {
-  @Expose()
+class CreateInboxGroupRes {
   @ValidateNested()
-  @Type(() => ResData)
-  data: ResData;
+  @Type(() => CreateInboxGroupResData)
+  data: CreateInboxGroupResData;
 }
 
-export { CreateInBoxGroupReq, CreateInBoxGroupRes };
+export { CreateInboxGroupReq, CreateInboxGroupRes };

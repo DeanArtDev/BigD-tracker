@@ -5,7 +5,8 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
 
 /* TODO: use cases
  *   [x] создание task (groupId?:)
- *   [] создание task IN BOX
+ *   [x] создание task IN BOX
+ *   [x] создание группы IN BOX
  *   [] обновление task (не даем менять группу)
  *   [] архивация task (в UI это удаление, под капотом архивация)
  *   [] прикрепление в группу

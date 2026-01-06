@@ -1,14 +1,14 @@
+import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   ACCOUNT_SERVICE_RMQ_KEY,
   AccountDeleteUser,
   AccountLogout,
   AccountRegister,
-  GOAL_SERVICE_RMQ_KEY,
-  GoalCreateInBoxGroup,
+  GoalCreateInboxGroup,
   RpcStatus,
 } from '@big-d/api-contracts';
-import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -17,7 +17,7 @@ import { firstValueFrom } from 'rxjs';
 export class RegisterSage {
   constructor(
     @Inject(ACCOUNT_SERVICE_RMQ_KEY) private readonly accountClient: ClientProxy,
-    @Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy,
+    private readonly goalClient: GoalServiceClientProxy,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -40,14 +40,14 @@ export class RegisterSage {
 
     try {
       await firstValueFrom(
-        this.goalClient.send<GoalCreateInBoxGroup.Response, GoalCreateInBoxGroup.Request>(
-          GoalCreateInBoxGroup.pattern,
+        this.goalClient.send<GoalCreateInboxGroup.Response, GoalCreateInboxGroup.Request>(
+          GoalCreateInboxGroup.pattern,
           { data: { userId: uid } },
         ),
       );
     } catch (error) {
       await this.#compensation({ userId: uid, userAgent });
-      throw new BadGatewayException('Failed to register', { description: error?.message });
+      throw error;
     }
 
     return response.data;

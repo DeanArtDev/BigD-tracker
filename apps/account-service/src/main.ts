@@ -38,8 +38,8 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
   app.useGlobalInterceptors(new ApplicationExceptionsInterceptor());
+  app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
 
   await app.listen();
   logger.log(`🚀 Account service is running, port: ${config.API_PORT}`);

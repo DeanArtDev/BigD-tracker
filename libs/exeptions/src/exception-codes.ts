@@ -38,9 +38,11 @@ const tasks = {
   taskCreationFailed: { code: 'GT-I-0001' },
 } as const satisfies ExceptionConfig;
 
-const groupt = {
+const groups = {
   // Application
-  groupNotExists: { code: 'GG-A-0001', details: Details.Define<{ groupId?: number }>() },
+  groupNotExist: { code: 'GG-A-0001', details: Details.Define<{ groupId?: number }>() },
+  inboxNotExist: { code: 'GG-A-0002', details: Details.Define<{ taskId: number }>() },
+  inboxAlreadyExist: { code: 'GG-A-0003', details: Details.Empty },
 } as const satisfies ExceptionConfig;
 
 // SYSTEM
@@ -64,7 +66,7 @@ const system = {
 
 const exceptionCode = {
   ...tasks,
-  ...groupt,
+  ...groups,
   ...account,
   ...system,
 } as const satisfies ExceptionConfig;
