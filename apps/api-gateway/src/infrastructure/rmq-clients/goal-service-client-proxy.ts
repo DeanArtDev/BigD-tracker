@@ -1,7 +1,7 @@
 import { TOKEN_PAYLOAD_HEADER_KEY } from '@/infrastructure/rmq-clients/constants';
 import { getTokenPayloadFromRequest } from '@/modules/auth/decorators';
 import { GOAL_SERVICE_RMQ_KEY } from '@big-d/api-contracts';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { CORRELATION_HEADER_KEY } from '@shared/interceptors/observability.interceptor';
@@ -9,7 +9,7 @@ import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class GoalServiceClientProxy {
   constructor(
     @Inject(REQUEST) private readonly req: Request,
