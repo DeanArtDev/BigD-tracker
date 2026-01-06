@@ -4,8 +4,10 @@ import { LoggerMiddleware } from '@big-d/api-utils';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { RpcToHttpExceptionFilter } from '@shared/filters';
+import { ExceptionRequestDataValidation, HttpExceptionFactory } from '@shared/exceptions';
+import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
+import { ObservabilityInterceptor } from '@shared/interceptors/observability.interceptor';
 import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
@@ -18,11 +20,17 @@ const initApp = async (): Promise<INestApplication> => {
       whitelist: true, // удаляет лишние поля
       forbidNonWhitelisted: false, // выбрасывает ошибку, если есть лишние поля
       transform: true, // включает class-transformer (plainToInstance)
+      exceptionFactory: (errors) =>
+        HttpExceptionFactory.createBadRequestException(
+          new ExceptionRequestDataValidation({ issues: errors, message: 'Invalid request data' }),
+        ),
     }),
   );
 
+  app.useGlobalInterceptors(new ObservabilityInterceptor());
+
   app.useGlobalFilters(new DomainErrorFilter());
-  app.useGlobalFilters(new RpcToHttpExceptionFilter());
+  app.useGlobalFilters(new GateWayExceptionFilter());
 
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
 

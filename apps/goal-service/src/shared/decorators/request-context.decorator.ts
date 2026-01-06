@@ -1,6 +1,7 @@
-import { getCorrelationId } from '@/modules/tasks/presentation/rpc/helpers';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
+import { TOKEN_PAYLOAD_HEADER_KEY } from '@shared/request-context/constants';
+import { getCorrelationId } from '@shared/request-context/helpers';
 
 interface RequestContextData {
   readonly userId: number;
@@ -12,7 +13,9 @@ const RequestContext = createParamDecorator(
     const rmq = ctx.switchToRpc().getContext<RmqContext>();
     const msg = rmq.getMessage();
 
-    const tokenPayload = JSON.parse(String(msg.properties?.headers?.['x-token-payload'] ?? '{}'));
+    const tokenPayload = JSON.parse(
+      String(msg.properties?.headers?.[TOKEN_PAYLOAD_HEADER_KEY] ?? '{}'),
+    );
 
     return {
       userId: tokenPayload?.uid,

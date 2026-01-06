@@ -1,6 +1,6 @@
 import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
-import { TaskStatus } from './tasks.types';
 
 function assertThingDates(input: { start?: DateVo; end?: DateVo; deadline?: DateVo }): void {
   const { start, end, deadline } = input;

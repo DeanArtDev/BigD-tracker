@@ -1,15 +1,6 @@
+import { TaskStatus } from '@big-d/api-contracts';
 import { Priority, Weight } from '../../value-objects';
 import { DateVo, Name } from '@big-d/api-utils';
-
-const enum TaskStatus {
-  NOT_STARTED = 'NOT_STARTED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  OVERDUE = 'OVERDUE',
-  CANCELLED = 'CANCELLED',
-  ARCHIVED = 'ARCHIVED',
-  DELETED = 'DELETED',
-}
 
 interface TaskState {
   readonly id: number;
@@ -52,4 +43,4 @@ interface TaskRestoreInput {
   readonly recurrence?: string;
 }
 
-export { TaskStatus, TaskCreateInput, TaskRestoreInput, TaskState };
+export { TaskCreateInput, TaskRestoreInput, TaskState };

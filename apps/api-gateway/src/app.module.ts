@@ -6,10 +6,8 @@ import { GoalServiceModule } from '@/modules/goal-service';
 import { TrainingTemplatesModule } from '@/modules/traning-templates';
 import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
-import { RpcResponseValidationInterceptor } from '@big-d/api-utils';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -25,12 +23,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     ExercisesModule,
     RmqClientsModule,
     GoalServiceModule,
-  ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: RpcResponseValidationInterceptor,
-    },
   ],
 })
 export class AppModule {}

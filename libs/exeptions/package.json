@@ -1,0 +1,49 @@
+{
+  "name": "@big-d/exceptions",
+  "description": "Ошибки и исключения DDD слоев (application, domain, infrastructure) кроме транспортных(http, rpc), коды ошибок со всех BC",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "exports": {
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js"
+  },
+  "scripts": {
+    "=== DEV ===": "",
+    "dev": "pnpm build --watch",
+    "=== BUILD ===": "",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "npm run build:cjs && npm run build:esm",
+    "=== LINK ===": "",
+    "test": "echo \"Error: no test specified , just skip\" && exit 0",
+    "format": "npx prettier . --check",
+    "format:fix": "npx prettier . --write",
+    "lint": "pnpm format && eslint \"./src/**/*.ts\"",
+    "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "lodash-es": "catalog:"
+  },
+  "devDependencies": {
+    "@big-d/linter": "workspace:*",
+    "@types/lodash": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "prettier": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "utility-types": "^3.11.0"
+  },
+  "sideEffects": false,
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
+  }
+}

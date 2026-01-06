@@ -15,9 +15,7 @@ interface TaskFactoryCreateInput {
 }
 
 export class TaskFactory {
-  constructor() {}
-
-  create(input: TaskFactoryCreateInput): Task {
+  static create(input: TaskFactoryCreateInput): Task {
     const state: TaskCreateInput = {
       userId: input.userId,
       name: Name.create(input.name),
