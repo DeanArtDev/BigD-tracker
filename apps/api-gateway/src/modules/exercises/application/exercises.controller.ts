@@ -9,7 +9,7 @@ import {
   TrainingGetOneExercise,
   TrainingUpdateExercise,
 } from '@big-d/api-contracts';
-import { ValidateRpcResponse } from '@big-d/api-utils';
+import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
   Body,
   Controller,

@@ -1,24 +1,23 @@
-import { Expose, Type } from 'class-transformer';
-import { IsInt, ValidateNested } from 'class-validator';
-import { GroupInBoxDto } from './shared/group-in-box.dto';
+import { Type } from 'class-transformer';
+import { IsArray, IsInt, ValidateNested } from 'class-validator';
+import { TaskDto } from '../../tasks/dtos/thing.dto';
 
-class ReqData {
+class GetInBoxGroupReqData {
   @IsInt()
   userId: number;
 }
 
 class GetInBoxGroupReq {
-  @Expose()
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => GetInBoxGroupReqData)
+  data: GetInBoxGroupReqData;
 }
 
 class GetInBoxGroupRes {
-  @Expose()
-  @ValidateNested()
-  @Type(() => GroupInBoxDto)
-  data: GroupInBoxDto;
+  @ValidateNested({ each: true })
+  @IsArray()
+  @Type(() => TaskDto)
+  data: TaskDto[];
 }
 
 export { GetInBoxGroupReq, GetInBoxGroupRes };

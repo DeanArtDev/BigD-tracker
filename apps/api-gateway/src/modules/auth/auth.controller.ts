@@ -5,7 +5,6 @@ import {
   AccountLogout,
   AccountRefresh,
 } from '@big-d/api-contracts';
-import { ValidateRpcResponse } from '@big-d/api-utils';
 import {
   Body,
   Controller,
@@ -21,8 +20,9 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
+import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { CookieService, RefreshToken } from '@shared/services/cookies';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { ACCESS_TOKEN_KEY } from './constants';
 import { Public, TokenPayload } from './decorators';

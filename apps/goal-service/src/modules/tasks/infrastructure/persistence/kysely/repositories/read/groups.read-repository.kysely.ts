@@ -1,13 +1,15 @@
 import { DB } from '@/infrastructure/types';
+import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
 import { GroupView } from '@/modules/tasks/application/dto/group.view';
-import { GroupsReadRepository } from '@/modules/tasks/application/ports';
+import { GroupsReadRepository, INBOX_GROUP_KEY } from '@/modules/tasks/application/ports';
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
+import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
+import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { isGroupExists } from './helpers';
-import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 
 @Injectable()
 export class GroupsReadRepositoryKysely
@@ -49,6 +51,55 @@ export class GroupsReadRepositoryKysely
         user_id: result.user_id,
         progress: result.progress,
         status: status.name,
+      });
+    });
+  }
+
+  async getInboxWithTasksByUserId(
+    input: { userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<GroupInboxView | null> {
+    return await this.errorCatcher('groups.get-inbox-by-user-id-with-tasks', async () => {
+      const inbox = await this.db
+        .qb(trx)
+        .selectFrom('groups as g')
+        .leftJoin('task_to_group as ttg', 'ttg.group_id', 'g.id')
+        .leftJoin('tasks as t', 't.id', 'ttg.task_id')
+        .leftJoin('task_statuses as ts', 'ts.id', 't.status_id')
+        .where('g.name', '=', INBOX_GROUP_KEY)
+        .where('g.user_id', '=', input.userId)
+        .select(['g.id as id', 'g.user_id as user_id', 'g.name as name'])
+        .executeTakeFirst();
+      if (inbox == null) return null;
+
+      const tasks = await this.db
+        .qb(trx)
+        .selectFrom('tasks as t')
+        .innerJoin('task_statuses as ts', 'ts.id', 't.status_id')
+        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
+        .select([
+          't.id as id',
+          't.user_id as user_id',
+          't.name as name',
+          't.description as description',
+          't.priority as priority',
+          't.weight as weight',
+          't.cancel_reason as cancel_reason',
+          't.start_date as start_date',
+          't.end_date as end_date',
+          't.deadline as deadline',
+          't.recurrence as recurrence',
+          'ts.name as status',
+        ])
+        .where('ttg.group_id', '=', inbox.id)
+        .orderBy('t.id', 'asc')
+        .execute();
+
+      return GroupReadKyselyMapper.fromRawToInboxView({
+        id: inbox.id,
+        name: inbox.name,
+        user_id: inbox.user_id,
+        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
       });
     });
   }
