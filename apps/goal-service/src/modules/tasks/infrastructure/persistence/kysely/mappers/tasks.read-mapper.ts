@@ -17,7 +17,7 @@ interface RawTask {
 }
 
 class TasksReadKyselyMapper {
-  static fromRawToView(raw: RawTask): TaskView {
+  static fromRawToView = (raw: RawTask): TaskView => {
     return TaskView.restore({
       id: raw.id,
       userId: raw.user_id,
@@ -26,13 +26,13 @@ class TasksReadKyselyMapper {
       priority: raw.priority,
       weight: raw.weight,
       cancelReason: raw.cancel_reason ?? undefined,
-      startDate: raw.start_date != null ? raw.start_date.toISOString() : undefined,
-      endDate: raw.end_date != null ? raw.end_date.toISOString() : undefined,
-      deadline: raw.deadline != null ? raw.deadline.toISOString() : undefined,
+      startDate: raw.start_date != null ? new Date(raw.start_date).toISOString() : undefined,
+      endDate: raw.end_date != null ? new Date(raw.end_date).toISOString() : undefined,
+      deadline: raw.deadline != null ? new Date(raw.deadline).toISOString() : undefined,
       status: raw.status,
       recurrence: raw.recurrence ?? undefined,
     });
-  }
+  };
 }
 
-export { TasksReadKyselyMapper };
+export { TasksReadKyselyMapper, RawTask };

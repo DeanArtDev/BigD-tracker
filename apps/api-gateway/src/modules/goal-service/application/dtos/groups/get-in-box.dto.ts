@@ -1,17 +1,18 @@
+import { TaskDto } from '@/modules/goal-service/tasks';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { GroupInBoxDto } from '../shared';
 
 class GetInBoxRes {
   @ApiProperty({
     description: 'Ответ сервера',
-    type: GroupInBoxDto,
+    type: TaskDto,
+    isArray: true,
   })
   @Expose()
-  @ValidateNested()
-  @Type(() => GroupInBoxDto)
-  data: GroupInBoxDto;
+  @ValidateNested({ each: true })
+  @Type(() => TaskDto)
+  data: TaskDto[];
 }
 
 export { GetInBoxRes };

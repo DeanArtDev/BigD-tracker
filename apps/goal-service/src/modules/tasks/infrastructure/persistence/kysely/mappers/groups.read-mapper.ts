@@ -1,5 +1,6 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
 import { GroupView } from '@/modules/tasks/application/dto/group.view';
+import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { GroupStatus } from '@big-d/api-contracts';
 
 interface RawGroup {
@@ -15,6 +16,7 @@ interface RawInboxGroup {
   readonly id: number;
   readonly name: string;
   readonly user_id: number;
+  readonly tasks: TaskView[];
 }
 
 class GroupReadKyselyMapper {
@@ -34,6 +36,7 @@ class GroupReadKyselyMapper {
       id: raw.id,
       name: raw.name,
       userId: raw.user_id,
+      tasks: raw.tasks,
     });
   }
 }

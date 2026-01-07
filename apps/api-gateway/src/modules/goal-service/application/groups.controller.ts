@@ -1,3 +1,4 @@
+import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
@@ -5,12 +6,12 @@ import { GetInBoxRes } from '@/modules/goal-service/application/dtos/groups/get-
 import { GetMyGroupsRes } from '@/modules/goal-service/application/dtos/groups/get-my-groups.dto';
 import { CreateGroupSage } from '@/modules/goal-service/application/sages';
 import {
-  GOAL_SERVICE_RMQ_KEY,
   GoalDeleteGroup,
   GoalGetGroupInBox,
   GoalGetGroupsByUserId,
   GoalUpdateGroup,
 } from '@big-d/api-contracts';
+import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
   Body,
   Controller,
@@ -18,28 +19,25 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   Param,
   ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { CreateGroupReq, CreateGroupRes, UpdateGroupReq, UpdateGroupRes } from './dtos';
-import { ValidateRpcResponse } from '@big-d/api-utils';
 
 @ApiTags('Groups')
 @Controller('/groups')
 export class GroupsController {
   constructor(
-    @Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy,
+    private readonly goalClient: GoalServiceClientProxy,
     private readonly createGroupSage: CreateGroupSage,
   ) {}
 
   @Get('inbox')
-  @ApiOperation({ summary: 'Получение IN BOX юзера' })
+  @ApiOperation({ summary: 'Получение группы IN BOX юзера с делами' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: GetInBoxRes,

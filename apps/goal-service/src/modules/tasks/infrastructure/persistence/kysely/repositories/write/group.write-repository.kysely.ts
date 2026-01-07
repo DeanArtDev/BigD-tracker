@@ -44,6 +44,7 @@ export class GroupWriteRepositoryKysely
         id: result.id,
         name: result.name,
         user_id: result.user_id,
+        tasks: [],
       });
     });
   }

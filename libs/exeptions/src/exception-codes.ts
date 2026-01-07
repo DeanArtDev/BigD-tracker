@@ -41,7 +41,7 @@ const tasks = {
 const groups = {
   // Application
   groupNotExist: { code: 'GG-A-0001', details: Details.Define<{ groupId?: number }>() },
-  inboxNotExist: { code: 'GG-A-0002', details: Details.Define<{ taskId: number }>() },
+  inboxNotExist: { code: 'GG-A-0002', details: Details.Define<{ taskId?: number }>() },
   inboxAlreadyExist: { code: 'GG-A-0003', details: Details.Empty },
 } as const satisfies ExceptionConfig;
 
