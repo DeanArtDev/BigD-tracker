@@ -31,7 +31,7 @@ interface ReplaceTaskInput {
 }
 
 @Injectable()
-class TaskServices {
+class TaskService {
   constructor(
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
@@ -53,4 +53,4 @@ class TaskServices {
   }
 }
 
-export { TaskServices, CreateTaskInput, ReplaceTaskInput };
+export { TaskService, CreateTaskInput, ReplaceTaskInput };

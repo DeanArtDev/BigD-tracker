@@ -3,7 +3,7 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { UpdateThingRes } from '@/modules/goal-service/application/dtos';
-import { GoalCreateTask, GoalReplaceTask } from '@big-d/api-contracts';
+import { GoalCreateTask, GoalReplaceTask, GoalUpdateInboxTask } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -17,7 +17,14 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { firstValueFrom } from 'rxjs';
-import { CreateTaskReq, CreateTaskRes, ReplaceTaskReq, ReplaceTaskRes } from './dtos';
+import {
+  CreateTaskReq,
+  CreateTaskRes,
+  ReplaceTaskReq,
+  ReplaceTaskRes,
+  UpdateInboxTaskReq,
+  UpdateInboxTaskRes,
+} from './dtos';
 
 @ApiTags('Tasks')
 @Controller('/tasks')
@@ -84,6 +91,38 @@ export class TasksController {
             deadline: data.deadline,
             weight: data.weight,
             recurrence: data.recurrence,
+          },
+        },
+      ),
+    );
+  }
+
+  @Put('/:taskId/inbox')
+  @ApiOperation({ summary: 'Редактирование дела в IN BOX' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UpdateThingRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(UpdateInboxTaskRes)
+  async replaceTaskInInbox(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: UpdateInboxTaskReq,
+  ): Promise<UpdateInboxTaskRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
+        GoalUpdateInboxTask.pattern,
+        {
+          data: {
+            id: taskId,
+            userId: uid,
+            priority: data.priority,
+            name: data.name,
+            startDate: data.startDate,
+            description: data.description,
+            deadline: data.deadline,
           },
         },
       ),

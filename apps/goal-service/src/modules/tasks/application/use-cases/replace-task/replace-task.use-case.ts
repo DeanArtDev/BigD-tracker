@@ -4,12 +4,12 @@ import { TasksViewMapper } from '@/modules/tasks/application/dto/task.view-mappe
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { ReplaceTaskInput, TaskServices } from '../../services';
+import { ReplaceTaskInput, TaskService } from '../../services';
 
 @Injectable()
 class ReplaceTaskUseCase {
   constructor(
-    private readonly taskServices: TaskServices,
+    private readonly taskServices: TaskService,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
   ) {}
 

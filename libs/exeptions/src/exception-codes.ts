@@ -27,6 +27,10 @@ const tasks = {
   // Application
   taskNotFound: { code: 'GT-A-0001', details: Details.Define<{ taskId?: number }>() },
   taskNotExist: { code: 'GT-A-0002', details: Details.Define<{ taskId?: number }>() },
+  taskNotInGroup: {
+    code: 'GT-A-0003',
+    details: Details.Define<{ taskId: number; groupId?: number; message?: string }>(),
+  },
 
   // Domain
   taskInvariantFailed: {

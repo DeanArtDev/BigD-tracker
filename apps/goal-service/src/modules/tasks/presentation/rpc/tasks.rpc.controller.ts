@@ -1,6 +1,6 @@
 import { CreateTaskCommand } from '@/modules/tasks/application/use-cases';
-import { ReplaceTaskCommand } from '@/modules/tasks/application/use-cases/replace-task';
-import { GoalCreateTask, GoalReplaceTask } from '@big-d/api-contracts';
+import { UpdateInboxTaskCommand } from '@/modules/tasks/application/use-cases/update-inbox-task';
+import { GoalCreateTask, GoalReplaceTask, GoalUpdateInboxTask } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -25,7 +25,16 @@ export class TasksRpcController {
     @Payload() { data: payload }: GoalReplaceTask.Request,
   ): Promise<GoalReplaceTask.Response> {
     return {
-      data: await this.commandBus.execute(new ReplaceTaskCommand(payload)),
+      data: await this.commandBus.execute(new UpdateInboxTaskCommand(payload)),
+    };
+  }
+
+  @MessagePattern(GoalUpdateInboxTask.pattern)
+  async updateInboxTask(
+    @Payload() { data: payload }: GoalUpdateInboxTask.Request,
+  ): Promise<GoalUpdateInboxTask.Response> {
+    return {
+      data: await this.commandBus.execute(new UpdateInboxTaskCommand(payload)),
     };
   }
 }
