@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { ExceptionGroupIsNotExists } from '@/modules/tasks/application/exceptions';
+import { ExceptionGroupNotExist } from '@/modules/tasks/application/exceptions';
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
@@ -25,7 +25,7 @@ class CreateTaskUseCase {
       if (input.groupId != null) {
         const isExists = await this.groupReadRepo.isGroupExists({ groupId: input.groupId });
         if (!isExists) {
-          throw new ExceptionGroupIsNotExists({ groupId: input.groupId });
+          throw new ExceptionGroupNotExist({ groupId: input.groupId });
         }
         await this.tasksWriteRepo.addTaskToGroup({ taskId: id, groupId: input.groupId }, trx);
       }

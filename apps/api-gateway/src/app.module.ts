@@ -1,5 +1,5 @@
 import { appConfigFactory } from '@/infrastructure/configs/app-config-factory';
-import { RmqClientsModule } from '@/infrastructure/rmq-clients';
+import { RmqClientsModule } from '@/infrastructure/rmq-clients/';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { ExercisesModule } from '@/modules/exercises';
 import { GoalServiceModule } from '@/modules/goal-service';
@@ -21,8 +21,9 @@ import { ConfigModule } from '@nestjs/config';
     TrainingsModule,
     TrainingTemplatesModule,
     ExercisesModule,
-    RmqClientsModule,
     GoalServiceModule,
+
+    RmqClientsModule,
   ],
 })
 export class AppModule {}

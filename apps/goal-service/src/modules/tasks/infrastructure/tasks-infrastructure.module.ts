@@ -4,17 +4,25 @@ import {
   GroupsReadRepositoryKysely,
   TasksReadRepositoryKysely,
 } from './persistence/kysely/repositories/read';
-import { TasksWriteRepositoryKysely } from './persistence/kysely/repositories/write';
+import {
+  GroupWriteRepositoryKysely,
+  TasksWriteRepositoryKysely,
+} from './persistence/kysely/repositories/write';
 
 @Module({
-  exports: [TasksToken.WRITE_REPOSITORY, TasksToken.READ_REPOSITORY, GroupsToken.READ_REPOSITORY],
+  exports: [
+    TasksToken.WRITE_REPOSITORY,
+    TasksToken.READ_REPOSITORY,
+
+    GroupsToken.READ_REPOSITORY,
+    GroupsToken.WRITE_REPOSITORY,
+  ],
   providers: [
+    { provide: GroupsToken.WRITE_REPOSITORY, useClass: GroupWriteRepositoryKysely },
     { provide: GroupsToken.READ_REPOSITORY, useClass: GroupsReadRepositoryKysely },
+
     { provide: TasksToken.WRITE_REPOSITORY, useClass: TasksWriteRepositoryKysely },
-    {
-      provide: TasksToken.READ_REPOSITORY,
-      useClass: TasksReadRepositoryKysely,
-    },
+    { provide: TasksToken.READ_REPOSITORY, useClass: TasksReadRepositoryKysely },
   ],
 })
 export class TasksInfrastructureModule {}

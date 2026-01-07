@@ -8,20 +8,21 @@ const PAYLOAD_KEY = 'tokenPayload';
 
 function tokenPayloadFactory(_: unknown, ctx: ExecutionContext): AccessTokenPayload | undefined {
   const request = ctx.switchToHttp().getRequest<Request>();
-  const payload = getTokenPayloadFromRequest(request);
-
-  if (validateSync(payload).length > 0) {
-    return undefined;
-  }
-  return payload;
+  return getTokenPayloadFromRequest(request);
 }
 
 const TokenPayload = createParamDecorator(tokenPayloadFactory);
 
-function getTokenPayloadFromRequest(request: Request): AccessTokenPayload {
-  return plainToInstance(AccessTokenPayload, request[PAYLOAD_KEY], {
+function getTokenPayloadFromRequest(request: Request): AccessTokenPayload | undefined {
+  const payload = plainToInstance(AccessTokenPayload, request[PAYLOAD_KEY], {
     excludeExtraneousValues: true,
   });
+
+  if (validateSync(payload).length > 0) {
+    return undefined;
+  }
+
+  return payload;
 }
 
 export { TokenPayload, getTokenPayloadFromRequest, PAYLOAD_KEY };
