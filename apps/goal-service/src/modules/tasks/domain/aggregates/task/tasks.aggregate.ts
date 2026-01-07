@@ -1,7 +1,7 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
-import { assertHasCancelReason, assertThingDates } from './tasks.invariants';
-import { TaskCreateInput, TaskRestoreInput, TaskState } from './tasks.types';
+import { assertTaskDates, assertTaskUpdate } from './tasks.invariants';
+import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
 
 class Task extends AggregateRoot {
   #state: TaskState;
@@ -49,10 +49,23 @@ class Task extends AggregateRoot {
   }
 
   #validate(): this {
-    const { startDate, endDate, deadline, cancelReason, status } = this.#state;
-    assertThingDates({ end: endDate, start: startDate, deadline });
-    assertHasCancelReason({ status, reason: cancelReason });
+    const { startDate, endDate, deadline } = this.#state;
+    assertTaskDates({ end: endDate, start: startDate, deadline });
     return this;
+  }
+
+  public update(input: TaskUpdateInput): this {
+    assertTaskUpdate({ status: this.#state.status, endDate: this.#state.endDate?.value });
+
+    this.#state.name = input.name;
+    this.#state.description = input.description;
+    this.#state.priority = input.priority;
+    this.#state.weight = input.weight;
+    this.#state.startDate = input.startDate;
+    this.#state.deadline = input.deadline;
+    this.#state.recurrence = input.recurrence;
+
+    return this.#validate();
   }
 
   get id() {

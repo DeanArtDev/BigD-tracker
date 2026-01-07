@@ -7,7 +7,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] создание task (groupId?:)
  *   [x] создание task IN BOX
  *   [x] создание группы IN BOX
- *   [] получение tasks для IN BOX
+ *   [x] получение tasks для IN BOX
  *   [] редактирование task IN BOX (не даем менять группу, менять вес)
  *   [] редактирование task (не даем менять группу)
  *
@@ -23,6 +23,11 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *
  *   [] сортировка по дате добавления IN BOX
  *   [] сортировка по приоритетам IN BOX
+ *   []
+ *   []
+ *   []
+ *   [] -- чистка --
+ *   [] прочистить api-contracts/things
  *   []
  *   []
  *   []

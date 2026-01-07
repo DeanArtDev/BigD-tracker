@@ -1,4 +1,4 @@
-import { Priority, Weight } from '@/modules/tasks/domain';
+import { Priority, TaskUpdateInput, Weight } from '@/modules/tasks/domain';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput } from './tasks.types';
@@ -9,6 +9,16 @@ interface TaskFactoryCreateInput {
   readonly description?: string;
   readonly priority?: number;
   readonly weight?: number;
+  readonly startDate?: string;
+  readonly deadline?: string;
+  readonly recurrence?: string;
+}
+
+interface TaskFactoryUpdateInput {
+  readonly name: string;
+  readonly description?: string;
+  readonly priority: number;
+  readonly weight: number;
   readonly startDate?: string;
   readonly deadline?: string;
   readonly recurrence?: string;
@@ -28,5 +38,19 @@ export class TaskFactory {
     };
 
     return Task.create(state);
+  }
+
+  static update(task: Task, input: TaskFactoryUpdateInput): Task {
+    const state: TaskUpdateInput = {
+      name: Name.create(input.name),
+      description: input.description,
+      priority: Priority.create(input.priority),
+      weight: Weight.create(input.weight),
+      startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
+      deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
+      recurrence: input.recurrence,
+    };
+
+    return task.update(state);
   }
 }

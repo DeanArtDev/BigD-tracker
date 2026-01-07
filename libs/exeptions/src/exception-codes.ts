@@ -26,6 +26,7 @@ const account = {
 const tasks = {
   // Application
   taskNotFound: { code: 'GT-A-0001', details: Details.Define<{ taskId?: number }>() },
+  taskNotExist: { code: 'GT-A-0002', details: Details.Define<{ taskId?: number }>() },
 
   // Domain
   taskInvariantFailed: {
@@ -34,7 +35,7 @@ const tasks = {
   },
 
   // Infrastructure
-  taskDBFailed: { code: 'GT-I-0000' },
+  taskDBFailed: { code: 'GT-I-0000', details: Details.Any },
   taskCreationFailed: { code: 'GT-I-0001' },
 } as const satisfies ExceptionConfig;
 

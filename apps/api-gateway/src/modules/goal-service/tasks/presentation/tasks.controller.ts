@@ -2,12 +2,22 @@ import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalCreateTask } from '@big-d/api-contracts';
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { UpdateThingRes } from '@/modules/goal-service/application/dtos';
+import { GoalCreateTask, GoalReplaceTask } from '@big-d/api-contracts';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { firstValueFrom } from 'rxjs';
-import { CreateTaskReq, CreateTaskRes } from './dtos';
+import { CreateTaskReq, CreateTaskRes, ReplaceTaskReq, ReplaceTaskRes } from './dtos';
 
 @ApiTags('Tasks')
 @Controller('/tasks')
@@ -40,6 +50,40 @@ export class TasksController {
             deadline: data.deadline,
             recurrence: data.recurrence,
             weight: data.weight,
+          },
+        },
+      ),
+    );
+  }
+
+  @Put('/:taskId')
+  @ApiOperation({ summary: 'Редактирование дела' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UpdateThingRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(ReplaceTaskRes)
+  async replaceTask(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: ReplaceTaskReq,
+  ): Promise<ReplaceTaskRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalReplaceTask.Response, GoalReplaceTask.Request>(
+        GoalReplaceTask.pattern,
+        {
+          data: {
+            id: taskId,
+            userId: uid,
+            priority: data.priority,
+            name: data.name,
+            startDate: data.startDate,
+            description: data.description,
+            deadline: data.deadline,
+            weight: data.weight,
+            recurrence: data.recurrence,
           },
         },
       ),
