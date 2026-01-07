@@ -42,7 +42,7 @@ class TaskServices {
   }
 
   async replaceTask(input: ReplaceTaskInput, trx?: Transaction<DB>): Promise<Task> {
-    const task = await this.tasksWriteRepo.getTaskById({ id: input.id, userId: input.userId });
+    const task = await this.tasksWriteRepo.getTaskById({ id: input.id, userId: input.userId }, trx);
     if (task == null) {
       throw new ExceptionTaskNotExist({ taskId: input.id });
     }
