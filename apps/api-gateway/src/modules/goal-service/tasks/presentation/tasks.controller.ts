@@ -106,7 +106,7 @@ export class TasksController {
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
   @ValidateRpcResponse(UpdateInboxTaskRes)
-  async replaceTaskInInbox(
+  async updateTaskInInbox(
     @Param('taskId', ParseIntPipe) taskId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: UpdateInboxTaskReq,
