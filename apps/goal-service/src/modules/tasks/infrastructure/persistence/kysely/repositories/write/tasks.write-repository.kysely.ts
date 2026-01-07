@@ -98,6 +98,7 @@ export class TasksWriteRepositoryKysely
         .qb(trx)
         .updateTable(this.#tableName)
         .where('id', '=', task.id)
+        .where('user_id', '=', task.userId)
         .set({
           name: task.name,
           description: task.description,
