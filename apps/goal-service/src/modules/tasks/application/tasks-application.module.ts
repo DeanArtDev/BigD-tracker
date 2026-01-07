@@ -12,17 +12,31 @@ import {
   CreateInboxGroupCommand,
   CreateInboxGroupHandler,
   CreateInboxGroupUseCase,
+  ReplaceTaskCommand,
+  ReplaceTaskHandler,
+  ReplaceTaskUseCase,
 } from './use-cases';
 
 const queries = [GetInboxByUserIdQuery];
-const commands = [CreateTaskCommand, CreateTaskInInboxCommand, CreateInboxGroupCommand];
+const commands = [
+  CreateTaskCommand,
+  CreateTaskInInboxCommand,
+  CreateInboxGroupCommand,
+  ReplaceTaskCommand,
+];
 const handlers = [
   CreateTaskHandler,
   CreateTaskInInboxHandler,
   CreateInboxGroupHandler,
   GetGroupUserInboxHandler,
+  ReplaceTaskHandler,
 ];
-const useCases = [CreateTaskUseCase, CreateTaskInInboxUseCase, CreateInboxGroupUseCase];
+const useCases = [
+  CreateTaskUseCase,
+  CreateTaskInInboxUseCase,
+  CreateInboxGroupUseCase,
+  ReplaceTaskUseCase,
+];
 
 @Module({
   imports: [TasksInfrastructureModule],

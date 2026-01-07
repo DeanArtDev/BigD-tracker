@@ -1,4 +1,5 @@
 import { isDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
 import { BaseRpcException, RpcExceptionFactory } from '@big-d/api-contracts';
 import { isBaseExceptionInstance } from '@big-d/exceptions';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
@@ -14,6 +15,10 @@ export class GoalExceptionToRpc implements ExceptionFilter {
 
     if (isDomainInvalidInvariant(error)) {
       return throwError(() => RpcExceptionFactory.createInvalidArgument(error.toResponse()));
+    }
+
+    if (error instanceof ExceptionTaskInfrastructure) {
+      return throwError(() => RpcExceptionFactory.createInternalError(error.toResponse()));
     }
 
     if (isBaseExceptionInstance(error)) {

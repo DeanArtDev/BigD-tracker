@@ -1,4 +1,4 @@
-import { BaseException, exceptionCode } from '@big-d/exceptions';
+import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
 
 class BaseTasksRepository {
   constructor() {}
@@ -7,10 +7,9 @@ class BaseTasksRepository {
     try {
       return await callback();
     } catch (error: unknown) {
-      throw new BaseException({
-        code: exceptionCode.taskDBFailed.code,
-        key: 'TASK_INFRASTRUCTURE_ERROR',
-        details: { operation, error },
+      throw new ExceptionTaskInfrastructure({
+        error,
+        operation,
       });
     }
   }

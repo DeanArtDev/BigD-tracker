@@ -43,4 +43,14 @@ interface TaskRestoreInput {
   readonly recurrence?: string;
 }
 
-export { TaskCreateInput, TaskRestoreInput, TaskState };
+interface TaskUpdateInput {
+  readonly name: Name;
+  readonly description?: string;
+  readonly priority: Priority;
+  readonly weight: Weight;
+  readonly startDate?: DateVo;
+  readonly deadline?: DateVo;
+  readonly recurrence?: string;
+}
+
+export { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput };

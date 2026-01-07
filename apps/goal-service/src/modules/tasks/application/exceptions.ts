@@ -1,6 +1,6 @@
 import { defineExceptionState, exceptionCode, generateExceptionClasses } from '@big-d/exceptions';
 
-const DomainExceptionStateList = {
+const ApplicationExceptionStateList = {
   GroupNotExist: defineExceptionState({
     key: 'GROUP_NOT_EXIST',
     code: exceptionCode.groupNotExist.code,
@@ -18,7 +18,17 @@ const DomainExceptionStateList = {
     code: exceptionCode.inboxAlreadyExist.code,
     details: exceptionCode.inboxAlreadyExist.details,
   }),
+
+  TaskNotExist: defineExceptionState({
+    key: 'TASK_NOT_EXIST',
+    code: exceptionCode.taskNotExist.code,
+    details: exceptionCode.taskNotExist.details,
+  }),
 };
 
-export const { ExceptionGroupNotExist, ExceptionInboxAlreadyExist, ExceptionInboxNotExist } =
-  generateExceptionClasses(DomainExceptionStateList);
+export const {
+  ExceptionTaskNotExist,
+  ExceptionGroupNotExist,
+  ExceptionInboxAlreadyExist,
+  ExceptionInboxNotExist,
+} = generateExceptionClasses(ApplicationExceptionStateList);

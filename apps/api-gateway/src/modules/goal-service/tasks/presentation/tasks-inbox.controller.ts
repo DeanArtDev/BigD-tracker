@@ -9,8 +9,8 @@ import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { firstValueFrom } from 'rxjs';
 import { CreateTaskInINBOXReq, CreateTaskInINBOXRes, CreateTaskRes } from './dtos';
 
-@ApiTags('Tasks IN BOX')
-@Controller('/tasks-in-box')
+@ApiTags('Tasks')
+@Controller('tasks/in-box')
 export class TasksInboxController {
   constructor(private readonly goalClient: GoalServiceClientProxy) {}
 

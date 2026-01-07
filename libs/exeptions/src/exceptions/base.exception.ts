@@ -49,6 +49,7 @@ class BaseException<
 function isBaseExceptionInstance(error: unknown): error is BaseException<string, string, any> {
   return error instanceof BaseException;
 }
+
 function isBaseException<
   TKey extends string = string,
   TCode extends string = string,
