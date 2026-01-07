@@ -3,7 +3,7 @@ import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { MeRes } from '@/modules/users/me.dto';
 import { ACCOUNT_SERVICE_RMQ_KEY, AccountGetMe } from '@big-d/api-contracts';
-import { ValidateRpcResponse } from '@big-d/api-utils';
+import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
