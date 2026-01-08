@@ -8,8 +8,8 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] создание task IN BOX
  *   [x] создание группы IN BOX
  *   [x] получение tasks для IN BOX
- *   [] редактирование task IN BOX (не даем менять группу, менять вес)
- *   [] редактирование task (не даем менять группу)
+ *   [х] редактирование task IN BOX (не даем менять группу, менять вес)
+ *   [x] редактирование task (не даем менять группу)
  *
  *   [] архивация task (в UI это удаление, под капотом архивация)
  *   [] прикрепление к группе
@@ -21,6 +21,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [] полное удаление task
  *   [] добавление тегов
  *
+ *   [] прикрепление к группе IN BOX (вернуть в обратно в помойку)
  *   [] сортировка по дате добавления IN BOX
  *   [] сортировка по приоритетам IN BOX
  *   []

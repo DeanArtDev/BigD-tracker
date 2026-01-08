@@ -11,12 +11,12 @@ import {
   TasksReadRepository,
   TasksWriteRepository,
 } from '../../ports';
-import { CreateTaskInput, TaskServices } from '../../services';
+import { CreateTaskInput, TaskService } from '../../services';
 
 @Injectable()
 class CreateTaskInInboxUseCase {
   constructor(
-    private readonly taskServices: TaskServices,
+    private readonly taskServices: TaskService,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,

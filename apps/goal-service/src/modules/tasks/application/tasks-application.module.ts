@@ -1,5 +1,10 @@
 import { GetGroupUserInboxHandler, GetInboxByUserIdQuery } from './queries';
-import { GroupsService, TaskServices } from '@/modules/tasks/application/services';
+import {
+  GroupCheckerService,
+  GroupsService,
+  TaskCheckerService,
+  TaskService,
+} from '@/modules/tasks/application/services';
 import { Module } from '@nestjs/common';
 import { TasksInfrastructureModule } from '@/modules/tasks/infrastructure/tasks-infrastructure.module';
 import {
@@ -12,6 +17,9 @@ import {
   CreateInboxGroupCommand,
   CreateInboxGroupHandler,
   CreateInboxGroupUseCase,
+  UpdateInboxTaskCommand,
+  UpdateInboxTaskHandler,
+  UpdateInboxTaskUseCase,
   ReplaceTaskCommand,
   ReplaceTaskHandler,
   ReplaceTaskUseCase,
@@ -22,6 +30,7 @@ const commands = [
   CreateTaskCommand,
   CreateTaskInInboxCommand,
   CreateInboxGroupCommand,
+  UpdateInboxTaskCommand,
   ReplaceTaskCommand,
 ];
 const handlers = [
@@ -29,17 +38,28 @@ const handlers = [
   CreateTaskInInboxHandler,
   CreateInboxGroupHandler,
   GetGroupUserInboxHandler,
+  UpdateInboxTaskHandler,
   ReplaceTaskHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
   CreateTaskInInboxUseCase,
   CreateInboxGroupUseCase,
+  UpdateInboxTaskUseCase,
   ReplaceTaskUseCase,
 ];
 
 @Module({
   imports: [TasksInfrastructureModule],
-  providers: [TaskServices, GroupsService, ...commands, ...queries, ...handlers, ...useCases],
+  providers: [
+    TaskService,
+    GroupsService,
+    TaskCheckerService,
+    GroupCheckerService,
+    ...commands,
+    ...queries,
+    ...handlers,
+    ...useCases,
+  ],
 })
 export class TasksApplicationModule {}

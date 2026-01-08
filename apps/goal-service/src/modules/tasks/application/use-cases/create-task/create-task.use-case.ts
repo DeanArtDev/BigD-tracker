@@ -6,12 +6,12 @@ import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupsReadRepository, TasksReadRepository, TasksWriteRepository } from '../../ports';
-import { CreateTaskInput, TaskServices } from '../../services';
+import { CreateTaskInput, TaskService } from '../../services';
 
 @Injectable()
 class CreateTaskUseCase {
   constructor(
-    private readonly taskServices: TaskServices,
+    private readonly taskServices: TaskService,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,

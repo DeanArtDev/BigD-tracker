@@ -24,6 +24,14 @@ interface TaskFactoryUpdateInput {
   readonly recurrence?: string;
 }
 
+interface TaskFactoryUpdateInboxInput {
+  readonly name: string;
+  readonly description?: string;
+  readonly priority: number;
+  readonly startDate?: string;
+  readonly deadline?: string;
+}
+
 export class TaskFactory {
   static create(input: TaskFactoryCreateInput): Task {
     const state: TaskCreateInput = {
@@ -49,6 +57,20 @@ export class TaskFactory {
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
       recurrence: input.recurrence,
+    };
+
+    return task.update(state);
+  }
+
+  static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {
+    const state: TaskUpdateInput = {
+      name: Name.create(input.name),
+      description: input.description,
+      priority: Priority.create(input.priority),
+      weight: Weight.create(task.weight),
+      startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
+      deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
+      recurrence: task.recurrence,
     };
 
     return task.update(state);

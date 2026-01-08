@@ -1,8 +1,9 @@
 import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
 import { GroupView } from '@/modules/tasks/application/dto/group.view';
-import { GroupsReadRepository, INBOX_GROUP_KEY } from '@/modules/tasks/application/ports';
+import { GroupsReadRepository } from '@/modules/tasks/application/ports';
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { getInboxByUserId } from './helpers/get-inbox-by-user-id';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -60,16 +61,7 @@ export class GroupsReadRepositoryKysely
     trx?: Transaction<DB>,
   ): Promise<GroupInboxView | null> {
     return await this.errorCatcher('groups.get-inbox-by-user-id-with-tasks', async () => {
-      const inbox = await this.db
-        .qb(trx)
-        .selectFrom('groups as g')
-        .leftJoin('task_to_group as ttg', 'ttg.group_id', 'g.id')
-        .leftJoin('tasks as t', 't.id', 'ttg.task_id')
-        .leftJoin('task_statuses as ts', 'ts.id', 't.status_id')
-        .where('g.name', '=', INBOX_GROUP_KEY)
-        .where('g.user_id', '=', input.userId)
-        .select(['g.id as id', 'g.user_id as user_id', 'g.name as name'])
-        .executeTakeFirst();
+      const inbox = await getInboxByUserId(this.db, input, trx);
       if (inbox == null) return null;
 
       const tasks = await this.db
@@ -110,6 +102,30 @@ export class GroupsReadRepositoryKysely
   ): Promise<boolean> {
     return await this.errorCatcher('groups.is-group-exists', async () => {
       return isGroupExists(this.db, input, trx);
+    });
+  }
+
+  async ensureTaskInInboxGroup(
+    input: { userId: number; taskId: number },
+    trx?: Transaction<DB>,
+  ): Promise<{ success: false } | { success: true; inboxId: number }> {
+    return await this.errorCatcher('groups.is-task-in-group', async () => {
+      const inbox = await getInboxByUserId(this.db, { userId: input.userId }, trx);
+      if (inbox == null) return { success: false };
+
+      const tasks = await this.db
+        .qb(trx)
+        .selectFrom('task_to_group')
+        .where('group_id', '=', inbox.id)
+        .where('task_id', '=', input.taskId)
+        .execute();
+
+      return tasks.length > 0
+        ? {
+            success: true,
+            inboxId: inbox.id,
+          }
+        : { success: false };
     });
   }
 }
