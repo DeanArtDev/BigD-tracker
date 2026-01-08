@@ -23,6 +23,9 @@ import {
   ReplaceTaskCommand,
   ReplaceTaskHandler,
   ReplaceTaskUseCase,
+  SoftDeleteTaskCommand,
+  SoftDeleteTaskHandler,
+  SoftDeleteTaskUseCase,
 } from './use-cases';
 
 const queries = [GetInboxByUserIdQuery];
@@ -32,6 +35,7 @@ const commands = [
   CreateInboxGroupCommand,
   UpdateInboxTaskCommand,
   ReplaceTaskCommand,
+  SoftDeleteTaskCommand,
 ];
 const handlers = [
   CreateTaskHandler,
@@ -40,6 +44,7 @@ const handlers = [
   GetGroupUserInboxHandler,
   UpdateInboxTaskHandler,
   ReplaceTaskHandler,
+  SoftDeleteTaskHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
@@ -47,6 +52,7 @@ const useCases = [
   CreateInboxGroupUseCase,
   UpdateInboxTaskUseCase,
   ReplaceTaskUseCase,
+  SoftDeleteTaskUseCase,
 ];
 
 @Module({

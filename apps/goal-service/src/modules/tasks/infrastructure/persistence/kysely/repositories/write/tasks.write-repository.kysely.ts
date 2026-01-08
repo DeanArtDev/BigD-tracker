@@ -20,7 +20,7 @@ export class TasksWriteRepositoryKysely
   }
 
   async getTaskById(
-    input: { id: number; userId: number },
+    input: { taskId: number; userId: number },
     trx?: Transaction<DB>,
   ): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
@@ -28,7 +28,7 @@ export class TasksWriteRepositoryKysely
         .qb(trx)
         .selectFrom('tasks as t')
         .innerJoin('task_statuses as ts', 't.status_id', 'ts.id')
-        .where('t.id', '=', input.id)
+        .where('t.id', '=', input.taskId)
         .where('t.user_id', '=', input.userId)
         .select([
           't.id as id',
@@ -149,6 +149,43 @@ export class TasksWriteRepositoryKysely
           position: Number(position?.count ?? 0),
         })
         .executeTakeFirstOrThrow();
+    });
+  }
+
+  async changeTaskStatus(task: Task, trx?: Transaction<DB>): Promise<void> {
+    return await this.errorCatcher('tasks.change-task-status', async () => {
+      const { id, userId, status } = task;
+
+      const { statusId } = await this.db
+        .qb(trx)
+        .selectFrom('task_statuses as ts')
+        .where('ts.name', '=', status)
+        .select(['id as statusId'])
+        .executeTakeFirstOrThrow();
+
+      await this.db
+        .qb(trx)
+        .updateTable(this.#tableName)
+        .set({ status_id: statusId })
+        .where('id', '=', id)
+        .where('user_id', '=', userId)
+        .executeTakeFirst();
+    });
+  }
+
+  async deleteTask(
+    input: { userId: number; taskId: number },
+    trx?: Transaction<DB>,
+  ): Promise<boolean> {
+    return await this.errorCatcher('tasks.task-deleting', async () => {
+      const result = await this.db
+        .qb(trx)
+        .deleteFrom(this.#tableName)
+        .where('id', '=', input.taskId)
+        .where('user_id', '=', input.userId)
+        .executeTakeFirst();
+
+      return result.numDeletedRows > 0;
     });
   }
 }

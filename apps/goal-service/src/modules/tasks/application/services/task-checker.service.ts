@@ -27,7 +27,7 @@ class TaskCheckerService {
     const { skipException, trx } = params ?? {};
 
     const task = await this.tasksWriteRepo.getTaskById(
-      { id: input.taskId, userId: input.userId },
+      { taskId: input.taskId, userId: input.userId },
       trx,
     );
 

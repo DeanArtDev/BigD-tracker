@@ -75,4 +75,8 @@ export class TaskFactory {
 
     return task.update(state);
   }
+
+  static deleteSoft(task: Task): Task {
+    return task.deleteSoft();
+  }
 }

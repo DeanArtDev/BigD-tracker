@@ -1,6 +1,8 @@
+import { availableTransitionsByTaskStatuses } from '@/modules/tasks/domain';
+import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
-import { assertTaskDates, assertTaskUpdate } from './tasks.invariants';
+import { assertTaskDates, assertTaskDeleteSoft, assertTaskUpdate } from './tasks.invariants';
 import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
 
 class Task extends AggregateRoot {
@@ -54,6 +56,18 @@ class Task extends AggregateRoot {
     return this;
   }
 
+  #setStatus(status: TaskStatus): this {
+    if (availableTransitionsByTaskStatuses[this.#state.status].includes(status)) {
+      this.#state.status = status;
+      return this;
+    }
+
+    throw new ExceptionDomainInvalidInvariant({
+      message: `Task status transition is unavailable from:{${this.#state.status} to:{${status}} status`,
+      field: 'status',
+    });
+  }
+
   public update(input: TaskUpdateInput): this {
     assertTaskUpdate({ status: this.#state.status, endDate: this.#state.endDate?.value });
 
@@ -66,6 +80,11 @@ class Task extends AggregateRoot {
     this.#state.recurrence = input.recurrence;
 
     return this.#validate();
+  }
+
+  public deleteSoft(): this {
+    assertTaskDeleteSoft({ status: this.#state.status });
+    return this.#setStatus(TaskStatus.DELETED);
   }
 
   get id() {

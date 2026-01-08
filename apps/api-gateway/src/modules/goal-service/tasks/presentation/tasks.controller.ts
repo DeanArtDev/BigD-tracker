@@ -3,10 +3,16 @@ import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { UpdateThingRes } from '@/modules/goal-service/application/dtos';
-import { GoalCreateTask, GoalReplaceTask, GoalUpdateInboxTask } from '@big-d/api-contracts';
+import {
+  GoalCreateTask,
+  GoalDeleteTask,
+  GoalReplaceTask,
+  GoalUpdateInboxTask,
+} from '@big-d/api-contracts';
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Param,
@@ -127,5 +133,23 @@ export class TasksController {
         },
       ),
     );
+  }
+
+  @Delete('/:taskId')
+  @ApiOperation({ summary: 'Удаление дела' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTask(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<void> {
+    await firstValueFrom(
+      this.goalClient.send<GoalDeleteTask.Response, GoalDeleteTask.Request>(
+        GoalDeleteTask.pattern,
+        { data: { id: taskId, userId: uid } },
+      ),
+    );
+    return;
   }
 }
