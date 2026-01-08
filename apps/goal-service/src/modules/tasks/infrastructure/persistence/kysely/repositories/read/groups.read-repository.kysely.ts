@@ -2,6 +2,7 @@ import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
 import { GroupView } from '@/modules/tasks/application/dto/group.view';
 import { GroupsReadRepository } from '@/modules/tasks/application/ports';
+import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
 import { getInboxByUserId } from './helpers/get-inbox-by-user-id';
 import { databaseToken } from '@big-d/database';
@@ -84,6 +85,7 @@ export class GroupsReadRepositoryKysely
           'ts.name as status',
         ])
         .where('ttg.group_id', '=', inbox.id)
+        .where('ts.name', 'in', tasksAreInInboxSpec.default)
         .orderBy('t.id', 'asc')
         .execute();
 

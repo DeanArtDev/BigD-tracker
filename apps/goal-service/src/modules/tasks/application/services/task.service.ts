@@ -1,10 +1,15 @@
 import { DB } from '@/infrastructure/types';
-import { ExceptionTaskNotExist } from '@/modules/tasks/application/exceptions';
 import { TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { Task, TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
+import { TaskCheckerService } from './task-checker.service';
+
+interface DeleteTaskInput {
+  readonly taskId: number;
+  readonly userId: number;
+}
 
 interface CreateTaskInput {
   readonly userId: number;
@@ -33,6 +38,7 @@ interface ReplaceTaskInput {
 @Injectable()
 class TaskService {
   constructor(
+    private readonly taskCheckerService: TaskCheckerService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
@@ -41,11 +47,21 @@ class TaskService {
     return await this.tasksWriteRepo.createTask(draftTask, trx);
   }
 
+  async softDeleteTask(input: DeleteTaskInput, trx?: Transaction<DB>): Promise<{ id: number }> {
+    const task = await this.taskCheckerService.ensureTaskExists(
+      { taskId: input.taskId, userId: input.userId },
+      { trx },
+    );
+    const draftTask = TaskFactory.delete(task);
+    await this.tasksWriteRepo.changeTaskStatus(draftTask, trx);
+    return { id: draftTask.id };
+  }
+
   async replaceTask(input: ReplaceTaskInput, trx?: Transaction<DB>): Promise<Task> {
-    const task = await this.tasksWriteRepo.getTaskById({ id: input.id, userId: input.userId }, trx);
-    if (task == null) {
-      throw new ExceptionTaskNotExist({ taskId: input.id });
-    }
+    const task = await this.taskCheckerService.ensureTaskExists(
+      { taskId: input.id, userId: input.userId },
+      { trx },
+    );
 
     const replacedTask = TaskFactory.update(task, input);
 
@@ -53,4 +69,4 @@ class TaskService {
   }
 }
 
-export { TaskService, CreateTaskInput, ReplaceTaskInput };
+export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput };

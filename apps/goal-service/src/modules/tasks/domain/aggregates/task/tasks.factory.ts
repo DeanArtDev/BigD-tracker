@@ -75,4 +75,8 @@ export class TaskFactory {
 
     return task.update(state);
   }
+
+  static delete(task: Task): Task {
+    return task.delete();
+  }
 }

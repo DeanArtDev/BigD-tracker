@@ -51,13 +51,9 @@ function assertTaskUpdate(input: { status: TaskStatus; endDate?: string }): void
   const { status, endDate } = input;
 
   if (
-    [
-      TaskStatus.DELETED,
-      TaskStatus.CANCELLED,
-      TaskStatus.ARCHIVED,
-      TaskStatus.OVERDUE,
-      TaskStatus.COMPLETED,
-    ].includes(status)
+    [TaskStatus.DELETED, TaskStatus.ARCHIVED, TaskStatus.OVERDUE, TaskStatus.COMPLETED].includes(
+      status,
+    )
   ) {
     throw new ExceptionDomainInvalidInvariant({
       message: `Task can't be updated at current status: ${status}`,
@@ -73,4 +69,15 @@ function assertTaskUpdate(input: { status: TaskStatus; endDate?: string }): void
   }
 }
 
-export { assertTaskDates, assertHasCancelReason, assertTaskUpdate };
+function assertTaskDelete(input: { status: TaskStatus }): void {
+  const { status } = input;
+
+  if ([TaskStatus.DELETED, TaskStatus.OVERDUE, TaskStatus.COMPLETED].includes(status)) {
+    throw new ExceptionDomainInvalidInvariant({
+      message: `Task can't be deleted at current status: ${status}`,
+      field: 'status',
+    });
+  }
+}
+
+export { assertTaskDates, assertTaskDelete, assertHasCancelReason, assertTaskUpdate };

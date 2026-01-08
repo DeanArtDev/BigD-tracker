@@ -3,7 +3,13 @@ import {
   UpdateInboxTaskCommand,
   ReplaceTaskCommand,
 } from '@/modules/tasks/application/use-cases';
-import { GoalCreateTask, GoalReplaceTask, GoalUpdateInboxTask } from '@big-d/api-contracts';
+import { SoftDeleteTaskCommand } from '@/modules/tasks/application/use-cases/soft-delete-task';
+import {
+  GoalCreateTask,
+  GoalDeleteTask,
+  GoalReplaceTask,
+  GoalUpdateInboxTask,
+} from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -38,6 +44,17 @@ export class TasksRpcController {
   ): Promise<GoalUpdateInboxTask.Response> {
     return {
       data: await this.commandBus.execute(new UpdateInboxTaskCommand(payload)),
+    };
+  }
+
+  @MessagePattern(GoalDeleteTask.pattern)
+  async deleteTask(
+    @Payload() { data: payload }: GoalDeleteTask.Request,
+  ): Promise<GoalDeleteTask.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new SoftDeleteTaskCommand({ taskId: payload.id, userId: payload.userId }),
+      ),
     };
   }
 }
