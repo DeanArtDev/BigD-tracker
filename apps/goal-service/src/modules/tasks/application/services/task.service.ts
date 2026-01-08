@@ -52,7 +52,7 @@ class TaskService {
       { taskId: input.taskId, userId: input.userId },
       { trx },
     );
-    const draftTask = TaskFactory.delete(task);
+    const draftTask = TaskFactory.deleteSoft(task);
     await this.tasksWriteRepo.changeTaskStatus(draftTask, trx);
     return { id: draftTask.id };
   }

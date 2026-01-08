@@ -69,7 +69,7 @@ function assertTaskUpdate(input: { status: TaskStatus; endDate?: string }): void
   }
 }
 
-function assertTaskDelete(input: { status: TaskStatus }): void {
+function assertTaskDeleteSoft(input: { status: TaskStatus }): void {
   const { status } = input;
 
   if ([TaskStatus.DELETED, TaskStatus.OVERDUE, TaskStatus.COMPLETED].includes(status)) {
@@ -80,4 +80,4 @@ function assertTaskDelete(input: { status: TaskStatus }): void {
   }
 }
 
-export { assertTaskDates, assertTaskDelete, assertHasCancelReason, assertTaskUpdate };
+export { assertTaskDates, assertTaskDeleteSoft, assertHasCancelReason, assertTaskUpdate };

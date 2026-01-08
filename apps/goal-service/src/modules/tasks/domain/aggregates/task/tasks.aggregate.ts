@@ -1,6 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
-import { assertTaskDates, assertTaskDelete, assertTaskUpdate } from './tasks.invariants';
+import { assertTaskDates, assertTaskDeleteSoft, assertTaskUpdate } from './tasks.invariants';
 import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
 
 class Task extends AggregateRoot {
@@ -68,8 +68,8 @@ class Task extends AggregateRoot {
     return this.#validate();
   }
 
-  public delete(): this {
-    assertTaskDelete({ status: this.#state.status });
+  public deleteSoft(): this {
+    assertTaskDeleteSoft({ status: this.#state.status });
     this.#state.status = TaskStatus.DELETED;
 
     return this.#validate();
