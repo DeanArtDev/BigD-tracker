@@ -8,7 +8,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] создание task IN BOX
  *   [x] создание группы IN BOX
  *   [x] получение tasks для IN BOX
- *   [] редактирование task IN BOX (не даем менять группу, менять вес)
+ *   [х] редактирование task IN BOX (не даем менять группу, менять вес)
  *   [x] редактирование task (не даем менять группу)
  *
  *   [] архивация task (в UI это удаление, под капотом архивация)

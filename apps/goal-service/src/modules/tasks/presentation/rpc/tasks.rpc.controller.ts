@@ -1,5 +1,8 @@
-import { CreateTaskCommand } from '@/modules/tasks/application/use-cases';
-import { UpdateInboxTaskCommand } from '@/modules/tasks/application/use-cases/update-inbox-task';
+import {
+  CreateTaskCommand,
+  UpdateInboxTaskCommand,
+  ReplaceTaskCommand,
+} from '@/modules/tasks/application/use-cases';
 import { GoalCreateTask, GoalReplaceTask, GoalUpdateInboxTask } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -25,7 +28,7 @@ export class TasksRpcController {
     @Payload() { data: payload }: GoalReplaceTask.Request,
   ): Promise<GoalReplaceTask.Response> {
     return {
-      data: await this.commandBus.execute(new UpdateInboxTaskCommand(payload)),
+      data: await this.commandBus.execute(new ReplaceTaskCommand(payload)),
     };
   }
 
