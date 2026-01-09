@@ -19,8 +19,6 @@ interface GroupsReadRepository {
     trx?: Transaction<DB>,
   ): Promise<GroupInboxView | null>;
 
-  isGroupExists(input: { groupId: number }, trx?: Transaction<DB>): Promise<boolean>;
-
   ensureTaskInInboxGroup(
     input: { userId: number; taskId: number },
     trx?: Transaction<DB>,

@@ -10,7 +10,6 @@ import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { isGroupExists } from './helpers';
 import { getGroupWithStatusQuery } from './helpers/get-group-with-status.query';
 import { getInboxByUserId } from './helpers/get-inbox-by-user-id';
 
@@ -105,15 +104,6 @@ export class GroupsReadRepositoryKysely
         user_id: inbox.user_id,
         tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
       });
-    });
-  }
-
-  async isGroupExists(
-    input: { groupId: number } | { name: string },
-    trx?: Transaction<DB>,
-  ): Promise<boolean> {
-    return await this.errorCatcher('groups.is-group-exists', async () => {
-      return isGroupExists(this.db, input, trx);
     });
   }
 
