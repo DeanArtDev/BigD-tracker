@@ -14,12 +14,10 @@ class CloneTaskReq {
   @ApiProperty({
     description: 'Запрос сервера',
     type: CloneTaskReqData,
-    required: false,
   })
   @ValidateNested()
-  @IsOptional()
   @Type(() => CloneTaskReqData)
-  data?: CloneTaskReqData;
+  data: CloneTaskReqData;
 }
 
 class CloneTaskRes {
