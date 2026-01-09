@@ -2,9 +2,11 @@ import {
   CreateTaskCommand,
   UpdateInboxTaskCommand,
   ReplaceTaskCommand,
+  CloneTaskCommand,
 } from '@/modules/tasks/application/use-cases';
 import { SoftDeleteTaskCommand } from '@/modules/tasks/application/use-cases/soft-delete-task';
 import {
+  GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
   GoalReplaceTask,
@@ -26,6 +28,21 @@ export class TasksRpcController {
   ): Promise<GoalCreateTask.Response> {
     return {
       data: await this.commandBus.execute(new CreateTaskCommand(payload)),
+    };
+  }
+
+  @MessagePattern(GoalCloneTask.pattern)
+  async cloneTask(
+    @Payload() { data: payload }: GoalCloneTask.Request,
+  ): Promise<GoalCloneTask.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new CloneTaskCommand({
+          userId: payload.userId,
+          taskId: payload.taskId,
+          groupId: payload.groupId,
+        }),
+      ),
     };
   }
 

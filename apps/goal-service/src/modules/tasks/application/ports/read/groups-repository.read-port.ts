@@ -9,6 +9,11 @@ interface GroupsReadRepository {
     trx?: Transaction<DB>,
   ): Promise<GroupView | null>;
 
+  getGroupById(
+    input: { groupId: number; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<GroupView | null>;
+
   getInboxWithTasksByUserId(
     input: { userId: number },
     trx?: Transaction<DB>,

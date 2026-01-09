@@ -11,6 +11,7 @@ class GroupsService {
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,
   ) {}
 
+  // кажется надо переписать!
   async canAddTaskToGroup(
     input: { taskId: number; groupId?: number },
     trx?: Transaction<DB>,

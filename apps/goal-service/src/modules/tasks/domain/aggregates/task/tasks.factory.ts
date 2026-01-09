@@ -1,4 +1,5 @@
 import { Priority, TaskUpdateInput, Weight } from '@/modules/tasks/domain';
+import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput } from './tasks.types';
@@ -46,6 +47,19 @@ export class TaskFactory {
     };
 
     return Task.create(state);
+  }
+
+  static clone(task: Task): Task {
+    const clonedTask = task.clone();
+
+    if (!clonedTask.isDraft) {
+      throw new ExceptionDomainInvalidInvariant({
+        message: `Cloned task from task:${task.id} must be a draft`,
+        field: 'clone',
+      });
+    }
+
+    return clonedTask;
   }
 
   static update(task: Task, input: TaskFactoryUpdateInput): Task {

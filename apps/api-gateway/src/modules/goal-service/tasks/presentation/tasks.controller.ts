@@ -4,6 +4,7 @@ import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { UpdateThingRes } from '@/modules/goal-service/application/dtos';
 import {
+  GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
   GoalReplaceTask,
@@ -20,10 +21,12 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { firstValueFrom } from 'rxjs';
 import {
+  CloneTaskReq,
+  CloneTaskRes,
   CreateTaskReq,
   CreateTaskRes,
   ReplaceTaskReq,
@@ -66,6 +69,31 @@ export class TasksController {
           },
         },
       ),
+    );
+  }
+
+  @Post('/:taskId/clone')
+  @ApiOperation({ summary: 'Клонирование дела' })
+  @ApiBody({ required: false, type: CloneTaskReq })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: CloneTaskRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(CloneTaskRes)
+  async cloneTask(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Body() { data }: CloneTaskReq,
+  ): Promise<CloneTaskRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, {
+        data: {
+          userId: uid,
+          taskId,
+          groupId: data?.groupId,
+        },
+      }),
     );
   }
 

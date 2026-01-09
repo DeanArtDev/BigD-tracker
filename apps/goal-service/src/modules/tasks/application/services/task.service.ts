@@ -47,6 +47,15 @@ class TaskService {
     return await this.tasksWriteRepo.createTask(draftTask, trx);
   }
 
+  async cloneTask(input: { taskId: number; userId: number }, trx?: Transaction<DB>): Promise<Task> {
+    const { taskId, userId } = input;
+
+    const task = await this.taskCheckerService.ensureTaskExists({ taskId, userId }, { trx });
+    const clonedTask = TaskFactory.clone(task);
+
+    return await this.tasksWriteRepo.createTask(clonedTask, trx);
+  }
+
   async softDeleteTask(input: DeleteTaskInput, trx?: Transaction<DB>): Promise<{ id: number }> {
     const task = await this.taskCheckerService.ensureTaskExists(
       { taskId: input.taskId, userId: input.userId },
