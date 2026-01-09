@@ -7,7 +7,7 @@ import { CloneTaskUseCase } from './clone-task.use-case';
 export class CloneTaskHandler implements ICommandHandler<CloneTaskCommand> {
   constructor(private cloneTaskUseCase: CloneTaskUseCase) {}
 
-  async execute({ input }: CloneTaskCommand): Promise<TaskView> {
-    return await this.cloneTaskUseCase.execute(input);
+  async execute(command: CloneTaskCommand): Promise<TaskView> {
+    return await this.cloneTaskUseCase.execute(command);
   }
 }

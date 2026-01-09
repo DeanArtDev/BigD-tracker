@@ -84,6 +84,19 @@ class Task extends AggregateRoot {
   }
 
   public clone(): Task {
+    let status = this.#state.status;
+    if (
+      [
+        TaskStatus.COMPLETED,
+        TaskStatus.OVERDUE,
+        TaskStatus.CANCELLED,
+        TaskStatus.ARCHIVED,
+        TaskStatus.DELETED,
+      ].includes(status)
+    ) {
+      status = TaskStatus.NOT_STARTED;
+    }
+
     return new Task({
       id: NaN,
       userId: this.#state.userId,
@@ -93,7 +106,7 @@ class Task extends AggregateRoot {
       weight: this.#state.weight,
       startDate: this.#state.startDate,
       deadline: this.#state.deadline,
-      status: this.#state.status,
+      status,
       recurrence: this.#state.recurrence,
     });
   }

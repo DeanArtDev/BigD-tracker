@@ -1,5 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { TasksWriteRepository } from '@/modules/tasks/application/ports';
+import { GroupCheckerService } from '@/modules/tasks/application/services/group-checker.service';
 import { Task, TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
@@ -35,10 +36,17 @@ interface ReplaceTaskInput {
   readonly recurrence?: string;
 }
 
+interface AddTaskToGroupInput {
+  readonly userId: number;
+  readonly groupId: number;
+  readonly task: Task;
+}
+
 @Injectable()
 class TaskService {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
+    private readonly groupCheckerService: GroupCheckerService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
@@ -76,6 +84,13 @@ class TaskService {
 
     return await this.tasksWriteRepo.replaceTask(replacedTask, trx);
   }
+
+  async addTaskToGroup(input: AddTaskToGroupInput, trx?: Transaction<DB>): Promise<void> {
+    // позже делать перерасчет group.progress по task.weight
+    const { task, userId, groupId } = input;
+    await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
+    await this.tasksWriteRepo.addTaskToGroup({ taskId: task.id, groupId }, trx);
+  }
 }
 
-export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput };
+export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput, AddTaskToGroupInput };
