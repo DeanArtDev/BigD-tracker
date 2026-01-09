@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TaskDto } from './thing.dto';
 
@@ -35,7 +35,6 @@ class CreateTaskInInboxReq {
 }
 
 class CreateTaskInInboxRes {
-  @Expose()
   @ValidateNested()
   @Type(() => TaskDto)
   data: TaskDto;

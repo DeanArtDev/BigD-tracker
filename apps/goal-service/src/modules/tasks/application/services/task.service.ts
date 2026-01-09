@@ -39,7 +39,7 @@ interface ReplaceTaskInput {
 interface AddTaskToGroupInput {
   readonly userId: number;
   readonly groupId: number;
-  readonly task: Task;
+  readonly taskId: number;
 }
 
 @Injectable()
@@ -86,10 +86,9 @@ class TaskService {
   }
 
   async addTaskToGroup(input: AddTaskToGroupInput, trx?: Transaction<DB>): Promise<void> {
-    // позже делать перерасчет group.progress по task.weight
-    const { task, userId, groupId } = input;
+    const { taskId, userId, groupId } = input;
     await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
-    await this.tasksWriteRepo.addTaskToGroup({ taskId: task.id, groupId }, trx);
+    await this.tasksWriteRepo.addTaskToGroup({ taskId, groupId }, trx);
   }
 }
 

@@ -4,6 +4,7 @@ import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { UpdateThingRes } from '@/modules/goal-service/application/dtos';
 import {
+  GoalAssignTaskToGroup,
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
@@ -25,6 +26,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nes
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { firstValueFrom } from 'rxjs';
 import {
+  AssignTaskToGroupRes,
   CloneTaskReq,
   CloneTaskRes,
   CreateTaskReq,
@@ -94,6 +96,33 @@ export class TasksController {
           groupId: data?.groupId,
         },
       }),
+    );
+  }
+
+  @Post('/:taskId/groups/:groupId')
+  @ApiOperation({ summary: 'Добавление дела в группу' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: AssignTaskToGroupRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(AssignTaskToGroupRes)
+  async assignTaskToGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<AssignTaskToGroupRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
+        GoalAssignTaskToGroup.pattern,
+        {
+          data: {
+            userId: uid,
+            taskId,
+            groupId,
+          },
+        },
+      ),
     );
   }
 

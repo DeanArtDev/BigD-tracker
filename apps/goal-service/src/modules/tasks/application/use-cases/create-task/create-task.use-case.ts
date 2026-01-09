@@ -21,7 +21,7 @@ class CreateTaskUseCase {
 
       if (input.groupId != null) {
         await this.taskServices.addTaskToGroup(
-          { task: createdTask, groupId: input.groupId, userId: input.userId },
+          { taskId: createdTask.id, groupId: input.groupId, userId: input.userId },
           trx,
         );
       }

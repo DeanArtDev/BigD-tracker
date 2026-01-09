@@ -2,7 +2,12 @@ import { availableTransitionsByTaskStatuses } from '@/modules/tasks/domain';
 import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
-import { assertTaskDates, assertTaskDeleteSoft, assertTaskUpdate } from './tasks.invariants';
+import {
+  assertTaskAssignToGroup,
+  assertTaskDates,
+  assertTaskDeleteSoft,
+  assertTaskUpdate,
+} from './tasks.invariants';
 import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
 
 class Task extends AggregateRoot {
@@ -81,6 +86,11 @@ class Task extends AggregateRoot {
   public deleteSoft(): this {
     assertTaskDeleteSoft({ status: this.#state.status });
     return this.#setStatus(TaskStatus.DELETED);
+  }
+
+  public assignToGroup(): this {
+    assertTaskAssignToGroup({ status: this.#state.status });
+    return this;
   }
 
   public clone(): Task {

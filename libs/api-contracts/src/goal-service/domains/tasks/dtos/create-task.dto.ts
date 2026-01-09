@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TaskDto } from './thing.dto';
 
@@ -35,7 +35,6 @@ class CreateTaskReqData {
   @IsString()
   description?: string;
 
-  @Expose()
   @IsOptional()
   @IsString()
   recurrence?: string;
@@ -48,7 +47,6 @@ class CreateTaskReq {
 }
 
 class CreateTaskRes {
-  @Expose()
   @ValidateNested()
   @Type(() => TaskDto)
   data: TaskDto;

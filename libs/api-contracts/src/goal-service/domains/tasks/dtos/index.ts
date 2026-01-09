@@ -4,3 +4,4 @@ export * from './replace-task';
 export * from './update-inbox-task';
 export * from './delete-task.dto';
 export * from './clone-task.dto';
+export * from './assign-task-to-group.dto';

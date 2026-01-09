@@ -23,7 +23,7 @@ class CloneTaskUseCase {
       const clonedTask = await this.taskServices.cloneTask({ taskId, userId }, trx);
 
       if (groupId != null) {
-        await this.taskServices.addTaskToGroup({ task: clonedTask, userId, groupId }, trx);
+        await this.taskServices.addTaskToGroup({ taskId, userId, groupId }, trx);
       }
 
       return await this.tasksReadRepo.getById(

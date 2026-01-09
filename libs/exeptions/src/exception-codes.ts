@@ -31,6 +31,10 @@ const tasks = {
     code: 'GT-A-0003',
     details: Details.Define<{ taskId: number; groupId?: number; message?: string }>(),
   },
+  taskAlreadyInGroup: {
+    code: 'GT-A-0004',
+    details: Details.Define<{ taskId: number; groupId: number; message?: string }>(),
+  },
 
   // Domain
   taskInvariantFailed: {

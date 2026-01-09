@@ -80,4 +80,29 @@ function assertTaskDeleteSoft(input: { status: TaskStatus }): void {
   }
 }
 
-export { assertTaskDates, assertTaskDeleteSoft, assertHasCancelReason, assertTaskUpdate };
+function assertTaskAssignToGroup(input: { status: TaskStatus }): void {
+  const { status } = input;
+
+  if (
+    [
+      TaskStatus.COMPLETED,
+      TaskStatus.OVERDUE,
+      TaskStatus.CANCELLED,
+      TaskStatus.ARCHIVED,
+      TaskStatus.DELETED,
+    ].includes(status)
+  ) {
+    throw new ExceptionDomainInvalidInvariant({
+      message: `Task can't be moved at current status: ${status}`,
+      field: 'status',
+    });
+  }
+}
+
+export {
+  assertTaskDates,
+  assertTaskDeleteSoft,
+  assertHasCancelReason,
+  assertTaskUpdate,
+  assertTaskAssignToGroup,
+};

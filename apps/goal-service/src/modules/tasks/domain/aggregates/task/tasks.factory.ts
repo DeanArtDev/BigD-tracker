@@ -93,4 +93,8 @@ export class TaskFactory {
   static deleteSoft(task: Task): Task {
     return task.deleteSoft();
   }
+
+  static assignToGroup(task: Task): Task {
+    return task.assignToGroup();
+  }
 }

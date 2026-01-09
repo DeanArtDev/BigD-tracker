@@ -1,16 +1,18 @@
 import {
-  CreateTaskCommand,
-  UpdateInboxTaskCommand,
-  ReplaceTaskCommand,
+  AssignTaskToGroupCommand,
   CloneTaskCommand,
+  CreateTaskCommand,
+  ReplaceTaskCommand,
+  SoftDeleteTaskCommand,
+  UpdateInboxTaskCommand,
 } from '@/modules/tasks/application/use-cases';
-import { SoftDeleteTaskCommand } from '@/modules/tasks/application/use-cases/soft-delete-task';
 import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
   GoalReplaceTask,
   GoalUpdateInboxTask,
+  GoalAssignTaskToGroup,
 } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -71,6 +73,21 @@ export class TasksRpcController {
     return {
       data: await this.commandBus.execute(
         new SoftDeleteTaskCommand({ taskId: payload.id, userId: payload.userId }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalAssignTaskToGroup.pattern)
+  async assignTaskToGroup(
+    @Payload() { data: payload }: GoalAssignTaskToGroup.Request,
+  ): Promise<GoalAssignTaskToGroup.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new AssignTaskToGroupCommand({
+          taskId: payload.taskId,
+          userId: payload.userId,
+          groupId: payload.groupId,
+        }),
       ),
     };
   }
