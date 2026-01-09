@@ -37,13 +37,13 @@ class CreateTaskReqData {
   @IsInt()
   weight?: number;
 
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @ApiPropertyOptional({ example: '2026-05-24T13:01:02.471Z' })
   @IsISO8601()
   @IsOptional()
   @IsString()
   startDate?: string;
 
-  @ApiPropertyOptional({ example: '2025-08-24T13:01:02.471Z' })
+  @ApiPropertyOptional({ example: '2026-08-24T13:01:02.471Z' })
   @IsISO8601()
   @IsOptional()
   @IsString()
@@ -58,7 +58,6 @@ class CreateTaskReqData {
     example: '----',
     description: 'Паттерн повторения дела',
   })
-  @Expose()
   @IsOptional()
   @IsString()
   recurrence?: string;

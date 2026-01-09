@@ -4,22 +4,20 @@ import { GroupView } from '@/modules/tasks/application/dto/group.view';
 import { GroupsReadRepository } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
-import { getInboxByUserId } from './helpers/get-inbox-by-user-id';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { isGroupExists } from './helpers';
+import { getGroupWithStatusQuery } from './helpers/get-group-with-status.query';
+import { getInboxByUserId } from './helpers/get-inbox-by-user-id';
 
 @Injectable()
 export class GroupsReadRepositoryKysely
   extends BaseTasksRepository
   implements GroupsReadRepository
 {
-  #tableName = 'groups' as const;
-
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
     super();
   }
@@ -29,22 +27,11 @@ export class GroupsReadRepositoryKysely
     trx?: Transaction<DB>,
   ): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get-by-name', async () => {
-      const result = await this.db
-        .qb(trx)
-        .selectFrom(this.#tableName)
-        .where('name', '=', input.name)
-        .where('user_id', '=', input.userId)
-        .select(['id', 'user_id', 'description', 'name', 'status_id', 'progress'])
+      const result = await getGroupWithStatusQuery(this.db, trx)
+        .where('g.name', '=', input.name)
+        .where('g.user_id', '=', input.userId)
         .executeTakeFirst();
       if (result == null) return null;
-
-      const status = await this.db
-        .qb(trx)
-        .selectFrom('group_statuses')
-        .where('id', '=', result.status_id)
-        .select(['name'])
-        .executeTakeFirst();
-      if (status == null) return null;
 
       return GroupReadKyselyMapper.fromRawToView({
         id: result.id,
@@ -52,7 +39,29 @@ export class GroupsReadRepositoryKysely
         description: result.description,
         user_id: result.user_id,
         progress: result.progress,
-        status: status.name,
+        status: result.status,
+      });
+    });
+  }
+
+  async getGroupById(
+    input: { groupId: number; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<GroupView | null> {
+    return await this.errorCatcher('groups.get-by-id', async () => {
+      const result = await getGroupWithStatusQuery(this.db, trx)
+        .where('g.id', '=', input.groupId)
+        .where('g.user_id', '=', input.userId)
+        .executeTakeFirst();
+      if (result == null) return null;
+
+      return GroupReadKyselyMapper.fromRawToView({
+        id: result.id,
+        name: result.name,
+        description: result.description,
+        user_id: result.user_id,
+        progress: result.progress,
+        status: result.status,
       });
     });
   }
@@ -95,15 +104,6 @@ export class GroupsReadRepositoryKysely
         user_id: inbox.user_id,
         tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
       });
-    });
-  }
-
-  async isGroupExists(
-    input: { groupId: number } | { name: string },
-    trx?: Transaction<DB>,
-  ): Promise<boolean> {
-    return await this.errorCatcher('groups.is-group-exists', async () => {
-      return isGroupExists(this.db, input, trx);
     });
   }
 

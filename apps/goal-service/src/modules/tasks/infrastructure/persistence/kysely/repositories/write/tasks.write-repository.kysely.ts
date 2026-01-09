@@ -138,6 +138,7 @@ export class TasksWriteRepositoryKysely
         .selectFrom('task_to_group')
         .select((eb) => eb.fn.count('task_id').as('count'))
         .where('group_id', '=', input.groupId)
+        .where('group_id', '=', input.groupId)
         .executeTakeFirst();
 
       await this.db

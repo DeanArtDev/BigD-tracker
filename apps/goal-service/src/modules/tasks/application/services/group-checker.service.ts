@@ -1,8 +1,9 @@
 import { DB } from '@/infrastructure/types';
+import { GroupView } from '@/modules/tasks/application/dto/group.view';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
-import { ExceptionTaskNotInGroup } from '../exceptions';
+import { ExceptionGroupNotExist, ExceptionTaskNotInGroup } from '../exceptions';
 import { GroupsReadRepository } from '../ports';
 
 @Injectable()
@@ -38,6 +39,36 @@ class GroupCheckerService {
     }
 
     return ensureResponse.success;
+  }
+
+  async ensureGroupExists(
+    input: { groupId: number; userId: number },
+    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+  ): Promise<GroupView>;
+  async ensureGroupExists(
+    input: { groupId: number; userId: number },
+    params: { trx?: Transaction<DB>; skipException: true },
+  ): Promise<GroupView | null>;
+  async ensureGroupExists(
+    input: { groupId: number; userId: number },
+    params?: { trx?: Transaction<DB>; skipException?: boolean },
+  ): Promise<GroupView | null> {
+    const { skipException, trx } = params ?? {};
+
+    const group = await this.groupReadRepo.getGroupById(
+      { groupId: input.groupId, userId: input.userId },
+      trx,
+    );
+
+    if (skipException != null) {
+      return group;
+    }
+
+    if (group == null) {
+      throw new ExceptionGroupNotExist({ groupId: input.groupId });
+    }
+
+    return group;
   }
 }
 

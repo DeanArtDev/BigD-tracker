@@ -1,7 +1,6 @@
 import { GetGroupUserInboxHandler, GetInboxByUserIdQuery } from './queries';
 import {
   GroupCheckerService,
-  GroupsService,
   TaskCheckerService,
   TaskService,
 } from '@/modules/tasks/application/services';
@@ -26,6 +25,9 @@ import {
   SoftDeleteTaskCommand,
   SoftDeleteTaskHandler,
   SoftDeleteTaskUseCase,
+  CloneTaskCommand,
+  CloneTaskHandler,
+  CloneTaskUseCase,
 } from './use-cases';
 
 const queries = [GetInboxByUserIdQuery];
@@ -36,6 +38,7 @@ const commands = [
   UpdateInboxTaskCommand,
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
+  CloneTaskCommand,
 ];
 const handlers = [
   CreateTaskHandler,
@@ -45,6 +48,7 @@ const handlers = [
   UpdateInboxTaskHandler,
   ReplaceTaskHandler,
   SoftDeleteTaskHandler,
+  CloneTaskHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
@@ -53,13 +57,13 @@ const useCases = [
   UpdateInboxTaskUseCase,
   ReplaceTaskUseCase,
   SoftDeleteTaskUseCase,
+  CloneTaskUseCase,
 ];
 
 @Module({
   imports: [TasksInfrastructureModule],
   providers: [
     TaskService,
-    GroupsService,
     TaskCheckerService,
     GroupCheckerService,
     ...commands,

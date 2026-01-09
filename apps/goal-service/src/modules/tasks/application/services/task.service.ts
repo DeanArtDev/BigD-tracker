@@ -4,6 +4,7 @@ import { Task, TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
+import { GroupCheckerService } from './group-checker.service';
 import { TaskCheckerService } from './task-checker.service';
 
 interface DeleteTaskInput {
@@ -35,16 +36,32 @@ interface ReplaceTaskInput {
   readonly recurrence?: string;
 }
 
+interface AddTaskToGroupInput {
+  readonly userId: number;
+  readonly groupId: number;
+  readonly task: Task;
+}
+
 @Injectable()
 class TaskService {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
+    private readonly groupCheckerService: GroupCheckerService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
   async createTask(input: CreateTaskInput, trx?: Transaction<DB>): Promise<Task> {
     const draftTask = TaskFactory.create(input);
     return await this.tasksWriteRepo.createTask(draftTask, trx);
+  }
+
+  async cloneTask(input: { taskId: number; userId: number }, trx?: Transaction<DB>): Promise<Task> {
+    const { taskId, userId } = input;
+
+    const task = await this.taskCheckerService.ensureTaskExists({ taskId, userId }, { trx });
+    const clonedTask = TaskFactory.clone(task);
+
+    return await this.tasksWriteRepo.createTask(clonedTask, trx);
   }
 
   async softDeleteTask(input: DeleteTaskInput, trx?: Transaction<DB>): Promise<{ id: number }> {
@@ -67,6 +84,13 @@ class TaskService {
 
     return await this.tasksWriteRepo.replaceTask(replacedTask, trx);
   }
+
+  async addTaskToGroup(input: AddTaskToGroupInput, trx?: Transaction<DB>): Promise<void> {
+    // позже делать перерасчет group.progress по task.weight
+    const { task, userId, groupId } = input;
+    await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
+    await this.tasksWriteRepo.addTaskToGroup({ taskId: task.id, groupId }, trx);
+  }
 }
 
-export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput };
+export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput, AddTaskToGroupInput };

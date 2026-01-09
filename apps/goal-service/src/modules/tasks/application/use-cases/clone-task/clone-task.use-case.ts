@@ -5,30 +5,33 @@ import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksReadRepository } from '../../ports';
-import { CreateTaskInput, TaskService } from '../../services';
+import { TaskService } from '../../services';
+import { CloneTaskCommand } from './clone-task.command';
 
 @Injectable()
-class CreateTaskUseCase {
+class CloneTaskUseCase {
   constructor(
     private readonly taskServices: TaskService,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,
   ) {}
 
-  async execute(input: CreateTaskInput): Promise<TaskView> {
+  async execute({ input }: CloneTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
-      const createdTask = await this.taskServices.createTask(input, trx);
+      const { taskId, userId, groupId } = input;
 
-      if (input.groupId != null) {
-        await this.taskServices.addTaskToGroup(
-          { task: createdTask, groupId: input.groupId, userId: input.userId },
-          trx,
-        );
+      const clonedTask = await this.taskServices.cloneTask({ taskId, userId }, trx);
+
+      if (groupId != null) {
+        await this.taskServices.addTaskToGroup({ task: clonedTask, userId, groupId }, trx);
       }
 
-      return await this.tasksReadRepo.getById({ id: createdTask.id, userId: input.userId }, trx);
+      return await this.tasksReadRepo.getById(
+        { id: clonedTask.id, userId: clonedTask.userId },
+        trx,
+      );
     });
   }
 }
 
-export { CreateTaskUseCase };
+export { CloneTaskUseCase };

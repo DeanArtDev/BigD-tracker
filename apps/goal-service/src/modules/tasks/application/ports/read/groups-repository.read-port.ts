@@ -9,12 +9,15 @@ interface GroupsReadRepository {
     trx?: Transaction<DB>,
   ): Promise<GroupView | null>;
 
+  getGroupById(
+    input: { groupId: number; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<GroupView | null>;
+
   getInboxWithTasksByUserId(
     input: { userId: number },
     trx?: Transaction<DB>,
   ): Promise<GroupInboxView | null>;
-
-  isGroupExists(input: { groupId: number }, trx?: Transaction<DB>): Promise<boolean>;
 
   ensureTaskInInboxGroup(
     input: { userId: number; taskId: number },

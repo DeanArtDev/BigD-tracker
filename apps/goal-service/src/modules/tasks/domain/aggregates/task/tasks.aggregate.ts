@@ -29,10 +29,6 @@ class Task extends AggregateRoot {
     }).#validate();
   }
 
-  toJSON(): string {
-    return JSON.stringify(this.#state, null, 2);
-  }
-
   static restore(input: TaskRestoreInput): Task {
     return new Task({
       id: input.id,
@@ -85,6 +81,34 @@ class Task extends AggregateRoot {
   public deleteSoft(): this {
     assertTaskDeleteSoft({ status: this.#state.status });
     return this.#setStatus(TaskStatus.DELETED);
+  }
+
+  public clone(): Task {
+    let status = this.#state.status;
+    if (
+      [
+        TaskStatus.COMPLETED,
+        TaskStatus.OVERDUE,
+        TaskStatus.CANCELLED,
+        TaskStatus.ARCHIVED,
+        TaskStatus.DELETED,
+      ].includes(status)
+    ) {
+      status = TaskStatus.NOT_STARTED;
+    }
+
+    return new Task({
+      id: NaN,
+      userId: this.#state.userId,
+      name: this.#state.name,
+      description: this.#state.description,
+      priority: this.#state.priority,
+      weight: this.#state.weight,
+      startDate: this.#state.startDate,
+      deadline: this.#state.deadline,
+      status,
+      recurrence: this.#state.recurrence,
+    });
   }
 
   get id() {
