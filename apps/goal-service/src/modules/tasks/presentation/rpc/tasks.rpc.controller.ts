@@ -29,7 +29,19 @@ export class TasksRpcController {
     @Payload() { data: payload }: GoalCreateTask.Request,
   ): Promise<GoalCreateTask.Response> {
     return {
-      data: await this.commandBus.execute(new CreateTaskCommand(payload)),
+      data: await this.commandBus.execute(
+        new CreateTaskCommand({
+          userId: payload.userId,
+          groupId: payload.groupId,
+          priority: payload.priority,
+          deadline: payload.deadline,
+          name: payload.name,
+          description: payload.description,
+          recurrence: payload.recurrence,
+          weight: payload.weight,
+          startDate: payload.startDate,
+        }),
+      ),
     };
   }
 
@@ -53,7 +65,19 @@ export class TasksRpcController {
     @Payload() { data: payload }: GoalReplaceTask.Request,
   ): Promise<GoalReplaceTask.Response> {
     return {
-      data: await this.commandBus.execute(new ReplaceTaskCommand(payload)),
+      data: await this.commandBus.execute(
+        new ReplaceTaskCommand({
+          deadline: payload.deadline,
+          name: payload.name,
+          id: payload.id,
+          userId: payload.userId,
+          weight: payload.weight,
+          startDate: payload.startDate,
+          description: payload.description,
+          recurrence: payload.recurrence,
+          priority: payload.priority,
+        }),
+      ),
     };
   }
 
@@ -62,7 +86,17 @@ export class TasksRpcController {
     @Payload() { data: payload }: GoalUpdateInboxTask.Request,
   ): Promise<GoalUpdateInboxTask.Response> {
     return {
-      data: await this.commandBus.execute(new UpdateInboxTaskCommand(payload)),
+      data: await this.commandBus.execute(
+        new UpdateInboxTaskCommand({
+          id: payload.id,
+          userId: payload.userId,
+          name: payload.name,
+          deadline: payload.deadline,
+          description: payload.description,
+          priority: payload.priority,
+          startDate: payload.startDate,
+        }),
+      ),
     };
   }
 
