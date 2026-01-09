@@ -11,43 +11,39 @@ import { Transaction } from 'kysely';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
-  #tableName = 'tasks' as const;
-
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
     super();
   }
 
-  async getById(input: { userId: number; id: number }, trx?: Transaction<DB>): Promise<TaskView> {
-    return await this.errorCatcher('tasks.creation', async () => {
+  async getById(
+    input: { userId: number; id: number },
+    trx?: Transaction<DB>,
+  ): Promise<TaskView | null> {
+    return await this.errorCatcher('tasks.get-by-id', async () => {
       const { id, userId } = input;
 
       const result = await this.db
         .qb(trx)
-        .selectFrom(this.#tableName)
+        .selectFrom('tasks as t')
+        .innerJoin('task_statuses as ts', 't.status_id', 'ts.id')
         .where('id', '=', id)
         .where('user_id', '=', userId)
         .select([
-          'id',
-          'user_id',
-          'name',
-          'description',
-          'priority',
-          'weight',
-          'cancel_reason',
-          'start_date',
-          'end_date',
-          'deadline',
-          'status_id',
-          'recurrence',
+          't.id as id',
+          't.user_id as user_id',
+          't.name as name',
+          't.description as description',
+          't.priority as priority',
+          't.weight as weight',
+          't.cancel_reason as cancel_reason',
+          't.start_date as start_date',
+          't.end_date as end_date',
+          't.deadline as deadline',
+          't.recurrence as recurrence',
+          'ts.name as status',
         ])
-        .executeTakeFirstOrThrow();
-
-      const { statusName } = await this.db
-        .qb(trx)
-        .selectFrom('task_statuses')
-        .where('task_statuses.id', '=', result.status_id)
-        .select(['name as statusName'])
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
+      if (result == null) return null;
 
       return TasksReadKyselyMapper.fromRawToView({
         id: result.id,
@@ -61,7 +57,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         end_date: result.end_date,
         deadline: result.deadline,
         recurrence: result.recurrence,
-        status: statusName as TaskStatus,
+        status: result.status as TaskStatus,
       });
     });
   }

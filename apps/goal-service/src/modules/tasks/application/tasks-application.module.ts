@@ -2,6 +2,7 @@ import { GetGroupUserInboxHandler, GetInboxByUserIdQuery } from './queries';
 import {
   GroupCheckerService,
   TaskCheckerService,
+  TaskQueryService,
   TaskService,
 } from '@/modules/tasks/application/services';
 import { Module } from '@nestjs/common';
@@ -72,6 +73,7 @@ const useCases = [
     TaskService,
     TaskCheckerService,
     GroupCheckerService,
+    TaskQueryService,
     ...commands,
     ...queries,
     ...handlers,
