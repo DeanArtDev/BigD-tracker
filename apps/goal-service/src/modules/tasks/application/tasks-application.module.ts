@@ -1,7 +1,6 @@
 import { GetGroupUserInboxHandler, GetInboxByUserIdQuery } from './queries';
 import {
   GroupCheckerService,
-  GroupsService,
   TaskCheckerService,
   TaskService,
 } from '@/modules/tasks/application/services';
@@ -65,7 +64,6 @@ const useCases = [
   imports: [TasksInfrastructureModule],
   providers: [
     TaskService,
-    GroupsService,
     TaskCheckerService,
     GroupCheckerService,
     ...commands,
