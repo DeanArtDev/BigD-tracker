@@ -68,7 +68,6 @@ class CreateTaskReq {
     description: 'Запрос сервера',
     type: CreateTaskReqData,
   })
-  @Expose()
   @ValidateNested()
   @Type(() => CreateTaskReqData)
   data: CreateTaskReqData;
@@ -76,6 +75,7 @@ class CreateTaskReq {
 
 class CreateTaskRes {
   @ApiProperty({ description: 'Ответ сервера' })
+  @Expose()
   @ValidateNested()
   @Type(() => TaskDto)
   data: TaskDto;
