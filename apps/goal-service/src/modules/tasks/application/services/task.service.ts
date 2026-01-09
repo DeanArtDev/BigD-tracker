@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { TasksWriteRepository } from '@/modules/tasks/application/ports';
-import { GroupCheckerService } from '@/modules/tasks/application/services/group-checker.service';
+import { GroupCheckerService } from '@/modules/tasks/application/services';
 import { Task, TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
