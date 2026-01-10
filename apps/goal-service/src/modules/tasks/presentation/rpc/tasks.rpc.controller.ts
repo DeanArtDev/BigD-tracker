@@ -4,6 +4,7 @@ import {
   CreateTaskCommand,
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
+  UnassignTaskFromGroupCommand,
   UpdateInboxTaskCommand,
 } from '@/modules/tasks/application/use-cases';
 import {
@@ -13,6 +14,7 @@ import {
   GoalReplaceTask,
   GoalUpdateInboxTask,
   GoalAssignTaskToGroup,
+  GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -118,6 +120,21 @@ export class TasksRpcController {
     return {
       data: await this.commandBus.execute(
         new AssignTaskToGroupCommand({
+          taskId: payload.taskId,
+          userId: payload.userId,
+          groupId: payload.groupId,
+        }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalUnassignTaskFromGroup.pattern)
+  async unassignTaskFromGroup(
+    @Payload() { data: payload }: GoalUnassignTaskFromGroup.Request,
+  ): Promise<GoalUnassignTaskFromGroup.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new UnassignTaskFromGroupCommand({
           taskId: payload.taskId,
           userId: payload.userId,
           groupId: payload.groupId,

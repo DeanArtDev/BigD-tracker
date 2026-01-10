@@ -24,7 +24,7 @@ interface GroupsReadRepository {
     trx?: Transaction<DB>,
   ): Promise<{ success: boolean; inboxId: number }>;
 
-  ensureTaskNotInGroup(
+  ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },
     trx?: Transaction<DB>,
   ): Promise<boolean>;

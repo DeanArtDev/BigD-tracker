@@ -96,7 +96,40 @@ class GroupCheckerService {
   ): Promise<boolean> {
     const { skipException, trx } = params ?? {};
 
-    const ensureResponse = await this.groupReadRepo.ensureTaskNotInGroup(
+    const ensureResponse = await this.groupReadRepo.ensureTaskInGroup(
+      {
+        userId: input.userId,
+        taskId: input.taskId,
+        groupId: input.groupId,
+      },
+      trx,
+    );
+
+    if (ensureResponse && !skipException) {
+      throw new ExceptionTaskAlreadyInGroup({
+        groupId: input.groupId,
+        taskId: input.taskId,
+      });
+    }
+
+    return ensureResponse;
+  }
+
+  async ensureTaskInGroup(
+    input: { taskId: number; userId: number; groupId: number },
+    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+  ): Promise<true>;
+  async ensureTaskInGroup(
+    input: { taskId: number; userId: number; groupId: number },
+    params: { trx?: Transaction<DB>; skipException: true },
+  ): Promise<boolean>;
+  async ensureTaskInGroup(
+    input: { taskId: number; userId: number; groupId: number },
+    params?: { trx?: Transaction<DB>; skipException?: boolean },
+  ): Promise<boolean> {
+    const { skipException, trx } = params ?? {};
+
+    const ensureResponse = await this.groupReadRepo.ensureTaskInGroup(
       {
         userId: input.userId,
         taskId: input.taskId,
@@ -106,7 +139,7 @@ class GroupCheckerService {
     );
 
     if (!ensureResponse && !skipException) {
-      throw new ExceptionTaskAlreadyInGroup({
+      throw new ExceptionTaskNotInGroup({
         groupId: input.groupId,
         taskId: input.taskId,
       });

@@ -98,4 +98,8 @@ export class TaskFactory {
   static assignToGroup(task: Task, type: 'COMMON' | 'IN_BOX' = 'COMMON'): Task {
     return task.assignToGroup(type === 'IN_BOX' ? TaskStatus.NOT_STARTED : undefined);
   }
+
+  static unassignFromGroup(task: Task): Task {
+    return task.unassignFromGroup();
+  }
 }
