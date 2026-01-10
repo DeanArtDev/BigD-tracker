@@ -1,9 +1,9 @@
 import { CreateGroupSage } from '@/modules/goal-service/application/sages';
+import { GroupsController } from './groups';
 import { HttpStatus, Module } from '@nestjs/common';
 import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
 import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
 import { GoalsController } from './application/goals.controller';
-import { GroupsController } from './application/groups.controller';
 import { ThingsController } from './application/things.controller';
 import { TasksController, TasksInboxController } from './tasks';
 
