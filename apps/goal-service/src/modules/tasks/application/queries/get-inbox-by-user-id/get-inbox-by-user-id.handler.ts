@@ -1,5 +1,4 @@
 import { DB } from '@/infrastructure/types';
-import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
 import { GroupsReadRepository } from '@/modules/tasks/application/ports';
 import { Database } from '@/modules/tasks/infrastructure/database.interface';
 import { GroupsToken } from '@/modules/tasks/tokens';
@@ -18,14 +17,7 @@ export class GetGroupUserInboxHandler implements IQueryHandler<GetInboxByUserIdQ
 
   async execute({ input }: GetInboxByUserIdQuery): Promise<GroupInboxView> {
     return this.db.runTransaction(async (trx) => {
-      const inBox = await this.groupsReadRepo.getInboxWithTasksByUserId(
-        { userId: input.userId },
-        trx,
-      );
-      if (inBox == null) {
-        throw new ExceptionInboxNotExist({});
-      }
-      return inBox;
+      return await this.groupsReadRepo.getInboxWithTasksByUserId({ userId: input.userId }, trx);
     });
   }
 }
