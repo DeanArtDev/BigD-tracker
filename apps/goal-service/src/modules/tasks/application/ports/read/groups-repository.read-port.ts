@@ -17,12 +17,12 @@ interface GroupsReadRepository {
   getInboxWithTasksByUserId(
     input: { userId: number },
     trx?: Transaction<DB>,
-  ): Promise<GroupInboxView | null>;
+  ): Promise<GroupInboxView>;
 
   ensureTaskInInboxGroup(
     input: { userId: number; taskId: number },
     trx?: Transaction<DB>,
-  ): Promise<{ success: false } | { success: true; inboxId: number }>;
+  ): Promise<{ success: boolean; inboxId: number }>;
 
   ensureTaskNotInGroup(
     input: { userId: number; taskId: number; groupId: number },
