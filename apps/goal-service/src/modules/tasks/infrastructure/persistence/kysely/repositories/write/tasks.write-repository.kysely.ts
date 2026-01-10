@@ -153,6 +153,37 @@ export class TasksWriteRepositoryKysely
     });
   }
 
+  async removeTaskFromGroup(
+    input: { groupId: number; taskId: number },
+    trx?: Transaction<DB>,
+  ): Promise<void> {
+    return await this.errorCatcher('tasks.remove-from-group', async () => {
+      const qb = this.db.qb(trx);
+
+      const { position } = await qb
+        .selectFrom('task_to_group')
+        .select(['position'])
+        .where('group_id', '=', input.groupId)
+        .where('task_id', '=', input.taskId)
+        .executeTakeFirstOrThrow();
+
+      await qb
+        .deleteFrom('task_to_group')
+        .where('group_id', '=', input.groupId)
+        .where('task_id', '=', input.taskId)
+        .execute();
+
+      await qb
+        .updateTable('task_to_group')
+        .set((eb) => ({
+          position: eb('position', '-', 1),
+        }))
+        .where('group_id', '=', input.groupId)
+        .where('position', '>', position)
+        .execute();
+    });
+  }
+
   async changeTaskStatus(task: Task, trx?: Transaction<DB>): Promise<void> {
     return await this.errorCatcher('tasks.change-task-status', async () => {
       const { id, userId, status } = task;

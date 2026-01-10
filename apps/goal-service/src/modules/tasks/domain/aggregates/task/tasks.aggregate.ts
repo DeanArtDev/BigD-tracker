@@ -6,6 +6,7 @@ import {
   assertTaskAssignToGroup,
   assertTaskDates,
   assertTaskDeleteSoft,
+  assertTaskUnassignFromGroup,
   assertTaskUpdate,
 } from './tasks.invariants';
 import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
@@ -92,8 +93,13 @@ class Task extends AggregateRoot {
   public assignToGroup(status?: TaskStatus.NOT_STARTED): this {
     assertTaskAssignToGroup({ status: this.#state.status });
     if (status != null) {
-      return this.#setStatus(TaskStatus.NOT_STARTED);
+      return this.#setStatus(status);
     }
+    return this;
+  }
+
+  public unassignFromGroup(): this {
+    assertTaskUnassignFromGroup({ status: this.#state.status });
     return this;
   }
 
