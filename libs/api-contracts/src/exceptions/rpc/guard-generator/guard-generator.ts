@@ -26,7 +26,6 @@ function generateRpcExceptionsGuards<
       const initialClass = new Cls({} as any);
       return (
         isBaseRpcException(error) &&
-        error.key === initialClass.key &&
         error.kind === initialClass.kind &&
         error.code === initialClass.code
       );

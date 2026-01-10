@@ -1,5 +1,5 @@
 import { Details } from './helpers';
-import { ValidationIssue } from './types';
+import { ExtractCodes, ValidationIssue } from './types';
 
 interface ExceptionConfig {
   [key: string]: {
@@ -80,4 +80,6 @@ const exceptionCode = {
   ...system,
 } as const satisfies ExceptionConfig;
 
-export { exceptionCode };
+type ExceptionCodes = ExtractCodes<typeof exceptionCode>;
+
+export { exceptionCode, ExceptionCodes };

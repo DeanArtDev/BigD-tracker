@@ -22,22 +22,20 @@ export class GateWayExceptionFilter implements ExceptionFilter {
     // RPC errors
     if (isDefaultRpcException(exception)) {
       const error = unwrapDefaultRpcException(exception);
+
       if (isBaseRpcException(error)) {
         const httpException = BaseHttpException.createFromRpc(error);
-        response.status(httpException.getStatus()).json(httpException.getResponse());
-        return;
+        return response.status(httpException.getStatus()).json(httpException.getResponse());
       }
     }
 
     // HTTP errors
     if (isHttpException(exception)) {
-      response.status(exception.getStatus()).json(exception.getResponse());
-      return;
+      return response.status(exception.getStatus()).json(exception.getResponse());
     }
     if (isHttpExceptionPlain(exception)) {
       const httpException = shapePlainToBaseHttpException(exception);
-      response.status(httpException.getStatus()).json(httpException.getResponse());
-      return;
+      return response.status(httpException.getStatus()).json(httpException.getResponse());
     }
 
     this.#defaultResponse(exception, response);

@@ -1,39 +1,54 @@
+import { BaseException } from '@big-d/exceptions';
 import { BaseRpcException } from './base-rpc-exception';
 import { RmqErrorKind } from './types';
 
 class RpcExceptionFactory {
-  static createInvalidArgument<
-    TKey extends string = string,
-    TCode extends string = string,
-    TDetails extends Record<string, unknown> = Record<string, unknown>,
-  >(state: {
-    key: TKey;
-    code: TCode;
-    details: TDetails;
-  }): BaseRpcException<TKey, TCode, RmqErrorKind.UNAVAILABLE, TDetails> {
-    const { code, key, details } = state;
-    return new BaseRpcException<TKey, TCode, RmqErrorKind.UNAVAILABLE, TDetails>({
+  static createInvalidArgument(exception: BaseException): BaseRpcException {
+    const { code, key, details } = exception.toResponse();
+    return new BaseRpcException({
       code,
       key,
-      kind: RmqErrorKind.UNAVAILABLE,
+      kind: RmqErrorKind.INVALID_ARGUMENT,
       details,
     });
   }
 
-  static createInternalError<
-    TKey extends string = string,
-    TCode extends string = string,
-    TDetails extends Record<string, unknown> = Record<string, unknown>,
-  >(state: {
-    key: TKey;
-    code: TCode;
-    details: TDetails;
-  }): BaseRpcException<TKey, TCode, RmqErrorKind.INTERNAL, TDetails> {
-    const { code, key, details } = state;
-    return new BaseRpcException<TKey, TCode, RmqErrorKind.INTERNAL, TDetails>({
+  static createDomainInvariantViolation(exception: BaseException): BaseRpcException {
+    const { code, key, details } = exception.toResponse();
+    return new BaseRpcException({
+      code,
+      key,
+      kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+      details,
+    });
+  }
+
+  static createAlreadyExistError(exception: BaseException): BaseRpcException {
+    const { code, key, details } = exception.toResponse();
+    return new BaseRpcException({
+      code,
+      key,
+      kind: RmqErrorKind.ALREADY_EXISTS,
+      details,
+    });
+  }
+
+  static createInternalError(exception: BaseException): BaseRpcException {
+    const { code, key, details } = exception.toResponse();
+    return new BaseRpcException({
       code,
       key,
       kind: RmqErrorKind.INTERNAL,
+      details,
+    });
+  }
+
+  static createNotFoundError(exception: BaseException): BaseRpcException {
+    const { code, key, details } = exception.toResponse();
+    return new BaseRpcException({
+      code,
+      key,
+      kind: RmqErrorKind.NOT_FOUND,
       details,
     });
   }

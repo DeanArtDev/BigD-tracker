@@ -22,6 +22,7 @@
     "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
   },
   "dependencies": {
+    "@big-d/exceptions": "workspace:*",
     "reflect-metadata": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/microservices": "catalog:",
