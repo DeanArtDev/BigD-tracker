@@ -30,10 +30,10 @@
     "--TOOLS--": "",
     "db:typegen:all": "turbo db:typegen -F=@big-d/goal-service",
     "migrate:all:dev:v2": "turbo migrate -F=@big-d/goal-service -- lts",
-    "migrate:all:dev": "ts-node -r dotenv/config tools/data-base/migrator.ts dotenv_config_path=./.env.development dotenv_config_debug=true",
+    "migrate:all:dev": "ts-node -r dotenv/config tools/data-base/migrator.ts dotenv_config_path=./.env.development dotenv_config_debug=true && pnpm migrate:all:dev:v2",
     "migrate:all:prod": "ts-node -r dotenv/config tools/data-base/migrator.ts dotenv_config_path=./.env dotenv_config_debug=true",
-    "seed:all:dev": "dotenv -e .env.development -- turbo seed -F=@big-d/account-service && dotenv -e .env.development -- turbo seed -F=@big-d/*-service -F=!@big-d/account-service -F=!@big-d/goal-service",
     "seed:all:dev:v2": "turbo seed -F=@big-d/goal-service",
+    "seed:all:dev": "pnpm seed:all:dev:v2 && dotenv -e .env.development -- turbo seed -F=@big-d/account-service && dotenv -e .env.development -- turbo seed -F=@big-d/*-service -F=!@big-d/account-service -F=!@big-d/goal-service",
     "seed:all:prod": "dotenv -e .env -- turbo seed -F=@big-d/account-service && dotenv -e .env -- turbo seed -F=@big-d/*-service -F=!@big-d/account-service"
   },
   "keywords": [],

@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, ValidateNested } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsJWT,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
@@ -10,9 +18,9 @@ class RegisterReqData {
   login: string;
 
   @ApiProperty({ example: '12345678' })
-  @IsString()
   @IsNotEmpty()
   @MinLength(6)
+  @IsString()
   password: string;
 }
 
@@ -27,21 +35,48 @@ class RegisterRequest {
   data: RegisterReqData;
 }
 
-class ResponseDto {
+class RegisterResData {
   @ApiProperty({ example: 'jwt token is here' })
+  @Expose()
+  @IsJWT()
   @IsString()
   token: string;
+}
+
+class RegisterRpcResData {
+  @ApiProperty({ example: 'jwt token' })
+  @Expose()
+  @IsJWT()
+  @IsString()
+  accessToken: string;
+
+  @ApiProperty({ example: 'Рефреш токен' })
+  @Expose()
+  @IsString()
+  refreshToken: string;
+
+  @ApiProperty({ example: 'Время жизни токена' })
+  @Expose()
+  @IsInt()
+  maxAge: number;
+}
+
+class RegisterRpcRes {
+  @Expose()
+  @ValidateNested()
+  @Type(() => RegisterRpcResData)
+  data: RegisterRpcResData;
 }
 
 class RegisterResponse {
   @ApiProperty({
     description: 'Ответ сервера',
-    type: ResponseDto,
+    type: RegisterResData,
   })
   @Expose()
   @ValidateNested()
-  @Type(() => ResponseDto)
-  data: ResponseDto;
+  @Type(() => RegisterResData)
+  data: RegisterResData;
 }
 
-export { RegisterResponse, RegisterRequest };
+export { RegisterResponse, RegisterRpcRes, RegisterRequest };
