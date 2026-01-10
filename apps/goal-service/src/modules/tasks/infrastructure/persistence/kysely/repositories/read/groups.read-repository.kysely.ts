@@ -131,7 +131,7 @@ export class GroupsReadRepositoryKysely
     });
   }
 
-  async ensureTaskNotInGroup(
+  async ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },
     trx?: Transaction<DB>,
   ): Promise<boolean> {
@@ -147,7 +147,7 @@ export class GroupsReadRepositoryKysely
         .where('g.user_id', '=', userId)
         .execute();
 
-      return tasks.length === 0;
+      return tasks.length > 0;
     });
   }
 }

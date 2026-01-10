@@ -93,7 +93,26 @@ function assertTaskAssignToGroup(input: { status: TaskStatus }): void {
     ].includes(status)
   ) {
     throw new ExceptionDomainInvalidInvariant({
-      message: `Task can't be moved at current status: ${status}`,
+      message: `Task can't be assigned at current status: ${status}`,
+      field: 'status',
+    });
+  }
+}
+
+function assertTaskUnassignFromGroup(input: { status: TaskStatus }): void {
+  const { status } = input;
+
+  if (
+    [
+      TaskStatus.COMPLETED,
+      TaskStatus.OVERDUE,
+      TaskStatus.CANCELLED,
+      TaskStatus.ARCHIVED,
+      TaskStatus.DELETED,
+    ].includes(status)
+  ) {
+    throw new ExceptionDomainInvalidInvariant({
+      message: `Task can't be unassigned at current status: ${status}`,
       field: 'status',
     });
   }
@@ -105,4 +124,5 @@ export {
   assertHasCancelReason,
   assertTaskUpdate,
   assertTaskAssignToGroup,
+  assertTaskUnassignFromGroup,
 };

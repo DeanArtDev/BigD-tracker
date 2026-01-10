@@ -11,6 +11,7 @@ import {
   GoalReplaceTask,
   GoalUpdateInboxTask,
 } from '@big-d/api-contracts';
+import { GoalUnassignTaskFromGroup } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -33,6 +34,7 @@ import {
   CreateTaskRes,
   ReplaceTaskReq,
   ReplaceTaskRes,
+  UnassignTaskFromGroupRes,
   UpdateInboxTaskReq,
   UpdateInboxTaskRes,
 } from './dtos';
@@ -115,6 +117,33 @@ export class TasksController {
     return await firstValueFrom(
       this.goalClient.send<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
         GoalAssignTaskToGroup.pattern,
+        {
+          data: {
+            userId: uid,
+            taskId,
+            groupId,
+          },
+        },
+      ),
+    );
+  }
+
+  @Post('/:taskId/groups/:groupId/unassign')
+  @ApiOperation({ summary: 'Открепление дела от группы' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UnassignTaskFromGroupRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(UnassignTaskFromGroupRes)
+  async unassignTaskFromGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<UnassignTaskFromGroupRes> {
+    return await firstValueFrom(
+      this.goalClient.send<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
+        GoalUnassignTaskFromGroup.pattern,
         {
           data: {
             userId: uid,

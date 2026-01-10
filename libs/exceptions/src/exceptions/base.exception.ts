@@ -1,3 +1,5 @@
+import { ExceptionCodes } from '../exception-codes';
+
 interface BaseExceptionState<
   TKey extends string,
   TCode extends string,
@@ -46,13 +48,15 @@ class BaseException<
   }
 }
 
-function isBaseExceptionInstance(error: unknown): error is BaseException<string, string, any> {
+function isBaseExceptionInstance(
+  error: unknown,
+): error is BaseException<string, ExceptionCodes, any> {
   return error instanceof BaseException;
 }
 
 function isBaseException<
   TKey extends string = string,
-  TCode extends string = string,
+  TCode extends ExceptionCodes = ExceptionCodes,
   TDetails extends Record<string, any> = Record<string, any>,
 >(error: unknown): error is BaseException<TKey, TCode, TDetails> {
   return typeof error === 'object' && error != null && 'key' in error && 'code' in error;

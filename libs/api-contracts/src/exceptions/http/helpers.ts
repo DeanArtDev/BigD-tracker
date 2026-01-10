@@ -19,10 +19,11 @@ function mapRpsKindToHttpStatus(kind: RmqErrorKind): HttpStatus | 499 {
     case RmqErrorKind.ALREADY_EXISTS:
     case RmqErrorKind.CONFLICT:
     case RmqErrorKind.ABORTED:
+    case RmqErrorKind.FAILED_PRECONDITION:
       return 409;
 
-    case RmqErrorKind.FAILED_PRECONDITION:
-      return 412;
+    case RmqErrorKind.DOMAIN_INVARIANT_VIOLATION:
+      return 422;
 
     case RmqErrorKind.RESOURCE_EXHAUSTED:
       return 429;
