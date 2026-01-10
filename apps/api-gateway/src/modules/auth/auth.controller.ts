@@ -54,7 +54,6 @@ export class AuthController {
     description: 'Пользователь успешно зарегистрирован',
     type: RegisterResponse,
   })
-  @ValidateRpcResponse(RegisterResponse)
   async register(
     @Body() { data }: RegisterRequest,
     @Res({ passthrough: true }) res: Response,

@@ -1,5 +1,6 @@
 import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
+import { RegisterRpcRes } from '@/modules/auth/dto/register.dto';
 import {
   ACCOUNT_SERVICE_RMQ_KEY,
   AccountDeleteUser,
@@ -8,9 +9,12 @@ import {
   GoalCreateInboxGroup,
   RpcStatus,
 } from '@big-d/api-contracts';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
+import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
@@ -35,6 +39,22 @@ export class RegisterSage {
         { data: { ip, userAgent, login, password } },
       ),
     );
+
+    const instance = plainToInstance(RegisterRpcRes, response, {
+      excludeExtraneousValues: true,
+    });
+
+    const issues = await validate(instance, {
+      whitelist: true,
+      forbidNonWhitelisted: false,
+    });
+
+    if (issues.length > 0) {
+      throw BaseHttpException.createFromBase(
+        new ExceptionWrongRpcResponse({ issues }),
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
 
     const { uid } = this.jwtService.decode<AccessTokenPayload>(response.data.accessToken);
 
