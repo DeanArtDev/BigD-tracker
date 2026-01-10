@@ -6,3 +6,5 @@ export * from './goal-service';
 export * from './exceptions';
 export * from './errors';
 export * from './rpc';
+
+export * from './transports';

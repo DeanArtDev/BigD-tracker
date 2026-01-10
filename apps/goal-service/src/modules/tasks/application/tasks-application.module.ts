@@ -2,6 +2,7 @@ import { GetGroupUserInboxHandler, GetInboxByUserIdQuery } from './queries';
 import {
   GroupCheckerService,
   TaskCheckerService,
+  TaskQueryService,
   TaskService,
 } from '@/modules/tasks/application/services';
 import { Module } from '@nestjs/common';
@@ -28,6 +29,9 @@ import {
   CloneTaskCommand,
   CloneTaskHandler,
   CloneTaskUseCase,
+  AssignTaskToGroupCommand,
+  AssignTaskToGroupHandler,
+  AssignTaskToGroupUseCase,
 } from './use-cases';
 
 const queries = [GetInboxByUserIdQuery];
@@ -39,6 +43,7 @@ const commands = [
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
   CloneTaskCommand,
+  AssignTaskToGroupCommand,
 ];
 const handlers = [
   CreateTaskHandler,
@@ -49,6 +54,7 @@ const handlers = [
   ReplaceTaskHandler,
   SoftDeleteTaskHandler,
   CloneTaskHandler,
+  AssignTaskToGroupHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
@@ -58,6 +64,7 @@ const useCases = [
   ReplaceTaskUseCase,
   SoftDeleteTaskUseCase,
   CloneTaskUseCase,
+  AssignTaskToGroupUseCase,
 ];
 
 @Module({
@@ -66,6 +73,7 @@ const useCases = [
     TaskService,
     TaskCheckerService,
     GroupCheckerService,
+    TaskQueryService,
     ...commands,
     ...queries,
     ...handlers,

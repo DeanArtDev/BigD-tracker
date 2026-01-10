@@ -25,14 +25,28 @@ const ApplicationExceptionStateList = {
     details: exceptionCode.taskNotExist.details,
   }),
 
+  TaskNotFound: defineExceptionState({
+    key: 'TASK_NOT_FOUNT',
+    code: exceptionCode.taskNotFound.code,
+    details: exceptionCode.taskNotFound.details,
+  }),
+
   TaskNotInGroup: defineExceptionState({
     key: 'TASK_NOT_IN_GROUP',
     code: exceptionCode.taskNotInGroup.code,
     details: exceptionCode.taskNotInGroup.details,
   }),
+
+  TaskAlreadyInGroup: defineExceptionState({
+    key: 'TASK_ALREADY_IN_GROUP',
+    code: exceptionCode.taskAlreadyInGroup.code,
+    details: exceptionCode.taskAlreadyInGroup.details,
+  }),
 };
 
 export const {
+  ExceptionTaskNotFound,
+  ExceptionTaskAlreadyInGroup,
   ExceptionTaskNotInGroup,
   ExceptionTaskNotExist,
   ExceptionGroupNotExist,

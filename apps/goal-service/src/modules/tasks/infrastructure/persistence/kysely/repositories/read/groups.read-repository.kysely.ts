@@ -111,7 +111,7 @@ export class GroupsReadRepositoryKysely
     input: { userId: number; taskId: number },
     trx?: Transaction<DB>,
   ): Promise<{ success: false } | { success: true; inboxId: number }> {
-    return await this.errorCatcher('groups.is-task-in-group', async () => {
+    return await this.errorCatcher('groups.is-task-in-inbox', async () => {
       const inbox = await getInboxByUserId(this.db, { userId: input.userId }, trx);
       if (inbox == null) return { success: false };
 
@@ -128,6 +128,26 @@ export class GroupsReadRepositoryKysely
             inboxId: inbox.id,
           }
         : { success: false };
+    });
+  }
+
+  async ensureTaskNotInGroup(
+    input: { userId: number; taskId: number; groupId: number },
+    trx?: Transaction<DB>,
+  ): Promise<boolean> {
+    return await this.errorCatcher('groups.is-task-in-group', async () => {
+      const { taskId, groupId, userId } = input;
+
+      const tasks = await this.db
+        .qb(trx)
+        .selectFrom('task_to_group as ttg')
+        .innerJoin('groups as g', 'g.id', 'ttg.group_id')
+        .where('ttg.group_id', '=', groupId)
+        .where('ttg.task_id', '=', taskId)
+        .where('g.user_id', '=', userId)
+        .execute();
+
+      return tasks.length === 0;
     });
   }
 }

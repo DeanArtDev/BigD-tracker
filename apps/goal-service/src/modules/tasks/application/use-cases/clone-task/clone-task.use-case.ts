@@ -5,13 +5,14 @@ import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksReadRepository } from '../../ports';
-import { TaskService } from '../../services';
+import { TaskQueryService, TaskService } from '../../services';
 import { CloneTaskCommand } from './clone-task.command';
 
 @Injectable()
 class CloneTaskUseCase {
   constructor(
     private readonly taskServices: TaskService,
+    private readonly taskQueryService: TaskQueryService,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,
   ) {}
@@ -23,11 +24,11 @@ class CloneTaskUseCase {
       const clonedTask = await this.taskServices.cloneTask({ taskId, userId }, trx);
 
       if (groupId != null) {
-        await this.taskServices.addTaskToGroup({ task: clonedTask, userId, groupId }, trx);
+        await this.taskServices.addTaskToGroup({ taskId, userId, groupId }, trx);
       }
 
-      return await this.tasksReadRepo.getById(
-        { id: clonedTask.id, userId: clonedTask.userId },
+      return await this.taskQueryService.getById(
+        { taskId: clonedTask.id, userId: clonedTask.userId },
         trx,
       );
     });

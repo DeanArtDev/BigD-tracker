@@ -3,7 +3,11 @@ import { GroupView } from '@/modules/tasks/application/dto/group.view';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
-import { ExceptionGroupNotExist, ExceptionTaskNotInGroup } from '../exceptions';
+import {
+  ExceptionGroupNotExist,
+  ExceptionTaskAlreadyInGroup,
+  ExceptionTaskNotInGroup,
+} from '../exceptions';
 import { GroupsReadRepository } from '../ports';
 
 @Injectable()
@@ -39,6 +43,39 @@ class GroupCheckerService {
     }
 
     return ensureResponse.success;
+  }
+
+  async ensureTaskNotInGroup(
+    input: { taskId: number; userId: number; groupId: number },
+    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+  ): Promise<true>;
+  async ensureTaskNotInGroup(
+    input: { taskId: number; userId: number; groupId: number },
+    params: { trx?: Transaction<DB>; skipException: true },
+  ): Promise<boolean>;
+  async ensureTaskNotInGroup(
+    input: { taskId: number; userId: number; groupId: number },
+    params?: { trx?: Transaction<DB>; skipException?: boolean },
+  ): Promise<boolean> {
+    const { skipException, trx } = params ?? {};
+
+    const ensureResponse = await this.groupReadRepo.ensureTaskNotInGroup(
+      {
+        userId: input.userId,
+        taskId: input.taskId,
+        groupId: input.groupId,
+      },
+      trx,
+    );
+
+    if (!ensureResponse && !skipException) {
+      throw new ExceptionTaskAlreadyInGroup({
+        groupId: input.groupId,
+        taskId: input.taskId,
+      });
+    }
+
+    return ensureResponse;
   }
 
   async ensureGroupExists(

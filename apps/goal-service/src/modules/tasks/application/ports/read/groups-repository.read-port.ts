@@ -23,6 +23,11 @@ interface GroupsReadRepository {
     input: { userId: number; taskId: number },
     trx?: Transaction<DB>,
   ): Promise<{ success: false } | { success: true; inboxId: number }>;
+
+  ensureTaskNotInGroup(
+    input: { userId: number; taskId: number; groupId: number },
+    trx?: Transaction<DB>,
+  ): Promise<boolean>;
 }
 
 export { GroupsReadRepository };

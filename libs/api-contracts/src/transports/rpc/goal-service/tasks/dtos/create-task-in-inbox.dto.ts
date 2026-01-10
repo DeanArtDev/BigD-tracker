@@ -1,25 +1,17 @@
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TaskDto } from './thing.dto';
 
-class CreateTaskReqData {
+class CreateTaskInInboxReqData {
   @IsString()
   name: string;
 
   @IsInt()
   userId: number;
 
-  @IsInt()
-  @IsOptional()
-  groupId?: number;
-
   @IsOptional()
   @IsInt()
   priority?: number;
-
-  @IsOptional()
-  @IsInt()
-  weight?: number;
 
   @IsISO8601()
   @IsOptional()
@@ -34,24 +26,18 @@ class CreateTaskReqData {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  recurrence?: string;
 }
 
-class CreateTaskReq {
+class CreateTaskInInboxReq {
   @ValidateNested()
-  @Type(() => CreateTaskReqData)
-  data: CreateTaskReqData;
+  @Type(() => CreateTaskInInboxReqData)
+  data: CreateTaskInInboxReqData;
 }
 
-class CreateTaskRes {
-  @Expose()
+class CreateTaskInInboxRes {
   @ValidateNested()
   @Type(() => TaskDto)
   data: TaskDto;
 }
 
-export { CreateTaskReq, CreateTaskRes };
+export { CreateTaskInInboxReq, CreateTaskInInboxRes };

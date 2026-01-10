@@ -5,3 +5,4 @@ export * from './update-inbox-task';
 export * from './replace-task';
 export * from './soft-delete-task';
 export * from './clone-task';
+export * from './assign-task-to-group';
