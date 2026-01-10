@@ -26,8 +26,8 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .qb(trx)
         .selectFrom('tasks as t')
         .innerJoin('task_statuses as ts', 't.status_id', 'ts.id')
-        .where('id', '=', id)
-        .where('user_id', '=', userId)
+        .where('t.id', '=', id)
+        .where('t.user_id', '=', userId)
         .select([
           't.id as id',
           't.user_id as user_id',
