@@ -39,7 +39,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     // Позиция в списке
     .addColumn('position', 'smallint', (col) => col.notNull().defaultTo(0))
     .addPrimaryKeyConstraint('ttg_pkey', ['group_id', 'task_id'])
-    .addUniqueConstraint('ttg_group_task_ids_unique', ['group_id', 'task_id'])
+    .execute();
+
+  await db.schema.createIndex('ttg_task_id_idx').on('task_to_group').column('task_id').execute();
+
+  await db.schema
+    .createIndex('ttg_group_position_task_idx')
+    .on('task_to_group')
+    .columns(['group_id', 'position', 'task_id'])
     .execute();
 
   // === Внешние ключи таблиц ===
