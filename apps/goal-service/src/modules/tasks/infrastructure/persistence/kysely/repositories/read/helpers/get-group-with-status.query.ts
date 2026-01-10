@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { Transaction } from 'kysely';
 
 function getGroupWithStatusQuery(db: Database<DB>, trx?: Transaction<DB>) {

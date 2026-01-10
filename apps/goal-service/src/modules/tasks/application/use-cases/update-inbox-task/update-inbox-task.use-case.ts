@@ -4,7 +4,7 @@ import { TasksViewMapper } from '@/modules/tasks/application/dto/task.view-mappe
 import { TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { GroupCheckerService, TaskCheckerService } from '@/modules/tasks/application/services';
 import { TaskFactory } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';

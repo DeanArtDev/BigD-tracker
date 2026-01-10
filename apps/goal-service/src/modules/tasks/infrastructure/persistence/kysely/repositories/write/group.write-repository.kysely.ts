@@ -1,7 +1,7 @@
 import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
 import { GroupsWriteRepository, INBOX_GROUP_KEY } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';

@@ -1,7 +1,7 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { TasksViewMapper } from '@/modules/tasks/application/dto/task.view-mapper';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { ReplaceTaskInput, TaskCheckerService, TaskService } from '../../services';

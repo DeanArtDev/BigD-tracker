@@ -1,7 +1,7 @@
 import { DB } from '@/infrastructure/types';
 import { TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';

@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { DeleteTaskInput, TaskService } from '../../services';

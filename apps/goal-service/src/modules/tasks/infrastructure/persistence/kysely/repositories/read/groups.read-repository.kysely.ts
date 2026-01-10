@@ -3,7 +3,7 @@ import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view
 import { GroupView } from '@/modules/tasks/application/dto/group.view';
 import { GroupsReadRepository } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';

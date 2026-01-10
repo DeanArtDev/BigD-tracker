@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { TaskFactory } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupCheckerService, TaskCheckerService, TaskService } from '../../services';
