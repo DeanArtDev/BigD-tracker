@@ -1,7 +1,7 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { TasksReadRepository } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { TaskStatus } from '@big-d/api-contracts';
 import { BaseTasksRepository } from '../base-tasks.repository';

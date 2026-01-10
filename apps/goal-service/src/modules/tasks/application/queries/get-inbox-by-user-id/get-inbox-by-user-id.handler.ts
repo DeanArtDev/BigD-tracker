@@ -1,6 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { GroupsReadRepository } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database, GroupsReadRepository } from '@/modules/tasks/application/ports';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';

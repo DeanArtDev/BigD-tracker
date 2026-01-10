@@ -1,7 +1,7 @@
 import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
 import { ExceptionInboxAlreadyExist } from '@/modules/tasks/application/exceptions';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';

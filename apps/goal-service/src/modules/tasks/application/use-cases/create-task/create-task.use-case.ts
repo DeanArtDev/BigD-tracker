@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { Database } from '@/modules/tasks/infrastructure/database.interface';
+import { Database } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateTaskInput, TaskQueryService, TaskService } from '../../services';
