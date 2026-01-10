@@ -5,5 +5,6 @@ export * from './update-inbox-task';
 export * from './delete-task';
 export * from './clone-task';
 export * from './assign-task-to-group';
+export * from './assign-task-to-inbox';
 
 export * from './dtos/shared/types';

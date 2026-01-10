@@ -11,7 +11,7 @@ import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getGroupWithStatusQuery } from './helpers/get-group-with-status.query';
-import { getInboxByUserId } from './helpers/get-inbox-by-user-id';
+import { getInboxByUserIdQuery } from './helpers';
 
 @Injectable()
 export class GroupsReadRepositoryKysely
@@ -69,10 +69,9 @@ export class GroupsReadRepositoryKysely
   async getInboxWithTasksByUserId(
     input: { userId: number },
     trx?: Transaction<DB>,
-  ): Promise<GroupInboxView | null> {
+  ): Promise<GroupInboxView> {
     return await this.errorCatcher('groups.get-inbox-by-user-id-with-tasks', async () => {
-      const inbox = await getInboxByUserId(this.db, input, trx);
-      if (inbox == null) return null;
+      const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirstOrThrow();
 
       const tasks = await this.db
         .qb(trx)
@@ -110,10 +109,13 @@ export class GroupsReadRepositoryKysely
   async ensureTaskInInboxGroup(
     input: { userId: number; taskId: number },
     trx?: Transaction<DB>,
-  ): Promise<{ success: false } | { success: true; inboxId: number }> {
+  ): Promise<{ inboxId: number; success: boolean }> {
     return await this.errorCatcher('groups.is-task-in-inbox', async () => {
-      const inbox = await getInboxByUserId(this.db, { userId: input.userId }, trx);
-      if (inbox == null) return { success: false };
+      const inbox = await getInboxByUserIdQuery(
+        this.db,
+        { userId: input.userId },
+        trx,
+      ).executeTakeFirstOrThrow();
 
       const tasks = await this.db
         .qb(trx)
@@ -122,12 +124,10 @@ export class GroupsReadRepositoryKysely
         .where('task_id', '=', input.taskId)
         .execute();
 
-      return tasks.length > 0
-        ? {
-            success: true,
-            inboxId: inbox.id,
-          }
-        : { success: false };
+      return {
+        inboxId: inbox.id,
+        success: tasks.length > 0,
+      };
     });
   }
 

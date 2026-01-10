@@ -30,7 +30,7 @@ class GroupCheckerService {
   ): Promise<boolean> {
     const { skipException, trx } = params ?? {};
 
-    const ensureResponse = await this.groupReadRepo.ensureTaskInInboxGroup(
+    const { success, inboxId } = await this.groupReadRepo.ensureTaskInInboxGroup(
       {
         userId: input.userId,
         taskId: input.taskId,
@@ -38,11 +38,48 @@ class GroupCheckerService {
       trx,
     );
 
-    if (!ensureResponse.success && !skipException) {
-      throw new ExceptionTaskNotInGroup({ taskId: input.taskId, message: 'Task is not in IN BOX' });
+    if (!success && !skipException) {
+      throw new ExceptionTaskNotInGroup({
+        groupId: inboxId,
+        taskId: input.taskId,
+        message: 'Task is not in IN BOX',
+      });
     }
 
-    return ensureResponse.success;
+    return success;
+  }
+
+  async ensureTaskNotInInboxGroup(
+    input: { taskId: number; userId: number },
+    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+  ): Promise<{ inboxId: number; success: false }>;
+  async ensureTaskNotInInboxGroup(
+    input: { taskId: number; userId: number },
+    params: { trx?: Transaction<DB>; skipException: true },
+  ): Promise<{ inboxId: number; success: true }>;
+  async ensureTaskNotInInboxGroup(
+    input: { taskId: number; userId: number },
+    params?: { trx?: Transaction<DB>; skipException?: boolean },
+  ): Promise<{ inboxId: number; success: boolean }> {
+    const { skipException, trx } = params ?? {};
+
+    const { success, inboxId } = await this.groupReadRepo.ensureTaskInInboxGroup(
+      {
+        userId: input.userId,
+        taskId: input.taskId,
+      },
+      trx,
+    );
+
+    if (success && !skipException) {
+      throw new ExceptionTaskAlreadyInGroup({
+        taskId: input.taskId,
+        groupId: inboxId,
+        message: 'Task is already in IN BOX',
+      });
+    }
+
+    return { success, inboxId };
   }
 
   async ensureTaskNotInGroup(

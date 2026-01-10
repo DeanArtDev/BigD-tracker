@@ -1,5 +1,6 @@
 import { Priority, TaskUpdateInput, Weight } from '@/modules/tasks/domain';
 import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput } from './tasks.types';
@@ -94,7 +95,7 @@ export class TaskFactory {
     return task.deleteSoft();
   }
 
-  static assignToGroup(task: Task): Task {
-    return task.assignToGroup();
+  static assignToGroup(task: Task, type: 'COMMON' | 'IN_BOX' = 'COMMON'): Task {
+    return task.assignToGroup(type === 'IN_BOX' ? TaskStatus.NOT_STARTED : undefined);
   }
 }

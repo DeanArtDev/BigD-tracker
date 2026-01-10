@@ -1,5 +1,8 @@
-import { CreateTaskInInboxCommand } from '@/modules/tasks/application/use-cases';
-import { GoalCreateTaskInInbox } from '@big-d/api-contracts';
+import {
+  AssignTaskToInboxCommand,
+  CreateTaskInInboxCommand,
+} from '@/modules/tasks/application/use-cases';
+import { GoalAssignTaskToInbox, GoalCreateTaskInInbox } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -16,6 +19,15 @@ export class TasksInboxRpcController {
   ): Promise<GoalCreateTaskInInbox.Response> {
     return {
       data: await this.commandBus.execute(new CreateTaskInInboxCommand(payload)),
+    };
+  }
+
+  @MessagePattern(GoalAssignTaskToInbox.pattern)
+  async assignTaskIntoInbox(
+    @Payload() { data: payload }: GoalAssignTaskToInbox.Request,
+  ): Promise<GoalAssignTaskToInbox.Response> {
+    return {
+      data: await this.commandBus.execute(new AssignTaskToInboxCommand(payload)),
     };
   }
 }

@@ -58,6 +58,7 @@ class Task extends AggregateRoot {
   }
 
   #setStatus(status: TaskStatus): this {
+    if (status === this.#state.status) return this;
     if (availableTransitionsByTaskStatuses[this.#state.status].includes(status)) {
       this.#state.status = status;
       return this;
@@ -88,8 +89,11 @@ class Task extends AggregateRoot {
     return this.#setStatus(TaskStatus.DELETED);
   }
 
-  public assignToGroup(): this {
+  public assignToGroup(status?: TaskStatus.NOT_STARTED): this {
     assertTaskAssignToGroup({ status: this.#state.status });
+    if (status != null) {
+      return this.#setStatus(TaskStatus.NOT_STARTED);
+    }
     return this;
   }
 

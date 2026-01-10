@@ -11,6 +11,7 @@ const availableTransitionsByTaskStatuses: Record<TaskStatus, TaskStatus[]> = {
   ],
 
   [TaskStatus.IN_PROGRESS]: [
+    TaskStatus.NOT_STARTED,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
     TaskStatus.CANCELLED,
