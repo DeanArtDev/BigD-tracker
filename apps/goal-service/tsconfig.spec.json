@@ -5,17 +5,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "types": ["jest", "node"],
-    "strict": true,
-    "strictPropertyInitialization": false,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["./src/shared/*"],
-      "@db/*": ["./db/*"],
-      "@big-d/api-contracts": ["../../libs/api-contracts/src"],
-      "@big-d/api-utils": ["../../libs/api-utils/src"],
-      "@big-d/database": ["../../libs/database/src"],
-      "@big-d/exceptions": ["../../libs/exeptions/src"]
-    }
+    "strict": true
   },
   "include": ["src/**/*.spec.ts", "src/**/*.test.ts"],
   "exclude": ["node_modules", "dist"]
