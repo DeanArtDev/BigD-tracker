@@ -56,20 +56,29 @@ const groups = {
 
 // SYSTEM
 const system = {
-  // Application
-  invalidRpcResponse: {
+  requestTimeout: {
     code: 'S-GW-0001',
+    details: Details.Define<{ message?: string }>(),
+  },
+
+  invalidRpcResponse: {
+    code: 'S-GW-0002',
     details: Details.Define<{ issues: ValidationIssue[] }>(),
   },
 
   requestDateValidation: {
-    code: 'S-GW-0002',
+    code: 'S-GW-0003',
     details: Details.Define<{ message: string; issues: ValidationIssue[] }>(),
   },
 
   requestContextPayload: {
     code: 'S-GW-0003',
     details: Details.Define<{ message: string }>(),
+  },
+
+  serviceUnavailable: {
+    code: 'S-GW-0004',
+    details: Details.Define<{ message?: string }>(),
   },
 } as const satisfies ExceptionConfig;
 

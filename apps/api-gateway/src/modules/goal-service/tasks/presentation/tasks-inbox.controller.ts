@@ -6,7 +6,6 @@ import { GoalAssignTaskToInbox, GoalCreateTaskInInbox } from '@big-d/api-contrac
 import { Body, Controller, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
-import { firstValueFrom } from 'rxjs';
 import {
   AssignTaskToInboxRes,
   CreateTaskInINBOXReq,
@@ -32,21 +31,19 @@ export class TasksInboxController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTaskInINBOXReq,
   ): Promise<CreateTaskInINBOXRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalCreateTaskInInbox.Response, GoalCreateTaskInInbox.Request>(
-        GoalCreateTaskInInbox.pattern,
-        {
-          data: {
-            userId: uid,
-            priority: data.priority,
-            description: data.description,
-            name: data.name,
-            startDate: data.startDate,
-            deadline: data.deadline,
-          },
-        },
-      ),
-    );
+    return await this.goalClient.send<
+      GoalCreateTaskInInbox.Response,
+      GoalCreateTaskInInbox.Request
+    >(GoalCreateTaskInInbox.pattern, {
+      data: {
+        userId: uid,
+        priority: data.priority,
+        description: data.description,
+        name: data.name,
+        startDate: data.startDate,
+        deadline: data.deadline,
+      },
+    });
   }
 
   @Post('/:taskId/in-box/assign')
@@ -62,16 +59,14 @@ export class TasksInboxController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('taskId', ParseIntPipe) taskId: number,
   ): Promise<AssignTaskToInboxRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalAssignTaskToInbox.Response, GoalAssignTaskToInbox.Request>(
-        GoalAssignTaskToInbox.pattern,
-        {
-          data: {
-            userId: uid,
-            taskId,
-          },
-        },
-      ),
-    );
+    return await this.goalClient.send<
+      GoalAssignTaskToInbox.Response,
+      GoalAssignTaskToInbox.Request
+    >(GoalAssignTaskToInbox.pattern, {
+      data: {
+        userId: uid,
+        taskId,
+      },
+    });
   }
 }

@@ -25,7 +25,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
-import { firstValueFrom } from 'rxjs';
 import {
   AssignTaskToGroupRes,
   CloneTaskReq,
@@ -56,23 +55,21 @@ export class TasksController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTaskReq,
   ): Promise<CreateTaskRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalCreateTask.Response, GoalCreateTask.Request>(
-        GoalCreateTask.pattern,
-        {
-          data: {
-            userId: uid,
-            groupId: data.groupId,
-            priority: data.priority,
-            description: data.description,
-            name: data.name,
-            startDate: data.startDate,
-            deadline: data.deadline,
-            recurrence: data.recurrence,
-            weight: data.weight,
-          },
+    return await this.goalClient.send<GoalCreateTask.Response, GoalCreateTask.Request>(
+      GoalCreateTask.pattern,
+      {
+        data: {
+          userId: uid,
+          groupId: data.groupId,
+          priority: data.priority,
+          description: data.description,
+          name: data.name,
+          startDate: data.startDate,
+          deadline: data.deadline,
+          recurrence: data.recurrence,
+          weight: data.weight,
         },
-      ),
+      },
     );
   }
 
@@ -90,14 +87,15 @@ export class TasksController {
     @Param('taskId', ParseIntPipe) taskId: number,
     @Body() { data }: CloneTaskReq,
   ): Promise<CloneTaskRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, {
+    return await this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(
+      GoalCloneTask.pattern,
+      {
         data: {
           userId: uid,
           taskId,
           groupId: data?.groupId,
         },
-      }),
+      },
     );
   }
 
@@ -114,18 +112,16 @@ export class TasksController {
     @Param('taskId', ParseIntPipe) taskId: number,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<AssignTaskToGroupRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
-        GoalAssignTaskToGroup.pattern,
-        {
-          data: {
-            userId: uid,
-            taskId,
-            groupId,
-          },
-        },
-      ),
-    );
+    return await this.goalClient.send<
+      GoalAssignTaskToGroup.Response,
+      GoalAssignTaskToGroup.Request
+    >(GoalAssignTaskToGroup.pattern, {
+      data: {
+        userId: uid,
+        taskId,
+        groupId,
+      },
+    });
   }
 
   @Post('/:taskId/groups/:groupId/unassign')
@@ -141,18 +137,16 @@ export class TasksController {
     @Param('taskId', ParseIntPipe) taskId: number,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<UnassignTaskFromGroupRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
-        GoalUnassignTaskFromGroup.pattern,
-        {
-          data: {
-            userId: uid,
-            taskId,
-            groupId,
-          },
-        },
-      ),
-    );
+    return await this.goalClient.send<
+      GoalUnassignTaskFromGroup.Response,
+      GoalUnassignTaskFromGroup.Request
+    >(GoalUnassignTaskFromGroup.pattern, {
+      data: {
+        userId: uid,
+        taskId,
+        groupId,
+      },
+    });
   }
 
   @Put('/:taskId')
@@ -169,23 +163,21 @@ export class TasksController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: ReplaceTaskReq,
   ): Promise<ReplaceTaskRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalReplaceTask.Response, GoalReplaceTask.Request>(
-        GoalReplaceTask.pattern,
-        {
-          data: {
-            id: taskId,
-            userId: uid,
-            priority: data.priority,
-            name: data.name,
-            startDate: data.startDate,
-            description: data.description,
-            deadline: data.deadline,
-            weight: data.weight,
-            recurrence: data.recurrence,
-          },
+    return await this.goalClient.send<GoalReplaceTask.Response, GoalReplaceTask.Request>(
+      GoalReplaceTask.pattern,
+      {
+        data: {
+          id: taskId,
+          userId: uid,
+          priority: data.priority,
+          name: data.name,
+          startDate: data.startDate,
+          description: data.description,
+          deadline: data.deadline,
+          weight: data.weight,
+          recurrence: data.recurrence,
         },
-      ),
+      },
     );
   }
 
@@ -203,21 +195,19 @@ export class TasksController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: UpdateInboxTaskReq,
   ): Promise<UpdateInboxTaskRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
-        GoalUpdateInboxTask.pattern,
-        {
-          data: {
-            id: taskId,
-            userId: uid,
-            priority: data.priority,
-            name: data.name,
-            startDate: data.startDate,
-            description: data.description,
-            deadline: data.deadline,
-          },
+    return await this.goalClient.send<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
+      GoalUpdateInboxTask.pattern,
+      {
+        data: {
+          id: taskId,
+          userId: uid,
+          priority: data.priority,
+          name: data.name,
+          startDate: data.startDate,
+          description: data.description,
+          deadline: data.deadline,
         },
-      ),
+      },
     );
   }
 
@@ -230,11 +220,9 @@ export class TasksController {
     @Param('taskId', ParseIntPipe) taskId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<void> {
-    await firstValueFrom(
-      this.goalClient.send<GoalDeleteTask.Response, GoalDeleteTask.Request>(
-        GoalDeleteTask.pattern,
-        { data: { id: taskId, userId: uid } },
-      ),
+    await this.goalClient.send<GoalDeleteTask.Response, GoalDeleteTask.Request>(
+      GoalDeleteTask.pattern,
+      { data: { id: taskId, userId: uid } },
     );
     return;
   }

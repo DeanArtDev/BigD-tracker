@@ -3,10 +3,12 @@ import {
   isDefaultRpcException,
   unwrapDefaultRpcException,
 } from '@big-d/api-contracts';
+import { isBaseExceptionInstance } from '@big-d/exceptions';
 import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  GatewayTimeoutException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { BaseHttpException } from '@shared/exceptions';
@@ -36,6 +38,11 @@ export class GateWayExceptionFilter implements ExceptionFilter {
     if (isHttpExceptionPlain(exception)) {
       const httpException = shapePlainToBaseHttpException(exception);
       return response.status(httpException.getStatus()).json(httpException.getResponse());
+    }
+
+    if (isBaseExceptionInstance(exception)) {
+      const httpExc = new GatewayTimeoutException(exception.toResponse());
+      return response.status(httpExc.getStatus()).json(httpExc.getResponse());
     }
 
     this.#defaultResponse(exception, response);

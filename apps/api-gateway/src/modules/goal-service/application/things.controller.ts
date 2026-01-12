@@ -1,16 +1,15 @@
-import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   GetThing,
+  GOAL_SERVICE_RMQ_KEY,
   GoalCreateThing,
   GoalCreateThingIntoInBoxGroup,
   GoalDeleteThing,
   GoalFinishThing,
   GoalUpdateThing,
 } from '@big-d/api-contracts';
-import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
   Body,
   Controller,
@@ -18,12 +17,15 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { firstValueFrom } from 'rxjs';
 import {
   CreateThingIntoInboxReq,
@@ -41,7 +43,7 @@ import {
 @ApiTags('Things')
 @Controller('/things')
 export class ThingsController {
-  constructor(private readonly goalClient: GoalServiceClientProxy) {}
+  constructor(@Inject(GOAL_SERVICE_RMQ_KEY) private readonly goalClient: ClientProxy) {}
 
   @Get()
   @ApiOperation({ summary: 'Получение дел' })

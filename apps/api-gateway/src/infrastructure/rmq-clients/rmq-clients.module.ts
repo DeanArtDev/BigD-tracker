@@ -1,4 +1,5 @@
 import { APP_ENV } from '@/infrastructure/configs';
+import { AccountServiceClientProxy } from './account-service-client-proxy';
 import { GoalServiceClientProxy } from './goal-service-client-proxy';
 import {
   ACCOUNT_SERVICE_RMQ_KEY,
@@ -14,7 +15,7 @@ import { ClientsModule } from '@nestjs/microservices';
 
 @Global()
 @Module({
-  providers: [GoalServiceClientProxy],
+  providers: [GoalServiceClientProxy, AccountServiceClientProxy],
   imports: [
     ClientsModule.registerAsync({
       isGlobal: true,
@@ -63,6 +64,6 @@ import { ClientsModule } from '@nestjs/microservices';
       ],
     }),
   ],
-  exports: [ClientsModule, GoalServiceClientProxy],
+  exports: [ClientsModule, GoalServiceClientProxy, AccountServiceClientProxy],
 })
 export class RmqClientsModule {}

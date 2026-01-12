@@ -11,7 +11,6 @@ import {
   GoalGetGroupsByUserId,
   GoalUpdateGroup,
 } from '@big-d/api-contracts';
-import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
   Body,
   Controller,
@@ -25,7 +24,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { firstValueFrom } from 'rxjs';
+import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { CreateGroupReq, CreateGroupRes, UpdateGroupReq, UpdateGroupRes } from './dtos';
 
 @ApiTags('Groups')
@@ -45,11 +44,9 @@ export class GroupsController {
   @ValidateRpcResponse(GetInBoxRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getUsersGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetInBoxRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
-        GoalGetGroupInBox.pattern,
-        { data: { userId: uid } },
-      ),
+    return await this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
+      GoalGetGroupInBox.pattern,
+      { data: { userId: uid } },
     );
   }
 
@@ -62,12 +59,10 @@ export class GroupsController {
   @ValidateRpcResponse(GetMyGroupsRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getMyGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetMyGroupsRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalGetGroupsByUserId.Response, GoalGetGroupsByUserId.Request>(
-        GoalGetGroupsByUserId.pattern,
-        { data: { userId: uid } },
-      ),
-    );
+    return await this.goalClient.send<
+      GoalGetGroupsByUserId.Response,
+      GoalGetGroupsByUserId.Request
+    >(GoalGetGroupsByUserId.pattern, { data: { userId: uid } });
   }
 
   @Post()
@@ -106,20 +101,18 @@ export class GroupsController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: UpdateGroupReq,
   ): Promise<CreateGroupRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalUpdateGroup.Response, GoalUpdateGroup.Request>(
-        GoalUpdateGroup.pattern,
-        {
-          data: {
-            id: groupId,
-            userId: uid,
-            name: data.name,
-            goalId: data.goalId,
-            description: data.description,
-            things: data.things,
-          },
+    return await this.goalClient.send<GoalUpdateGroup.Response, GoalUpdateGroup.Request>(
+      GoalUpdateGroup.pattern,
+      {
+        data: {
+          id: groupId,
+          userId: uid,
+          name: data.name,
+          goalId: data.goalId,
+          description: data.description,
+          things: data.things,
         },
-      ),
+      },
     );
   }
 
@@ -132,11 +125,9 @@ export class GroupsController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<void> {
-    await firstValueFrom(
-      this.goalClient.send<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
-        GoalDeleteGroup.pattern,
-        { data: { id: groupId, userId: uid } },
-      ),
+    await this.goalClient.send<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
+      GoalDeleteGroup.pattern,
+      { data: { id: groupId, userId: uid } },
     );
     return;
   }
