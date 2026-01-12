@@ -1,3 +1,4 @@
+import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { GroupStatus } from '@big-d/api-contracts';
 
 interface GroupViewState {
@@ -7,6 +8,7 @@ interface GroupViewState {
   readonly name: string;
   readonly status: GroupStatus;
   readonly description?: string;
+  readonly tasks: TaskView[];
 }
 
 class GroupView {
@@ -16,6 +18,7 @@ class GroupView {
     public readonly progress: number,
     public readonly name: string,
     public readonly status: GroupStatus,
+    public readonly tasks: TaskView[],
     public readonly description?: string,
   ) {}
 
@@ -26,6 +29,7 @@ class GroupView {
       input.progress,
       input.name,
       input.status,
+      input.tasks,
       input.description,
     );
   }

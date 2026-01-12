@@ -36,4 +36,4 @@ class TasksWriteKyselyMapper {
   }
 }
 
-export { TasksWriteKyselyMapper };
+export { TasksWriteKyselyMapper, RawTask };

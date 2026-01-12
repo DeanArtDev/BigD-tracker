@@ -3,17 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "main": "dist/index.js",
-  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
-  },
   "scripts": {
     "=== DEV ===": "",
     "dev": "pnpm build --watch",
     "=== BUILD ===": "",
-    "build": "tsc --build",
+    "build": "tsc --build && tsc-alias",
     "=== LINK ===": "",
     "test": "echo \"Error: no test specified , just skip\" && exit 0",
     "format": "npx prettier . --check",
@@ -23,15 +18,14 @@
   },
   "dependencies": {
     "@big-d/exceptions": "workspace:*",
-    "reflect-metadata": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/microservices": "catalog:",
     "class-transformer": "catalog:",
     "class-validator": "catalog:",
+    "reflect-metadata": "catalog:",
     "rxjs": "catalog:"
   },
   "devDependencies": {
-    "ts-node": "catalog:",
     "@big-d/linter": "workspace:*",
     "@eslint/js": "catalog:",
     "@types/node": "catalog:",
@@ -40,6 +34,7 @@
     "eslint-plugin-prettier": "catalog:",
     "globals": "catalog:",
     "prettier": "catalog:",
+    "tsc-alias": "^1.8.16",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
   },

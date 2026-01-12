@@ -1,4 +1,3 @@
-import { CreateGroupSage } from '@/modules/goal-service/application/sages';
 import { GroupsController } from './groups';
 import { HttpStatus, Module } from '@nestjs/common';
 import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
@@ -24,6 +23,5 @@ import { TasksController, TasksInboxController } from './tasks';
     TasksController,
     TasksInboxController,
   ],
-  providers: [CreateGroupSage],
 })
 export class GoalServiceModule {}

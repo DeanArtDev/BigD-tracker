@@ -67,11 +67,11 @@ class TaskDto {
   @IsString()
   cancelReason?: string;
 
-  @ApiPropertyOptional({ example: 'Статус дела' })
+  @ApiPropertyOptional({ example: 'Статус дела', enum: TaskStatus })
   @Expose()
   @IsEnum(TaskStatus)
   @Type(() => String)
-  status: string;
+  status: TaskStatus;
 }
 
 export { TaskDto };

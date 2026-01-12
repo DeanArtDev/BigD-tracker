@@ -4,6 +4,7 @@ import { GroupView } from '@/modules/tasks/application/dto/group.view';
 import { GroupsReadRepository } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
 import { Database } from '@/modules/tasks/application/ports';
+import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -39,7 +40,8 @@ export class GroupsReadRepositoryKysely
         description: result.description,
         user_id: result.user_id,
         progress: result.progress,
-        status: result.status,
+        status: result.status as GroupStatus,
+        tasks: [],
       });
     });
   }
@@ -61,7 +63,8 @@ export class GroupsReadRepositoryKysely
         description: result.description,
         user_id: result.user_id,
         progress: result.progress,
-        status: result.status,
+        status: result.status as GroupStatus,
+        tasks: [],
       });
     });
   }
