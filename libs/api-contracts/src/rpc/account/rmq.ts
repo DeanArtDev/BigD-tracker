@@ -22,7 +22,13 @@ const accountServiceRmqConfig = (params: {
     options: {
       urls: [`amqp://${user}:${password}@${host}:${port}`],
       queue: 'account_service_queue',
-      queueOptions: { durable: isProd, autoDelete: true },
+      queueOptions: {
+        durable: isProd,
+        autoDelete: true,
+        arguments: {
+          'x-message-ttl': 5000,
+        },
+      },
       exchange: 'account_service_exchange',
       exchangeType: 'topic',
       wildcards: true,

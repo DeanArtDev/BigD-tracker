@@ -6,7 +6,6 @@ import { GoalGetGroupInBox } from '@big-d/api-contracts';
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
-import { firstValueFrom } from 'rxjs';
 import { GetInBoxRes } from './dtos';
 
 @ApiTags('Groups')
@@ -23,11 +22,9 @@ export class GroupsController {
   @ValidateRpcResponse(GetInBoxRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   async getUsersGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetInBoxRes> {
-    return await firstValueFrom(
-      this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
-        GoalGetGroupInBox.pattern,
-        { data: { userId: uid } },
-      ),
+    return await this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
+      GoalGetGroupInBox.pattern,
+      { data: { userId: uid } },
     );
   }
 }

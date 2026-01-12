@@ -1,29 +1,13 @@
+import { AccountServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { RegisterSage } from '@/modules/auth/application';
-import {
-  ACCOUNT_SERVICE_RMQ_KEY,
-  AccountLogin,
-  AccountLogout,
-  AccountRefresh,
-} from '@big-d/api-contracts';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { AccountLogin, AccountLogout, AccountRefresh } from '@big-d/api-contracts';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import { CookieService, RefreshToken } from '@shared/services/cookies';
 import { Request, Response } from 'express';
-import { firstValueFrom } from 'rxjs';
 import { ACCESS_TOKEN_KEY } from './constants';
 import { Public, TokenPayload } from './decorators';
 import { AccessTokenPayload } from './dto/access-token.dto';
@@ -37,7 +21,7 @@ import { RefreshTokenGuard } from './guards/refresh-token.guard';
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(ACCOUNT_SERVICE_RMQ_KEY) private readonly accountClient: ClientProxy,
+    private readonly accountClient: AccountServiceClientProxy,
     private readonly cookieService: CookieService,
     private readonly registerSage: RegisterSage,
   ) {}
@@ -93,12 +77,10 @@ export class AuthController {
     @RefreshToken() refreshToken: string,
   ) {
     try {
-      const { data } = await firstValueFrom(
-        this.accountClient.send<AccountRefresh.Response, AccountRefresh.Request>(
-          AccountRefresh.pattern,
-          { data: { ip, userAgent, refreshToken } },
-        ),
-      );
+      const { data } = await this.accountClient.send<
+        AccountRefresh.Response,
+        AccountRefresh.Request
+      >(AccountRefresh.pattern, { data: { ip, userAgent, refreshToken } });
       this.cookieService.setRefreshToken(res, { token: data.refreshToken, maxAge: data.maxAge });
       return { data: { token: data.accessToken } };
     } catch (e) {
@@ -126,11 +108,9 @@ export class AuthController {
   ): Promise<LogoutResponse> {
     this.cookieService.setRefreshToken(res, { token: undefined });
 
-    const { data } = await firstValueFrom(
-      this.accountClient.send<AccountLogout.Response, AccountLogout.Request>(
-        AccountLogout.pattern,
-        { data: { userAgent, userId: uid } },
-      ),
+    const { data } = await this.accountClient.send<AccountLogout.Response, AccountLogout.Request>(
+      AccountLogout.pattern,
+      { data: { userAgent, userId: uid } },
     );
 
     return { data: Boolean(data.stats) };
@@ -155,10 +135,11 @@ export class AuthController {
   ): Promise<LoginResponse> {
     const {
       data: { refreshToken, accessToken, maxAge },
-    } = await firstValueFrom(
-      this.accountClient.send<AccountLogin.Response, AccountLogin.Request>(AccountLogin.pattern, {
+    } = await this.accountClient.send<AccountLogin.Response, AccountLogin.Request>(
+      AccountLogin.pattern,
+      {
         data: { ip, userAgent, login: data.login, password: data.password },
-      }),
+      },
     );
 
     this.cookieService.setRefreshToken(res, { token: refreshToken, maxAge });
