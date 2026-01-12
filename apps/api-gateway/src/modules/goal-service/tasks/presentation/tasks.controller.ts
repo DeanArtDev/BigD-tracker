@@ -2,7 +2,6 @@ import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { UpdateThingRes } from '@/modules/goal-service/application/dtos';
 import {
   GoalAssignTaskToGroup,
   GoalCloneTask,
@@ -153,7 +152,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Редактирование дела' })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: UpdateThingRes,
+    type: ReplaceTaskRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
@@ -185,7 +184,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Редактирование дела в IN BOX' })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: UpdateThingRes,
+    type: UpdateInboxTaskRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.OK)
