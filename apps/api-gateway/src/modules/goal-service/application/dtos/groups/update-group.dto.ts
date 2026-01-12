@@ -1,3 +1,4 @@
+import { GroupResSingle } from '@/modules/goal-service/groups/presentation/dtos/shared/group-response.dto';
 import { Expose, Type } from 'class-transformer';
 import {
   IsArray,
@@ -11,7 +12,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { GroupResSingle } from '../shared';
 
 class Thing {
   @ApiPropertyOptional({ example: 1 })

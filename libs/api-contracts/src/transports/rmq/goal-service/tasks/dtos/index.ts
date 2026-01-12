@@ -7,3 +7,5 @@ export * from './clone-task.dto';
 export * from './assign-task-to-group.dto';
 export * from './assign-task-to-inbox.dto';
 export * from './unassign-task-from-group.dto';
+
+export * from './task.dto';

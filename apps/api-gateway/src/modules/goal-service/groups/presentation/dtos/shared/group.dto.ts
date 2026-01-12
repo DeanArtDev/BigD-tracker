@@ -1,7 +1,17 @@
 import { TaskDto } from '@/modules/goal-service/tasks';
+import { GroupStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 class GroupDto {
   @ApiProperty({ example: 1 })
@@ -25,18 +35,18 @@ class GroupDto {
   @IsInt()
   userId: number;
 
-  @ApiPropertyOptional({ example: 1 })
-  @Expose()
-  @IsOptional()
-  @IsInt()
-  goalId?: number;
-
   @ApiProperty({ example: 40, description: 'От 0 до 100' })
   @Expose()
   @Min(0)
   @Max(100)
   @IsInt()
-  result: number;
+  progress: number;
+
+  @ApiProperty({ example: 40, description: 'От 0 до 100', enum: GroupStatus })
+  @Expose()
+  @IsEnum(GroupStatus)
+  @Type(() => String)
+  status: GroupStatus;
 
   @ApiProperty({
     description: 'Список дел',
@@ -47,7 +57,7 @@ class GroupDto {
   @ValidateNested({ each: true })
   @Type(() => TaskDto)
   @IsArray()
-  things: TaskDto[];
+  tasks: TaskDto[];
 }
 
 export { GroupDto };

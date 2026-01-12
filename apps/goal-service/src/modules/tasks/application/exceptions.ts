@@ -7,6 +7,12 @@ const ApplicationExceptionStateList = {
     details: exceptionCode.groupNotExist.details,
   }),
 
+  GroupNotFound: defineExceptionState({
+    key: 'GROUP_NOT_FOUND',
+    code: exceptionCode.groupNotFound.code,
+    details: exceptionCode.groupNotFound.details,
+  }),
+
   InboxNotExist: defineExceptionState({
     key: 'INBOX_NOT_EXIST',
     code: exceptionCode.inboxNotExist.code,
@@ -45,6 +51,7 @@ const ApplicationExceptionStateList = {
 };
 
 export const {
+  ExceptionGroupNotFound,
   ExceptionTaskNotFound,
   ExceptionTaskAlreadyInGroup,
   ExceptionTaskNotInGroup,

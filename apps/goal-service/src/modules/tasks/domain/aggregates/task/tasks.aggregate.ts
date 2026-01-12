@@ -172,4 +172,4 @@ class Task extends AggregateRoot {
   }
 }
 
-export { Task, TaskCreateInput };
+export { Task };

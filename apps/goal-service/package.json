@@ -30,9 +30,9 @@
   },
   "dependencies": {
     "@big-d/api-contracts": "workspace:*",
-    "@big-d/exceptions": "workspace:*",
     "@big-d/api-utils": "workspace:*",
     "@big-d/database": "workspace:*",
+    "@big-d/exceptions": "workspace:*",
     "@nestjs/common": "catalog:",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "catalog:",
@@ -54,6 +54,7 @@
     "lodash": "catalog:",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:",
+    "sanitize-html": "^2.17.0",
     "validator": "catalog:",
     "zod": "4.2.1"
   },

@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, ValidateNested } from 'class-validator';
-import { TaskDto } from './thing.dto';
+import { TaskDto } from './task.dto';
 
 class CloneTaskReqData {
   @IsInt()

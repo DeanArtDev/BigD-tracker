@@ -1,6 +1,6 @@
+import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, ValidateNested } from 'class-validator';
-import { TaskDto } from '../../tasks/dtos/thing.dto';
 
 class GetInBoxGroupReqData {
   @IsInt()

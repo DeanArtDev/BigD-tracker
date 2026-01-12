@@ -1,7 +1,3 @@
-import {
-  ExceptionRpcRequestTimeout,
-  ExceptionRpcServiceUnavailable,
-} from '@/infrastructure/rmq-clients/exceptions';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { CORRELATION_HEADER_KEY } from '@shared/interceptors/observability.interceptor';
 import { randomUUID } from 'crypto';
@@ -9,11 +5,16 @@ import { Request } from 'express';
 import { catchError, firstValueFrom, throwError, timeout, TimeoutError } from 'rxjs';
 
 async function send<TResult = any, TInput = any>(
-  options: { client: ClientProxy; req: Request; timeout: number },
   pattern: any,
   payload: TInput,
+  options: {
+    client: ClientProxy;
+    req: Request;
+    timeout: number;
+    onTimeoutError: (err: TimeoutError) => Error;
+  },
 ): Promise<TResult> {
-  const { client, req } = options;
+  const { client, req, onTimeoutError } = options;
 
   const cid = req.headers[CORRELATION_HEADER_KEY]?.toString() ?? randomUUID();
 
@@ -31,11 +32,9 @@ async function send<TResult = any, TInput = any>(
       catchError((err) =>
         throwError(() => {
           if (err instanceof TimeoutError) {
-            return new ExceptionRpcRequestTimeout({
-              message: `account service RPC timeout (${options.timeout}ms)`,
-            });
+            throw onTimeoutError(err);
           }
-          return new ExceptionRpcServiceUnavailable({ message: 'account-service unavailable' });
+          return err;
         }),
       ),
     ),

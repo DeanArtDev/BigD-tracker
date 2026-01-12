@@ -1,6 +1,5 @@
 import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
-import { GroupStatus } from '../../../../../transports/rmq/goal-service/groups';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
@@ -10,6 +9,7 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
+import { GroupStatus } from '../types';
 
 class GroupDto {
   @IsInt()
@@ -30,14 +30,12 @@ class GroupDto {
   progress: number;
 
   @IsEnum(GroupStatus)
-  @Type(() => String)
   status: GroupStatus;
 
-  @Expose()
   @ValidateNested({ each: true })
   @Type(() => TaskDto)
   @IsArray()
-  things: TaskDto[];
+  tasks: TaskDto[];
 }
 
 export { GroupDto };

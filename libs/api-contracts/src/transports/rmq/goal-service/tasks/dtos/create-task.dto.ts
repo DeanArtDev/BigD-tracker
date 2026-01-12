@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { TaskDto } from './thing.dto';
+import { TaskDto } from './task.dto';
 
 class CreateTaskReqData {
   @IsString()

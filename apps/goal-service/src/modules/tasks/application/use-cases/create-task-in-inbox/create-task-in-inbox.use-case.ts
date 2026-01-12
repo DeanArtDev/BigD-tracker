@@ -28,7 +28,7 @@ class CreateTaskInInboxUseCase {
       );
 
       if (inboxGroup == null) {
-        throw new ExceptionInboxNotExist({ taskId: id });
+        throw new ExceptionInboxNotExist({});
       }
 
       await this.tasksWriteRepo.addTaskToGroup({ taskId: id, groupId: inboxGroup.id }, trx);

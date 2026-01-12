@@ -1,17 +1,22 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { TaskDto } from './thing.dto';
+import { TaskDto } from './task.dto';
 
-class CreateTaskInInboxReqData {
+class ReplaceTaskReqData {
+  @IsInt()
+  id: number;
+
   @IsString()
   name: string;
 
   @IsInt()
   userId: number;
 
-  @IsOptional()
   @IsInt()
-  priority?: number;
+  priority: number;
+
+  @IsInt()
+  weight: number;
 
   @IsISO8601()
   @IsOptional()
@@ -26,18 +31,22 @@ class CreateTaskInInboxReqData {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  recurrence?: string;
 }
 
-class CreateTaskInInboxReq {
+class ReplaceTaskReq {
   @ValidateNested()
-  @Type(() => CreateTaskInInboxReqData)
-  data: CreateTaskInInboxReqData;
+  @Type(() => ReplaceTaskReqData)
+  data: ReplaceTaskReqData;
 }
 
-class CreateTaskInInboxRes {
+class ReplaceTaskRes {
   @ValidateNested()
   @Type(() => TaskDto)
   data: TaskDto;
 }
 
-export { CreateTaskInInboxReq, CreateTaskInInboxRes };
+export { ReplaceTaskRes, ReplaceTaskReq };

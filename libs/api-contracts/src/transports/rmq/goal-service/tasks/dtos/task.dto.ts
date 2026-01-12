@@ -1,6 +1,5 @@
-import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
-import { TaskStatus } from './shared/types';
+import { TaskStatus } from '../types';
 
 class TaskDto {
   @IsInt()
@@ -39,8 +38,7 @@ class TaskDto {
   deadline?: string;
 
   @IsEnum(TaskStatus)
-  @Type(() => String)
-  status: string;
+  status: TaskStatus;
 
   @IsOptional()
   @IsString()

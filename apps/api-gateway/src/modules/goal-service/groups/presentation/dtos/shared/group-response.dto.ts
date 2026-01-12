@@ -9,9 +9,9 @@ class GroupRes {
     type: GroupDto,
   })
   @Expose()
-  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => GroupDto)
+  @IsArray()
   data: GroupDto[];
 }
 
