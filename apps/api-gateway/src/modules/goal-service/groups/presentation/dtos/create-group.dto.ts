@@ -55,14 +55,11 @@ class CreateGroupResData {
   @IsInt()
   progress: number;
 
-  @ApiProperty({ example: 100, description: 'От 0 до 100' })
-  @Expose()
-  @Min(0)
-  @Max(100)
-  @IsInt()
-  weight: number;
-
-  @ApiProperty({ example: 40, description: 'От 0 до 100', enum: GroupStatus })
+  @ApiProperty({
+    example: GroupStatus.NOT_STARTED,
+    description: 'Статус группы',
+    enum: GroupStatus,
+  })
   @Expose()
   @IsEnum(GroupStatus)
   @Type(() => String)
@@ -81,6 +78,10 @@ class CreateGroupReq {
 }
 
 class CreateGroupRes {
+  @ApiProperty({
+    description: 'Ответ сервера',
+    type: CreateGroupResData,
+  })
   @Expose()
   @ValidateNested()
   @Type(() => CreateGroupResData)
