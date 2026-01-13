@@ -5,20 +5,6 @@ import { DateVo } from '@big-d/api-utils';
 function assertTaskDates(input: { start?: DateVo; end?: DateVo; deadline?: DateVo }): void {
   const { start, end, deadline } = input;
 
-  if (start != null && start.isBefore(new Date().toISOString())) {
-    throw new ExceptionDomainInvalidInvariant({
-      message: `startDate:${start.value} can't be in the past`,
-      field: 'startDate',
-    });
-  }
-
-  if (end != null && end.isBefore(new Date().toISOString())) {
-    throw new ExceptionDomainInvalidInvariant({
-      message: `end:${end.value} can't be in the past`,
-      field: 'end',
-    });
-  }
-
   if (start != null && end != null) {
     if (start.equals(end) || start.isAfter(end.value)) {
       throw new ExceptionDomainInvalidInvariant({
@@ -35,6 +21,39 @@ function assertTaskDates(input: { start?: DateVo; end?: DateVo; deadline?: DateV
         field: 'startDate',
       });
     }
+  }
+}
+
+function assertEndDateNotInThePast(input: { end?: DateVo }): void {
+  const { end } = input;
+
+  if (end != null && end.isBefore(new Date().toISOString())) {
+    throw new ExceptionDomainInvalidInvariant({
+      message: `end:${end.value} can't be in the past`,
+      field: 'end',
+    });
+  }
+}
+
+function assertDeadlineInThePast(input: { deadline?: DateVo }): void {
+  const { deadline } = input;
+
+  if (deadline != null && deadline.isBefore(new Date().toISOString())) {
+    throw new ExceptionDomainInvalidInvariant({
+      message: `deadline:${deadline.value} can't be in the past`,
+      field: 'deadline',
+    });
+  }
+}
+
+function assertStartDateNotInThePast(input: { start?: DateVo }): void {
+  const { start } = input;
+
+  if (start != null && start.isBefore(new Date().toISOString())) {
+    throw new ExceptionDomainInvalidInvariant({
+      message: `startDate:${start.value} can't be in the past`,
+      field: 'startDate',
+    });
   }
 }
 
@@ -125,4 +144,7 @@ export {
   assertTaskReplace,
   assertTaskAssignToGroup,
   assertTaskUnassignFromGroup,
+  assertEndDateNotInThePast,
+  assertDeadlineInThePast,
+  assertStartDateNotInThePast,
 };
