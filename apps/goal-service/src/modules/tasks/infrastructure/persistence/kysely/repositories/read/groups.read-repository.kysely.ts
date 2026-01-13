@@ -114,6 +114,7 @@ export class GroupsReadRepositoryKysely
       const tasks = await getTasksWithStatusQuery(this.db, trx)
         .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
         .where('ttg.group_id', '=', input.groupId)
+        .orderBy('ttg.position', 'asc')
         .execute();
 
       return GroupReadKyselyMapper.fromRawToWithTaskView({
