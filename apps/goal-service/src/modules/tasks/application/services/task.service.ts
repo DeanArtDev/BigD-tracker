@@ -80,7 +80,7 @@ class TaskService {
       { trx },
     );
 
-    const replacedTask = TaskFactory.update(task, input);
+    const replacedTask = TaskFactory.replace(task, input);
 
     return await this.tasksWriteRepo.replaceTask(replacedTask, trx);
   }

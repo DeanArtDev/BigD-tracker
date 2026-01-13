@@ -1,8 +1,10 @@
-import { GroupInboxView, GroupView, TaskView } from '@/modules/tasks/application/dto';
-import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
-import { Group } from '@/modules/tasks/domain/aggregates/group';
+import {
+  GroupInboxView,
+  GroupView,
+  GroupWithTasksView,
+  TaskView,
+} from '@/modules/tasks/application/dto';
 import { GroupStatus } from '@big-d/api-contracts';
-import { Name } from '@big-d/api-utils';
 
 interface RawGroup {
   readonly id: number;
@@ -11,6 +13,9 @@ interface RawGroup {
   readonly user_id: number;
   readonly progress: number;
   readonly status: GroupStatus;
+}
+
+interface RawGroupWithTasks extends RawGroup {
   readonly tasks: TaskView[];
 }
 
@@ -22,18 +27,6 @@ interface RawInboxGroup {
 }
 
 class GroupReadKyselyMapper {
-  static fromRawToAgr(raw: RawGroup): Group {
-    return Group.restore({
-      id: raw.id,
-      name: Name.restore(raw.name),
-      description: raw.description != null ? DescriptionVo.restore(raw.description) : undefined,
-      userId: raw.user_id,
-      status: raw.status,
-      progress: ProgressVo.restore(raw.progress),
-      tasks: raw.tasks,
-    });
-  }
-
   static fromRawToView(raw: RawGroup): GroupView {
     return GroupView.restore({
       id: raw.id,
@@ -42,7 +35,21 @@ class GroupReadKyselyMapper {
       userId: raw.user_id,
       progress: raw.progress,
       status: raw.status,
+    });
+  }
+
+  static fromRawToWithTaskView(raw: RawGroupWithTasks): GroupWithTasksView {
+    return GroupWithTasksView.restore({
       tasks: raw.tasks,
+
+      ...GroupReadKyselyMapper.fromRawToView({
+        id: raw.id,
+        name: raw.name,
+        description: raw.description,
+        user_id: raw.user_id,
+        progress: raw.progress,
+        status: raw.status,
+      }),
     });
   }
 

@@ -1,13 +1,13 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { TasksReadRepository } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/application/ports';
-import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
+import { Database, TasksReadRepository } from '@/modules/tasks/application/ports';
 import { TaskStatus } from '@big-d/api-contracts';
-import { BaseTasksRepository } from '../base-tasks.repository';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
+import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
+import { BaseTasksRepository } from '../base-tasks.repository';
+import { getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -22,26 +22,9 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return await this.errorCatcher('tasks.get-by-id', async () => {
       const { id, userId } = input;
 
-      const result = await this.db
-        .qb(trx)
-        .selectFrom('tasks as t')
-        .innerJoin('task_statuses as ts', 't.status_id', 'ts.id')
+      const result = await getTasksWithStatusQuery(this.db, trx)
         .where('t.id', '=', id)
         .where('t.user_id', '=', userId)
-        .select([
-          't.id as id',
-          't.user_id as user_id',
-          't.name as name',
-          't.description as description',
-          't.priority as priority',
-          't.weight as weight',
-          't.cancel_reason as cancel_reason',
-          't.start_date as start_date',
-          't.end_date as end_date',
-          't.deadline as deadline',
-          't.recurrence as recurrence',
-          'ts.name as status',
-        ])
         .executeTakeFirst();
       if (result == null) return null;
 
@@ -75,6 +58,27 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .executeTakeFirst();
 
       return result != null;
+    });
+  }
+
+  async getTaskToGroupLink(
+    input: { taskId: number },
+    trx?: Transaction<DB>,
+  ): Promise<{ taskId: number; groupId: number; position: number } | null> {
+    return await this.errorCatcher('tasks.get-task-to-group-link.read', async () => {
+      const result = await this.db
+        .qb(trx)
+        .selectFrom('task_to_group')
+        .where('task_id', '=', input.taskId)
+        .selectAll()
+        .executeTakeFirst();
+
+      if (result == null) return null;
+      return {
+        taskId: result.task_id,
+        groupId: result.group_id,
+        position: result.position,
+      };
     });
   }
 }

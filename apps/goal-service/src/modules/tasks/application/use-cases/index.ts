@@ -9,4 +9,5 @@ export * from './assign-task-to-inbox';
 export * from './unassign-task-from-group';
 
 export * from './create-inbox-group';
+export * from './replace-group';
 export * from './create-group';

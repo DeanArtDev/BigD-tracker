@@ -1,9 +1,12 @@
 import { DB } from '@/infrastructure/types';
-import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
-import { GroupView } from '@/modules/tasks/application/dto/group.view';
-import { GroupsReadRepository } from '@/modules/tasks/application/ports';
+import { GroupInboxView, GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
+import {
+  Database,
+  GetGroupByIdInput,
+  GroupsReadRepository,
+  ThrowErrorOptions,
+} from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/application/ports';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -11,8 +14,13 @@ import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getGroupWithStatusQuery } from './helpers/get-group-with-status.query';
-import { getInboxByUserIdQuery } from './helpers';
+import {
+  firstOrThrowError,
+  getAvailableGroupQuery,
+  getGroupWithStatusQuery,
+  getInboxByUserIdQuery,
+  getTasksWithStatusQuery,
+} from '../helpers';
 
 @Injectable()
 export class GroupsReadRepositoryKysely
@@ -23,6 +31,9 @@ export class GroupsReadRepositoryKysely
     super();
   }
 
+  /**
+   * Ищет во всех группах, даже в IN_BOX
+   * */
   async getByName(
     input: { name: string; userId: number },
     trx?: Transaction<DB>,
@@ -41,20 +52,30 @@ export class GroupsReadRepositoryKysely
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
-        tasks: [],
       });
     });
   }
 
+  getGroupById(
+    input: GetGroupByIdInput,
+    options?: { throwError?: false; trx?: Transaction<DB> },
+  ): Promise<GroupView | null>;
+  getGroupById(
+    input: GetGroupByIdInput,
+    options: { throwError: true; trx?: Transaction<DB> },
+  ): Promise<GroupView>;
   async getGroupById(
-    input: { groupId: number; userId: number },
-    trx?: Transaction<DB>,
+    input: GetGroupByIdInput,
+    options?: ThrowErrorOptions,
   ): Promise<GroupView | null> {
-    return await this.errorCatcher('groups.get-by-id', async () => {
-      const result = await getGroupWithStatusQuery(this.db, trx)
+    return await this.errorCatcher('groups.get-by-id.read', async () => {
+      const { trx, throwError } = options ?? {};
+
+      const query = getAvailableGroupQuery(this.db, trx)
         .where('g.id', '=', input.groupId)
-        .where('g.user_id', '=', input.userId)
-        .executeTakeFirst();
+        .where('g.user_id', '=', input.userId);
+
+      const result = await firstOrThrowError(query, { throwError });
       if (result == null) return null;
 
       return GroupReadKyselyMapper.fromRawToView({
@@ -64,7 +85,45 @@ export class GroupsReadRepositoryKysely
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
-        tasks: [],
+      });
+    });
+  }
+
+  getGroupWithTasksById(
+    input: GetGroupByIdInput,
+    options?: { throwError?: false; trx?: Transaction<DB> },
+  ): Promise<GroupWithTasksView | null>;
+  getGroupWithTasksById(
+    input: GetGroupByIdInput,
+    options: { throwError: true; trx?: Transaction<DB> },
+  ): Promise<GroupWithTasksView>;
+  async getGroupWithTasksById(
+    input: GetGroupByIdInput,
+    options?: ThrowErrorOptions,
+  ): Promise<GroupWithTasksView | null> {
+    return await this.errorCatcher('groups.get-with-tasks-by-id.read', async () => {
+      const { trx, throwError } = options ?? {};
+
+      const query = getAvailableGroupQuery(this.db, trx)
+        .where('g.id', '=', input.groupId)
+        .where('g.user_id', '=', input.userId);
+
+      const result = await firstOrThrowError(query, { throwError });
+      if (result == null) return null;
+
+      const tasks = await getTasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
+        .where('ttg.group_id', '=', input.groupId)
+        .execute();
+
+      return GroupReadKyselyMapper.fromRawToWithTaskView({
+        id: result.id,
+        name: result.name,
+        description: result.description,
+        user_id: result.user_id,
+        progress: result.progress,
+        status: result.status as GroupStatus,
+        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
       });
     });
   }
@@ -76,25 +135,8 @@ export class GroupsReadRepositoryKysely
     return await this.errorCatcher('groups.get-inbox-by-user-id-with-tasks', async () => {
       const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirstOrThrow();
 
-      const tasks = await this.db
-        .qb(trx)
-        .selectFrom('tasks as t')
-        .innerJoin('task_statuses as ts', 'ts.id', 't.status_id')
+      const tasks = await getTasksWithStatusQuery(this.db, trx)
         .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-        .select([
-          't.id as id',
-          't.user_id as user_id',
-          't.name as name',
-          't.description as description',
-          't.priority as priority',
-          't.weight as weight',
-          't.cancel_reason as cancel_reason',
-          't.start_date as start_date',
-          't.end_date as end_date',
-          't.deadline as deadline',
-          't.recurrence as recurrence',
-          'ts.name as status',
-        ])
         .where('ttg.group_id', '=', inbox.id)
         .where('ts.name', 'in', tasksAreInInboxSpec.default)
         .orderBy('t.id', 'asc')

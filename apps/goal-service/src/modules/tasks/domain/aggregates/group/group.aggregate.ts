@@ -1,14 +1,13 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
+import { assertGroupUpdate } from './group.invariants';
 
 interface GroupState {
   readonly id: number;
   readonly userId: number;
   readonly progress: ProgressVo;
   readonly status: GroupStatus;
-  readonly tasks: TaskView[];
   name: Name;
   description?: DescriptionVo;
 }
@@ -20,7 +19,13 @@ interface GroupRestoreInput {
   readonly description?: DescriptionVo;
   readonly progress: ProgressVo;
   readonly status: GroupStatus;
-  readonly tasks: TaskView[];
+}
+
+interface GroupReplaceInput {
+  readonly id: number;
+  readonly userId: number;
+  readonly name: Name;
+  readonly description?: DescriptionVo;
 }
 
 interface GroupCreateInput {
@@ -44,7 +49,19 @@ class Group {
       description: input.description,
       status: GroupStatus.NOT_STARTED,
       progress: ProgressVo.defaultValue(),
-      tasks: [],
+    });
+  }
+
+  static replace(group: Group, input: GroupReplaceInput): Group {
+    assertGroupUpdate({ status: group.status });
+
+    return new Group({
+      id: input.id,
+      userId: input.userId,
+      name: input.name,
+      description: input.description,
+      status: GroupStatus.NOT_STARTED,
+      progress: ProgressVo.defaultValue(),
     });
   }
 
@@ -56,7 +73,6 @@ class Group {
       description: input.description,
       status: GroupStatus.NOT_STARTED,
       progress: ProgressVo.defaultValue(),
-      tasks: [],
     });
   }
 
@@ -83,10 +99,6 @@ class Group {
   get status(): GroupStatus {
     return this.#state.status;
   }
-
-  get tasks(): TaskView[] {
-    return this.#state.tasks;
-  }
 }
 
-export { Group };
+export { Group, GroupCreateInput, GroupReplaceInput, GroupRestoreInput, GroupState };

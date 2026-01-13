@@ -16,7 +16,7 @@ interface TaskFactoryCreateInput {
   readonly recurrence?: string;
 }
 
-interface TaskFactoryUpdateInput {
+interface TaskFactoryReplaceInput {
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
@@ -34,7 +34,7 @@ interface TaskFactoryUpdateInboxInput {
   readonly deadline?: string;
 }
 
-export class TaskFactory {
+class TaskFactory {
   static create(input: TaskFactoryCreateInput): Task {
     const state: TaskCreateInput = {
       userId: input.userId,
@@ -63,7 +63,7 @@ export class TaskFactory {
     return clonedTask;
   }
 
-  static update(task: Task, input: TaskFactoryUpdateInput): Task {
+  static replace(task: Task, input: TaskFactoryReplaceInput): Task {
     const state: TaskUpdateInput = {
       name: Name.create(input.name),
       description: input.description,
@@ -103,3 +103,5 @@ export class TaskFactory {
     return task.unassignFromGroup();
   }
 }
+
+export { TaskFactory, TaskFactoryReplaceInput };

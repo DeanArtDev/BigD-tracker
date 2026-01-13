@@ -1,13 +1,18 @@
 import { DB } from '@/infrastructure/types';
-import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
-import { GroupsWriteRepository, INBOX_GROUP_KEY } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/application/ports';
-import { Group } from '@/modules/tasks/domain/aggregates/group';
+import { GroupInboxView } from '@/modules/tasks/application/dto';
+import {
+  Database,
+  GroupsWriteRepository,
+  INBOX_GROUP_KEY,
+} from '@/modules/tasks/application/ports';
+import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { getGroupWithStatusQuery } from '../helpers';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
+import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 
 @Injectable()
@@ -17,6 +22,28 @@ export class GroupWriteRepositoryKysely
 {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
     super();
+  }
+
+  async getGroupById(
+    input: { groupId: number; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<Group | null> {
+    return await this.errorCatcher('groups.get-by-id.write', async () => {
+      const result = await getGroupWithStatusQuery(this.db, trx)
+        .where('g.id', '=', input.groupId)
+        .where('g.user_id', '=', input.userId)
+        .executeTakeFirst();
+      if (result == null) return null;
+
+      return GroupWriteKyselyMapper.fromRawToAgr({
+        id: result.id,
+        name: result.name,
+        description: result.description,
+        user_id: result.user_id,
+        progress: result.progress,
+        status: result.status as GroupStatus,
+      });
+    });
   }
 
   async createInbox(input: { userId: number }, trx?: Transaction<DB>): Promise<GroupInboxView> {
@@ -69,15 +96,71 @@ export class GroupWriteRepositoryKysely
         .returning(['id', 'name', 'user_id', 'progress', 'description'])
         .executeTakeFirstOrThrow();
 
-      return GroupReadKyselyMapper.fromRawToAgr({
+      return GroupWriteKyselyMapper.fromRawToAgr({
         id: result.id,
         name: result.name,
         user_id: result.user_id,
         status: groupStatus.name as GroupStatus,
         progress: result.progress,
         description: result.description,
-        tasks: [],
       });
+    });
+  }
+
+  /**
+   * Обновление группы с ее делами
+   * */
+  async replaceGroupWithTasks(group: GroupWithTasks, trx?: Transaction<DB>): Promise<void> {
+    return await this.errorCatcher('groups.replace-with-tasks', async () => {
+      await this.db
+        .qb(trx)
+        .updateTable('groups')
+        .where('id', '=', group.id)
+        .where('user_id', '=', group.userId)
+        .set({
+          name: group.name,
+          description: group.description,
+        })
+        .executeTakeFirstOrThrow();
+
+      await this.db
+        .qb(trx)
+        .deleteFrom('task_to_group as ttg')
+        .where('ttg.group_id', '=', group.id)
+        .execute();
+
+      for (let i = 0; i < group.tasks.length; i++) {
+        const task = group.tasks[i];
+
+        await this.db
+          .qb(trx)
+          .updateTable('tasks')
+          .where('id', '=', task.id)
+          .where('user_id', '=', group.userId)
+          .set({
+            name: task.name,
+            description: task.description,
+            priority: task.priority,
+            start_date: task.startDate,
+            deadline: task.deadline,
+            weight: task.weight,
+          })
+          .executeTakeFirstOrThrow();
+      }
+
+      if (group.tasks.length > 0) {
+        await this.db
+          .qb(trx)
+          .insertInto('task_to_group')
+          .values(
+            group.tasks.map((t, i) => ({
+              task_id: t.id,
+              group_id: group.id,
+              position: i,
+            })),
+          )
+          .executeTakeFirstOrThrow();
+      }
     });
   }
 }
