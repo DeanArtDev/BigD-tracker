@@ -63,6 +63,7 @@ export class GroupWriteRepositoryKysely
         .values({
           name: group.name,
           user_id: group.userId,
+          description: group.description,
           status_id: groupStatus.id,
         })
         .returning(['id', 'name', 'user_id', 'progress', 'description'])

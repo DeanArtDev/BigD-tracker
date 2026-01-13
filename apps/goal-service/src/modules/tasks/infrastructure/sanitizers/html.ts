@@ -1,5 +1,5 @@
 import { HtmlSanitizer } from '@/modules/tasks/domain/ports';
-import sanitizeHtml from 'sanitize-html';
+import * as sanitizeHtml from 'sanitize-html';
 
 class SanitizeHtmlAdapter implements HtmlSanitizer {
   sanitize(input: string): string {
