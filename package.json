@@ -58,7 +58,7 @@
     "prettier": "catalog:",
     "ts-loader": "catalog:",
     "ts-node": "catalog:",
-    "turbo": "^2.5.3",
+    "turbo": "^2.7.4",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
   },
