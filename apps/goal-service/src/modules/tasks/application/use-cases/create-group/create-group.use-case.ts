@@ -15,7 +15,7 @@ class CreateGroupUseCase {
 
   async execute({ input }: CreateGroupCommand): Promise<GroupView> {
     return this.db.runTransaction(async (trx) => {
-      return this.groupsService.createTask(input, trx);
+      return this.groupsService.createGroup(input, trx);
     });
   }
 }

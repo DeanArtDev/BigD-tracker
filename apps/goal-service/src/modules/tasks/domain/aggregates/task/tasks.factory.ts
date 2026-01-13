@@ -1,4 +1,4 @@
-import { Priority, TaskUpdateInput, Weight } from '@/modules/tasks/domain';
+import { Priority, TaskReplaceInput, Weight } from '@/modules/tasks/domain';
 import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
@@ -16,7 +16,7 @@ interface TaskFactoryCreateInput {
   readonly recurrence?: string;
 }
 
-interface TaskFactoryUpdateInput {
+interface TaskFactoryReplaceInput {
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
@@ -34,7 +34,7 @@ interface TaskFactoryUpdateInboxInput {
   readonly deadline?: string;
 }
 
-export class TaskFactory {
+class TaskFactory {
   static create(input: TaskFactoryCreateInput): Task {
     const state: TaskCreateInput = {
       userId: input.userId,
@@ -63,8 +63,8 @@ export class TaskFactory {
     return clonedTask;
   }
 
-  static update(task: Task, input: TaskFactoryUpdateInput): Task {
-    const state: TaskUpdateInput = {
+  static replace(task: Task, input: TaskFactoryReplaceInput): Task {
+    const state: TaskReplaceInput = {
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
@@ -74,11 +74,11 @@ export class TaskFactory {
       recurrence: input.recurrence,
     };
 
-    return task.update(state);
+    return task.replace(state);
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {
-    const state: TaskUpdateInput = {
+    const state: TaskReplaceInput = {
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
@@ -88,7 +88,7 @@ export class TaskFactory {
       recurrence: task.recurrence,
     };
 
-    return task.update(state);
+    return task.replace(state);
   }
 
   static deleteSoft(task: Task): Task {
@@ -103,3 +103,5 @@ export class TaskFactory {
     return task.unassignFromGroup();
   }
 }
+
+export { TaskFactory, TaskFactoryReplaceInput };

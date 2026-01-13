@@ -31,10 +31,10 @@ describe('Task aggregate', () => {
     expect(task.recurrence).toBe('weekly');
   });
 
-  it('updates task fields', () => {
+  it('replace task fields', () => {
     const task = Task.create(buildCreateInput());
 
-    task.update({
+    task.replace({
       name: Name.create('Refine tests'),
       description: 'Update aggregate tests',
       priority: Priority.create(3),

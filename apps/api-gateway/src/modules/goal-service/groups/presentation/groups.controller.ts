@@ -2,11 +2,27 @@ import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalCreateGroup, GoalGetGroupInBox } from '@big-d/api-contracts';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { GoalCreateGroup, GoalGetGroupInBox, GoalReplaceGroup } from '@big-d/api-contracts';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
-import { CreateGroupReq, CreateGroupRes, GetInBoxRes } from './dtos';
+import {
+  CreateGroupReq,
+  CreateGroupRes,
+  GetInBoxRes,
+  ReplaceGroupReq,
+  ReplaceGroupRes,
+} from './dtos';
 
 @ApiTags('Groups')
 @Controller('/groups')
@@ -44,6 +60,34 @@ export class GroupsController {
     return await this.goalClient.send<GoalCreateGroup.Response, GoalCreateGroup.Request>(
       GoalCreateGroup.pattern,
       { data: { userId: uid, description: data.description, name: data.name } },
+    );
+  }
+
+  @Put('/:groupId')
+  @ApiOperation({ summary: 'Редактирование группы' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: ReplaceGroupRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(ReplaceGroupRes)
+  async replaceGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Body() { data }: ReplaceGroupReq,
+  ): Promise<ReplaceGroupRes> {
+    return await this.goalClient.send<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
+      GoalReplaceGroup.pattern,
+      {
+        data: {
+          id: groupId,
+          userId: uid,
+          description: data.description,
+          name: data.name,
+          tasks: data.tasks,
+        },
+      },
     );
   }
 }

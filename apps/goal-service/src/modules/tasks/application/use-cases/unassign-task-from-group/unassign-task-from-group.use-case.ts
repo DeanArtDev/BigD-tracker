@@ -22,9 +22,9 @@ class UnassignTaskFromGroupUseCase {
 
       const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId, userId }, { trx });
       await this.groupCheckerService.ensureTaskInGroup({ groupId, userId, taskId }, { trx });
-      const unassignedTask = TaskFactory.unassignFromGroup(sureTask);
+      TaskFactory.unassignFromGroup(sureTask);
 
-      await this.tasksWriteRepo.removeTaskFromGroup({ taskId: unassignedTask.id, groupId }, trx);
+      await this.tasksWriteRepo.removeTaskFromGroup({ taskId }, trx);
       return { success: true };
     });
   }

@@ -1,10 +1,11 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import {
+  assertStartDateNotInThePast,
   assertTaskAssignToGroup,
   assertTaskDates,
   assertTaskDeleteSoft,
-  assertTaskUpdate,
+  assertTaskReplace,
 } from './tasks.invariants';
 
 const futureDate = (offsetDays: number) =>
@@ -16,9 +17,8 @@ const pastDate = (offsetDays: number) =>
 describe('task invariants', () => {
   it('rejects start dates in the past', () => {
     expect(() =>
-      assertTaskDates({
+      assertStartDateNotInThePast({
         start: DateVo.create(pastDate(1)),
-        deadline: DateVo.create(futureDate(1)),
       }),
     ).toThrow();
   });
@@ -43,7 +43,7 @@ describe('task invariants', () => {
 
   it('rejects updates for terminal statuses', () => {
     expect(() =>
-      assertTaskUpdate({
+      assertTaskReplace({
         status: TaskStatus.COMPLETED,
       }),
     ).toThrow();
@@ -51,7 +51,7 @@ describe('task invariants', () => {
 
   it('rejects updates after ending', () => {
     expect(() =>
-      assertTaskUpdate({
+      assertTaskReplace({
         status: TaskStatus.NOT_STARTED,
         endDate: futureDate(1),
       }),

@@ -1,7 +1,7 @@
 import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
 import { BaseRpcException, RpcExceptionFactory } from '@big-d/api-contracts';
-import { BaseException, exceptionCode, isBaseExceptionInstance } from '@big-d/exceptions';
+import { BaseException, exceptionCode, isBaseException } from '@big-d/exceptions';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
 import { getCorrelationId } from '@shared/request-context/helpers';
@@ -21,7 +21,7 @@ export class GoalExceptionToRpc implements ExceptionFilter {
       return throwError(() => RpcExceptionFactory.createInternalError(exception));
     }
 
-    if (isBaseExceptionInstance(exception)) {
+    if (isBaseException(exception)) {
       if (
         [
           exceptionCode.taskNotFound.code,
