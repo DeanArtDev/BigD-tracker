@@ -36,16 +36,21 @@ class ReplaceGroupUseCase {
 
       const readyToReplaceTasks: GroupFactoryReplaceWithTasksInput['tasks'] = [];
       for (const taskInput of tasks) {
-        await this.groupCheckerService.ensureTaskInGroup({ taskId: taskInput.id, groupId, userId });
         const restoredTask = await this.taskCheckerService.ensureTaskExists(
           { userId, taskId: taskInput.id },
           { trx },
         );
+
+        await this.groupCheckerService.ensureTaskInGroup(
+          { taskId: taskInput.id, groupId, userId },
+          { trx },
+        );
+
         readyToReplaceTasks.push({ task: restoredTask, input: taskInput });
       }
 
       const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
-      const groupWithTasks = groupFactory.replaceWithTasks(ensureGroup, {
+      const groupWithTasks = groupFactory.replaceWithTasksByGroup(ensureGroup, {
         id: groupId,
         userId,
         name,

@@ -4,7 +4,7 @@ import {
   assertTaskAssignToGroup,
   assertTaskDates,
   assertTaskDeleteSoft,
-  assertTaskUpdate,
+  assertTaskReplace,
 } from './tasks.invariants';
 
 const futureDate = (offsetDays: number) =>
@@ -43,7 +43,7 @@ describe('task invariants', () => {
 
   it('rejects updates for terminal statuses', () => {
     expect(() =>
-      assertTaskUpdate({
+      assertTaskReplace({
         status: TaskStatus.COMPLETED,
       }),
     ).toThrow();
@@ -51,7 +51,7 @@ describe('task invariants', () => {
 
   it('rejects updates after ending', () => {
     expect(() =>
-      assertTaskUpdate({
+      assertTaskReplace({
         status: TaskStatus.NOT_STARTED,
         endDate: futureDate(1),
       }),

@@ -36,6 +36,10 @@ class ReplaceGroupTask {
   @IsOptional()
   @IsString()
   deadline?: string;
+
+  @IsOptional()
+  @IsString()
+  recurrence?: string;
 }
 
 class ReplaceGroupReqData {

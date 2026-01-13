@@ -144,6 +144,7 @@ export class GroupWriteRepositoryKysely
             start_date: task.startDate,
             deadline: task.deadline,
             weight: task.weight,
+            recurrence: task.recurrence,
           })
           .executeTakeFirstOrThrow();
       }

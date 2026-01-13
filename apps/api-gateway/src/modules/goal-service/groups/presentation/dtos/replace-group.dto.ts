@@ -57,6 +57,14 @@ class ReplaceGroupTask {
   @Max(100)
   @IsInt()
   weight: number;
+
+  @ApiPropertyOptional({
+    example: '----',
+    description: 'Паттерн повторения дела',
+  })
+  @IsOptional()
+  @IsString()
+  recurrence?: string;
 }
 
 class ReplaceGroupReqData {

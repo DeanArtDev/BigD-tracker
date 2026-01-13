@@ -47,7 +47,7 @@ function assertHasCancelReason(input: { status: TaskStatus; reason?: string }): 
   }
 }
 
-function assertTaskUpdate(input: { status: TaskStatus; endDate?: string }): void {
+function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): void {
   const { status, endDate } = input;
 
   if (
@@ -122,7 +122,7 @@ export {
   assertTaskDates,
   assertTaskDeleteSoft,
   assertHasCancelReason,
-  assertTaskUpdate,
+  assertTaskReplace,
   assertTaskAssignToGroup,
   assertTaskUnassignFromGroup,
 };

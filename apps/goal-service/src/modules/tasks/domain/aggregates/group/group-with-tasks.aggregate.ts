@@ -3,7 +3,7 @@ import { GroupStatus } from '@big-d/api-contracts';
 import { Group } from './group.aggregate';
 
 interface GroupWithTasksState {
-  readonly tasks: TaskView[];
+  tasks: TaskView[];
 }
 
 interface GroupWithTasksRestoreInput {
@@ -24,10 +24,10 @@ interface GroupWithTasksCreateInput {
 class GroupWithTasks {
   readonly id: number;
   readonly userId: number;
-  readonly name: string;
-  readonly description?: string;
-  readonly status: GroupStatus;
-  readonly progress: number;
+  name: string;
+  description?: string;
+  status: GroupStatus;
+  progress: number;
   #state: GroupWithTasksState;
 
   private constructor(input: Readonly<{ group: Group; tasks: TaskView[] }>) {
@@ -50,11 +50,14 @@ class GroupWithTasks {
     });
   }
 
-  static replace(input: GroupWithTasksReplaceInput): GroupWithTasks {
-    return new GroupWithTasks({
-      group: input.group,
-      tasks: input.tasks,
-    });
+  public replace(input: GroupWithTasksReplaceInput): this {
+    this.name = input.group.name;
+    this.description = input.group.description;
+    this.status = input.group.status;
+    this.progress = input.group.progress;
+    this.#state.tasks = input.tasks;
+
+    return this;
   }
 
   static restore(input: GroupWithTasksRestoreInput): GroupWithTasks {

@@ -6,10 +6,10 @@ import {
   assertTaskAssignToGroup,
   assertTaskDates,
   assertTaskDeleteSoft,
+  assertTaskReplace,
   assertTaskUnassignFromGroup,
-  assertTaskUpdate,
 } from './tasks.invariants';
-import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
+import { TaskCreateInput, TaskRestoreInput, TaskState, TaskReplaceInput } from './tasks.types';
 
 class Task extends AggregateRoot {
   #state: TaskState;
@@ -71,8 +71,8 @@ class Task extends AggregateRoot {
     });
   }
 
-  public update(input: TaskUpdateInput): this {
-    assertTaskUpdate({ status: this.#state.status, endDate: this.#state.endDate?.value });
+  public replace(input: TaskReplaceInput): this {
+    assertTaskReplace({ status: this.#state.status, endDate: this.#state.endDate?.value });
 
     this.#state.name = input.name;
     this.#state.description = input.description;
@@ -82,7 +82,7 @@ class Task extends AggregateRoot {
     this.#state.deadline = input.deadline;
     this.#state.recurrence = input.recurrence;
 
-    return this.#validate();
+    return this;
   }
 
   public deleteSoft(): this {

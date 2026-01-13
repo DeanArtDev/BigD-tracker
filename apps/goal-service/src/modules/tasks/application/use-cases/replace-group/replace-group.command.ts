@@ -13,6 +13,7 @@ export class ReplaceGroupCommand {
         readonly priority: number;
         readonly startDate?: string;
         readonly deadline?: string;
+        readonly recurrence?: string;
       }[];
     },
   ) {}

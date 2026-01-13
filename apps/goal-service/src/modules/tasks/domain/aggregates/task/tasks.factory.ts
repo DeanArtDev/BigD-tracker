@@ -1,4 +1,4 @@
-import { Priority, TaskUpdateInput, Weight } from '@/modules/tasks/domain';
+import { Priority, TaskReplaceInput, Weight } from '@/modules/tasks/domain';
 import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
@@ -64,7 +64,7 @@ class TaskFactory {
   }
 
   static replace(task: Task, input: TaskFactoryReplaceInput): Task {
-    const state: TaskUpdateInput = {
+    const state: TaskReplaceInput = {
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
@@ -74,11 +74,11 @@ class TaskFactory {
       recurrence: input.recurrence,
     };
 
-    return task.update(state);
+    return task.replace(state);
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {
-    const state: TaskUpdateInput = {
+    const state: TaskReplaceInput = {
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
@@ -88,7 +88,7 @@ class TaskFactory {
       recurrence: task.recurrence,
     };
 
-    return task.update(state);
+    return task.replace(state);
   }
 
   static deleteSoft(task: Task): Task {

@@ -36,7 +36,7 @@ class GroupFactory {
   }
 
   replace(group: Group, input: GroupFactoryReplaceInput): Group {
-    return Group.replace(group, {
+    return group.replace({
       id: input.id,
       userId: input.userId,
       name: Name.create(input.name),
@@ -47,10 +47,13 @@ class GroupFactory {
     });
   }
 
-  replaceWithTasks(group: Group, input: GroupFactoryReplaceWithTasksInput): GroupWithTasks {
+  replaceWithTasksByGroup(group: Group, input: GroupFactoryReplaceWithTasksInput): GroupWithTasks {
     const { tasks, ...others } = input;
-    return GroupWithTasks.replace({
-      group: this.replace(group, others),
+
+    const replacedGroup = this.replace(group, others);
+
+    return GroupWithTasks.restore({ group: replacedGroup, tasks: [] }).replace({
+      group: replacedGroup,
       tasks: tasks.map((task) => TaskFactory.replace(task.task, task.input)),
     });
   }

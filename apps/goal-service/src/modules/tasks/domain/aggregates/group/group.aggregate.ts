@@ -21,7 +21,7 @@ interface GroupRestoreInput {
   readonly status: GroupStatus;
 }
 
-interface GroupReplaceInput {
+interface GroupUpdateInput {
   readonly id: number;
   readonly userId: number;
   readonly name: Name;
@@ -52,17 +52,13 @@ class Group {
     });
   }
 
-  static replace(group: Group, input: GroupReplaceInput): Group {
-    assertGroupUpdate({ status: group.status });
+  public replace(input: GroupUpdateInput): this {
+    assertGroupUpdate({ status: this.#state.status });
 
-    return new Group({
-      id: input.id,
-      userId: input.userId,
-      name: input.name,
-      description: input.description,
-      status: GroupStatus.NOT_STARTED,
-      progress: ProgressVo.defaultValue(),
-    });
+    this.#state.name = input.name;
+    this.#state.description = input.description;
+
+    return this;
   }
 
   static restore(input: GroupRestoreInput): Group {
@@ -101,4 +97,4 @@ class Group {
   }
 }
 
-export { Group, GroupCreateInput, GroupReplaceInput, GroupRestoreInput, GroupState };
+export { Group, GroupCreateInput, GroupUpdateInput, GroupRestoreInput, GroupState };
