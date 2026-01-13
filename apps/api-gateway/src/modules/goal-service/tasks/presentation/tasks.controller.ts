@@ -99,7 +99,7 @@ export class TasksController {
   }
 
   @Post('/:taskId/groups/:groupId')
-  @ApiOperation({ summary: 'Добавление дела в группу' })
+  @ApiOperation({ summary: 'Перемещение дела в группу' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: AssignTaskToGroupRes,

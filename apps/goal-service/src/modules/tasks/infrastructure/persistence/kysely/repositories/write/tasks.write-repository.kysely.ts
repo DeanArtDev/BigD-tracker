@@ -137,27 +137,24 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async removeTaskFromGroup(
-    input: { groupId: number; taskId: number },
-    trx?: Transaction<DB>,
-  ): Promise<void> {
+  async removeTaskFromGroup(input: { taskId: number }, trx?: Transaction<DB>): Promise<void> {
     return await this.errorCatcher('tasks.remove-from-group', async () => {
       const qb = this.db.qb(trx);
 
-      const { position } = await qb
+      const taskToGroupLink = await qb
         .deleteFrom('task_to_group')
-        .where('group_id', '=', input.groupId)
         .where('task_id', '=', input.taskId)
-        .returning(['position'])
-        .executeTakeFirstOrThrow();
+        .returning(['position', 'group_id'])
+        .executeTakeFirst();
+      if (taskToGroupLink == null) return;
 
       await qb
         .updateTable('task_to_group')
         .set((eb) => ({
           position: eb('position', '-', 1),
         }))
-        .where('group_id', '=', input.groupId)
-        .where('position', '>', position)
+        .where('group_id', '=', taskToGroupLink.group_id)
+        .where('position', '>', taskToGroupLink.position)
         .execute();
     });
   }
