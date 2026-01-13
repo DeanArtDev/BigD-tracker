@@ -1,5 +1,5 @@
-import { CreateGroupCommand } from '@/modules/tasks/application/use-cases';
-import { GoalCreateGroup } from '@big-d/api-contracts';
+import { CreateGroupCommand, ReplaceGroupCommand } from '@/modules/tasks/application/use-cases';
+import { GoalCreateGroup, GoalReplaceGroup } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -20,6 +20,23 @@ export class GroupsRpcController {
           userId: payload.userId,
           name: payload.name,
           description: payload.description,
+        }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalReplaceGroup.pattern)
+  async replaceGroup(
+    @Payload() { data: payload }: GoalReplaceGroup.Request,
+  ): Promise<GoalReplaceGroup.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new ReplaceGroupCommand({
+          id: payload.id,
+          userId: payload.userId,
+          name: payload.name,
+          description: payload.description,
+          tasks: payload.tasks,
         }),
       ),
     };

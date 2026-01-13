@@ -48,9 +48,11 @@ class BaseException<
   }
 }
 
-function isBaseExceptionInstance(
-  error: unknown,
-): error is BaseException<string, ExceptionCodes, any> {
+function isBaseExceptionInstance<
+  TKey extends string = string,
+  TCode extends ExceptionCodes = ExceptionCodes,
+  TDetails extends Record<string, any> = Record<string, any>,
+>(error: unknown): error is BaseException<TKey, TCode, TDetails> {
   return error instanceof BaseException;
 }
 

@@ -3,6 +3,7 @@ import {
   GroupCheckerService,
   GroupsService,
   TaskCheckerService,
+  TaskGroupCheckerService,
   TaskQueryService,
   TaskService,
 } from '@/modules/tasks/application/services';
@@ -42,6 +43,9 @@ import {
   CreateGroupCommand,
   CreateGroupHandler,
   CreateGroupUseCase,
+  ReplaceGroupCommand,
+  ReplaceGroupHandler,
+  ReplaceGroupUseCase,
 } from './use-cases';
 
 const queries = [GetInboxByUserIdQuery];
@@ -56,6 +60,7 @@ const commands = [
   AssignTaskToGroupCommand,
   AssignTaskToInboxCommand,
   UnassignTaskFromGroupCommand,
+  ReplaceGroupCommand,
   CreateGroupCommand,
 ];
 const handlers = [
@@ -70,6 +75,7 @@ const handlers = [
   AssignTaskToGroupHandler,
   AssignTaskToInboxHandler,
   UnassignTaskFromGroupHandler,
+  ReplaceGroupHandler,
   CreateGroupHandler,
 ];
 const useCases = [
@@ -83,6 +89,7 @@ const useCases = [
   AssignTaskToGroupUseCase,
   AssignTaskToInboxUseCase,
   UnassignTaskFromGroupUseCase,
+  ReplaceGroupUseCase,
   CreateGroupUseCase,
 ];
 
@@ -93,6 +100,7 @@ const useCases = [
     GroupsService,
     TaskCheckerService,
     GroupCheckerService,
+    TaskGroupCheckerService,
     TaskQueryService,
     ...commands,
     ...queries,

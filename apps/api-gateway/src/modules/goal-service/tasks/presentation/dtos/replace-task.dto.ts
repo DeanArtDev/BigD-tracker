@@ -1,4 +1,4 @@
-import { TaskDto } from '@/modules/goal-service/tasks';
+import { TaskDto } from './task.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import {

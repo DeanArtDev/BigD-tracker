@@ -21,12 +21,12 @@ class GroupsService {
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupReadRepo: GroupsReadRepository,
   ) {}
 
-  async createTask(input: CreateGroupInput, trx?: Transaction<DB>): Promise<GroupView> {
+  async createGroup(input: CreateGroupInput, trx?: Transaction<DB>): Promise<GroupView> {
     const groupDraft = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() }).create(input);
     const group = await this.groupsWriteRepo.createGroup(groupDraft, trx);
     const groupView = await this.groupReadRepo.getGroupById(
       { groupId: group.id, userId: input.userId },
-      trx,
+      { trx },
     );
 
     if (groupView == null) {

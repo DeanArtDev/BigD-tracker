@@ -1,7 +1,6 @@
 import { DB } from '@/infrastructure/types';
-import { TasksWriteRepository } from '@/modules/tasks/application/ports';
+import { Database, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/application/ports';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -26,8 +25,10 @@ class AssignTaskToInboxUseCase {
         { userId, taskId },
         { trx },
       );
+
       const assignedTask = TaskFactory.assignToGroup(sureTask, 'IN_BOX');
 
+      await this.tasksWriteRepo.removeTaskFromGroup({ taskId }, trx);
       await this.tasksWriteRepo.addTaskToGroup({ taskId: assignedTask.id, groupId: inboxId }, trx);
       return { success: true };
     });

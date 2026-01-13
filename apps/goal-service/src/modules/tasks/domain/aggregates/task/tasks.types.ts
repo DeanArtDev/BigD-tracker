@@ -43,7 +43,7 @@ interface TaskRestoreInput {
   readonly recurrence?: string;
 }
 
-interface TaskUpdateInput {
+interface TaskReplaceInput {
   readonly name: Name;
   readonly description?: string;
   readonly priority: Priority;
@@ -53,4 +53,4 @@ interface TaskUpdateInput {
   readonly recurrence?: string;
 }
 
-export { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput };
+export { TaskCreateInput, TaskRestoreInput, TaskState, TaskReplaceInput };

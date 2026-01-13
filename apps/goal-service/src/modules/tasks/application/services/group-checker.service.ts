@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { GroupView } from '@/modules/tasks/application/dto/group.view';
+import { Group } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -8,12 +8,13 @@ import {
   ExceptionTaskAlreadyInGroup,
   ExceptionTaskNotInGroup,
 } from '../exceptions';
-import { GroupsReadRepository } from '../ports';
+import { GroupsReadRepository, GroupsWriteRepository } from '../ports';
 
 @Injectable()
 class GroupCheckerService {
   constructor(
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupReadRepo: GroupsReadRepository,
+    @Inject(GroupsToken.WRITE_REPOSITORY) private readonly groupWriteRepo: GroupsWriteRepository,
   ) {}
 
   async ensureTaskInInboxGroup(
@@ -151,18 +152,18 @@ class GroupCheckerService {
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params?: { trx?: Transaction<DB>; skipException?: false | undefined },
-  ): Promise<GroupView>;
+  ): Promise<Group>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params: { trx?: Transaction<DB>; skipException: true },
-  ): Promise<GroupView | null>;
+  ): Promise<Group | null>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params?: { trx?: Transaction<DB>; skipException?: boolean },
-  ): Promise<GroupView | null> {
+  ): Promise<Group | null> {
     const { skipException, trx } = params ?? {};
 
-    const group = await this.groupReadRepo.getGroupById(
+    const group = await this.groupWriteRepo.getGroupById(
       { groupId: input.groupId, userId: input.userId },
       trx,
     );
