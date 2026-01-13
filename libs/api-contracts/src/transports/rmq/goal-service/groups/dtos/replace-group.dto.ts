@@ -5,15 +5,15 @@ import {
   IsISO8601,
   IsOptional,
   IsString,
-  Max,
   MaxLength,
-  Min,
   ValidateNested,
 } from 'class-validator';
-import { GroupResSingle } from './shared/group-response.dto';
+import { GroupResSingle } from './group-response.dto';
 
-class Thing {
-  @MaxLength(255)
+class ReplaceGroupTask {
+  @IsInt()
+  id: number;
+
   @IsString()
   name: string;
 
@@ -22,22 +22,26 @@ class Thing {
   description?: string;
 
   @IsInt()
-  @Min(0)
-  @Max(4)
-  priority?: number;
+  priority: number;
+
+  @IsInt()
+  weight: number;
 
   @IsISO8601()
-  @IsString()
   @IsOptional()
+  @IsString()
   startDate?: string;
 
   @IsISO8601()
-  @IsString()
   @IsOptional()
+  @IsString()
   deadline?: string;
 }
 
-class ReqData {
+class ReplaceGroupReqData {
+  @IsInt()
+  id: number;
+
   @IsInt()
   userId: number;
 
@@ -45,26 +49,22 @@ class ReqData {
   @IsString()
   name: string;
 
-  @IsOptional()
-  @IsInt()
-  goalId?: number;
-
   @IsString()
   @IsOptional()
   description?: string;
 
-  @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => Thing)
-  things: Thing[];
+  @IsArray()
+  @Type(() => ReplaceGroupTask)
+  tasks: ReplaceGroupTask[];
 }
 
-class CreateGroupReq {
+class ReplaceGroupReq {
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => ReplaceGroupReqData)
+  data: ReplaceGroupReqData;
 }
 
-class CreateGroupRes extends GroupResSingle {}
+class ReplaceGroupRes extends GroupResSingle {}
 
-export { CreateGroupReq, CreateGroupRes };
+export { ReplaceGroupReq, ReplaceGroupRes };
