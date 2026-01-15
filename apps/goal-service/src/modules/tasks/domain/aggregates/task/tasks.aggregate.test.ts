@@ -18,6 +18,9 @@ const buildCreateInput = () => ({
   recurrence: 'weekly',
 });
 
+const pastDate = (offsetDays: number) =>
+  new Date(Date.now() - offsetDays * 24 * 60 * 60 * 1000).toISOString();
+
 describe('Task aggregate', () => {
   it('creates task with default status and exposes state', () => {
     const task = Task.create(buildCreateInput());
@@ -49,6 +52,39 @@ describe('Task aggregate', () => {
     expect(task.priority).toBe(3);
     expect(task.weight).toBe(50);
     expect(task.recurrence).toBe('monthly');
+  });
+
+  it('rejects creation with past start date', () => {
+    expect(() =>
+      Task.create({
+        ...buildCreateInput(),
+        startDate: DateVo.create(pastDate(1)),
+      }),
+    ).toThrow();
+  });
+
+  it('rejects updates for completed tasks', () => {
+    const task = Task.restore({
+      id: 13,
+      userId: 8,
+      name: Name.create('Completed task'),
+      description: 'Cannot update',
+      priority: Priority.create(1),
+      weight: Weight.create(10),
+      status: TaskStatus.COMPLETED,
+    });
+
+    expect(() =>
+      task.update({
+        name: Name.create('Should fail'),
+        description: 'No updates',
+        priority: Priority.create(2),
+        weight: Weight.create(20),
+        startDate: DateVo.create(futureDate(2)),
+        deadline: DateVo.create(futureDate(3)),
+        recurrence: 'weekly',
+      }),
+    ).toThrow();
   });
 
   it('deletes task softly when allowed', () => {
