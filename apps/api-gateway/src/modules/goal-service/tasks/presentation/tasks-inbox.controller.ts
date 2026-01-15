@@ -28,7 +28,7 @@ import {
   UpdateInboxTaskRes,
 } from './dtos';
 
-@ApiTags('Tasks')
+@ApiTags('Tasks Inbox manipulation')
 @Controller('tasks')
 export class TasksInboxController {
   constructor(private readonly goalClient: GoalServiceClientProxy) {}
