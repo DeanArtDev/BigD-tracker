@@ -1,25 +1,14 @@
 import { DB } from '@/infrastructure/types';
-import { GroupInboxView, GroupWithTasksView } from '@/modules/tasks/application/dto';
-import {
-  Database,
-  GetGroupByIdInput,
-  GroupInboxReadRepository,
-  ThrowErrorOptions,
-} from '@/modules/tasks/application/ports';
+import { GroupInboxView } from '@/modules/tasks/application/dto';
+import { Database, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
-import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import {
-  firstOrThrowError,
-  getAvailableGroupQuery,
-  getInboxByUserIdQuery,
-  getTasksWithStatusQuery,
-} from '../helpers';
+import { getInboxByUserIdQuery, getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class GroupInboxReadRepositoryKysely
@@ -28,46 +17,6 @@ export class GroupInboxReadRepositoryKysely
 {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
     super();
-  }
-
-  getGroupWithTasksById(
-    input: GetGroupByIdInput,
-    options?: { throwError?: false; trx?: Transaction<DB> },
-  ): Promise<GroupWithTasksView | null>;
-  getGroupWithTasksById(
-    input: GetGroupByIdInput,
-    options: { throwError: true; trx?: Transaction<DB> },
-  ): Promise<GroupWithTasksView>;
-  async getGroupWithTasksById(
-    input: GetGroupByIdInput,
-    options?: ThrowErrorOptions,
-  ): Promise<GroupWithTasksView | null> {
-    return await this.errorCatcher('groups.get-with-tasks-by-id.read', async () => {
-      const { trx, throwError } = options ?? {};
-
-      const query = getAvailableGroupQuery(this.db, trx)
-        .where('g.id', '=', input.groupId)
-        .where('g.user_id', '=', input.userId);
-
-      const result = await firstOrThrowError(query, { throwError });
-      if (result == null) return null;
-
-      const tasks = await getTasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-        .where('ttg.group_id', '=', input.groupId)
-        .orderBy('ttg.position', 'asc')
-        .execute();
-
-      return GroupReadKyselyMapper.fromRawToWithTaskView({
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        user_id: result.user_id,
-        progress: result.progress,
-        status: result.status as GroupStatus,
-        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
-      });
-    });
   }
 
   async getInboxWithTasksByUserId(

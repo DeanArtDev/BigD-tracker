@@ -1,8 +1,11 @@
 import { TaskView } from '@/modules/tasks/application/dto';
+import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { GroupStatus } from '@big-d/api-contracts';
+import { isFunction } from 'lodash';
 import { Group } from './group.aggregate';
 
 interface GroupWithTasksState {
+  group: Group;
   tasks: TaskView[];
 }
 
@@ -12,7 +15,7 @@ interface GroupWithTasksRestoreInput {
 }
 
 interface GroupWithTasksReplaceInput {
-  readonly group: Group;
+  readonly group: Group | ((group: Group) => Group);
   readonly tasks: TaskView[];
 }
 
@@ -22,25 +25,13 @@ interface GroupWithTasksCreateInput {
 }
 
 class GroupWithTasks {
-  readonly id: number;
-  readonly userId: number;
-  name: string;
-  description?: string;
-  status: GroupStatus;
-  progress: number;
   #state: GroupWithTasksState;
 
   private constructor(input: Readonly<{ group: Group; tasks: TaskView[] }>) {
     this.#state = {
+      group: input.group,
       tasks: input.tasks,
     };
-
-    this.id = input.group.id;
-    this.name = input.group.name;
-    this.description = input.group.description;
-    this.userId = input.group.userId;
-    this.status = input.group.status;
-    this.progress = input.group.progress;
   }
 
   static create(input: GroupWithTasksCreateInput): GroupWithTasks {
@@ -50,12 +41,21 @@ class GroupWithTasks {
     });
   }
 
+  public delete(): this {
+    if (this.#state.tasks.length > 0) {
+      throw new ExceptionDomainInvalidInvariant({
+        message: `Group can't be delete if has at least one task`,
+        field: 'tasks',
+      });
+    }
+
+    this.#state.group.delete();
+    return this;
+  }
+
   public replace(input: GroupWithTasksReplaceInput): this {
-    this.name = input.group.name;
-    this.description = input.group.description;
-    this.status = input.group.status;
-    this.progress = input.group.progress;
     this.#state.tasks = input.tasks;
+    this.#state.group = isFunction(input.group) ? input.group(this.#state.group) : input.group;
 
     return this;
   }
@@ -65,6 +65,30 @@ class GroupWithTasks {
       group: input.group,
       tasks: input.tasks,
     });
+  }
+
+  get id(): number {
+    return this.#state.group.id;
+  }
+
+  get userId(): number {
+    return this.#state.group.userId;
+  }
+
+  get name(): string {
+    return this.#state.group.name;
+  }
+
+  get description(): string | undefined {
+    return this.#state.group.description;
+  }
+
+  get progress(): number {
+    return this.#state.group.progress;
+  }
+
+  get status(): GroupStatus {
+    return this.#state.group.status;
   }
 
   get tasks(): TaskView[] {

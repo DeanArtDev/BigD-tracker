@@ -10,7 +10,9 @@ interface GroupsWriteRepository {
   getGroupById(
     input: { groupId: number; userId: number },
     trx?: Transaction<DB>,
-  ): Promise<Group | null>;
+  ): Promise<GroupWithTasks | null>;
+
+  deleteById(input: { groupId: number; userId: number }, trx?: Transaction<DB>): Promise<boolean>;
 }
 
 export { GroupsWriteRepository };

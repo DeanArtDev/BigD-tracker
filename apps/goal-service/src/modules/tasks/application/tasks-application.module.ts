@@ -47,6 +47,9 @@ import {
   ReplaceGroupCommand,
   ReplaceGroupHandler,
   ReplaceGroupUseCase,
+  DeleteGroupCommand,
+  DeleteGroupHandler,
+  DeleteGroupUseCase,
 } from './use-cases';
 
 const queries = [GetInboxByUserIdQuery];
@@ -63,6 +66,7 @@ const commands = [
   UnassignTaskFromGroupCommand,
   ReplaceGroupCommand,
   CreateGroupCommand,
+  DeleteGroupCommand,
 ];
 const handlers = [
   CreateTaskHandler,
@@ -78,6 +82,7 @@ const handlers = [
   UnassignTaskFromGroupHandler,
   ReplaceGroupHandler,
   CreateGroupHandler,
+  DeleteGroupHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
@@ -92,6 +97,7 @@ const useCases = [
   UnassignTaskFromGroupUseCase,
   ReplaceGroupUseCase,
   CreateGroupUseCase,
+  DeleteGroupUseCase,
 ];
 
 @Module({

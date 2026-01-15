@@ -11,8 +11,6 @@ interface GroupFactoryCreateInput {
 }
 
 interface GroupFactoryReplaceInput {
-  readonly id: number;
-  readonly userId: number;
   readonly name: string;
   readonly description?: string;
 }
@@ -37,8 +35,6 @@ class GroupFactory {
 
   replace(group: Group, input: GroupFactoryReplaceInput): Group {
     return group.replace({
-      id: input.id,
-      userId: input.userId,
       name: Name.create(input.name),
       description:
         input.description != null
@@ -47,15 +43,20 @@ class GroupFactory {
     });
   }
 
-  replaceWithTasksByGroup(group: Group, input: GroupFactoryReplaceWithTasksInput): GroupWithTasks {
+  replaceWithTasksByGroup(
+    group: GroupWithTasks,
+    input: GroupFactoryReplaceWithTasksInput,
+  ): GroupWithTasks {
     const { tasks, ...others } = input;
 
-    const replacedGroup = this.replace(group, others);
-
-    return GroupWithTasks.restore({ group: replacedGroup, tasks: [] }).replace({
-      group: replacedGroup,
+    return group.replace({
+      group: (group) => this.replace(group, others),
       tasks: tasks.map((task) => TaskFactory.replace(task.task, task.input)),
     });
+  }
+
+  delete(group: GroupWithTasks): GroupWithTasks {
+    return group.delete();
   }
 }
 

@@ -1,5 +1,9 @@
-import { CreateGroupCommand, ReplaceGroupCommand } from '@/modules/tasks/application/use-cases';
-import { GoalCreateGroup, GoalReplaceGroup } from '@big-d/api-contracts';
+import {
+  CreateGroupCommand,
+  DeleteGroupCommand,
+  ReplaceGroupCommand,
+} from '@/modules/tasks/application/use-cases';
+import { GoalCreateGroup, GoalDeleteGroup, GoalReplaceGroup } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -40,5 +44,14 @@ export class GroupsRmqController {
         }),
       ),
     };
+  }
+
+  @MessagePattern(GoalDeleteGroup.pattern)
+  async deleteGroup(
+    @Payload() { data: payload }: GoalDeleteGroup.Request,
+  ): Promise<GoalDeleteGroup.Response> {
+    return await this.commandBus.execute(
+      new DeleteGroupCommand({ groupId: payload.groupId, userId: payload.userId }),
+    );
   }
 }

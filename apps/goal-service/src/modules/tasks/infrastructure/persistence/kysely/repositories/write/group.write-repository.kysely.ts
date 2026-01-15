@@ -1,13 +1,15 @@
 import { DB } from '@/infrastructure/types';
 import { Database, GroupsWriteRepository } from '@/modules/tasks/application/ports';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
+import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getGroupWithStatusQuery } from '../helpers';
+import { getAvailableGroupQuery, getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class GroupWriteRepositoryKysely
@@ -21,21 +23,28 @@ export class GroupWriteRepositoryKysely
   async getGroupById(
     input: { groupId: number; userId: number },
     trx?: Transaction<DB>,
-  ): Promise<Group | null> {
+  ): Promise<GroupWithTasks | null> {
     return await this.errorCatcher('groups.get-by-id.write', async () => {
-      const result = await getGroupWithStatusQuery(this.db, trx)
+      const result = await getAvailableGroupQuery(this.db, trx)
         .where('g.id', '=', input.groupId)
         .where('g.user_id', '=', input.userId)
         .executeTakeFirst();
       if (result == null) return null;
 
-      return GroupWriteKyselyMapper.fromRawToAgr({
+      const tasks = await getTasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
+        .where('ttg.group_id', '=', input.groupId)
+        .orderBy('ttg.position', 'asc')
+        .execute();
+
+      return GroupWriteKyselyMapper.fromRawToAgrWithTasks({
         id: result.id,
         name: result.name,
         description: result.description,
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
+        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
       });
     });
   }
@@ -82,6 +91,7 @@ export class GroupWriteRepositoryKysely
         .updateTable('groups')
         .where('id', '=', group.id)
         .where('user_id', '=', group.userId)
+        .where('name', 'not in', groupsQuerySpec.unavailableName)
         .set({
           name: group.name,
           description: group.description,
@@ -127,6 +137,23 @@ export class GroupWriteRepositoryKysely
           )
           .executeTakeFirstOrThrow();
       }
+    });
+  }
+
+  async deleteById(
+    input: { groupId: number; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<boolean> {
+    return await this.errorCatcher('groups.delete-by-id.write', async () => {
+      const result = await this.db
+        .qb(trx)
+        .deleteFrom('groups as g')
+        .where('g.id', '=', input.groupId)
+        .where('g.user_id', '=', input.userId)
+        .where('g.name', 'not in', groupsQuerySpec.unavailableName)
+        .executeTakeFirst();
+
+      return result.numDeletedRows > 0;
     });
   }
 }

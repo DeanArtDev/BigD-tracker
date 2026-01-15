@@ -51,8 +51,6 @@ class ReplaceGroupUseCase {
 
       const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
       const groupWithTasks = groupFactory.replaceWithTasksByGroup(ensureGroup, {
-        id: groupId,
-        userId,
         name,
         description,
         tasks: readyToReplaceTasks,

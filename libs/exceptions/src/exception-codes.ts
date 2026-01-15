@@ -81,6 +81,11 @@ const system = {
     code: 'S-GW-0004',
     details: Details.Define<{ message?: string }>(),
   },
+
+  writeConflict: {
+    code: 'S-GW-0005',
+    details: Details.Define<{ subjectId: number; message?: string }>(),
+  },
 } as const satisfies ExceptionConfig;
 
 const exceptionCode = {
