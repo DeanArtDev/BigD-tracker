@@ -6,6 +6,9 @@ const TasksToken = {
 const GroupsToken = {
   WRITE_REPOSITORY: Symbol('GROUPS_WRITE_REPOSITORY'),
   READ_REPOSITORY: Symbol('GROUPS_READ_REPOSITORY'),
+
+  INBOX_WRITE_REPOSITORY: Symbol('INBOX_WRITE_REPOSITORY'),
+  INBOX_READ_REPOSITORY: Symbol('INBOX_READ_REPOSITORY'),
 };
 
 export { TasksToken, GroupsToken };

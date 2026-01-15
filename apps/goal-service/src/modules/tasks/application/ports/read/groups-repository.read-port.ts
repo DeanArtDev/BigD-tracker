@@ -1,7 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { GroupWithTasksView } from '@/modules/tasks/application/dto';
-import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
-import { GroupView } from '@/modules/tasks/application/dto/group.view';
+import { GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
 import { Transaction } from 'kysely';
 
 interface GetGroupByIdInput {
@@ -42,16 +40,6 @@ interface GroupsReadRepository {
     input: GetGroupByIdInput,
     options?: ThrowErrorOptions,
   ): Promise<GroupWithTasksView | null>;
-
-  getInboxWithTasksByUserId(
-    input: { userId: number },
-    trx?: Transaction<DB>,
-  ): Promise<GroupInboxView>;
-
-  ensureTaskInInboxGroup(
-    input: { userId: number; taskId: number },
-    trx?: Transaction<DB>,
-  ): Promise<{ success: boolean; inboxId: number }>;
 
   ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },

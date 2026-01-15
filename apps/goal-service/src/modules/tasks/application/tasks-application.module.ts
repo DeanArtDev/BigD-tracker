@@ -2,6 +2,7 @@ import { GetGroupUserInboxHandler, GetInboxByUserIdQuery } from './queries';
 import {
   GroupCheckerService,
   GroupsService,
+  InboxGroupCheckerService,
   TaskCheckerService,
   TaskGroupCheckerService,
   TaskQueryService,
@@ -101,6 +102,7 @@ const useCases = [
     TaskCheckerService,
     GroupCheckerService,
     TaskGroupCheckerService,
+    InboxGroupCheckerService,
     TaskQueryService,
     ...commands,
     ...queries,
