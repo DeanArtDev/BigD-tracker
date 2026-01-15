@@ -91,7 +91,7 @@ export class GroupWriteRepositoryKysely
         .updateTable('groups')
         .where('id', '=', group.id)
         .where('user_id', '=', group.userId)
-        .where('name', 'is not', groupsQuerySpec.unavailableName)
+        .where('name', 'not in', groupsQuerySpec.unavailableName)
         .set({
           name: group.name,
           description: group.description,
