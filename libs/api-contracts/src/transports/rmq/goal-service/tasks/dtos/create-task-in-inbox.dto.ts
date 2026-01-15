@@ -16,11 +16,6 @@ class CreateTaskInInboxReqData {
   @IsISO8601()
   @IsOptional()
   @IsString()
-  startDate?: string;
-
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
   deadline?: string;
 
   @IsOptional()

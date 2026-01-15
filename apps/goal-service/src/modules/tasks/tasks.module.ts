@@ -41,8 +41,9 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] создание группы
  *   [x] обновить конфиги для api-contracts (можно использовать aliases)
  *   [x] добавил санитайзер для поля group.description
- *   [] inbox в отдельном (use-case, service, checker, repository)
+ *   [x] inbox в отдельном (use-case, service, checker, repository)
  *   [] редактирование группы
+ *   [] создание дела в inbox не имеет startDate, recurrence
  *   [] удаление группы
  *   [] список доступных групп для юзера (все кроме DONE)
  *   [] прикрепление группы к цели
