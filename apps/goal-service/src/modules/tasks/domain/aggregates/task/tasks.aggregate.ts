@@ -93,6 +93,13 @@ class Task extends AggregateRoot {
 
   public assignToGroup(status?: TaskStatus.NOT_STARTED): this {
     assertTaskAssignToGroup({ status: this.#state.status });
+
+    if (status === TaskStatus.NOT_STARTED) {
+      this.#state.startDate = undefined;
+      this.#state.endDate = undefined;
+      this.#state.recurrence = undefined;
+    }
+
     if (status != null) {
       return this.#setStatus(status);
     }
