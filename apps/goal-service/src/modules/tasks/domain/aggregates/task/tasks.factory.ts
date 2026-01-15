@@ -30,7 +30,6 @@ interface TaskFactoryUpdateInboxInput {
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
-  readonly startDate?: string;
   readonly deadline?: string;
 }
 
@@ -83,9 +82,7 @@ class TaskFactory {
       description: input.description,
       priority: Priority.create(input.priority),
       weight: Weight.create(task.weight),
-      startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
-      recurrence: task.recurrence,
     };
 
     return task.replace(state);

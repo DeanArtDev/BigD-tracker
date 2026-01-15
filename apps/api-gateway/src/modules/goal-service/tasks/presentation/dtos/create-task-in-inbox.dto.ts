@@ -25,12 +25,6 @@ class CreateTaskInINBOXReqData {
   @IsInt()
   priority?: number;
 
-  @ApiPropertyOptional({ example: '2026-05-24T13:01:02.471Z' })
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  startDate?: string;
-
   @ApiPropertyOptional({ example: '2026-06-24T13:01:02.471Z' })
   @IsISO8601()
   @IsOptional()

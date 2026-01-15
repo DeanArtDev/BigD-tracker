@@ -8,9 +8,8 @@ import {
   GoalCreateTask,
   GoalDeleteTask,
   GoalReplaceTask,
-  GoalUpdateInboxTask,
+  GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
-import { GoalUnassignTaskFromGroup } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -33,8 +32,6 @@ import {
   ReplaceTaskReq,
   ReplaceTaskRes,
   UnassignTaskFromGroupRes,
-  UpdateInboxTaskReq,
-  UpdateInboxTaskRes,
 } from './dtos';
 
 @ApiTags('Tasks')
@@ -175,36 +172,6 @@ export class TasksController {
           deadline: data.deadline,
           weight: data.weight,
           recurrence: data.recurrence,
-        },
-      },
-    );
-  }
-
-  @Put('/:taskId/inbox')
-  @ApiOperation({ summary: 'Редактирование дела в IN BOX' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: UpdateInboxTaskRes,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  @HttpCode(HttpStatus.OK)
-  @ValidateRpcResponse(UpdateInboxTaskRes)
-  async updateTaskInInbox(
-    @Param('taskId', ParseIntPipe) taskId: number,
-    @TokenPayload() { uid }: AccessTokenPayload,
-    @Body() { data }: UpdateInboxTaskReq,
-  ): Promise<UpdateInboxTaskRes> {
-    return await this.goalClient.send<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
-      GoalUpdateInboxTask.pattern,
-      {
-        data: {
-          id: taskId,
-          userId: uid,
-          priority: data.priority,
-          name: data.name,
-          startDate: data.startDate,
-          description: data.description,
-          deadline: data.deadline,
         },
       },
     );

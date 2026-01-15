@@ -2,8 +2,21 @@ import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalAssignTaskToInbox, GoalCreateTaskInInbox } from '@big-d/api-contracts';
-import { Body, Controller, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
+import {
+  GoalAssignTaskToInbox,
+  GoalCreateTaskInInbox,
+  GoalUpdateInboxTask,
+} from '@big-d/api-contracts';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
@@ -11,9 +24,11 @@ import {
   CreateTaskInINBOXReq,
   CreateTaskInINBOXRes,
   CreateTaskRes,
+  UpdateInboxTaskReq,
+  UpdateInboxTaskRes,
 } from './dtos';
 
-@ApiTags('Tasks')
+@ApiTags('Tasks Inbox manipulation')
 @Controller('tasks')
 export class TasksInboxController {
   constructor(private readonly goalClient: GoalServiceClientProxy) {}
@@ -40,7 +55,6 @@ export class TasksInboxController {
         priority: data.priority,
         description: data.description,
         name: data.name,
-        startDate: data.startDate,
         deadline: data.deadline,
       },
     });
@@ -68,5 +82,34 @@ export class TasksInboxController {
         taskId,
       },
     });
+  }
+
+  @Put('/:taskId/inbox')
+  @ApiOperation({ summary: 'Редактирование дела в IN BOX' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UpdateInboxTaskRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @HttpCode(HttpStatus.OK)
+  @ValidateRpcResponse(UpdateInboxTaskRes)
+  async updateTaskInInbox(
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Body() { data }: UpdateInboxTaskReq,
+  ): Promise<UpdateInboxTaskRes> {
+    return await this.goalClient.send<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
+      GoalUpdateInboxTask.pattern,
+      {
+        data: {
+          id: taskId,
+          userId: uid,
+          priority: data.priority,
+          name: data.name,
+          description: data.description,
+          deadline: data.deadline,
+        },
+      },
+    );
   }
 }
