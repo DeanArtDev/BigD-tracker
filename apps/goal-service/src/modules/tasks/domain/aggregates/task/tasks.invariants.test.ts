@@ -6,6 +6,8 @@ import {
   assertTaskDates,
   assertTaskDeleteSoft,
   assertTaskReplace,
+  assertHasCancelReason,
+  assertTaskUnassignFromGroup,
 } from './tasks.invariants';
 
 const futureDate = (offsetDays: number) =>
@@ -69,6 +71,22 @@ describe('task invariants', () => {
   it('rejects moving tasks in terminal states', () => {
     expect(() =>
       assertTaskAssignToGroup({
+        status: TaskStatus.CANCELLED,
+      }),
+    ).toThrow();
+  });
+
+  it('rejects unassigning tasks in terminal states', () => {
+    expect(() =>
+      assertTaskUnassignFromGroup({
+        status: TaskStatus.ARCHIVED,
+      }),
+    ).toThrow();
+  });
+
+  it('requires cancel reason for cancelled status', () => {
+    expect(() =>
+      assertHasCancelReason({
         status: TaskStatus.CANCELLED,
       }),
     ).toThrow();
