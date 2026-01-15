@@ -1,5 +1,5 @@
 import { DB } from '@/infrastructure/types';
-import { Group } from '@/modules/tasks/domain/aggregates/group';
+import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -86,15 +86,15 @@ class GroupCheckerService {
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params?: { trx?: Transaction<DB>; skipException?: false | undefined },
-  ): Promise<Group>;
+  ): Promise<GroupWithTasks>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params: { trx?: Transaction<DB>; skipException: true },
-  ): Promise<Group | null>;
+  ): Promise<GroupWithTasks | null>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params?: { trx?: Transaction<DB>; skipException?: boolean },
-  ): Promise<Group | null> {
+  ): Promise<GroupWithTasks | null> {
     const { skipException, trx } = params ?? {};
 
     const group = await this.groupWriteRepo.getGroupById(

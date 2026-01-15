@@ -1,4 +1,5 @@
 import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
+import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
 import { assertGroupUpdate } from './group.invariants';
@@ -22,8 +23,6 @@ interface GroupRestoreInput {
 }
 
 interface GroupUpdateInput {
-  readonly id: number;
-  readonly userId: number;
   readonly name: Name;
   readonly description?: DescriptionVo;
 }
@@ -70,6 +69,16 @@ class Group {
       status: GroupStatus.NOT_STARTED,
       progress: ProgressVo.defaultValue(),
     });
+  }
+
+  public delete(): this {
+    if (this.#state.status === GroupStatus.DONE) {
+      throw new ExceptionDomainInvalidInvariant({
+        message: `Group can't be delete if it's already done`,
+        field: 'status',
+      });
+    }
+    return this;
   }
 
   get id(): number {

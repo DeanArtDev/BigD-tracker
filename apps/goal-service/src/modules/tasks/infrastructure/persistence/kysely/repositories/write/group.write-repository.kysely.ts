@@ -6,8 +6,9 @@ import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
+import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getGroupWithStatusQuery } from '../helpers';
+import { getGroupWithStatusQuery, getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class GroupWriteRepositoryKysely
@@ -21,7 +22,7 @@ export class GroupWriteRepositoryKysely
   async getGroupById(
     input: { groupId: number; userId: number },
     trx?: Transaction<DB>,
-  ): Promise<Group | null> {
+  ): Promise<GroupWithTasks | null> {
     return await this.errorCatcher('groups.get-by-id.write', async () => {
       const result = await getGroupWithStatusQuery(this.db, trx)
         .where('g.id', '=', input.groupId)
@@ -29,13 +30,20 @@ export class GroupWriteRepositoryKysely
         .executeTakeFirst();
       if (result == null) return null;
 
-      return GroupWriteKyselyMapper.fromRawToAgr({
+      const tasks = await getTasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
+        .where('ttg.group_id', '=', input.groupId)
+        .orderBy('ttg.position', 'asc')
+        .execute();
+
+      return GroupWriteKyselyMapper.fromRawToAgrWithTasks({
         id: result.id,
         name: result.name,
         description: result.description,
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
+        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
       });
     });
   }
@@ -127,6 +135,22 @@ export class GroupWriteRepositoryKysely
           )
           .executeTakeFirstOrThrow();
       }
+    });
+  }
+
+  async deleteById(
+    input: { groupId: number; userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<boolean> {
+    return await this.errorCatcher('groups.delete-by-id.write', async () => {
+      const result = await this.db
+        .qb(trx)
+        .deleteFrom('groups as g')
+        .where('g.id', '=', input.groupId)
+        .where('g.user_id', '=', input.groupId)
+        .executeTakeFirst();
+
+      return result.numDeletedRows > 0;
     });
   }
 }

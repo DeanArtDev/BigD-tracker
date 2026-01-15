@@ -41,4 +41,21 @@ export class GroupsRmqController {
       ),
     };
   }
+
+  @MessagePattern(GoalReplaceGroup.pattern)
+  async deleteGroup(
+    @Payload() { data: payload }: GoalReplaceGroup.Request,
+  ): Promise<GoalReplaceGroup.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new ReplaceGroupCommand({
+          id: payload.id,
+          userId: payload.userId,
+          name: payload.name,
+          description: payload.description,
+          tasks: payload.tasks,
+        }),
+      ),
+    };
+  }
 }

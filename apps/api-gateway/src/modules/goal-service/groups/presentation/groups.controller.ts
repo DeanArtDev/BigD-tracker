@@ -2,10 +2,16 @@ import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalCreateGroup, GoalGetGroupInBox, GoalReplaceGroup } from '@big-d/api-contracts';
+import {
+  GoalCreateGroup,
+  GoalDeleteGroup,
+  GoalGetGroupInBox,
+  GoalReplaceGroup,
+} from '@big-d/api-contracts';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -19,6 +25,7 @@ import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
   CreateGroupReq,
   CreateGroupRes,
+  DeleteGroupRes,
   GetInBoxRes,
   ReplaceGroupReq,
   ReplaceGroupRes,
@@ -86,6 +93,30 @@ export class GroupsController {
           description: data.description,
           name: data.name,
           tasks: data.tasks,
+        },
+      },
+    );
+  }
+
+  @Delete('/:groupId')
+  @ApiOperation({ summary: 'Удаление группы' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    type: DeleteGroupRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(DeleteGroupRes)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<DeleteGroupRes> {
+    return await this.goalClient.send<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
+      GoalDeleteGroup.pattern,
+      {
+        data: {
+          groupId,
+          userId: uid,
         },
       },
     );

@@ -1,6 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { Task } from '@/modules/tasks/domain';
-import { Group } from '@/modules/tasks/domain/aggregates/group';
+import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -17,7 +17,7 @@ class TaskGroupCheckerService {
   async ensureTaskInAnyGroup(
     input: { taskId: number; userId: number },
     params?: { trx?: Transaction<DB> },
-  ): Promise<{ task: Task; group: Group } | null> {
+  ): Promise<{ task: Task; group: GroupWithTasks } | null> {
     const { userId, taskId } = input;
     const { trx } = params ?? {};
 
@@ -38,8 +38,6 @@ class TaskGroupCheckerService {
     if (group == null) {
       return null;
     }
-
-    console.log(task, group);
 
     return { task, group };
   }
