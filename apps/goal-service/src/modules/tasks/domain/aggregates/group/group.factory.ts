@@ -56,7 +56,6 @@ class GroupFactory {
   }
 
   delete(group: GroupWithTasks): GroupWithTasks {
-    console.log(555, group.status);
     return group.delete();
   }
 }
