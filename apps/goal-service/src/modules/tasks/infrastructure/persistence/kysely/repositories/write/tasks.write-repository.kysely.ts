@@ -2,6 +2,7 @@ import { DB } from '@/infrastructure/types';
 import { TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { Database } from '@/modules/tasks/application/ports';
+import { getTasksWithStatusQuery } from '../helpers';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -24,26 +25,9 @@ export class TasksWriteRepositoryKysely
     trx?: Transaction<DB>,
   ): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
-      const task = await this.db
-        .qb(trx)
-        .selectFrom('tasks as t')
-        .innerJoin('task_statuses as ts', 't.status_id', 'ts.id')
+      const task = await getTasksWithStatusQuery(this.db, trx)
         .where('t.id', '=', input.taskId)
         .where('t.user_id', '=', input.userId)
-        .select([
-          't.id as id',
-          't.user_id as user_id',
-          't.name as name',
-          't.description as description',
-          't.priority as priority',
-          't.weight as weight',
-          't.cancel_reason as cancel_reason',
-          't.start_date as start_date',
-          't.end_date as end_date',
-          't.deadline as deadline',
-          't.recurrence as recurrence',
-          'ts.name as status',
-        ])
         .executeTakeFirst();
       if (task == null) return null;
 
@@ -153,33 +137,24 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async removeTaskFromGroup(
-    input: { groupId: number; taskId: number },
-    trx?: Transaction<DB>,
-  ): Promise<void> {
+  async removeTaskFromGroup(input: { taskId: number }, trx?: Transaction<DB>): Promise<void> {
     return await this.errorCatcher('tasks.remove-from-group', async () => {
       const qb = this.db.qb(trx);
 
-      const { position } = await qb
-        .selectFrom('task_to_group')
-        .select(['position'])
-        .where('group_id', '=', input.groupId)
-        .where('task_id', '=', input.taskId)
-        .executeTakeFirstOrThrow();
-
-      await qb
+      const taskToGroupLink = await qb
         .deleteFrom('task_to_group')
-        .where('group_id', '=', input.groupId)
         .where('task_id', '=', input.taskId)
-        .execute();
+        .returning(['position', 'group_id'])
+        .executeTakeFirst();
+      if (taskToGroupLink == null) return;
 
       await qb
         .updateTable('task_to_group')
         .set((eb) => ({
           position: eb('position', '-', 1),
         }))
-        .where('group_id', '=', input.groupId)
-        .where('position', '>', position)
+        .where('group_id', '=', taskToGroupLink.group_id)
+        .where('position', '>', taskToGroupLink.position)
         .execute();
     });
   }

@@ -43,7 +43,7 @@ describe('TaskFactory', () => {
       deadline: futureDate(2),
     });
 
-    TaskFactory.update(task, {
+    TaskFactory.replace(task, {
       name: 'Updated',
       description: 'After update',
       priority: 2,

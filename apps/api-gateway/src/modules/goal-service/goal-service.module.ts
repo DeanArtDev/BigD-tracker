@@ -2,8 +2,6 @@ import { GroupsController } from './groups';
 import { HttpStatus, Module } from '@nestjs/common';
 import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
 import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
-import { GoalsController } from './application/goals.controller';
-import { ThingsController } from './application/things.controller';
 import { TasksController, TasksInboxController } from './tasks';
 
 @Module({
@@ -16,12 +14,6 @@ import { TasksController, TasksInboxController } from './tasks';
         ),
     }),
   ],
-  controllers: [
-    GoalsController,
-    GroupsController,
-    ThingsController,
-    TasksController,
-    TasksInboxController,
-  ],
+  controllers: [GroupsController, TasksController, TasksInboxController],
 })
 export class GoalServiceModule {}

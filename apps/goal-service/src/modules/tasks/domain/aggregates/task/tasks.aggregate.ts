@@ -3,13 +3,15 @@ import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
 import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
 import {
+  assertDeadlineInThePast,
+  assertStartDateNotInThePast,
   assertTaskAssignToGroup,
   assertTaskDates,
   assertTaskDeleteSoft,
+  assertTaskReplace,
   assertTaskUnassignFromGroup,
-  assertTaskUpdate,
 } from './tasks.invariants';
-import { TaskCreateInput, TaskRestoreInput, TaskState, TaskUpdateInput } from './tasks.types';
+import { TaskCreateInput, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
 
 class Task extends AggregateRoot {
   #state: TaskState;
@@ -21,6 +23,10 @@ class Task extends AggregateRoot {
   }
 
   static create(input: TaskCreateInput): Task {
+    assertStartDateNotInThePast({ start: input.startDate });
+    assertDeadlineInThePast({ deadline: input.deadline });
+    assertTaskDates({ start: input.startDate, deadline: input.deadline });
+
     return new Task({
       id: NaN,
       userId: input.userId,
@@ -32,7 +38,7 @@ class Task extends AggregateRoot {
       deadline: input.deadline,
       status: TaskStatus.NOT_STARTED,
       recurrence: input.recurrence,
-    }).#validate();
+    });
   }
 
   static restore(input: TaskRestoreInput): Task {
@@ -52,12 +58,6 @@ class Task extends AggregateRoot {
     });
   }
 
-  #validate(): this {
-    const { startDate, endDate, deadline } = this.#state;
-    assertTaskDates({ end: endDate, start: startDate, deadline });
-    return this;
-  }
-
   #setStatus(status: TaskStatus): this {
     if (status === this.#state.status) return this;
     if (availableTransitionsByTaskStatuses[this.#state.status].includes(status)) {
@@ -71,8 +71,9 @@ class Task extends AggregateRoot {
     });
   }
 
-  public update(input: TaskUpdateInput): this {
-    assertTaskUpdate({ status: this.#state.status, endDate: this.#state.endDate?.value });
+  public replace(input: TaskReplaceInput): this {
+    assertTaskReplace({ status: this.#state.status, endDate: this.#state.endDate?.value });
+    assertTaskDates({ start: input.startDate, deadline: input.deadline });
 
     this.#state.name = input.name;
     this.#state.description = input.description;
@@ -82,7 +83,7 @@ class Task extends AggregateRoot {
     this.#state.deadline = input.deadline;
     this.#state.recurrence = input.recurrence;
 
-    return this.#validate();
+    return this;
   }
 
   public deleteSoft(): this {

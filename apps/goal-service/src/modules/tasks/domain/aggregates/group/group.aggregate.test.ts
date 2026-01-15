@@ -17,7 +17,6 @@ describe('Group aggregate', () => {
     expect(group.description).toBe('Plan the sprint');
     expect(group.status).toBe(GroupStatus.NOT_STARTED);
     expect(group.progress).toBe(ProgressVo.defaultValue().value);
-    expect(group.tasks).toEqual([]);
   });
 
   it('restores group identity while keeping defaults', () => {
@@ -28,7 +27,6 @@ describe('Group aggregate', () => {
       description: DescriptionVo.create('From storage'),
       progress: ProgressVo.create(75),
       status: GroupStatus.DONE,
-      tasks: [],
     });
 
     expect(group.id).toBe(41);
@@ -37,6 +35,5 @@ describe('Group aggregate', () => {
     expect(group.description).toBe('From storage');
     expect(group.status).toBe(GroupStatus.NOT_STARTED);
     expect(group.progress).toBe(ProgressVo.defaultValue().value);
-    expect(group.tasks).toEqual([]);
   });
 });

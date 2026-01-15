@@ -1,0 +1,26 @@
+import { DB } from '@/infrastructure/types';
+import { Database } from '@/modules/tasks/application/ports';
+import { Transaction } from 'kysely';
+
+function getTasksWithStatusQuery(db: Database<DB>, trx?: Transaction<DB>) {
+  return db
+    .qb(trx)
+    .selectFrom('tasks as t')
+    .innerJoin('task_statuses as ts', 't.status_id', 'ts.id')
+    .select([
+      't.id as id',
+      't.user_id as user_id',
+      't.name as name',
+      't.description as description',
+      't.priority as priority',
+      't.weight as weight',
+      't.cancel_reason as cancel_reason',
+      't.start_date as start_date',
+      't.end_date as end_date',
+      't.deadline as deadline',
+      't.recurrence as recurrence',
+      'ts.name as status',
+    ]);
+}
+
+export { getTasksWithStatusQuery };

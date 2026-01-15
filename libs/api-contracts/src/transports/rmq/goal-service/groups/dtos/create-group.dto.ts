@@ -1,6 +1,6 @@
+import { GroupStatus } from '../types';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
-import { GroupResSingle } from './group-response.dto';
+import { IsEnum, IsInt, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 
 class CreateGroupReqData {
   @IsInt()
@@ -15,12 +15,40 @@ class CreateGroupReqData {
   description?: string;
 }
 
+class CreateGroupResData {
+  @IsInt()
+  id: number;
+
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsInt()
+  userId: number;
+
+  @IsInt()
+  progress: number;
+
+  @IsInt()
+  weight: number;
+
+  @IsEnum(GroupStatus)
+  status: GroupStatus;
+}
+
 class CreateGroupReq {
   @ValidateNested()
   @Type(() => CreateGroupReqData)
   data: CreateGroupReqData;
 }
 
-class CreateGroupRes extends GroupResSingle {}
+class CreateGroupRes {
+  @ValidateNested()
+  @Type(() => CreateGroupResData)
+  data: CreateGroupResData;
+}
 
 export { CreateGroupReq, CreateGroupRes };

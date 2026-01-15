@@ -12,10 +12,7 @@ interface TasksWriteRepository {
   changeTaskStatus(task: Task, trx?: Transaction<DB>): Promise<void>;
   replaceTask(agr: Task, trx?: Transaction<DB>): Promise<Task>;
   addTaskToGroup(input: { taskId: number; groupId: number }, trx?: Transaction<DB>): Promise<void>;
-  removeTaskFromGroup(
-    input: { taskId: number; groupId: number },
-    trx?: Transaction<DB>,
-  ): Promise<void>;
+  removeTaskFromGroup(input: { taskId: number }, trx?: Transaction<DB>): Promise<void>;
 }
 
 export { TasksWriteRepository };
