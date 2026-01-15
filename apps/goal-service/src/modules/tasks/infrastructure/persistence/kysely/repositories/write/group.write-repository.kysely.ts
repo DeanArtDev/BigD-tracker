@@ -1,19 +1,13 @@
 import { DB } from '@/infrastructure/types';
-import { GroupInboxView } from '@/modules/tasks/application/dto';
-import {
-  Database,
-  GroupsWriteRepository,
-  INBOX_GROUP_KEY,
-} from '@/modules/tasks/application/ports';
+import { Database, GroupsWriteRepository } from '@/modules/tasks/application/ports';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
-import { getGroupWithStatusQuery } from '../helpers';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
-import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
+import { getGroupWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class GroupWriteRepositoryKysely
@@ -42,35 +36,6 @@ export class GroupWriteRepositoryKysely
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
-      });
-    });
-  }
-
-  async createInbox(input: { userId: number }, trx?: Transaction<DB>): Promise<GroupInboxView> {
-    return await this.errorCatcher('groups.inbox-creation', async () => {
-      const groupStatus = await this.db
-        .qb(trx)
-        .selectFrom('group_statuses')
-        .where('name', '=', GroupStatus.IN_PROGRESS)
-        .select(['id', 'name'])
-        .executeTakeFirstOrThrow();
-
-      const result = await this.db
-        .qb(trx)
-        .insertInto('groups')
-        .values({
-          name: INBOX_GROUP_KEY,
-          user_id: input.userId,
-          status_id: groupStatus.id,
-        })
-        .returning(['id', 'name', 'user_id'])
-        .executeTakeFirstOrThrow();
-
-      return GroupReadKyselyMapper.fromRawToInboxView({
-        id: result.id,
-        name: result.name,
-        user_id: result.user_id,
-        tasks: [],
       });
     });
   }

@@ -1,11 +1,11 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
-import { Database } from '@/modules/tasks/application/ports';
+import { Database, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { GroupsReadRepository, INBOX_GROUP_KEY, TasksWriteRepository } from '../../ports';
+import { TasksWriteRepository } from '../../ports';
 import { CreateTaskInput, TaskQueryService, TaskService } from '../../services';
 
 @Injectable()
@@ -14,19 +14,21 @@ class CreateTaskInInboxUseCase {
     private readonly taskServices: TaskService,
     private readonly taskQueryService: TaskQueryService,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+
+    @Inject(GroupsToken.INBOX_READ_REPOSITORY)
+    private readonly inboxReadRepo: GroupInboxReadRepository,
+
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
-    @Inject(GroupsToken.READ_REPOSITORY) private readonly groupsReadRepo: GroupsReadRepository,
   ) {}
 
   async execute(input: CreateTaskInput): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { id } = await this.taskServices.createTask(input, trx);
 
-      const inboxGroup = await this.groupsReadRepo.getByName(
-        { name: INBOX_GROUP_KEY, userId: input.userId },
+      const inboxGroup = await this.inboxReadRepo.getInboxWithTasksByUserId(
+        { userId: input.userId },
         trx,
       );
-
       if (inboxGroup == null) {
         throw new ExceptionInboxNotExist({});
       }

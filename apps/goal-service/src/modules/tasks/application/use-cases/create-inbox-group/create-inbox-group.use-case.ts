@@ -1,24 +1,27 @@
 import { DB } from '@/infrastructure/types';
-import { GroupInboxView } from '@/modules/tasks/application/dto/group-inbox.view';
+import { GroupInboxView } from '@/modules/tasks/application/dto';
 import { ExceptionInboxAlreadyExist } from '@/modules/tasks/application/exceptions';
-import { Database } from '@/modules/tasks/application/ports';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { GroupsReadRepository, GroupsWriteRepository, INBOX_GROUP_KEY } from '../../ports';
+import { Database, GroupInboxReadRepository, GroupInboxWriteRepository } from '../../ports';
 
 @Injectable()
 class CreateInboxGroupUseCase {
   constructor(
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
-    @Inject(GroupsToken.WRITE_REPOSITORY) private readonly groupsWriteRepo: GroupsWriteRepository,
-    @Inject(GroupsToken.READ_REPOSITORY) private readonly groupReadRepo: GroupsReadRepository,
+
+    @Inject(GroupsToken.INBOX_WRITE_REPOSITORY)
+    private readonly inboxWriteRepo: GroupInboxWriteRepository,
+
+    @Inject(GroupsToken.INBOX_READ_REPOSITORY)
+    private readonly inboxReadRepo: GroupInboxReadRepository,
   ) {}
 
   async execute(input: { userId: number }): Promise<GroupInboxView> {
     return this.db.runTransaction(async (trx) => {
-      const inboxGroup = await this.groupReadRepo.getByName(
-        { name: INBOX_GROUP_KEY, userId: input.userId },
+      const inboxGroup = await this.inboxReadRepo.getInboxWithTasksByUserId(
+        { userId: input.userId },
         trx,
       );
 
@@ -26,7 +29,7 @@ class CreateInboxGroupUseCase {
         throw new ExceptionInboxAlreadyExist({});
       }
 
-      return await this.groupsWriteRepo.createInbox({ userId: input.userId });
+      return await this.inboxWriteRepo.createInbox({ userId: input.userId });
     });
   }
 }

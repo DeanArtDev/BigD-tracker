@@ -23,7 +23,7 @@ import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
 @UseGuards(RequestContextPayloadGuard)
-export class TasksRpcController {
+export class TasksRmqController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @MessagePattern(GoalCreateTask.pattern)

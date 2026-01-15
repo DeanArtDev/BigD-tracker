@@ -117,11 +117,10 @@ export class TasksWriteRepositoryKysely
     trx?: Transaction<DB>,
   ): Promise<void> {
     return await this.errorCatcher('tasks.add-to-group', async () => {
-      const position = await this.db
+      const lastPosition = await this.db
         .qb(trx)
         .selectFrom('task_to_group')
         .select((eb) => eb.fn.count('task_id').as('count'))
-        .where('group_id', '=', input.groupId)
         .where('group_id', '=', input.groupId)
         .executeTakeFirst();
 
@@ -131,7 +130,7 @@ export class TasksWriteRepositoryKysely
         .values({
           group_id: input.groupId,
           task_id: input.taskId,
-          position: Number(position?.count ?? 0),
+          position: Number(lastPosition?.count ?? 0),
         })
         .executeTakeFirstOrThrow();
     });

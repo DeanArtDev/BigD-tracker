@@ -4,14 +4,14 @@ import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { GroupCheckerService, TaskCheckerService } from '../../services';
+import { InboxGroupCheckerService, TaskCheckerService } from '../../services';
 import { AssignTaskToInboxCommand } from './assign-task-to-inbox.command';
 
 @Injectable()
 class AssignTaskToInboxUseCase {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
-    private readonly groupCheckerService: GroupCheckerService,
+    private readonly inboxGroupCheckerService: InboxGroupCheckerService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
   ) {}
@@ -21,7 +21,7 @@ class AssignTaskToInboxUseCase {
       const { taskId, userId } = input;
 
       const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId, userId }, { trx });
-      const { inboxId } = await this.groupCheckerService.ensureTaskNotInInboxGroup(
+      const { inboxId } = await this.inboxGroupCheckerService.ensureTaskNotInInboxGroup(
         { userId, taskId },
         { trx },
       );
