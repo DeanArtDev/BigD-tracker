@@ -96,7 +96,6 @@ export class TasksRmqController {
           deadline: payload.deadline,
           description: payload.description,
           priority: payload.priority,
-          startDate: payload.startDate,
         }),
       ),
     };

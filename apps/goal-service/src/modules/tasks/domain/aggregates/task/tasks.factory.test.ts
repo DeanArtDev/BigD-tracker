@@ -75,7 +75,6 @@ describe('TaskFactory', () => {
       name: 'Inbox updated',
       description: 'After update',
       priority: 3,
-      startDate: futureDate(3),
       deadline: futureDate(4),
     });
 
@@ -83,7 +82,6 @@ describe('TaskFactory', () => {
     expect(task.description).toBe('After update');
     expect(task.priority).toBe(3);
     expect(task.weight).toBe(80);
-    expect(task.recurrence).toBe('weekly');
   });
 
   it('soft deletes task through factory', () => {
