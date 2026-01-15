@@ -8,7 +8,7 @@ import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
 @UseGuards(RequestContextPayloadGuard)
-export class GroupsInboxRpcController {
+export class GroupsInboxRmqController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,

@@ -7,7 +7,7 @@ import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
 @UseGuards(RequestContextPayloadGuard)
-export class GroupsRpcController {
+export class GroupsRmqController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @MessagePattern(GoalCreateGroup.pattern)

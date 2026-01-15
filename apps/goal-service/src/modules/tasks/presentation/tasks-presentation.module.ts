@@ -1,16 +1,16 @@
 import { RequestContextService } from '@/modules/tasks/infrastructure/observability';
-import { GroupsRpcController } from './rpc/groups.rpc.controller';
 import { Module } from '@nestjs/common';
-import { GroupsInboxRpcController } from './rpc/groups-inbox.rpc.controller';
-import { TasksInboxRpcController } from './rpc/tasks-inbox.rpc.controller';
-import { TasksRpcController } from './rpc/tasks.rpc.controller';
+import { GroupsInboxRmqController } from './rmq/groups-inbox.rmq.controller';
+import { GroupsRmqController } from './rmq/groups.rmq.controller';
+import { TasksInboxRmqController } from './rmq/tasks-inbox.rmq.controller';
+import { TasksRmqController } from './rmq/tasks.rmq.controller';
 
 @Module({
   controllers: [
-    TasksRpcController,
-    TasksInboxRpcController,
-    GroupsInboxRpcController,
-    GroupsRpcController,
+    TasksRmqController,
+    TasksInboxRmqController,
+    GroupsInboxRmqController,
+    GroupsRmqController,
   ],
   providers: [RequestContextService],
 })
