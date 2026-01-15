@@ -1,4 +1,5 @@
 import { DB } from '@/infrastructure/types';
+import { ExceptionGroupWriteConflict } from '@/modules/tasks/application/exceptions';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
 import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
@@ -16,7 +17,7 @@ class DeleteGroupUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
   ) {}
 
-  async execute({ input }: DeleteGroupCommand): Promise<boolean> {
+  async execute({ input }: DeleteGroupCommand): Promise<{ data: true }> {
     return this.db.runTransaction(async (trx) => {
       const { groupId, userId } = input;
 
@@ -28,10 +29,19 @@ class DeleteGroupUseCase {
       const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
       const deletedGroup = groupFactory.delete(ensureGroup);
 
-      return await this.groupsWriteRepo.deleteById(
-        { groupId: deletedGroup.userId, userId: deletedGroup.userId },
+      const isDeleted = await this.groupsWriteRepo.deleteById(
+        { groupId: deletedGroup.id, userId: deletedGroup.userId },
         trx,
       );
+
+      if (!isDeleted) {
+        throw new ExceptionGroupWriteConflict({
+          subjectId: groupId,
+          message: 'Group could not be deleted',
+        });
+      }
+
+      return { data: true };
     });
   }
 }

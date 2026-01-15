@@ -47,39 +47,4 @@ function mapRpsKindToHttpStatus(kind: RmqErrorKind): HttpStatus | 499 {
   }
 }
 
-function mapHttpStatusToRpcKind(status: number): RmqErrorKind {
-  switch (status) {
-    case 400:
-      return RmqErrorKind.INVALID_ARGUMENT;
-    case 408:
-      return RmqErrorKind.DEADLINE_EXCEEDED;
-    case 412:
-      return RmqErrorKind.FAILED_PRECONDITION;
-    case 429:
-      return RmqErrorKind.RESOURCE_EXHAUSTED;
-
-    case 401:
-      return RmqErrorKind.UNAUTHENTICATED;
-    case 403:
-      return RmqErrorKind.PERMISSION_DENIED;
-
-    case 404:
-      return RmqErrorKind.NOT_FOUND;
-    case 409:
-      return RmqErrorKind.CONFLICT;
-
-    case 501:
-      return RmqErrorKind.NOT_IMPLEMENTED;
-    case 503:
-      return RmqErrorKind.UNAVAILABLE;
-
-    case 499:
-      return RmqErrorKind.CANCELLED;
-
-    default:
-      if (status >= 500 && status <= 599) return RmqErrorKind.INTERNAL;
-      return RmqErrorKind.INVALID_ARGUMENT;
-  }
-}
-
-export { mapRpsKindToHttpStatus, mapHttpStatusToRpcKind };
+export { mapRpsKindToHttpStatus };

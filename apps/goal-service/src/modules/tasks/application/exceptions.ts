@@ -48,9 +48,16 @@ const ApplicationExceptionStateList = {
     code: exceptionCode.taskAlreadyInGroup.code,
     details: exceptionCode.taskAlreadyInGroup.details,
   }),
+
+  GroupWriteConflict: defineExceptionState({
+    key: 'GROUP_WRITE_CONFLICT',
+    code: exceptionCode.writeConflict.code,
+    details: exceptionCode.writeConflict.details,
+  }),
 };
 
 export const {
+  ExceptionGroupWriteConflict,
   ExceptionGroupNotFound,
   ExceptionTaskNotFound,
   ExceptionTaskAlreadyInGroup,

@@ -1,5 +1,6 @@
 import { DB } from '@/infrastructure/types';
 import { Database, GroupsWriteRepository } from '@/modules/tasks/application/ports';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
@@ -8,7 +9,7 @@ import { Transaction } from 'kysely';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getGroupWithStatusQuery, getTasksWithStatusQuery } from '../helpers';
+import { getAvailableGroupQuery, getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class GroupWriteRepositoryKysely
@@ -24,7 +25,7 @@ export class GroupWriteRepositoryKysely
     trx?: Transaction<DB>,
   ): Promise<GroupWithTasks | null> {
     return await this.errorCatcher('groups.get-by-id.write', async () => {
-      const result = await getGroupWithStatusQuery(this.db, trx)
+      const result = await getAvailableGroupQuery(this.db, trx)
         .where('g.id', '=', input.groupId)
         .where('g.user_id', '=', input.userId)
         .executeTakeFirst();
@@ -90,6 +91,7 @@ export class GroupWriteRepositoryKysely
         .updateTable('groups')
         .where('id', '=', group.id)
         .where('user_id', '=', group.userId)
+        .where('name', 'is not', groupsQuerySpec.unavailableName)
         .set({
           name: group.name,
           description: group.description,
@@ -147,7 +149,8 @@ export class GroupWriteRepositoryKysely
         .qb(trx)
         .deleteFrom('groups as g')
         .where('g.id', '=', input.groupId)
-        .where('g.user_id', '=', input.groupId)
+        .where('g.user_id', '=', input.userId)
+        .where('g.name', 'not in', groupsQuerySpec.unavailableName)
         .executeTakeFirst();
 
       return result.numDeletedRows > 0;

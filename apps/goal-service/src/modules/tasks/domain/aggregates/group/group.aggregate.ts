@@ -66,7 +66,7 @@ class Group {
       userId: input.userId,
       name: input.name,
       description: input.description,
-      status: GroupStatus.NOT_STARTED,
+      status: input.status,
       progress: ProgressVo.defaultValue(),
     });
   }

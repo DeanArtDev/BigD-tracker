@@ -33,7 +33,7 @@ describe('Group aggregate', () => {
     expect(group.userId).toBe(13);
     expect(group.name).toBe('Restored');
     expect(group.description).toBe('From storage');
-    expect(group.status).toBe(GroupStatus.NOT_STARTED);
+    expect(group.status).toBe(GroupStatus.DONE);
     expect(group.progress).toBe(ProgressVo.defaultValue().value);
   });
 });
