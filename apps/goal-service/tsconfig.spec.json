@@ -4,6 +4,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "types": ["jest", "node"],
     "strict": true
   },
