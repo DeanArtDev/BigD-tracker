@@ -190,8 +190,6 @@ export class GroupsReadRepositoryKysely
         else tasksByGroupIdMap.set(task.group_id, [taskView]);
       }
 
-      console.log(444, tasksByGroupIdMap);
-
       for (const group of groups) {
         response.push(
           GroupReadKyselyMapper.fromRawToWithTaskView({
