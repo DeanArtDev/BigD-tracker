@@ -1,12 +1,13 @@
 import { DB } from '@/infrastructure/types';
-import { GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
+import { GroupView, GroupWithTasksView, TaskView } from '@/modules/tasks/application/dto';
 import {
   Database,
   GetGroupByIdInput,
   GroupsReadRepository,
   ThrowErrorOptions,
 } from '@/modules/tasks/application/ports';
-import { GroupStatus } from '@big-d/api-contracts';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
+import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -136,6 +137,74 @@ export class GroupsReadRepositoryKysely
         .execute();
 
       return tasks.length > 0;
+    });
+  }
+
+  async getGroupListWithTasksByUserId(
+    input: { userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<GroupWithTasksView[]> {
+    return await this.errorCatcher('groups.get-group-list-with-tasks-by-user-id', async () => {
+      const { userId } = input;
+
+      const groups = await getAvailableGroupQuery(this.db, trx)
+        .where('g.user_id', '=', userId)
+        .where('gs.name', 'not in', groupsQuerySpec.unavailableStatuses)
+        .execute();
+      if (groups.length === 0) return [];
+
+      const response: GroupWithTasksView[] = [];
+
+      const tasks = await getTasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
+        .where('t.user_id', '=', userId)
+        .where(
+          'ttg.group_id',
+          'in',
+          groups.map((group) => group.id),
+        )
+        .select(['ttg.group_id as group_id'])
+        .orderBy('ttg.position', 'asc')
+        .execute();
+
+      const tasksByGroupIdMap = new Map<(typeof tasks)[0]['group_id'], TaskView[]>([]);
+
+      for (const task of tasks) {
+        const taskView = TasksReadKyselyMapper.fromRawToView({
+          id: task.id,
+          user_id: task.user_id,
+          name: task.name,
+          description: task.description,
+          priority: task.priority,
+          weight: task.weight,
+          cancel_reason: task.cancel_reason,
+          start_date: task.start_date,
+          end_date: task.end_date,
+          deadline: task.deadline,
+          recurrence: task.recurrence,
+          status: task.status as TaskStatus,
+        });
+
+        const arr = tasksByGroupIdMap.get(task.group_id);
+        if (Array.isArray(arr)) arr.push(taskView);
+        else tasksByGroupIdMap.set(task.group_id, [taskView]);
+      }
+
+      for (const group of groups) {
+        response.push(
+          GroupReadKyselyMapper.fromRawToWithTaskView({
+            id: group.id,
+            name: group.name,
+            description: group.description,
+            user_id: group.user_id,
+            progress: group.progress,
+            status: group.status as GroupStatus,
+            tasks: tasksByGroupIdMap.get(group.id) ?? [],
+          }),
+        );
+      }
+
+      return response;
     });
   }
 }

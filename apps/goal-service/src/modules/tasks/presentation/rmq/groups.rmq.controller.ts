@@ -1,18 +1,36 @@
+import { GetUserGroupsQuery } from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
   DeleteGroupCommand,
   ReplaceGroupCommand,
 } from '@/modules/tasks/application/use-cases';
-import { GoalCreateGroup, GoalDeleteGroup, GoalReplaceGroup } from '@big-d/api-contracts';
+import {
+  GoalCreateGroup,
+  GoalDeleteGroup,
+  GoalGetUserGroups,
+  GoalReplaceGroup,
+} from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
 @UseGuards(RequestContextPayloadGuard)
 export class GroupsRmqController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
+  ) {}
+
+  @MessagePattern(GoalGetUserGroups.pattern)
+  async getUserGroups(
+    @Payload() { data: payload }: GoalGetUserGroups.Request,
+  ): Promise<GoalGetUserGroups.Response> {
+    return {
+      data: await this.queryBus.execute(new GetUserGroupsQuery({ userId: payload.userId })),
+    };
+  }
 
   @MessagePattern(GoalCreateGroup.pattern)
   async createGroup(

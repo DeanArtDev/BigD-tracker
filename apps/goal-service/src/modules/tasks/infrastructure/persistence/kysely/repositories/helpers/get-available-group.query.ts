@@ -8,7 +8,7 @@ function getAvailableGroupQuery(db: Database<DB>, trx?: Transaction<DB>) {
   return getGroupWithStatusQuery(db, trx).where(
     'g.name',
     'not in',
-    groupsQuerySpec.unavailableName,
+    groupsQuerySpec.unavailableNames,
   );
 }
 

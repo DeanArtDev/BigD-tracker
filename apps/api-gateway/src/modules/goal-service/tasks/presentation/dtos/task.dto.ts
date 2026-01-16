@@ -1,6 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { IsEnum, IsInt, IsISO8601, IsOptional, IsString, Max, Min } from 'class-validator';
 
 class TaskDto {
@@ -67,10 +67,13 @@ class TaskDto {
   @IsString()
   cancelReason?: string;
 
-  @ApiPropertyOptional({ example: 'Статус дела', enum: TaskStatus })
+  @ApiPropertyOptional({
+    example: TaskStatus.NOT_STARTED,
+    description: 'Статус дела',
+    enum: TaskStatus,
+  })
   @Expose()
   @IsEnum(TaskStatus)
-  @Type(() => String)
   status: TaskStatus;
 }
 

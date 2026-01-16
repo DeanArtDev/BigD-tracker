@@ -44,8 +44,10 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] inbox в отдельном (use-case, service, checker, repository)
  *   [x] редактирование группы
  *   [x] создание дела в inbox не имеет startDate, recurrence
- *   [] удаление группы
- *   [] список доступных групп для юзера (все кроме DONE)
+ *   [x] удаление группы
+ *   [x] список доступных групп для юзера (все кроме DONE)
+ *
+ -- цели --
  *   [] прикрепление группы к цели
  *   [] открепление группы от цели
  * */

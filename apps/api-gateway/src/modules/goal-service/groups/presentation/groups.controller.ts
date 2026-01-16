@@ -6,6 +6,7 @@ import {
   GoalCreateGroup,
   GoalDeleteGroup,
   GoalGetGroupInBox,
+  GoalGetUserGroups,
   GoalReplaceGroup,
 } from '@big-d/api-contracts';
 import {
@@ -27,6 +28,7 @@ import {
   CreateGroupRes,
   DeleteGroupRes,
   GetInBoxRes,
+  GetUserGroupsRes,
   ReplaceGroupReq,
   ReplaceGroupRes,
 } from './dtos';
@@ -37,16 +39,31 @@ export class GroupsController {
   constructor(private readonly goalClient: GoalServiceClientProxy) {}
 
   @Get('inbox')
-  @ApiOperation({ summary: 'Получение группы IN BOX юзера с делами' })
+  @ApiOperation({ summary: 'Получение группы IN BOX с делами' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: GetInBoxRes,
   })
   @ValidateRpcResponse(GetInBoxRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getUsersGoals(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetInBoxRes> {
+  async getInbox(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetInBoxRes> {
     return await this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
       GoalGetGroupInBox.pattern,
+      { data: { userId: uid } },
+    );
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Получение групп с делами' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetUserGroupsRes,
+  })
+  @ValidateRpcResponse(GetUserGroupsRes)
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async getUserGroups(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetUserGroupsRes> {
+    return await this.goalClient.send<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
+      GoalGetUserGroups.pattern,
       { data: { userId: uid } },
     );
   }

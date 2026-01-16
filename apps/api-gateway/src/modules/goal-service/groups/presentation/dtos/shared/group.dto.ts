@@ -42,10 +42,13 @@ class GroupDto {
   @IsInt()
   progress: number;
 
-  @ApiProperty({ example: 40, description: 'От 0 до 100', enum: GroupStatus })
+  @ApiProperty({
+    example: GroupStatus.NOT_STARTED,
+    description: 'Статус группы',
+    enum: GroupStatus,
+  })
   @Expose()
   @IsEnum(GroupStatus)
-  @Type(() => String)
   status: GroupStatus;
 
   @ApiProperty({
