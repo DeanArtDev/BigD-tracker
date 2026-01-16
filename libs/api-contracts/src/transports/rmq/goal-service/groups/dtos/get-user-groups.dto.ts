@@ -1,5 +1,4 @@
 import { GroupDto } from './group.dto';
-import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, ValidateNested } from 'class-validator';
 
@@ -17,7 +16,7 @@ class GetUserGroupsReq {
 class GetUserGroupsRes {
   @ValidateNested({ each: true })
   @IsArray()
-  @Type(() => TaskDto)
+  @Type(() => GroupDto)
   data: GroupDto[];
 }
 
