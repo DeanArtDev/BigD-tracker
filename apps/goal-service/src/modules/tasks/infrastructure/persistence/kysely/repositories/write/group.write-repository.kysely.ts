@@ -91,7 +91,7 @@ export class GroupWriteRepositoryKysely
         .updateTable('groups')
         .where('id', '=', group.id)
         .where('user_id', '=', group.userId)
-        .where('name', 'not in', groupsQuerySpec.unavailableName)
+        .where('name', 'not in', groupsQuerySpec.unavailableNames)
         .set({
           name: group.name,
           description: group.description,
@@ -150,7 +150,7 @@ export class GroupWriteRepositoryKysely
         .deleteFrom('groups as g')
         .where('g.id', '=', input.groupId)
         .where('g.user_id', '=', input.userId)
-        .where('g.name', 'not in', groupsQuerySpec.unavailableName)
+        .where('g.name', 'not in', groupsQuerySpec.unavailableNames)
         .executeTakeFirst();
 
       return result.numDeletedRows > 0;

@@ -45,6 +45,11 @@ interface GroupsReadRepository {
     input: { userId: number; taskId: number; groupId: number },
     trx?: Transaction<DB>,
   ): Promise<boolean>;
+
+  getGroupListWithTasksByUserId(
+    input: { userId: number },
+    trx?: Transaction<DB>,
+  ): Promise<GroupWithTasksView[]>;
 }
 
 export { GroupsReadRepository, GetGroupByIdInput, ThrowErrorOptions };
