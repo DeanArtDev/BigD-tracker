@@ -28,6 +28,7 @@ export class GoalExceptionToRpc implements ExceptionFilter {
           exceptionCode.taskNotExist.code,
           exceptionCode.taskNotInGroup.code,
           exceptionCode.groupNotExist.code,
+          exceptionCode.groupNotFound.code,
           exceptionCode.inboxNotExist.code,
         ].some((code) => code === exception.code)
       ) {

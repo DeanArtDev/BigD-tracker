@@ -1,10 +1,10 @@
+import { addApplicationUses } from '@/infrastructure/bootstrap';
 import { appConfigFactory } from '@/infrastructure/configs';
 import { goalServiceRmqConfig } from '@big-d/api-contracts';
 import { RmqLoggerDeserializer, RmqLoggerSerializer } from '@big-d/api-utils';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
-import { GoalExceptionToRpc } from '@shared/exception-filters';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -25,16 +25,7 @@ async function bootstrap() {
   );
 
   app.useLogger(logger);
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // удаляет лишние поля
-      forbidNonWhitelisted: false, // выбрасывает ошибку, если есть лишние поля
-      transform: true, // включает class-transformer (plainToInstance)
-    }),
-  );
-
-  app.useGlobalFilters(new GoalExceptionToRpc());
+  addApplicationUses(app);
 
   await app.listen();
   app.enableShutdownHooks();
