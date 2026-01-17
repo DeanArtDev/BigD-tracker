@@ -2,7 +2,7 @@ import { DB } from '@/infrastructure/types';
 import { Database, GroupsWriteRepository } from '@/modules/tasks/application/ports';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
-import { GroupStatus } from '@big-d/api-contracts';
+import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -44,7 +44,22 @@ export class GroupWriteRepositoryKysely
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
-        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
+        tasks: tasks.map((task) =>
+          TasksReadKyselyMapper.fromRawToView({
+            id: task.id,
+            user_id: task.user_id,
+            name: task.name,
+            description: task.description,
+            priority: task.priority,
+            weight: task.weight,
+            cancel_reason: task.cancel_reason,
+            start_date: task.start_date,
+            end_date: task.end_date,
+            deadline: task.deadline,
+            recurrence: task.recurrence,
+            status: task.status as TaskStatus,
+          }),
+        ),
       });
     });
   }

@@ -115,7 +115,22 @@ export class GroupsReadRepositoryKysely
         user_id: result.user_id,
         progress: result.progress,
         status: result.status as GroupStatus,
-        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
+        tasks: tasks.map((task) =>
+          TasksReadKyselyMapper.fromRawToView({
+            id: task.id,
+            user_id: task.user_id,
+            name: task.name,
+            description: task.description,
+            priority: task.priority,
+            weight: task.weight,
+            cancel_reason: task.cancel_reason,
+            start_date: task.start_date,
+            end_date: task.end_date,
+            deadline: task.deadline,
+            recurrence: task.recurrence,
+            status: task.status as TaskStatus,
+          }),
+        ),
       });
     });
   }
