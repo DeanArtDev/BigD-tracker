@@ -1,3 +1,4 @@
+import { addApplicationUses } from '@/infrastructure/bootstrap';
 import { appConfigFactory } from '@/infrastructure/configs';
 import { goalServiceRmqConfig } from '@big-d/api-contracts';
 import { ClientProxyFactory } from '@nestjs/microservices';
@@ -15,6 +16,8 @@ async function connectRmqClients(params: { testingModule: TestingModule }) {
       isProd: false,
     }),
   );
+
+  addApplicationUses(microservice);
   await microservice.listen();
 
   const client = ClientProxyFactory.create(
