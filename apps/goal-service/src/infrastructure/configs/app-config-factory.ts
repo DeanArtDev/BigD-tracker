@@ -1,4 +1,4 @@
-import { ConfigFactory, registerAs } from '@nestjs/config';
+import { registerAs } from '@nestjs/config';
 import * as process from 'node:process';
 import { z } from 'zod';
 
@@ -13,6 +13,7 @@ interface GOAL_APP_ENV {
   readonly RMQ_HOST: string;
 
   readonly DB_HOST: string;
+  readonly DB_PASSWORD: string;
   readonly DB_PORT: number;
   readonly DB_DATABASE: string;
   readonly DB_USERNAME: string;
@@ -21,7 +22,7 @@ interface GOAL_APP_ENV {
 const envSchema = z.object({
   API_PORT: z.coerce.number(),
   TZ: z.string(),
-  NODE_ENV: z.union([z.literal('production'), z.literal('development')]),
+  NODE_ENV: z.union([z.literal('production'), z.literal('development'), z.literal('test')]),
 
   RMQ_USER: z.string(),
   RMQ_PASSWORD: z.string(),
@@ -50,7 +51,7 @@ const dbConfig = registerAs('db', () => ({
   PASSWORD: process.env.DB_PASSWORD ?? '',
 }));
 
-const appConfigFactory: ConfigFactory<GOAL_APP_ENV> = () => {
+const appConfigFactory = (): GOAL_APP_ENV => {
   const rmq = rmqConfig();
   const db = dbConfig();
 

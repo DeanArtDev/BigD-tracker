@@ -2,6 +2,7 @@ import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import { Database, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
+import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
@@ -38,7 +39,22 @@ export class GroupInboxReadRepositoryKysely
         id: inbox.id,
         name: inbox.name,
         user_id: inbox.user_id,
-        tasks: tasks.map(TasksReadKyselyMapper.fromRawToView),
+        tasks: tasks.map((task) =>
+          TasksReadKyselyMapper.fromRawToView({
+            id: task.id,
+            user_id: task.user_id,
+            name: task.name,
+            description: task.description,
+            priority: task.priority,
+            weight: task.weight,
+            cancel_reason: task.cancel_reason,
+            start_date: task.start_date,
+            end_date: task.end_date,
+            deadline: task.deadline,
+            recurrence: task.recurrence,
+            status: task.status as TaskStatus,
+          }),
+        ),
       });
     });
   }

@@ -63,4 +63,4 @@ class GroupReadKyselyMapper {
   }
 }
 
-export { GroupReadKyselyMapper };
+export { GroupReadKyselyMapper, RawGroup, RawGroupWithTasks, RawInboxGroup };
