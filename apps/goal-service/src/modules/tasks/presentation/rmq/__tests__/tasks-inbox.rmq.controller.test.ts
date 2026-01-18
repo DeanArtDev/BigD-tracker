@@ -23,6 +23,21 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView, getTask, getTaskView } from '@shared/__tests__/entities';
 
+const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
+  id: taskView.id,
+  userId: taskView.userId,
+  name: taskView.name,
+  description: taskView.description,
+  priority: taskView.priority,
+  weight: taskView.weight,
+  cancelReason: taskView.cancelReason,
+  startDate: taskView.startDate,
+  endDate: taskView.endDate,
+  deadline: taskView.deadline,
+  status: taskView.status,
+  recurrence: taskView.recurrence,
+});
+
 const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
   getTaskById: jest.fn(),
   createTask: jest.fn(),
@@ -121,7 +136,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
         { id: createdTask.id, userId },
         expectTransaction(),
       );
-      expect(res).toEqual({ data: taskView });
+      expect(res).toEqual({ data: toTaskResponse(taskView) });
     });
 
     test('should throw when inbox missing', async () => {
