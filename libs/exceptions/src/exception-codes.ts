@@ -52,7 +52,7 @@ const groups = {
   groupNotExist: { code: 'GG-A-0001', details: Details.Define<{ groupId?: number }>() },
   inboxNotExist: { code: 'GG-A-0002', details: Details.Empty },
   inboxAlreadyExist: { code: 'GG-A-0003', details: Details.Empty },
-  groupNotFound: { code: 'GT-A-0004', details: Details.Define<{ groupId?: number }>() },
+  groupNotFound: { code: 'GG-A-0004', details: Details.Define<{ groupId?: number }>() },
 } as const satisfies ExceptionConfig;
 
 // SYSTEM

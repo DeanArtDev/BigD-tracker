@@ -29,7 +29,9 @@ import {
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
+import { initTestEnvironment } from '@/../jest.setup';
 
+initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   id: taskView.id,
   userId: taskView.userId,
@@ -107,10 +109,6 @@ describe('TasksRmqController (rmq e2e)', () => {
     ms = resp.microservice;
     client = resp.client;
     sendMessage = sendMessageBuilder(client);
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   afterAll(async () => {
@@ -281,7 +279,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const userId = 21;
       const taskId = 2001;
       const originalTask = getTask({ id: taskId, userId, name: 'Original' });
-      const clonedTask = getTask({ id: 2002, userId, name: 'Original' });
+      const clonedTask = getTask({ id: originalTask.id + 1, userId, name: originalTask.name });
       const taskView = getTaskView({ id: clonedTask.id, userId, name: clonedTask.name });
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
@@ -313,15 +311,16 @@ describe('TasksRmqController (rmq e2e)', () => {
         { id: clonedTask.id, userId },
         expectTransaction(),
       );
-      expect(res).toEqual({ data: toTaskResponse(taskView) });
+      expect(res).toEqual({ data: toTaskResponse(clonedTask) });
     });
 
     test('should clone task with group', async () => {
       const userId = 22;
       const taskId = 3001;
       const groupId = 401;
+
       const originalTask = getTask({ id: taskId, userId, name: 'Original' });
-      const clonedTask = getTask({ id: 3002, userId, name: 'Original' });
+      const clonedTask = getTask({ ...originalTask, id: originalTask.id + 1 });
       const taskView = getTaskView({ id: clonedTask.id, userId, name: clonedTask.name });
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
@@ -483,7 +482,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const existingTask = getTask({ id: taskId, userId, name: 'Old' });
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
-      tasksWriteRepoMock.replaceTask.mockImplementation(async (task: Task) => task);
+      tasksWriteRepoMock.replaceTask.mockImplementation((task: Task) => task);
 
       const payload: GoalReplaceTask.Request = buildPayload({
         data: {
@@ -587,7 +586,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         success: true,
         inboxId: 777,
       });
-      tasksWriteRepoMock.replaceTask.mockImplementation(async (task: Task) => task);
+      tasksWriteRepoMock.replaceTask.mockImplementation((task: Task) => task);
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
@@ -1039,10 +1038,10 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
-        GoalUnassignTaskFromGroup.pattern,
-        payload,
-      );
+      const res = await sendMessage<
+        GoalUnassignTaskFromGroup.Response,
+        GoalUnassignTaskFromGroup.Request
+      >(GoalUnassignTaskFromGroup.pattern, payload);
 
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
         { taskId, userId },

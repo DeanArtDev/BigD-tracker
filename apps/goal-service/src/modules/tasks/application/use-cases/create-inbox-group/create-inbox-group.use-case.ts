@@ -29,7 +29,7 @@ class CreateInboxGroupUseCase {
         throw new ExceptionInboxAlreadyExist({});
       }
 
-      return await this.inboxWriteRepo.createInbox({ userId: input.userId });
+      return await this.inboxWriteRepo.createInbox({ userId: input.userId }, trx);
     });
   }
 }

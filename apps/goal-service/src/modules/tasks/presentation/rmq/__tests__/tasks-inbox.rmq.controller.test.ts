@@ -5,11 +5,7 @@ import {
 } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
-import {
-  GoalAssignTaskToInbox,
-  GoalCreateTaskInInbox,
-  RmqErrorKind,
-} from '@big-d/api-contracts';
+import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, RmqErrorKind } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -22,7 +18,9 @@ import {
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupInboxView, getTask, getTaskView } from '@shared/__tests__/entities';
+import { initTestEnvironment } from '@/../jest.setup';
 
+initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   id: taskView.id,
   userId: taskView.userId,
@@ -81,10 +79,6 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
     ms = resp.microservice;
     client = resp.client;
     sendMessage = sendMessageBuilder(client);
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   afterAll(async () => {

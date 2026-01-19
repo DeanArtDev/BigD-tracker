@@ -26,7 +26,9 @@ import {
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupRaw, getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
+import { initTestEnvironment } from '@/../jest.setup';
 
+initTestEnvironment();
 const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
   createGroup: jest.fn(),
   deleteById: jest.fn(),
@@ -74,10 +76,6 @@ describe('GroupsRmqController (rmq e2e)', () => {
     ms = resp.microservice;
     client = resp.client;
     sendMessage = sendMessageBuilder(client);
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   afterAll(async () => {

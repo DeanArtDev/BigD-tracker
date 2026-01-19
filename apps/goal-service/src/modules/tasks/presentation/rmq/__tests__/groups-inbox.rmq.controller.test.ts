@@ -1,4 +1,7 @@
-import { GroupInboxReadRepository, GroupInboxWriteRepository } from '@/modules/tasks/application/ports';
+import {
+  GroupInboxReadRepository,
+  GroupInboxWriteRepository,
+} from '@/modules/tasks/application/ports';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { GoalCreateInboxGroup, GoalGetGroupInBox, RmqErrorKind } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -13,7 +16,9 @@ import {
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupInboxView, getTaskView } from '@shared/__tests__/entities';
+import { initTestEnvironment } from '@/../jest.setup';
 
+initTestEnvironment();
 const inboxWriteRepoMock: Record<keyof GroupInboxWriteRepository, jest.Mock> = {
   createInbox: jest.fn(),
 };
@@ -45,10 +50,6 @@ describe('GroupsInboxRmqController (rmq e2e)', () => {
     sendMessage = sendMessageBuilder(client);
   });
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   afterAll(async () => {
     await client.close();
     await ms.close();
@@ -75,10 +76,7 @@ describe('GroupsInboxRmqController (rmq e2e)', () => {
         { userId },
         expectTransaction(),
       );
-      expect(inboxWriteRepoMock.createInbox).toHaveBeenCalledWith(
-        { userId },
-        expectTransaction(),
-      );
+      expect(inboxWriteRepoMock.createInbox).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(res).toEqual({ data: inboxView });
     });
 
