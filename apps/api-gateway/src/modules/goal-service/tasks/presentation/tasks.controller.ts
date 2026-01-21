@@ -7,6 +7,7 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalGetDiaryTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
@@ -14,12 +15,14 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
@@ -29,6 +32,8 @@ import {
   CloneTaskRes,
   CreateTaskReq,
   CreateTaskRes,
+  GetDiaryTasksQuery,
+  GetDiaryTasksRes,
   ReplaceTaskReq,
   ReplaceTaskRes,
   UnassignTaskFromGroupRes,
@@ -38,6 +43,30 @@ import {
 @Controller('/tasks')
 export class TasksController {
   constructor(private readonly goalClient: GoalServiceClientProxy) {}
+
+  @Get('/diary')
+  @ApiOperation({ summary: 'Получение дел для ежедневника' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetDiaryTasksRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GetDiaryTasksRes)
+  async getDiaryTasks(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Query() { from, to }: GetDiaryTasksQuery,
+  ): Promise<GetDiaryTasksRes> {
+    return await this.goalClient.send<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(
+      GoalGetDiaryTasks.pattern,
+      {
+        data: {
+          userId: uid,
+          from,
+          to,
+        },
+      },
+    );
+  }
 
   @Post()
   @ApiOperation({ summary: 'Создание дела' })

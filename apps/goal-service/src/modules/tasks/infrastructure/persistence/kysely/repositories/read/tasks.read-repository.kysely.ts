@@ -1,6 +1,7 @@
 import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { Database, TasksReadRepository } from '@/modules/tasks/application/ports';
+import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -79,6 +80,38 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         groupId: result.group_id,
         position: result.position,
       };
+    });
+  }
+
+  async getByRange(
+    input: { userId: number; from: string; to: string },
+    trx?: Transaction<DB>,
+  ): Promise<TaskView[]> {
+    return await this.errorCatcher('tasks.get-by-range.read', async () => {
+      const tasks = await getTasksWithStatusQuery(this.db, trx)
+        .where('ts.name', 'in', tasksQuerySpec.readableStatuses)
+        .where('t.user_id', '=', input.userId)
+        .where('t.start_date', '<=', new Date(input.to))
+        .where('t.deadline', '>=', new Date(input.from))
+        .orderBy('t.start_date', 'asc')
+        .execute();
+
+      return tasks.map((task) => {
+        return TasksReadKyselyMapper.fromRawToView({
+          id: task.id,
+          user_id: task.user_id,
+          name: task.name,
+          description: task.description,
+          priority: task.priority,
+          weight: task.weight,
+          cancel_reason: task.cancel_reason,
+          start_date: task.start_date,
+          end_date: task.end_date,
+          deadline: task.deadline,
+          recurrence: task.recurrence,
+          status: task.status as TaskStatus,
+        });
+      });
     });
   }
 }

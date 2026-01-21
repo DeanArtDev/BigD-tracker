@@ -1,8 +1,4 @@
-import {
-  GroupInboxReadRepository,
-  TasksReadRepository,
-  TasksWriteRepository,
-} from '@/modules/tasks/application/ports';
+import { GroupInboxReadRepository, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, RmqErrorKind } from '@big-d/api-contracts';
@@ -19,6 +15,7 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView, getTask, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
+import { tasksReadRepoMock } from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
@@ -44,12 +41,6 @@ const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
   replaceTask: jest.fn(),
   addTaskToGroup: jest.fn(),
   removeTaskFromGroup: jest.fn(),
-};
-
-const tasksReadRepoMock: Record<keyof TasksReadRepository, jest.Mock> = {
-  getById: jest.fn(),
-  getTaskToGroupLink: jest.fn(),
-  isTaskIntoGroup: jest.fn(),
 };
 
 const inboxReadRepoMock: Record<keyof GroupInboxReadRepository, jest.Mock> = {

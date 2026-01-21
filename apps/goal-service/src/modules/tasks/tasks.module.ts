@@ -16,7 +16,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] прикрепление к группе IN BOX (из другого места в IN BOX)
  *   [x] открепление от группы (подумать о position после удаления)
  *
- *   [] -- ежедневник ---
+ *   [] -- ежедневник /task/diary ---
  *   [] получение tasks для ежедневника
  *
  *   [] -- второстепенные ---
@@ -46,6 +46,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] создание дела в inbox не имеет startDate, recurrence
  *   [x] удаление группы
  *   [x] список доступных групп для юзера (все кроме DONE)
+ *   [x] добавил вычисляемы поля группы под нужные статусы tasks и groups
  *
  -- цели --
  *   [] прикрепление группы к цели

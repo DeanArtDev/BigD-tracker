@@ -42,6 +42,10 @@ class GroupWithTasksView {
       return this.#group.status;
     }
 
+    if (this.#tasks.length === 0) {
+      return GroupStatus.NOT_STARTED;
+    }
+
     if (this.#tasks.every((t) => t.status === TaskStatus.NOT_STARTED)) {
       return GroupStatus.NOT_STARTED;
     }
