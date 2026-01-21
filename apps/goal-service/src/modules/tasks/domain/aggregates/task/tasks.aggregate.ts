@@ -1,5 +1,5 @@
 import { availableTransitionsByTaskStatuses } from '@/modules/tasks/domain';
-import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskStatus } from '@big-d/api-contracts';
 import { AggregateRoot } from '@nestjs/cqrs';
 import {
@@ -65,7 +65,7 @@ class Task extends AggregateRoot {
       return this;
     }
 
-    throw new ExceptionDomainInvalidInvariant({
+    throw new ExceptionTaskDomainInvalidInvariant({
       message: `Task status transition is unavailable from:{${this.#state.status} to:{${status}} status`,
       field: 'status',
     });

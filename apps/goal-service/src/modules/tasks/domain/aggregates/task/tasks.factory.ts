@@ -1,5 +1,5 @@
 import { Priority, TaskReplaceInput, Weight } from '@/modules/tasks/domain';
-import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
@@ -53,7 +53,7 @@ class TaskFactory {
     const clonedTask = task.clone();
 
     if (!clonedTask.isDraft) {
-      throw new ExceptionDomainInvalidInvariant({
+      throw new ExceptionTaskDomainInvalidInvariant({
         message: `Cloned task from task:${task.id} must be a draft`,
         field: 'clone',
       });

@@ -1,4 +1,4 @@
-import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { BaseValueObject } from '@big-d/api-utils';
 
 class Weight implements BaseValueObject {
@@ -18,7 +18,7 @@ class Weight implements BaseValueObject {
 
   public static create(value: number): Weight {
     if (value < 0 || value > 100) {
-      throw new ExceptionDomainInvalidInvariant({
+      throw new ExceptionTaskDomainInvalidInvariant({
         message: 'Priority available value range is from 0 to 100',
         field: 'weight',
       });

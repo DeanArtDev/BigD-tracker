@@ -6,7 +6,7 @@ import {
   GroupsReadRepository,
   ThrowErrorOptions,
 } from '@/modules/tasks/application/ports';
-import { groupsQuerySpec } from '@/modules/tasks/domain';
+import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -164,7 +164,6 @@ export class GroupsReadRepositoryKysely
 
       const groups = await getAvailableGroupQuery(this.db, trx)
         .where('g.user_id', '=', userId)
-        .where('gs.name', 'not in', groupsQuerySpec.unavailableStatuses)
         .execute();
       if (groups.length === 0) return [];
 
@@ -178,6 +177,7 @@ export class GroupsReadRepositoryKysely
           'in',
           groups.map((group) => group.id),
         )
+        .where('ts.name', 'in', tasksQuerySpec.readableStatuses)
         .select(['ttg.group_id as group_id'])
         .orderBy('ttg.position', 'asc')
         .execute();

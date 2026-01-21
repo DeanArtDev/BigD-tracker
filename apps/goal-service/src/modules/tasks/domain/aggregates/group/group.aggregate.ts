@@ -1,5 +1,5 @@
 import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
-import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
 import { assertGroupUpdate } from './group.invariants';
@@ -73,7 +73,7 @@ class Group {
 
   public delete(): this {
     if (this.#state.status === GroupStatus.DONE) {
-      throw new ExceptionDomainInvalidInvariant({
+      throw new ExceptionTaskDomainInvalidInvariant({
         message: `Group can't be delete if it's already done`,
         field: 'status',
       });

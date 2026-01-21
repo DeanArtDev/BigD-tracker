@@ -16,8 +16,8 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] прикрепление к группе IN BOX (из другого места в IN BOX)
  *   [x] открепление от группы (подумать о position после удаления)
  *
- *   [] -- ежедневник ---
- *   [] получение tasks для ежедневника
+ *   -- ежедневник /task/diary ---
+ *   [x] получение tasks для ежедневника
  *
  *   [] -- второстепенные ---
  *   [] полное удаление task
@@ -25,10 +25,11 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [] свалка дел (фильтры, сортировка, поиск)
  *   [] сортировка по дате добавления IN BOX
  *   [] сортировка по приоритетам IN BOX
+ *   [] вынести регистрацию в отдельный сервис orchestration service
  *
  *   [] -- чистка --
  *   [x] удалить libs/api-contracts/src/goal-service
- *   [] удалить в api-gateway старые модули groups, goals, things
+ *   [x] удалить в api-gateway старые модули groups, goals, things
  *   []
  *   []
  * */
@@ -46,6 +47,8 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [x] создание дела в inbox не имеет startDate, recurrence
  *   [x] удаление группы
  *   [x] список доступных групп для юзера (все кроме DONE)
+ *   [x] добавил вычисляемы поля группы под нужные статусы tasks и groups
+ *   [] продумать систему расчета прогресса в группе
  *
  -- цели --
  *   [] прикрепление группы к цели

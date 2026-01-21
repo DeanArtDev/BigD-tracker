@@ -1,3 +1,4 @@
+import { GetDiaryTasksQuery } from '@/modules/tasks/application/queries';
 import {
   AssignTaskToGroupCommand,
   CloneTaskCommand,
@@ -8,23 +9,27 @@ import {
   UpdateInboxTaskCommand,
 } from '@/modules/tasks/application/use-cases';
 import {
+  GoalAssignTaskToGroup,
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalGetDiaryTasks,
   GoalReplaceTask,
-  GoalUpdateInboxTask,
-  GoalAssignTaskToGroup,
   GoalUnassignTaskFromGroup,
+  GoalUpdateInboxTask,
 } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
 @UseGuards(RequestContextPayloadGuard)
 export class TasksRmqController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   @MessagePattern(GoalCreateTask.pattern)
   async createTask(
@@ -137,6 +142,21 @@ export class TasksRmqController {
           taskId: payload.taskId,
           userId: payload.userId,
           groupId: payload.groupId,
+        }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalGetDiaryTasks.pattern)
+  async getDiaryTasks(
+    @Payload() { data: payload }: GoalGetDiaryTasks.Request,
+  ): Promise<GoalGetDiaryTasks.Response> {
+    return {
+      data: await this.queryBus.execute(
+        new GetDiaryTasksQuery({
+          to: payload.to,
+          from: payload.from,
+          userId: payload.userId,
         }),
       ),
     };
