@@ -51,17 +51,15 @@ class GroupWithTasksView {
     }
 
     if (
-      this.#tasks.every((t) => [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS].includes(t.status))
-    ) {
-      return GroupStatus.IN_PROGRESS;
-    }
-
-    if (
       this.#tasks.every((t) =>
         [TaskStatus.COMPLETED, TaskStatus.OVERDUE, TaskStatus.CANCELLED].includes(t.status),
       )
     ) {
       return GroupStatus.DONE;
+    }
+
+    if (this.#tasks.some((t) => t.status === TaskStatus.IN_PROGRESS)) {
+      return GroupStatus.IN_PROGRESS;
     }
 
     throw new ExceptionTaskDomainInvalidInvariant({
