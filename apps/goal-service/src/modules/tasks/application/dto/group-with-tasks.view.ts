@@ -1,4 +1,3 @@
-import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { GroupView } from './group.view';
 import { TaskView } from './task.view';
@@ -58,14 +57,7 @@ class GroupWithTasksView {
       return GroupStatus.DONE;
     }
 
-    if (this.#tasks.some((t) => t.status === TaskStatus.IN_PROGRESS)) {
-      return GroupStatus.IN_PROGRESS;
-    }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      message: `Group id:${this.#group.id} has desynchronized case statuses`,
-      field: 'group.status',
-    });
+    return GroupStatus.IN_PROGRESS;
   }
 
   get description() {
