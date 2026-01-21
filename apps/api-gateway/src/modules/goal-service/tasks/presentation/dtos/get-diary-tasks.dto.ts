@@ -1,24 +1,22 @@
-import { TaskDto } from './task.dto';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsArray, IsISO8601, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, IsISO8601, ValidateNested } from 'class-validator';
+import { TaskDto } from './task.dto';
 
 class GetDiaryTasksQuery {
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '2026-05-24T13:01:02.471Z',
     description: 'ISO String',
   })
   @Expose()
-  @IsOptional()
   @IsISO8601()
   from: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '2026-05-24T13:01:02.471Z',
     description: 'ISO String',
   })
   @Expose()
-  @IsOptional()
   @IsISO8601()
   to: string;
 }

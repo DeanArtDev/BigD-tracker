@@ -1,14 +1,16 @@
 import { TaskDto } from './task.dto';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsISO8601, IsString, ValidateNested } from 'class-validator';
 
 class GetDiaryTasksReqData {
   @IsInt()
   userId: number;
 
+  @IsISO8601()
   @IsString()
   from: string;
 
+  @IsISO8601()
   @IsString()
   to: string;
 }
