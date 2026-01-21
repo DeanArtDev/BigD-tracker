@@ -1,5 +1,5 @@
 import { TaskView } from '@/modules/tasks/application/dto';
-import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { GroupStatus } from '@big-d/api-contracts';
 import { isFunction } from 'lodash';
 import { Group } from './group.aggregate';
@@ -43,7 +43,7 @@ class GroupWithTasks {
 
   public delete(): this {
     if (this.#state.tasks.length > 0) {
-      throw new ExceptionDomainInvalidInvariant({
+      throw new ExceptionTaskDomainInvalidInvariant({
         message: `Group can't be delete if has at least one task`,
         field: 'tasks',
       });

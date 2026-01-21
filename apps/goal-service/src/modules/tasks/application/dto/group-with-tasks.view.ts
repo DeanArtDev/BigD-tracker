@@ -1,35 +1,108 @@
-import { TaskView } from './task.view';
-import { GroupStatus } from '@big-d/api-contracts';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
+import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { GroupView } from './group.view';
+import { TaskView } from './task.view';
 
 interface GroupWithTasksViewState {
-  readonly id: number;
-  readonly userId: number;
-  readonly progress: number;
-  readonly name: string;
-  readonly status: GroupStatus;
-  readonly description?: string;
+  readonly group: GroupView;
   readonly tasks: TaskView[];
 }
 
-class GroupWithTasksView extends GroupView {
-  constructor(
-    public readonly tasks: TaskView[],
-    ...groupViewConstructor: ConstructorParameters<typeof GroupView>
-  ) {
-    super(...groupViewConstructor);
+class GroupWithTasksView {
+  #group: GroupView;
+  #tasks: TaskView[];
+
+  constructor(state: GroupWithTasksViewState) {
+    const { tasks, group } = state;
+    this.#tasks = tasks;
+    this.#group = group;
   }
 
-  static restore(input: GroupWithTasksViewState): GroupWithTasksView {
-    return new GroupWithTasksView(
-      input.tasks,
-      input.id,
-      input.userId,
-      input.progress,
-      input.name,
-      input.status,
-      input.description,
-    );
+  static restore(state: GroupWithTasksViewState): GroupWithTasksView {
+    return new GroupWithTasksView({
+      group: state.group,
+      tasks: state.tasks,
+    });
+  }
+
+  get id() {
+    return this.#group.id;
+  }
+
+  get userId() {
+    return this.#group.userId;
+  }
+
+  get name() {
+    return this.#group.name;
+  }
+
+  get status() {
+    if (this.#group.status === GroupStatus.DONE) {
+      return this.#group.status;
+    }
+
+    if (this.#tasks.every((t) => t.status === TaskStatus.NOT_STARTED)) {
+      return GroupStatus.NOT_STARTED;
+    }
+
+    if (this.#tasks.every((t) => t.status === TaskStatus.IN_PROGRESS)) {
+      return GroupStatus.IN_PROGRESS;
+    }
+
+    if (
+      this.#tasks.every((t) =>
+        [TaskStatus.COMPLETED, TaskStatus.OVERDUE, TaskStatus.CANCELLED].includes(t.status),
+      )
+    ) {
+      return GroupStatus.DONE;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Group id:${this.#group.id} has desynchronized case statuses`,
+      field: 'group.status',
+    });
+  }
+
+  get description() {
+    return this.#group.description;
+  }
+
+  get tasks() {
+    return [...this.#tasks];
+  }
+
+  get progress() {
+    if (this.#group.status === GroupStatus.DONE) {
+      return this.#group.progress;
+    }
+
+    const parts = this.#tasks.length;
+    if (parts === 0) return 0;
+
+    const partCost = 100 / parts;
+
+    const result = this.#tasks.reduce<number>((acc, task) => {
+      if (task.status === TaskStatus.COMPLETED) {
+        const weight = task.weight / 100;
+        acc += weight * partCost;
+      }
+      return acc;
+    }, 0);
+
+    return Number(result.toFixed(1));
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      userId: this.userId,
+      name: this.name,
+      status: this.status,
+      description: this.description,
+      progress: this.progress,
+      tasks: this.tasks,
+    };
   }
 }
 

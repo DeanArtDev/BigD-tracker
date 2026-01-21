@@ -1,9 +1,11 @@
+import { GroupWithTasksView } from '@/modules/tasks/application/dto';
 import { GetUserGroupsQuery } from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
   DeleteGroupCommand,
   ReplaceGroupCommand,
 } from '@/modules/tasks/application/use-cases';
+import { GroupViewRmqMapper } from '@/modules/tasks/presentation/rmq/mappers/group-view.rmq.mapper';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
@@ -27,8 +29,12 @@ export class GroupsRmqController {
   async getUserGroups(
     @Payload() { data: payload }: GoalGetUserGroups.Request,
   ): Promise<GoalGetUserGroups.Response> {
+    const groups = await this.queryBus.execute<GetUserGroupsQuery, GroupWithTasksView[]>(
+      new GetUserGroupsQuery({ userId: payload.userId }),
+    );
+
     return {
-      data: await this.queryBus.execute(new GetUserGroupsQuery({ userId: payload.userId })),
+      data: groups.map(GroupViewRmqMapper.fromViewToDtoWithTasks),
     };
   }
 

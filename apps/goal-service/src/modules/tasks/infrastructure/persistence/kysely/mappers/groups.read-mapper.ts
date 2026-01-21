@@ -41,8 +41,7 @@ class GroupReadKyselyMapper {
   static fromRawToWithTaskView(raw: RawGroupWithTasks): GroupWithTasksView {
     return GroupWithTasksView.restore({
       tasks: raw.tasks,
-
-      ...GroupReadKyselyMapper.fromRawToView({
+      group: GroupReadKyselyMapper.fromRawToView({
         id: raw.id,
         name: raw.name,
         description: raw.description,

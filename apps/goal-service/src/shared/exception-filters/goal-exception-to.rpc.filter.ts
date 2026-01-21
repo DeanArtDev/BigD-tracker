@@ -1,4 +1,4 @@
-import { ExceptionDomainInvalidInvariant } from '@/modules/tasks/domain/errors';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
 import { BaseRpcException, RpcExceptionFactory } from '@big-d/api-contracts';
 import { BaseException, exceptionCode, isBaseException } from '@big-d/exceptions';
@@ -13,7 +13,7 @@ export class GoalExceptionToRpc implements ExceptionFilter {
     const message = host.switchToRpc().getContext<RmqContext>().getMessage();
     const correlationId = getCorrelationId(message);
 
-    if (exception instanceof ExceptionDomainInvalidInvariant) {
+    if (exception instanceof ExceptionTaskDomainInvalidInvariant) {
       return throwError(() => RpcExceptionFactory.createDomainInvariantViolation(exception));
     }
 
