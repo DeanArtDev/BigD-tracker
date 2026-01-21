@@ -50,7 +50,9 @@ class GroupWithTasksView {
       return GroupStatus.NOT_STARTED;
     }
 
-    if (this.#tasks.every((t) => t.status === TaskStatus.IN_PROGRESS)) {
+    if (
+      this.#tasks.every((t) => [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS].includes(t.status))
+    ) {
       return GroupStatus.IN_PROGRESS;
     }
 
