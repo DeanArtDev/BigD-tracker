@@ -1,13 +1,14 @@
-import { DB } from '@/infrastructure/types';
-import { TasksWriteRepository } from '@/modules/tasks/application/ports';
+import {
+  TaskDatabase,
+  TaskTransaction,
+  TasksWriteRepository,
+} from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
-import { Database } from '@/modules/tasks/application/ports';
-import { getTasksWithStatusQuery } from '../helpers';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
+import { getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class TasksWriteRepositoryKysely
@@ -16,13 +17,13 @@ export class TasksWriteRepositoryKysely
 {
   #tableName = 'tasks' as const;
 
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 
   async getTaskById(
     input: { taskId: number; userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
       const task = await getTasksWithStatusQuery(this.db, trx)
@@ -35,7 +36,7 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async createTask(agr: Task, trx?: Transaction<DB>): Promise<Task> {
+  async createTask(agr: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.creation', async () => {
       const { statusId, statusName } = await this.db
         .qb(trx)
@@ -76,7 +77,7 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async replaceTask(task: Task, trx?: Transaction<DB>): Promise<Task> {
+  async replaceTask(task: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.replace', async () => {
       const result = await this.db
         .qb(trx)
@@ -114,7 +115,7 @@ export class TasksWriteRepositoryKysely
 
   async addTaskToGroup(
     input: { groupId: number; taskId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<void> {
     return await this.errorCatcher('tasks.add-to-group', async () => {
       const lastPosition = await this.db
@@ -136,7 +137,7 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async removeTaskFromGroup(input: { taskId: number }, trx?: Transaction<DB>): Promise<void> {
+  async removeTaskFromGroup(input: { taskId: number }, trx?: TaskTransaction): Promise<void> {
     return await this.errorCatcher('tasks.remove-from-group', async () => {
       const qb = this.db.qb(trx);
 
@@ -158,7 +159,7 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async changeTaskStatus(task: Task, trx?: Transaction<DB>): Promise<void> {
+  async changeTaskStatus(task: Task, trx?: TaskTransaction): Promise<void> {
     return await this.errorCatcher('tasks.change-task-status', async () => {
       const { id, userId, status } = task;
 
@@ -181,7 +182,7 @@ export class TasksWriteRepositoryKysely
 
   async deleteTask(
     input: { userId: number; taskId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<boolean> {
     return await this.errorCatcher('tasks.task-deleting', async () => {
       const result = await this.db

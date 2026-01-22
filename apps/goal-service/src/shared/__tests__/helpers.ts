@@ -33,4 +33,19 @@ function expectTransaction(id = TEST_TRANSACTION_ID) {
   return expect.objectContaining({ trueTransaction: true, id });
 }
 
-export { buildPayload, sendMessageBuilder, unwrapRpcError, expectTransaction };
+function firstArg<T extends (...args: any[]) => any>(fn: jest.MockedFunction<T>) {
+  return fn.mock.calls[0]?.[0] as Parameters<T>[0];
+}
+
+function nthCallArgs<T extends (...args: any[]) => any>(fn: jest.MockedFunction<T>, n: number) {
+  return fn.mock.calls[n] as Parameters<T> | undefined;
+}
+
+export {
+  buildPayload,
+  sendMessageBuilder,
+  unwrapRpcError,
+  expectTransaction,
+  firstArg,
+  nthCallArgs,
+};

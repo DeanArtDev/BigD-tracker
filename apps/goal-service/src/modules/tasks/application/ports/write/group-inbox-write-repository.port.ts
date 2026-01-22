@@ -1,9 +1,8 @@
-import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto';
-import { Transaction } from 'kysely';
+import { TaskTransaction } from '../transaction-manager.port';
 
 interface GroupInboxWriteRepository {
-  createInbox(input: { userId: number }, trx?: Transaction<DB>): Promise<GroupInboxView>;
+  createInbox(input: { userId: number }, trx?: TaskTransaction): Promise<GroupInboxView>;
 }
 
 export { GroupInboxWriteRepository };

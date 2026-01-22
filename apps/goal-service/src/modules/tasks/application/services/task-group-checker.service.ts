@@ -1,10 +1,13 @@
-import { DB } from '@/infrastructure/types';
 import { Task } from '@/modules/tasks/domain';
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
-import { GroupsWriteRepository, TasksReadRepository, TasksWriteRepository } from '../ports';
+import {
+  GroupsWriteRepository,
+  TasksReadRepository,
+  TasksWriteRepository,
+  TaskTransaction,
+} from '../ports';
 
 @Injectable()
 class TaskGroupCheckerService {
@@ -16,7 +19,7 @@ class TaskGroupCheckerService {
 
   async ensureTaskInAnyGroup(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB> },
+    params?: { trx?: TaskTransaction },
   ): Promise<{ task: Task; group: GroupWithTasks } | null> {
     const { userId, taskId } = input;
     const { trx } = params ?? {};

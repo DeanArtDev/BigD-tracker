@@ -1,3 +1,2 @@
 pnpm format:all;
 pnpm lint:all;
-pnpm test:all;

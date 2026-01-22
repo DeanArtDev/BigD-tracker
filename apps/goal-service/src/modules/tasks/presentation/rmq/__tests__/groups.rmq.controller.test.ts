@@ -9,6 +9,7 @@ import {
   GoalReplaceGroup,
   RmqErrorKind,
 } from '@big-d/api-contracts';
+import { specToDebugString } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -17,6 +18,7 @@ import {
   connectRmqClients,
   createTestingModule,
   expectTransaction,
+  firstArg,
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
@@ -450,7 +452,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
         getGroupWithTasks({ id: groupId, user_id: userId, tasks: [] }),
       );
-      groupWriteRepoMock.deleteById.mockResolvedValueOnce(true);
+      groupWriteRepoMock.delete.mockResolvedValueOnce(true);
       const payload: GoalDeleteGroup.Request = buildPayload({
         data: { groupId, userId },
       });
@@ -464,8 +466,17 @@ describe('GroupsRmqController (rmq e2e)', () => {
         { groupId, userId },
         expectTransaction(),
       );
-      expect(groupWriteRepoMock.deleteById).toHaveBeenCalledWith(
-        { groupId, userId },
+      expect(specToDebugString(firstArg(groupWriteRepoMock.delete))).toMatchInlineSnapshot(`
+"AND[groups.policy.delete-by-user](
+  groups.byId,
+  groups.byUserId,
+  NOT(
+    groups.inbox
+  )
+)"
+`);
+      expect(groupWriteRepoMock.delete).toHaveBeenCalledWith(
+        expect.anything(),
         expectTransaction(),
       );
       expect(res).toEqual({ data: true });
@@ -487,7 +498,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(groupWriteRepoMock.deleteById).not.toHaveBeenCalled();
+      expect(groupWriteRepoMock.delete).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.groupNotExist.code,
         key: 'GROUP_NOT_EXIST',
@@ -515,7 +526,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(groupWriteRepoMock.deleteById).not.toHaveBeenCalled();
+      expect(groupWriteRepoMock.delete).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskInvariantFailed.code,
         key: 'INVARIANT_FAILED',
@@ -534,7 +545,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
         getGroupWithTasks({ id: 83, user_id: 53, tasks: [] }),
       );
-      groupWriteRepoMock.deleteById.mockResolvedValueOnce(false);
+      groupWriteRepoMock.delete.mockResolvedValueOnce(false);
 
       let error: unknown;
       try {
@@ -546,10 +557,6 @@ describe('GroupsRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(groupWriteRepoMock.deleteById).toHaveBeenCalledWith(
-        { groupId: 83, userId: 53 },
-        expectTransaction(),
-      );
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.writeConflict.code,
         key: 'GROUP_WRITE_CONFLICT',

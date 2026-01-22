@@ -1,9 +1,7 @@
-import { DB } from '@/infrastructure/types';
-import { INBOX_GROUP_KEY } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/application/ports';
-import { Transaction } from 'kysely';
+import { INBOX_GROUP_KEY, TaskTransaction } from '@/modules/tasks/application/ports';
+import { TaskDatabase } from '@/modules/tasks/application/ports';
 
-function getInboxByUserIdQuery(db: Database<DB>, input: { userId: number }, trx?: Transaction<DB>) {
+function getInboxByUserIdQuery(db: TaskDatabase, input: { userId: number }, trx?: TaskTransaction) {
   return db
     .qb(trx)
     .selectFrom('groups as g')

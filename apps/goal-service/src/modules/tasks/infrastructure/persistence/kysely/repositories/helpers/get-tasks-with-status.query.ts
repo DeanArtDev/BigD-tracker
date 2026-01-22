@@ -1,8 +1,6 @@
-import { DB } from '@/infrastructure/types';
-import { Database } from '@/modules/tasks/application/ports';
-import { Transaction } from 'kysely';
+import { TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 
-function getTasksWithStatusQuery(db: Database<DB>, trx?: Transaction<DB>) {
+function getTasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return db
     .qb(trx)
     .selectFrom('tasks as t')

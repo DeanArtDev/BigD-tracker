@@ -1,11 +1,11 @@
-import { DB } from '@/infrastructure/types';
 import { ExceptionGroupWriteConflict } from '@/modules/tasks/application/exceptions';
+import { GroupDeleteByUserPolicy } from '@/modules/tasks/application/policies';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
 import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Database, GroupsWriteRepository } from '../../ports';
+import { TaskDatabase, GroupsWriteRepository } from '../../ports';
 import { GroupCheckerService } from '../../services';
 import { DeleteGroupCommand } from './delete-group.command';
 
@@ -14,7 +14,7 @@ class DeleteGroupUseCase {
   constructor(
     private readonly groupCheckerService: GroupCheckerService,
     @Inject(GroupsToken.WRITE_REPOSITORY) private readonly groupsWriteRepo: GroupsWriteRepository,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
   async execute({ input }: DeleteGroupCommand): Promise<{ data: true }> {
@@ -29,8 +29,8 @@ class DeleteGroupUseCase {
       const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
       const deletedGroup = groupFactory.delete(ensureGroup);
 
-      const isDeleted = await this.groupsWriteRepo.deleteById(
-        { groupId: deletedGroup.id, userId: deletedGroup.userId },
+      const isDeleted = await this.groupsWriteRepo.delete(
+        GroupDeleteByUserPolicy({ groupId: deletedGroup.id, userId: deletedGroup.userId }),
         trx,
       );
 

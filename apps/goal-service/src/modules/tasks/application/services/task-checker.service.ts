@@ -1,10 +1,8 @@
-import { DB } from '@/infrastructure/types';
 import { Task } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { ExceptionTaskNotExist } from '../exceptions';
-import { TasksWriteRepository } from '../ports';
+import { TasksWriteRepository, TaskTransaction } from '../ports';
 
 @Injectable()
 class TaskCheckerService {
@@ -14,15 +12,15 @@ class TaskCheckerService {
 
   async ensureTaskExists(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
   ): Promise<Task>;
   async ensureTaskExists(
     input: { taskId: number; userId: number },
-    params: { trx?: Transaction<DB>; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true },
   ): Promise<Task | null>;
   async ensureTaskExists(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
   ): Promise<Task | null> {
     const { skipException, trx } = params ?? {};
 
