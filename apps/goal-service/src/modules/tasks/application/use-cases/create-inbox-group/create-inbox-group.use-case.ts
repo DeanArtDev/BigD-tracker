@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import { ExceptionInboxAlreadyExist } from '@/modules/tasks/application/exceptions';
 import { GroupsToken } from '@/modules/tasks/tokens';
@@ -9,7 +8,7 @@ import { Database, GroupInboxReadRepository, GroupInboxWriteRepository } from '.
 @Injectable()
 class CreateInboxGroupUseCase {
   constructor(
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
 
     @Inject(GroupsToken.INBOX_WRITE_REPOSITORY)
     private readonly inboxWriteRepo: GroupInboxWriteRepository,

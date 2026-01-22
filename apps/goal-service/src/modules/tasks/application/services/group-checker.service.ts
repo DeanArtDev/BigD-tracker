@@ -1,14 +1,12 @@
-import { DB } from '@/infrastructure/types';
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import {
   ExceptionGroupNotExist,
   ExceptionTaskAlreadyInGroup,
   ExceptionTaskNotInGroup,
 } from '../exceptions';
-import { GroupsReadRepository, GroupsWriteRepository } from '../ports';
+import { GroupsReadRepository, GroupsWriteRepository, TaskTransaction } from '../ports';
 
 @Injectable()
 class GroupCheckerService {
@@ -19,15 +17,15 @@ class GroupCheckerService {
 
   async ensureTaskNotInGroup(
     input: { taskId: number; userId: number; groupId: number },
-    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
   ): Promise<true>;
   async ensureTaskNotInGroup(
     input: { taskId: number; userId: number; groupId: number },
-    params: { trx?: Transaction<DB>; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true },
   ): Promise<boolean>;
   async ensureTaskNotInGroup(
     input: { taskId: number; userId: number; groupId: number },
-    params?: { trx?: Transaction<DB>; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
   ): Promise<boolean> {
     const { skipException, trx } = params ?? {};
 
@@ -52,15 +50,15 @@ class GroupCheckerService {
 
   async ensureTaskInGroup(
     input: { taskId: number; userId: number; groupId: number },
-    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
   ): Promise<true>;
   async ensureTaskInGroup(
     input: { taskId: number; userId: number; groupId: number },
-    params: { trx?: Transaction<DB>; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true },
   ): Promise<boolean>;
   async ensureTaskInGroup(
     input: { taskId: number; userId: number; groupId: number },
-    params?: { trx?: Transaction<DB>; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
   ): Promise<boolean> {
     const { skipException, trx } = params ?? {};
 
@@ -85,15 +83,15 @@ class GroupCheckerService {
 
   async ensureGroupExists(
     input: { groupId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
   ): Promise<GroupWithTasks>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
-    params: { trx?: Transaction<DB>; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true },
   ): Promise<GroupWithTasks | null>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
   ): Promise<GroupWithTasks | null> {
     const { skipException, trx } = params ?? {};
 

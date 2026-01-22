@@ -1,23 +1,22 @@
-import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { Transaction } from 'kysely';
+import { TaskTransaction } from '../transaction-manager.port';
 
 interface TasksReadRepository {
   getByRange(
     input: { userId: number; from: string; to: string },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<TaskView[]>;
 
-  getById(input: { id: number; userId: number }, trx?: Transaction<DB>): Promise<TaskView | null>;
+  getById(input: { id: number; userId: number }, trx?: TaskTransaction): Promise<TaskView | null>;
 
   getTaskToGroupLink(
     input: { taskId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<{ taskId: number; groupId: number; position: number } | null>;
 
   isTaskIntoGroup(
     input: { taskId: number; groupId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<boolean>;
 }
 

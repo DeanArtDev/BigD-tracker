@@ -1,24 +1,22 @@
-import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { Database, TasksReadRepository } from '@/modules/tasks/application/ports';
+import { Database, TaskTransaction, TasksReadRepository } from '@/modules/tasks/application/ports';
 import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
     super();
   }
 
   async getById(
     input: { userId: number; id: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<TaskView | null> {
     return await this.errorCatcher('tasks.get-by-id', async () => {
       const { id, userId } = input;
@@ -48,7 +46,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
   async isTaskIntoGroup(
     input: { taskId: number; groupId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<boolean> {
     return await this.errorCatcher('tasks.is-task-into-group', async () => {
       const result = await this.db
@@ -64,7 +62,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
   async getTaskToGroupLink(
     input: { taskId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<{ taskId: number; groupId: number; position: number } | null> {
     return await this.errorCatcher('tasks.get-task-to-group-link.read', async () => {
       const result = await this.db
@@ -85,7 +83,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
   async getByRange(
     input: { userId: number; from: string; to: string },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
       const tasks = await getTasksWithStatusQuery(this.db, trx)

@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
 import { Database, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
@@ -13,7 +12,7 @@ class CreateTaskInInboxUseCase {
   constructor(
     private readonly taskServices: TaskService,
     private readonly taskQueryService: TaskQueryService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
 
     @Inject(GroupsToken.INBOX_READ_REPOSITORY)
     private readonly inboxReadRepo: GroupInboxReadRepository,

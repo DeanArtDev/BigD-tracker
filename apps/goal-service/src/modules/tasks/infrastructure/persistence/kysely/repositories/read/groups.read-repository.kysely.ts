@@ -1,16 +1,15 @@
-import { DB } from '@/infrastructure/types';
 import { GroupView, GroupWithTasksView, TaskView } from '@/modules/tasks/application/dto';
 import {
   Database,
   GetGroupByIdInput,
   GroupsReadRepository,
+  TaskTransaction,
   ThrowErrorOptions,
 } from '@/modules/tasks/application/ports';
 import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
@@ -21,13 +20,13 @@ export class GroupsReadRepositoryKysely
   extends BaseTasksRepository
   implements GroupsReadRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
     super();
   }
 
   async getByName(
     input: { name: string; userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get-by-name', async () => {
       const result = await getAvailableGroupQuery(this.db, trx)
@@ -49,11 +48,11 @@ export class GroupsReadRepositoryKysely
 
   getGroupById(
     input: GetGroupByIdInput,
-    options?: { throwError?: false; trx?: Transaction<DB> },
+    options?: { throwError?: false; trx?: TaskTransaction },
   ): Promise<GroupView | null>;
   getGroupById(
     input: GetGroupByIdInput,
-    options: { throwError: true; trx?: Transaction<DB> },
+    options: { throwError: true; trx?: TaskTransaction },
   ): Promise<GroupView>;
   async getGroupById(
     input: GetGroupByIdInput,
@@ -82,11 +81,11 @@ export class GroupsReadRepositoryKysely
 
   getGroupWithTasksById(
     input: GetGroupByIdInput,
-    options?: { throwError?: false; trx?: Transaction<DB> },
+    options?: { throwError?: false; trx?: TaskTransaction },
   ): Promise<GroupWithTasksView | null>;
   getGroupWithTasksById(
     input: GetGroupByIdInput,
-    options: { throwError: true; trx?: Transaction<DB> },
+    options: { throwError: true; trx?: TaskTransaction },
   ): Promise<GroupWithTasksView>;
   async getGroupWithTasksById(
     input: GetGroupByIdInput,
@@ -137,7 +136,7 @@ export class GroupsReadRepositoryKysely
 
   async ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<boolean> {
     return await this.errorCatcher('groups.is-task-in-group', async () => {
       const { taskId, groupId, userId } = input;
@@ -157,7 +156,7 @@ export class GroupsReadRepositoryKysely
 
   async getGroupListWithTasksByUserId(
     input: { userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]> {
     return await this.errorCatcher('groups.get-group-list-with-tasks-by-user-id', async () => {
       const { userId } = input;

@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { Database, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -13,7 +12,7 @@ class AssignTaskToInboxUseCase {
     private readonly taskCheckerService: TaskCheckerService,
     private readonly inboxGroupCheckerService: InboxGroupCheckerService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
   ) {}
 
   async execute({ input }: AssignTaskToInboxCommand): Promise<{ success: boolean }> {

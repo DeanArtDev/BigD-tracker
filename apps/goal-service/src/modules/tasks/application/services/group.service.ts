@@ -1,12 +1,10 @@
-import { DB } from '@/infrastructure/types';
 import { GroupView } from '@/modules/tasks/application/dto';
 import { ExceptionGroupNotFound } from '@/modules/tasks/application/exceptions';
-import { GroupsReadRepository, GroupsWriteRepository } from '@/modules/tasks/application/ports';
+import { GroupsReadRepository, GroupsWriteRepository, TaskTransaction } from '../ports';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
 import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 
 interface CreateGroupInput {
   readonly name: string;
@@ -21,7 +19,7 @@ class GroupsService {
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupReadRepo: GroupsReadRepository,
   ) {}
 
-  async createGroup(input: CreateGroupInput, trx?: Transaction<DB>): Promise<GroupView> {
+  async createGroup(input: CreateGroupInput, trx?: TaskTransaction): Promise<GroupView> {
     const groupDraft = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() }).create(input);
     const group = await this.groupsWriteRepo.createGroup(groupDraft, trx);
     const groupView = await this.groupReadRepo.getGroupById(

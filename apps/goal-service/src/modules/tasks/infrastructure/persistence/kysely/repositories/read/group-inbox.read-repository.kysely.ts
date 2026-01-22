@@ -1,11 +1,13 @@
-import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto';
-import { Database, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
+import {
+  Database,
+  GroupInboxReadRepository,
+  TaskTransaction,
+} from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
@@ -16,13 +18,13 @@ export class GroupInboxReadRepositoryKysely
   extends BaseTasksRepository
   implements GroupInboxReadRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
     super();
   }
 
   async getInboxWithTasksByUserId(
     input: { userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupInboxView | null> {
     return await this.errorCatcher('inbox-group.get-inbox-by-user-id-with-tasks', async () => {
       const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirst();
@@ -61,7 +63,7 @@ export class GroupInboxReadRepositoryKysely
 
   async ensureTaskInInbox(
     input: { userId: number; taskId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<{ inboxId: number; success: boolean }> {
     return await this.errorCatcher('inbox-group.is-task-in-inbox', async () => {
       const inbox = await getInboxByUserIdQuery(

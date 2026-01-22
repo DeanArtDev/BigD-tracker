@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { Database } from '@/modules/tasks/application/ports';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -13,7 +12,7 @@ class CloneTaskUseCase {
   constructor(
     private readonly taskServices: TaskService,
     private readonly taskQueryService: TaskQueryService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,
   ) {}
 

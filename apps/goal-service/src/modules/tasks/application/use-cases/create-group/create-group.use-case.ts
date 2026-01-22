@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { GroupView } from '@/modules/tasks/application/dto';
 import { Database } from '@/modules/tasks/application/ports';
 import { GroupsService } from '@/modules/tasks/application/services';
@@ -10,7 +9,7 @@ import { Inject, Injectable } from '@nestjs/common';
 class CreateGroupUseCase {
   constructor(
     private readonly groupsService: GroupsService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
   ) {}
 
   async execute({ input }: CreateGroupCommand): Promise<GroupView> {

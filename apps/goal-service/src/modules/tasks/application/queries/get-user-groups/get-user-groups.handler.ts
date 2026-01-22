@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { GroupWithTasksView } from '@/modules/tasks/application/dto';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
@@ -10,7 +9,7 @@ import { GetUserGroupsQuery } from './get-user-groups.query';
 @QueryHandler(GetUserGroupsQuery)
 export class GetUserGroupsHandler implements IQueryHandler<GetUserGroupsQuery> {
   constructor(
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupsReadRepo: GroupsReadRepository,
   ) {}
 

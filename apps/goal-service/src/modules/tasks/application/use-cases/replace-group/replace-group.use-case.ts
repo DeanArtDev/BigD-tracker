@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { GroupWithTasksView } from '@/modules/tasks/application/dto';
 import {
   Database,
@@ -23,7 +22,7 @@ class ReplaceGroupUseCase {
     private readonly taskCheckerService: TaskCheckerService,
     @Inject(GroupsToken.WRITE_REPOSITORY) private readonly groupsWriteRepo: GroupsWriteRepository,
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupsReadRepo: GroupsReadRepository,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
   ) {}
 
   async execute({ input }: ReplaceGroupCommand): Promise<GroupWithTasksView> {

@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
@@ -11,7 +10,7 @@ import { GetInboxByUserIdQuery } from './get-inbox-by-user-id.query';
 @QueryHandler(GetInboxByUserIdQuery)
 export class GetGroupUserInboxHandler implements IQueryHandler<GetInboxByUserIdQuery> {
   constructor(
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
 
     @Inject(GroupsToken.INBOX_READ_REPOSITORY)
     private readonly inboxReadRepo: GroupInboxReadRepository,

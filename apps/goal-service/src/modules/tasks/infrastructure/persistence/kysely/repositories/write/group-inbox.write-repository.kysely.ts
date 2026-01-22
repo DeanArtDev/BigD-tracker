@@ -1,14 +1,13 @@
-import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import {
   Database,
   GroupInboxWriteRepository,
   INBOX_GROUP_KEY,
+  TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 
@@ -17,11 +16,11 @@ export class GroupInboxWriteRepositoryKysely
   extends BaseTasksRepository
   implements GroupInboxWriteRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
     super();
   }
 
-  async createInbox(input: { userId: number }, trx?: Transaction<DB>): Promise<GroupInboxView> {
+  async createInbox(input: { userId: number }, trx?: TaskTransaction): Promise<GroupInboxView> {
     return await this.errorCatcher('group-inbox.inbox-creation', async () => {
       const groupStatus = await this.db
         .qb(trx)

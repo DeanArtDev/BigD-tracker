@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { TasksViewMapper } from '@/modules/tasks/application/dto/task.view-mapper';
 import { Database } from '@/modules/tasks/application/ports';
@@ -10,7 +9,7 @@ import { ReplaceTaskInput, TaskService } from '../../services';
 class ReplaceTaskUseCase {
   constructor(
     private readonly taskServices: TaskService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
   ) {}
 
   async execute(input: ReplaceTaskInput): Promise<TaskView> {

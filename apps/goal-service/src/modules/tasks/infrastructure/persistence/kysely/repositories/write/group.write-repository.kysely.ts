@@ -1,11 +1,15 @@
-import { DB } from '@/infrastructure/types';
-import { Database, GroupsWriteRepository } from '@/modules/tasks/application/ports';
+import {
+  Database,
+  GroupsWriteRepository,
+  TaskTransaction,
+} from '@/modules/tasks/application/ports';
+import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
+import { specToDebugString } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
@@ -16,13 +20,13 @@ export class GroupWriteRepositoryKysely
   extends BaseTasksRepository
   implements GroupsWriteRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database<DB>) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
     super();
   }
 
   async getGroupById(
     input: { groupId: number; userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupWithTasks | null> {
     return await this.errorCatcher('groups.get-by-id.write', async () => {
       const result = await getAvailableGroupQuery(this.db, trx)
@@ -64,7 +68,7 @@ export class GroupWriteRepositoryKysely
     });
   }
 
-  async createGroup(group: Group, trx?: Transaction<DB>): Promise<Group> {
+  async createGroup(group: Group, trx?: TaskTransaction): Promise<Group> {
     return await this.errorCatcher('groups.creation', async () => {
       const groupStatus = await this.db
         .qb(trx)
@@ -99,7 +103,7 @@ export class GroupWriteRepositoryKysely
   /**
    * Обновление группы с ее делами
    * */
-  async replaceGroupWithTasks(group: GroupWithTasks, trx?: Transaction<DB>): Promise<void> {
+  async replaceGroupWithTasks(group: GroupWithTasks, trx?: TaskTransaction): Promise<void> {
     return await this.errorCatcher('groups.replace-with-tasks', async () => {
       await this.db
         .qb(trx)
@@ -155,18 +159,15 @@ export class GroupWriteRepositoryKysely
     });
   }
 
-  async deleteById(
-    input: { groupId: number; userId: number },
-    trx?: Transaction<DB>,
-  ): Promise<boolean> {
-    return await this.errorCatcher('groups.delete-by-id.write', async () => {
+  async delete(specification: TasksSpecification, trx?: TaskTransaction): Promise<boolean> {
+    return await this.errorCatcher('groups.delete.write', async () => {
       const result = await this.db
         .qb(trx)
-        .deleteFrom('groups as g')
-        .where('g.id', '=', input.groupId)
-        .where('g.user_id', '=', input.userId)
-        .where('g.name', 'not in', groupsQuerySpec.unavailableNames)
+        .deleteFrom('groups')
+        .where((eb) => specification.toExpr(eb))
         .executeTakeFirst();
+
+      console.log(specToDebugString(specification));
 
       return result.numDeletedRows > 0;
     });

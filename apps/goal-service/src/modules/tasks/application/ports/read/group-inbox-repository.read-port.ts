@@ -1,16 +1,15 @@
-import { DB } from '@/infrastructure/types';
 import { GroupInboxView } from '@/modules/tasks/application/dto';
-import { Transaction } from 'kysely';
+import { TaskTransaction } from '../transaction-manager.port';
 
 interface GroupInboxReadRepository {
   getInboxWithTasksByUserId(
     input: { userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupInboxView | null>;
 
   ensureTaskInInbox(
     input: { userId: number; taskId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<{ success: boolean; inboxId: number }>;
 }
 

@@ -1,4 +1,3 @@
-import { DB } from '@/infrastructure/types';
 import { TasksViewMapper, TaskView } from '@/modules/tasks/application/dto';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -13,7 +12,7 @@ class UpdateInboxTaskUseCase {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
     private readonly inboxGroupCheckerService: InboxGroupCheckerService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: Database,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
