@@ -76,12 +76,11 @@ class GroupWithTasksView {
     const parts = this.#tasks.length;
     if (parts === 0) return 0;
 
-    const partCost = 100 / parts;
+    const partCost = Number((100 / parts).toFixed(1));
 
     const result = this.#tasks.reduce<number>((acc, task) => {
       if (task.status === TaskStatus.COMPLETED) {
-        const weight = task.weight / 100;
-        acc += weight * partCost;
+        acc += partCost;
       }
       return acc;
     }, 0);
