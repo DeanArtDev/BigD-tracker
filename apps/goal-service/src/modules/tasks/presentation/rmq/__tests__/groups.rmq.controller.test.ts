@@ -1,8 +1,3 @@
-import {
-  GroupsReadRepository,
-  GroupsWriteRepository,
-  TasksWriteRepository,
-} from '@/modules/tasks/application/ports';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupReadKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.write-mapper';
@@ -27,37 +22,21 @@ import {
 } from '@shared/__tests__';
 import { getGroupRaw, getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
+import {
+  groupReadRepoMock,
+  groupWriteRepoMock,
+  tasksWriteRepoMock,
+} from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
-const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
-  createGroup: jest.fn(),
-  deleteById: jest.fn(),
-  getGroupById: jest.fn(),
-  replaceGroupWithTasks: jest.fn(),
-};
-
-const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> = {
-  getByName: jest.fn(),
-  getGroupById: jest.fn(),
-  getGroupWithTasksById: jest.fn(),
-  ensureTaskInGroup: jest.fn(),
-  getGroupListWithTasksByUserId: jest.fn(),
-};
-
-const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
-  getTaskById: jest.fn(),
-  createTask: jest.fn(),
-  deleteTask: jest.fn(),
-  changeTaskStatus: jest.fn(),
-  replaceTask: jest.fn(),
-  addTaskToGroup: jest.fn(),
-  removeTaskFromGroup: jest.fn(),
-};
-
 describe('GroupsRmqController (rmq e2e)', () => {
   let ms: INestMicroservice;
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
@@ -83,7 +62,8 @@ describe('GroupsRmqController (rmq e2e)', () => {
     await ms.close();
   });
 
-  test(`${GoalGetUserGroups.pattern} should return user groups`, async () => {
+  describe(`${GoalGetUserGroups.pattern}`, () => {
+    test('should return user groups', async () => {
     const taskView = getTaskView({ id: 91, userId: 7, name: 'T1', priority: 3, weight: 10 });
     const groupRaw = getGroupRaw({ id: 11, user_id: 7, name: 'Group 1' });
     const groupRawTwo = getGroupRaw({ id: 22, user_id: 7, name: 'Group 2' });
@@ -142,9 +122,11 @@ describe('GroupsRmqController (rmq e2e)', () => {
         },
       ],
     });
+    });
   });
 
-  test(`${GoalCreateGroup.pattern} should work`, async () => {
+  describe(`${GoalCreateGroup.pattern}`, () => {
+    test('should work', async () => {
     const groupRaw = getGroupRaw({ user_id: 1, name: 'G1', description: '<b>hi</b>' });
     groupReadRepoMock.getGroupById.mockResolvedValueOnce(
       GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRaw, tasks: [] }),
@@ -185,9 +167,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
         tasks: [],
       },
     });
-  });
+    });
 
-  test(`${GoalCreateGroup.pattern} should return not found when group view missing`, async () => {
+    test('should return not found when group view missing', async () => {
     const groupRaw = getGroupRaw({ id: 44, user_id: 2, name: 'Missing view' });
     groupWriteRepoMock.createGroup.mockResolvedValueOnce(
       GroupWriteKyselyMapper.fromRawToAgr(groupRaw),
@@ -218,9 +200,11 @@ describe('GroupsRmqController (rmq e2e)', () => {
       kind: RmqErrorKind.NOT_FOUND,
       details: { groupId: groupRaw.id },
     });
+    });
   });
 
-  test(`${GoalReplaceGroup.pattern} should replace group with tasks`, async () => {
+  describe(`${GoalReplaceGroup.pattern}`, () => {
+    test('should replace group with tasks', async () => {
     const userId = 5;
     const groupId = 12;
     const taskInputOne = {
@@ -330,9 +314,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
         ],
       },
     });
-  });
+    });
 
-  test(`${GoalReplaceGroup.pattern} should throw when group missing`, async () => {
+    test('should throw when group missing', async () => {
     const payload: GoalReplaceGroup.Request = buildPayload({
       data: {
         id: 999,
@@ -365,9 +349,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
       kind: RmqErrorKind.NOT_FOUND,
       details: { groupId: 999 },
     });
-  });
+    });
 
-  test(`${GoalReplaceGroup.pattern} should throw when task is missing`, async () => {
+    test('should throw when task is missing', async () => {
     const userId = 10;
     const groupId = 300;
     const payload: GoalReplaceGroup.Request = buildPayload({
@@ -412,9 +396,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
       kind: RmqErrorKind.NOT_FOUND,
       details: { taskId: 555 },
     });
-  });
+    });
 
-  test(`${GoalReplaceGroup.pattern} should throw when task not in group`, async () => {
+    test('should throw when task not in group', async () => {
     const userId = 10;
     const groupId = 301;
     const payload: GoalReplaceGroup.Request = buildPayload({
@@ -460,9 +444,11 @@ describe('GroupsRmqController (rmq e2e)', () => {
       kind: RmqErrorKind.NOT_FOUND,
       details: { taskId: 556, groupId },
     });
+    });
   });
 
-  test(`${GoalDeleteGroup.pattern} should delete group`, async () => {
+  describe(`${GoalDeleteGroup.pattern}`, () => {
+    test('should delete group', async () => {
     const userId = 50;
     const groupId = 80;
     groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
@@ -487,9 +473,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
       expectTransaction(),
     );
     expect(res).toEqual({ data: true });
-  });
+    });
 
-  test(`${GoalDeleteGroup.pattern} should throw when group missing`, async () => {
+    test('should throw when group missing', async () => {
     const payload: GoalDeleteGroup.Request = buildPayload({
       data: { groupId: 81, userId: 51 },
     });
@@ -512,9 +498,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
       kind: RmqErrorKind.NOT_FOUND,
       details: { groupId: 81 },
     });
-  });
+    });
 
-  test(`${GoalDeleteGroup.pattern} should throw when group has tasks`, async () => {
+    test('should throw when group has tasks', async () => {
     const payload: GoalDeleteGroup.Request = buildPayload({
       data: { groupId: 82, userId: 52 },
     });
@@ -543,9 +529,9 @@ describe('GroupsRmqController (rmq e2e)', () => {
         message: "Group can't be delete if has at least one task",
       },
     });
-  });
+    });
 
-  test(`${GoalDeleteGroup.pattern} should throw on write conflict`, async () => {
+    test('should throw on write conflict', async () => {
     const payload: GoalDeleteGroup.Request = buildPayload({
       data: { groupId: 83, userId: 53 },
     });
@@ -573,6 +559,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       key: 'GROUP_WRITE_CONFLICT',
       kind: RmqErrorKind.INTERNAL,
       details: { subjectId: 83, message: 'Group could not be deleted' },
+    });
     });
   });
 });

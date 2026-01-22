@@ -1,7 +1,3 @@
-import {
-  GroupInboxReadRepository,
-  GroupInboxWriteRepository,
-} from '@/modules/tasks/application/ports';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { GoalCreateInboxGroup, GoalGetGroupInBox, RmqErrorKind } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -17,21 +13,20 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
+import {
+  inboxReadRepoMock,
+  inboxWriteRepoMock,
+} from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
-const inboxWriteRepoMock: Record<keyof GroupInboxWriteRepository, jest.Mock> = {
-  createInbox: jest.fn(),
-};
-
-const inboxReadRepoMock: Record<keyof GroupInboxReadRepository, jest.Mock> = {
-  getInboxWithTasksByUserId: jest.fn(),
-  ensureTaskInInbox: jest.fn(),
-};
-
 describe('GroupsInboxRmqController (rmq e2e)', () => {
   let ms: INestMicroservice;
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
