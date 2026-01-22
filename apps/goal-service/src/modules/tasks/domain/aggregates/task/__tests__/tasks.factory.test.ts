@@ -1,5 +1,5 @@
 import { TaskStatus } from '@big-d/api-contracts';
-import { TaskFactory } from './tasks.factory';
+import { TaskFactory } from '../tasks.factory';
 
 const futureDate = (offsetDays: number) =>
   new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
@@ -82,6 +82,7 @@ describe('TaskFactory', () => {
     expect(task.description).toBe('After update');
     expect(task.priority).toBe(3);
     expect(task.weight).toBe(80);
+    expect(task.recurrence).toBe('weekly');
   });
 
   it('soft deletes task through factory', () => {
