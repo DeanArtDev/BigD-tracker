@@ -1,5 +1,9 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { Database, TaskTransaction, TasksReadRepository } from '@/modules/tasks/application/ports';
+import {
+  TaskDatabase,
+  TaskTransaction,
+  TasksReadRepository,
+} from '@/modules/tasks/application/ports';
 import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
@@ -10,7 +14,7 @@ import { getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 

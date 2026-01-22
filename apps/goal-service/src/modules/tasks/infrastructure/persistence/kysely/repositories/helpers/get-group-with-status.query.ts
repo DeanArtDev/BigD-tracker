@@ -1,6 +1,6 @@
-import { Database, TaskTransaction } from '@/modules/tasks/application/ports';
+import { TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 
-function getGroupWithStatusQuery(db: Database, trx?: TaskTransaction) {
+function getGroupWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return db
     .qb(trx)
     .selectFrom('groups as g')

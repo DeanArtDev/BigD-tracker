@@ -1,6 +1,6 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
-import { Database, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
+import { TaskDatabase, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -12,7 +12,7 @@ class CreateTaskInInboxUseCase {
   constructor(
     private readonly taskServices: TaskService,
     private readonly taskQueryService: TaskQueryService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
 
     @Inject(GroupsToken.INBOX_READ_REPOSITORY)
     private readonly inboxReadRepo: GroupInboxReadRepository,

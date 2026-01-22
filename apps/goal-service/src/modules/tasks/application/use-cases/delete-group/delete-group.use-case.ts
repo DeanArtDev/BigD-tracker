@@ -5,7 +5,7 @@ import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Database, GroupsWriteRepository } from '../../ports';
+import { TaskDatabase, GroupsWriteRepository } from '../../ports';
 import { GroupCheckerService } from '../../services';
 import { DeleteGroupCommand } from './delete-group.command';
 
@@ -14,7 +14,7 @@ class DeleteGroupUseCase {
   constructor(
     private readonly groupCheckerService: GroupCheckerService,
     @Inject(GroupsToken.WRITE_REPOSITORY) private readonly groupsWriteRepo: GroupsWriteRepository,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
   async execute({ input }: DeleteGroupCommand): Promise<{ data: true }> {

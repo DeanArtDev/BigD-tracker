@@ -1,4 +1,4 @@
-import { Database, TasksWriteRepository } from '@/modules/tasks/application/ports';
+import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
@@ -13,7 +13,7 @@ class AssignTaskToGroupUseCase {
     private readonly taskCheckerService: TaskCheckerService,
     private readonly groupCheckerService: GroupCheckerService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
   async execute({ input }: AssignTaskToGroupCommand): Promise<{ success: boolean }> {

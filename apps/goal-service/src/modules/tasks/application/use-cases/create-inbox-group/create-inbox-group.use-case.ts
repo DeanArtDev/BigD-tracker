@@ -3,12 +3,12 @@ import { ExceptionInboxAlreadyExist } from '@/modules/tasks/application/exceptio
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Database, GroupInboxReadRepository, GroupInboxWriteRepository } from '../../ports';
+import { TaskDatabase, GroupInboxReadRepository, GroupInboxWriteRepository } from '../../ports';
 
 @Injectable()
 class CreateInboxGroupUseCase {
   constructor(
-    @Inject(databaseToken.CONNECTION) private readonly db: Database,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
 
     @Inject(GroupsToken.INBOX_WRITE_REPOSITORY)
     private readonly inboxWriteRepo: GroupInboxWriteRepository,

@@ -1,6 +1,6 @@
-import { Database, TaskTransaction } from '@/modules/tasks/application/ports';
+import { TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 
-function getTasksWithStatusQuery(db: Database, trx?: TaskTransaction) {
+function getTasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return db
     .qb(trx)
     .selectFrom('tasks as t')

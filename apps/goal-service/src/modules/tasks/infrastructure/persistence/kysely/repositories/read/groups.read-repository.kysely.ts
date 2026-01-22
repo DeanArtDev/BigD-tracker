@@ -1,6 +1,6 @@
 import { GroupView, GroupWithTasksView, TaskView } from '@/modules/tasks/application/dto';
 import {
-  Database,
+  TaskDatabase,
   GetGroupByIdInput,
   GroupsReadRepository,
   TaskTransaction,
@@ -20,7 +20,7 @@ export class GroupsReadRepositoryKysely
   extends BaseTasksRepository
   implements GroupsReadRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 

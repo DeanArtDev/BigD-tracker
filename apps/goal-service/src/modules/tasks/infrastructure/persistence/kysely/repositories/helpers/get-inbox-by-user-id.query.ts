@@ -1,7 +1,7 @@
 import { INBOX_GROUP_KEY, TaskTransaction } from '@/modules/tasks/application/ports';
-import { Database } from '@/modules/tasks/application/ports';
+import { TaskDatabase } from '@/modules/tasks/application/ports';
 
-function getInboxByUserIdQuery(db: Database, input: { userId: number }, trx?: TaskTransaction) {
+function getInboxByUserIdQuery(db: TaskDatabase, input: { userId: number }, trx?: TaskTransaction) {
   return db
     .qb(trx)
     .selectFrom('groups as g')

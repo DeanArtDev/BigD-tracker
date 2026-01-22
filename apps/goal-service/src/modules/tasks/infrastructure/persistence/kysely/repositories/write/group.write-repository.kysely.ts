@@ -1,5 +1,5 @@
 import {
-  Database,
+  TaskDatabase,
   GroupsWriteRepository,
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
@@ -20,7 +20,7 @@ export class GroupWriteRepositoryKysely
   extends BaseTasksRepository
   implements GroupsWriteRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 

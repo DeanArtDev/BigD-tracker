@@ -7,8 +7,8 @@ type TasksDB = Pick<
   'tasks' | 'groups' | 'group_statuses' | 'task_statuses' | 'tag_to_tasks' | 'task_to_group'
 >;
 
-type Database = IKyselyPostgresDB<TasksDB>;
+type TaskDatabase = IKyselyPostgresDB<TasksDB>;
 
 type TaskTransaction = Transaction<TasksDB>;
 
-export { Database, TasksDB, TaskTransaction };
+export { TaskDatabase, TasksDB, TaskTransaction };

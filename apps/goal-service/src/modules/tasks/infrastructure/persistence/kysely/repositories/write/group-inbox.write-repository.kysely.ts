@@ -1,6 +1,6 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import {
-  Database,
+  TaskDatabase,
   GroupInboxWriteRepository,
   INBOX_GROUP_KEY,
   TaskTransaction,
@@ -16,7 +16,7 @@ export class GroupInboxWriteRepositoryKysely
   extends BaseTasksRepository
   implements GroupInboxWriteRepository
 {
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 

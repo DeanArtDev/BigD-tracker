@@ -1,4 +1,8 @@
-import { Database, TaskTransaction, TasksWriteRepository } from '@/modules/tasks/application/ports';
+import {
+  TaskDatabase,
+  TaskTransaction,
+  TasksWriteRepository,
+} from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -13,7 +17,7 @@ export class TasksWriteRepositoryKysely
 {
   #tableName = 'tasks' as const;
 
-  constructor(@Inject(databaseToken.CONNECTION) private readonly db: Database) {
+  constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 

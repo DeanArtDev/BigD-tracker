@@ -4,13 +4,13 @@ import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GroupInboxView } from '../../dto/group-inbox.view';
-import { Database, GroupInboxReadRepository } from '../../ports';
+import { TaskDatabase, GroupInboxReadRepository } from '../../ports';
 import { GetInboxByUserIdQuery } from './get-inbox-by-user-id.query';
 
 @QueryHandler(GetInboxByUserIdQuery)
 export class GetGroupUserInboxHandler implements IQueryHandler<GetInboxByUserIdQuery> {
   constructor(
-    @Inject(databaseToken.CONNECTION) private readonly db: Database,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
 
     @Inject(GroupsToken.INBOX_READ_REPOSITORY)
     private readonly inboxReadRepo: GroupInboxReadRepository,

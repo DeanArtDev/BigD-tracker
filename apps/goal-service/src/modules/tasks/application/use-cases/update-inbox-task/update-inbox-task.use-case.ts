@@ -3,7 +3,7 @@ import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { Database, TasksWriteRepository } from '../../ports';
+import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import { InboxGroupCheckerService, TaskCheckerService } from '../../services';
 import { UpdateInboxTaskCommand } from './update-inbox-task.command';
 
@@ -12,7 +12,7 @@ class UpdateInboxTaskUseCase {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
     private readonly inboxGroupCheckerService: InboxGroupCheckerService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
