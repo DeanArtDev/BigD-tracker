@@ -7,7 +7,6 @@ import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
-import { specToDebugString } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
@@ -166,8 +165,6 @@ export class GroupWriteRepositoryKysely
         .deleteFrom('groups')
         .where((eb) => specification.toExpr(eb))
         .executeTakeFirst();
-
-      console.log(specToDebugString(specification));
 
       return result.numDeletedRows > 0;
     });

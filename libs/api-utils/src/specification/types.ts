@@ -1,7 +1,7 @@
 import { ExpressionBuilder, ExpressionWrapper, SqlBool } from 'kysely';
 
 /**
- * Тип дескриптора
+ * Тип комбинатора
  * */
 type SpecKind = 'leaf' | 'and' | 'or' | 'not';
 
