@@ -1,4 +1,3 @@
-import { GroupInboxReadRepository, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, RmqErrorKind } from '@big-d/api-contracts';
@@ -15,7 +14,11 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView, getTask, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
-import { tasksReadRepoMock } from '@shared/__tests__/repository-mocks';
+import {
+  inboxReadRepoMock,
+  tasksReadRepoMock,
+  tasksWriteRepoMock,
+} from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
@@ -32,21 +35,6 @@ const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   status: taskView.status,
   recurrence: taskView.recurrence,
 });
-
-const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
-  getTaskById: jest.fn(),
-  createTask: jest.fn(),
-  deleteTask: jest.fn(),
-  changeTaskStatus: jest.fn(),
-  replaceTask: jest.fn(),
-  addTaskToGroup: jest.fn(),
-  removeTaskFromGroup: jest.fn(),
-};
-
-const inboxReadRepoMock: Record<keyof GroupInboxReadRepository, jest.Mock> = {
-  getInboxWithTasksByUserId: jest.fn(),
-  ensureTaskInInbox: jest.fn(),
-};
 
 describe('TasksInboxRmqController (rmq e2e)', () => {
   let ms: INestMicroservice;

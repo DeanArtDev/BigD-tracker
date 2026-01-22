@@ -1,9 +1,3 @@
-import {
-  GroupInboxReadRepository,
-  GroupsReadRepository,
-  GroupsWriteRepository,
-  TasksWriteRepository,
-} from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import {
@@ -11,6 +5,7 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalGetDiaryTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
@@ -29,7 +24,13 @@ import {
 } from '@shared/__tests__';
 import { getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
-import { tasksReadRepoMock } from '@shared/__tests__/repository-mocks';
+import {
+  groupReadRepoMock,
+  groupWriteRepoMock,
+  inboxReadRepoMock,
+  tasksReadRepoMock,
+  tasksWriteRepoMock,
+} from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
@@ -46,36 +47,6 @@ const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   status: taskView.status,
   recurrence: taskView.recurrence,
 });
-
-const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
-  getTaskById: jest.fn(),
-  createTask: jest.fn(),
-  deleteTask: jest.fn(),
-  changeTaskStatus: jest.fn(),
-  replaceTask: jest.fn(),
-  addTaskToGroup: jest.fn(),
-  removeTaskFromGroup: jest.fn(),
-};
-
-const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
-  createGroup: jest.fn(),
-  getGroupById: jest.fn(),
-  replaceGroupWithTasks: jest.fn(),
-  delete: jest.fn(),
-};
-
-const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> = {
-  getByName: jest.fn(),
-  getGroupById: jest.fn(),
-  getGroupWithTasksById: jest.fn(),
-  ensureTaskInGroup: jest.fn(),
-  getGroupListWithTasksByUserId: jest.fn(),
-};
-
-const inboxReadRepoMock: Record<keyof GroupInboxReadRepository, jest.Mock> = {
-  getInboxWithTasksByUserId: jest.fn(),
-  ensureTaskInInbox: jest.fn(),
-};
 
 describe('TasksRmqController (rmq e2e)', () => {
   let ms: INestMicroservice;
@@ -1127,6 +1098,32 @@ describe('TasksRmqController (rmq e2e)', () => {
         kind: RmqErrorKind.NOT_FOUND,
         details: { taskId, groupId },
       });
+    });
+  });
+
+  describe(`${GoalGetDiaryTasks.pattern}`, () => {
+    test('should return diary tasks', async () => {
+      const userId = 81;
+      const taskView = getTaskView({ id: 9005, userId, name: 'Diary task' });
+      tasksReadRepoMock.getByRange.mockResolvedValueOnce([taskView]);
+
+      const payload: GoalGetDiaryTasks.Request = buildPayload({
+        data: {
+          userId,
+          from: '2024-01-01T00:00:00.000Z',
+          to: '2024-01-31T00:00:00.000Z',
+        },
+      });
+
+      const res = await sendMessage<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(
+        GoalGetDiaryTasks.pattern,
+        payload,
+      );
+
+      expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
+      const [, trxArg] = tasksReadRepoMock.getByRange.mock.calls[0];
+      expect(trxArg).toEqual(expectTransaction());
+      expect(res).toEqual({ data: [toTaskResponse(taskView)] });
     });
   });
 });
