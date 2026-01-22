@@ -29,11 +29,6 @@ class DeleteGroupUseCase {
       const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
       const deletedGroup = groupFactory.delete(ensureGroup);
 
-      // const isDeleted = await this.groupsWriteRepo.deleteById(
-      //   { groupId: deletedGroup.id, userId: deletedGroup.userId },
-      //   trx,
-      // );
-
       const isDeleted = await this.groupsWriteRepo.delete(
         GroupDeleteByUserPolicy({ groupId: deletedGroup.id, userId: deletedGroup.userId }),
         trx,
