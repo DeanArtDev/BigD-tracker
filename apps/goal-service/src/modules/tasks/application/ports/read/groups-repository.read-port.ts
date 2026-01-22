@@ -1,6 +1,5 @@
-import { DB } from '@/infrastructure/types';
 import { GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
-import { Transaction } from 'kysely';
+import { TaskTransaction } from '../transaction-manager.port';
 
 interface GetGroupByIdInput {
   readonly groupId: number;
@@ -9,32 +8,32 @@ interface GetGroupByIdInput {
 
 interface ThrowErrorOptions {
   readonly throwError?: boolean;
-  readonly trx?: Transaction<DB>;
+  readonly trx?: TaskTransaction;
 }
 
 interface GroupsReadRepository {
   getByName(
     input: { name: string; userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupView | null>;
 
   getGroupById(
     input: GetGroupByIdInput,
-    options?: { throwError?: false; trx?: Transaction<DB> },
+    options?: { throwError?: false; trx?: TaskTransaction },
   ): Promise<GroupView | null>;
   getGroupById(
     input: GetGroupByIdInput,
-    options: { throwError: true; trx?: Transaction<DB> },
+    options: { throwError: true; trx?: TaskTransaction },
   ): Promise<GroupView>;
   getGroupById(input: GetGroupByIdInput, options?: ThrowErrorOptions): Promise<GroupView | null>;
 
   getGroupWithTasksById(
     input: GetGroupByIdInput,
-    options?: { throwError?: false; trx?: Transaction<DB> },
+    options?: { throwError?: false; trx?: TaskTransaction },
   ): Promise<GroupWithTasksView | null>;
   getGroupWithTasksById(
     input: GetGroupByIdInput,
-    options: { throwError: true; trx?: Transaction<DB> },
+    options: { throwError: true; trx?: TaskTransaction },
   ): Promise<GroupWithTasksView>;
   getGroupWithTasksById(
     input: GetGroupByIdInput,
@@ -43,12 +42,12 @@ interface GroupsReadRepository {
 
   ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<boolean>;
 
   getGroupListWithTasksByUserId(
     input: { userId: number },
-    trx?: Transaction<DB>,
+    trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]>;
 }
 

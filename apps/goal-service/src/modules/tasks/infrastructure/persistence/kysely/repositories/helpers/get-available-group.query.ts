@@ -1,10 +1,8 @@
-import { DB } from '@/infrastructure/types';
-import { Database } from '@/modules/tasks/application/ports';
+import { TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { getGroupWithStatusQuery } from './get-group-with-status.query';
-import { Transaction } from 'kysely';
 
-function getAvailableGroupQuery(db: Database<DB>, trx?: Transaction<DB>) {
+function getAvailableGroupQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return getGroupWithStatusQuery(db, trx).where(
     'g.name',
     'not in',

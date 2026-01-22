@@ -1,6 +1,5 @@
-import { DB } from '@/infrastructure/types';
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { Database } from '@/modules/tasks/application/ports';
+import { TaskDatabase } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateTaskInput, TaskQueryService, TaskService } from '../../services';
@@ -10,7 +9,7 @@ class CreateTaskUseCase {
   constructor(
     private readonly taskServices: TaskService,
     private readonly taskQueryService: TaskQueryService,
-    @Inject(databaseToken.CONNECTION) private readonly db: Database<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
   async execute(input: CreateTaskInput): Promise<TaskView> {

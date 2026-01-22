@@ -1,13 +1,11 @@
-import { DB } from '@/infrastructure/types';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import { Transaction } from 'kysely';
 import {
   ExceptionInboxNotExist,
   ExceptionTaskAlreadyInGroup,
   ExceptionTaskNotInGroup,
 } from '../exceptions';
-import { GroupInboxReadRepository } from '../ports';
+import { GroupInboxReadRepository, TaskTransaction } from '../ports';
 
 @Injectable()
 class InboxGroupCheckerService {
@@ -18,15 +16,15 @@ class InboxGroupCheckerService {
 
   async ensureTaskInInboxGroup(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
   ): Promise<true>;
   async ensureTaskInInboxGroup(
     input: { taskId: number; userId: number },
-    params: { trx?: Transaction<DB>; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true },
   ): Promise<boolean>;
   async ensureTaskInInboxGroup(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
   ): Promise<boolean> {
     const { skipException, trx } = params ?? {};
 
@@ -53,15 +51,15 @@ class InboxGroupCheckerService {
 
   async ensureTaskNotInInboxGroup(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
   ): Promise<{ inboxId: number; success: false }>;
   async ensureTaskNotInInboxGroup(
     input: { taskId: number; userId: number },
-    params: { trx?: Transaction<DB>; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true },
   ): Promise<{ inboxId: number; success: true }>;
   async ensureTaskNotInInboxGroup(
     input: { taskId: number; userId: number },
-    params?: { trx?: Transaction<DB>; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
   ): Promise<{ inboxId: number; success: boolean }> {
     const { skipException, trx } = params ?? {};
 
