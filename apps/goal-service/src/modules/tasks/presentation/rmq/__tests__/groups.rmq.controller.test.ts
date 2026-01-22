@@ -34,10 +34,6 @@ describe('GroupsRmqController (rmq e2e)', () => {
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
       .overrideProvider(GroupsToken.WRITE_REPOSITORY)

@@ -41,10 +41,6 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
       .overrideProvider(TasksToken.WRITE_REPOSITORY)

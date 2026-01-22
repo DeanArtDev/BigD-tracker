@@ -13,20 +13,13 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
-import {
-  inboxReadRepoMock,
-  inboxWriteRepoMock,
-} from '@shared/__tests__/repository-mocks';
+import { inboxReadRepoMock, inboxWriteRepoMock } from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
 describe('GroupsInboxRmqController (rmq e2e)', () => {
   let ms: INestMicroservice;
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
 
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
