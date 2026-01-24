@@ -109,7 +109,7 @@ export class TasksWriteRepositoryKysely
           'recurrence',
         ])
         .executeTakeFirstOrThrow();
-      console.log(444, result);
+
       return TasksWriteKyselyMapper.fromRawToAgr({ ...result, status: task.status });
     });
   }

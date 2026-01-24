@@ -6,7 +6,7 @@ import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { useMemo, useState } from 'react';
 
 function DailyPlannerPage() {
-  const [dateSet, setDateSet] = useState<{ from?: string; to?: string }>();
+  const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
   const { things, isLoading } = useGetDiaryTasks({ filters: dateSet });
 
   const events = useMemo(() => {

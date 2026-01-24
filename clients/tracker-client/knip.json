@@ -1,0 +1,8 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "tags": ["-lintignore"],
+  "entry": ["./src/app/main.tsx"],
+  "include": ["exports", "types", "duplicates", "files"],
+  "ignore": ["src/shared/ui-kit/ui/**"],
+  "project": ["**/*.{ts,tsx}"]
+}

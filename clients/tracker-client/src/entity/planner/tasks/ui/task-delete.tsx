@@ -13,7 +13,8 @@ function TaskDelete({ taskId, onSuccess, children }: TaskDeleteProps) {
 
   return (
     <AlertConfirmDialog
-      title="Ты уверен что хочешь удалить?"
+      title="Удалить?"
+      content="В будущем, дело можно будет восстановить"
       onConfirm={() => void deleteTask({ params: { path: { taskId } } }, { onSuccess })}
     >
       {children({ isLoading: isPending })}

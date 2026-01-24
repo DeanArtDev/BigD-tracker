@@ -17,7 +17,7 @@ class LocalStorageManager<TSchema extends ZodObject<any>> {
     return this.schema.shape[key].safeParse(value);
   }
 
-  setValue(key: string, value: ValueOf<z.infer<TSchema>>) {
+  setValue(key: keyof TSchema['shape'] & string, value: ValueOf<TSchema> & string) {
     this.storage.setItem(key, value);
   }
 
@@ -25,16 +25,23 @@ class LocalStorageManager<TSchema extends ZodObject<any>> {
     this.storage.removeItem(key);
   }
 
+  getValue<TKey extends keyof TSchema['shape'] & string>(
+    key: TKey,
+    stringParseSchema?: never,
+  ): z.infer<TSchema>[TKey] | undefined;
+  getValue<TKey extends keyof TSchema['shape'] & string, ParseSchema extends ZodType>(
+    key: TKey,
+    stringParseSchema: ParseSchema,
+  ): z.infer<ParseSchema>;
   getValue<TKey extends keyof TSchema['shape'] & string, ParseSchema extends ZodType>(
     key: TKey,
     stringParseSchema?: ParseSchema,
-  ): undefined | ParseSchema extends undefined
-    ? z.infer<TSchema>[TKey] | undefined
-    : z.infer<ParseSchema> {
+  ): z.infer<TSchema>[TKey] | z.infer<ParseSchema> | undefined {
     const value = this.storage.getItem(key);
     if (this.schema.shape[key] instanceof ZodBoolean && value === 'false') {
       return false as z.infer<TSchema>[TKey];
     }
+
     const result = this.schema.shape[key].safeParse(value);
     if (result.success) {
       if (stringParseSchema != null) {
@@ -43,6 +50,7 @@ class LocalStorageManager<TSchema extends ZodObject<any>> {
       }
       return result.data;
     }
+
     return undefined;
   }
 }

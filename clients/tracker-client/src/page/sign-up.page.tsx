@@ -1,4 +1,4 @@
-import { SignUpForm } from '@/feature/sign-up/sign-up-form';
+import { SignUpForm } from '@/feature/sign-up';
 
 function SignUpPage() {
   return (
