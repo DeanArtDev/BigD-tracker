@@ -56,6 +56,7 @@ export class TasksWriteRepositoryKysely
           start_date: agr.startDate,
           description: agr.description,
           user_id: agr.userId,
+          priority: agr.priority,
           status_id: statusId,
         })
         .returning([
@@ -86,13 +87,13 @@ export class TasksWriteRepositoryKysely
         .where('user_id', '=', task.userId)
         .set({
           name: task.name,
-          description: task.description,
+          description: task.description ?? null,
           priority: task.priority,
           weight: task.weight,
-          start_date: task.startDate,
+          start_date: task.startDate ?? null,
           end_date: task.endDate,
-          deadline: task.deadline,
-          recurrence: task.recurrence,
+          deadline: task.deadline ?? null,
+          recurrence: task.recurrence ?? null,
         })
         .returning([
           'id',
@@ -108,7 +109,7 @@ export class TasksWriteRepositoryKysely
           'recurrence',
         ])
         .executeTakeFirstOrThrow();
-
+      console.log(444, result);
       return TasksWriteKyselyMapper.fromRawToAgr({ ...result, status: task.status });
     });
   }

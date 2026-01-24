@@ -74,6 +74,7 @@ class Task extends AggregateRoot {
   public replace(input: TaskReplaceInput): this {
     assertTaskReplace({ status: this.#state.status, endDate: this.#state.endDate?.value });
     assertTaskDates({ start: input.startDate, deadline: input.deadline });
+    assertDeadlineInThePast({ deadline: input.deadline });
 
     this.#state.name = input.name;
     this.#state.description = input.description;

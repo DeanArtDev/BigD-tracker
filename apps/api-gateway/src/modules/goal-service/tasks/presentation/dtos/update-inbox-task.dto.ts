@@ -23,7 +23,7 @@ class UpdateInboxTaskReqData {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
+  @ApiProperty({ example: 2, description: 'От 1 до 4' })
   @Min(1)
   @Max(4)
   @IsInt()
