@@ -1,4 +1,4 @@
-import { GroupFactory } from './group.factory';
+import { GroupFactory } from '../group.factory';
 
 describe('GroupFactory', () => {
   it('creates group with sanitized description', () => {
