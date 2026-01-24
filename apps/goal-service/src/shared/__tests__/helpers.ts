@@ -41,7 +41,25 @@ function nthCallArgs<T extends (...args: any[]) => any>(fn: jest.MockedFunction<
   return fn.mock.calls[n] as Parameters<T> | undefined;
 }
 
+const TEST_DATE = '2023-01-01T00:00:00.000Z';
+
+function mockDate(dataToUse: ReturnType<Date['toISOString']> = TEST_DATE): void {
+  const _global: any = global;
+  const DATE_TO_USE = dataToUse;
+  const _Date = _global.Date;
+
+  (_global.Date as unknown) = jest.fn((t: Date | string = DATE_TO_USE) => new _Date(t));
+  _global.Date.UTC = _Date.UTC;
+  _global.Date.parse = _Date.parse;
+  _global.Date.now = _Date.now;
+
+  afterAll(() => {
+    _global.Date = _Date;
+  });
+}
+
 export {
+  mockDate,
   buildPayload,
   sendMessageBuilder,
   unwrapRpcError,

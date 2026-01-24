@@ -1,0 +1,76 @@
+import { useInvalidateInbox } from '@/entity/planner/groups';
+import { type TaskInboxEntity, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
+import { useUpdateInboxTask } from '@/entity/planner/tasks/model';
+import { useFormStateEmitter } from '@/shared/components/form';
+import { withLazy } from '@/shared/lib/react/with-lazy';
+import { useConfirmDialog } from '@/shared/ui-kit/helpers';
+import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
+
+const TaskInboxFormLazy = withLazy(() =>
+  import('@/entity/planner/tasks/ui/form').then((m) => ({ default: m.TaskInboxForm })),
+);
+
+interface TaskInboxCreateControllerProps {
+  readonly inboxTask?: TaskInboxEntity;
+  readonly onCancel?: () => void;
+  readonly onSuccess?: () => void;
+}
+
+function TaskInboxCreateController({
+  inboxTask,
+  onCancel,
+  onSuccess,
+}: TaskInboxCreateControllerProps) {
+  const { formEmitterState, formStateEmitterProps } = useFormStateEmitter();
+  const { confirmHolder, viaConfirmation } = useConfirmDialog();
+  const open = inboxTask != null;
+
+  const { updateInboxTask, isPending } = useUpdateInboxTask();
+  const invalidateInbox = useInvalidateInbox();
+  const invalidateDiaryTasks = useInvalidateDiaryTasks();
+
+  return (
+    <>
+      <AppDialog
+        open={open}
+        className="sm:h-full sm:max-h-[60vh] p-0 sm:p-0"
+        onOpenChange={(value) => {
+          if (formEmitterState.isLoading) return;
+
+          viaConfirmation({
+            isNeedConfirm: () => formEmitterState.isDirty && !value,
+            callback: () => void onCancel?.(),
+            dialog: { title: 'Закрыть?', content: 'Не сохраненные данные будут потеряны!' },
+          });
+        }}
+      >
+        <TaskInboxFormLazy
+          inboxTask={inboxTask}
+          isLoading={isPending}
+          {...formStateEmitterProps}
+          onSubmit={(formResult) => {
+            if (inboxTask == null) return;
+
+            updateInboxTask(
+              {
+                params: { path: { taskId: inboxTask.id } },
+                body: { data: formResult },
+              },
+              {
+                onSuccess: async () => {
+                  await invalidateDiaryTasks();
+                  await invalidateInbox();
+                  onSuccess?.();
+                },
+              },
+            );
+          }}
+        />
+      </AppDialog>
+
+      {confirmHolder}
+    </>
+  );
+}
+
+export { TaskInboxCreateController };

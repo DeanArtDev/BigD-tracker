@@ -1,19 +1,17 @@
 import { useInvalidateInbox } from '@/entity/planner/groups';
-import { useCreateThing, useInvalidateThings } from '@/entity/planner/things';
-import { AddThingDialog } from '@/entity/planner/things/ui';
-import { DateElements } from './date-elements';
+import { useCreateTask, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
+import { AddTaskInboxDialog } from '@/entity/planner/tasks/ui';
 
-function AddDailyThing({ thingFilters }: { thingFilters?: { from?: string; to?: string } }) {
-  const { createThing, isPending } = useCreateThing();
+function AddDailyThing() {
+  const { createTask, isPending } = useCreateTask();
   const invalidateInbox = useInvalidateInbox();
-  const invalidateThings = useInvalidateThings();
+  const invalidateThings = useInvalidateDiaryTasks();
 
   return (
-    <AddThingDialog
+    <AddTaskInboxDialog
       loading={isPending}
-      dateSlot={<DateElements dateSet={thingFilters} />}
       onSubmit={(formResult, { close }) => {
-        createThing(
+        createTask(
           { body: { data: formResult } },
           {
             onSuccess: async () => {

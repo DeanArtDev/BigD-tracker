@@ -19,6 +19,7 @@ import {
   createTestingModule,
   expectTransaction,
   firstArg,
+  mockDate,
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
@@ -31,6 +32,8 @@ import {
 } from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
+mockDate();
+
 describe('GroupsRmqController (rmq e2e)', () => {
   let ms: INestMicroservice;
   let client: ClientProxy;
@@ -211,8 +214,8 @@ describe('GroupsRmqController (rmq e2e)', () => {
         description: 'desc-a',
         priority: 2,
         weight: 10,
-        startDate: '2024-01-01T00:00:00.000Z',
-        deadline: '2024-02-01T00:00:00.000Z',
+        startDate: '2026-01-01T00:00:00.000Z',
+        deadline: '2026-02-01T00:00:00.000Z',
         recurrence: 'daily',
       };
       const taskInputTwo = {

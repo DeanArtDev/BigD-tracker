@@ -7,8 +7,9 @@ import { isDate } from 'lodash-es';
 import { type ComponentProps } from 'react';
 import { type FieldValues, type Path } from 'react-hook-form';
 
-interface TimeFormProps<FormValues extends FieldValues = FieldValues>
-  extends ComponentProps<'input'> {
+interface TimeFormProps<
+  FormValues extends FieldValues = FieldValues,
+> extends ComponentProps<'input'> {
   readonly name: Path<FormValues>;
   readonly required?: boolean;
   readonly format?: string;

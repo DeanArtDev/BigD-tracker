@@ -1,4 +1,4 @@
-import type { ThingManagerFormData } from '@/entity/planner/things/ui';
+import type { ThingManagerFormData } from '@/entity/planner/tasks/ui';
 import dayjs from '@/shared/lib/time';
 import { Checkbox } from '@/shared/ui-kit/ui/checkbox';
 import { Label } from '@/shared/ui-kit/ui/label';

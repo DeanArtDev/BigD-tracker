@@ -14,6 +14,7 @@ function useConfirmDialog() {
       <AlertConfirmDialog
         open
         title={confirmProps.title}
+        content={confirmProps.content}
         onOpenChange={(value) => {
           !value && setConfirmProps(null);
         }}
@@ -27,14 +28,14 @@ function useConfirmDialog() {
     callback: () => void;
     cancel?: () => void;
     dialog?: {
-      title: string;
+      title?: string;
       content?: string;
     };
   }) => {
     param.isNeedConfirm()
       ? setConfirmProps({
-          title: param.dialog?.title ?? 'Не сохраненные данные будут потеряны! Закрыть?',
-          content: param.dialog?.content,
+          title: param.dialog?.title ?? null,
+          content: param.dialog?.content ?? null,
           onConfirm: param.callback,
           onDecline: param?.cancel,
         })

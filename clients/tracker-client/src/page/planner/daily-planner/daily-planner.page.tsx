@@ -1,14 +1,13 @@
-import { useGetThings } from '@/entity/planner/things';
+import { useGetDiaryTasks } from '@/entity/planner/tasks';
 import { PageWrapper } from '@/page/ui/page-wrapper';
 import { TimeView } from '@/shared/lib/time-view';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { useMemo, useState } from 'react';
-import { AddDailyThing } from './components/add-daily-thing';
 
 function DailyPlannerPage() {
-  const [dateSet, setDateSet] = useState<{ from?: string; to?: string }>();
-  const { things, isLoading } = useGetThings({ filters: dateSet });
+  const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
+  const { things, isLoading } = useGetDiaryTasks({ filters: dateSet });
 
   const events = useMemo(() => {
     return things.map((thing) => {
@@ -31,8 +30,6 @@ function DailyPlannerPage() {
           }
         />
       </DataLoader>
-
-      <AddDailyThing thingFilters={dateSet} />
     </PageWrapper>
   );
 }

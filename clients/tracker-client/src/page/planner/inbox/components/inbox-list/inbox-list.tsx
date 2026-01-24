@@ -1,34 +1,33 @@
-import { useInboxQuery, useInvalidateInbox } from '@/entity/planner/groups';
-import { useUpdateThing } from '@/entity/planner/things';
-import { ThingDelete } from '@/entity/planner/things/ui';
+import { useGetUserInbox, useInvalidateInbox } from '@/entity/planner/groups';
+import { type TaskInboxEntity } from '@/entity/planner/tasks';
+import { TaskDelete } from '@/entity/planner/tasks/ui';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
-import { ThingOverviewDialog } from './thing-overview-dialog';
+import { TaskInboxCreateController } from '../task-inbox-update-controller';
 
 const ThingCardMobileLazy = withLazy(
   () =>
-    import('@/entity/planner/things/ui/thing-card-mobile').then((m) => ({
-      default: m.ThingCardMobile,
+    import('@/entity/planner/tasks/ui/task-card-mobile').then((m) => ({
+      default: m.TaskCardMobile,
     })),
   <Skeleton className="h-10 w-full rounded-md" />,
 );
 
 const ThingCardLazy = withLazy(
   () =>
-    import('@/entity/planner/things/ui/thing-card').then((m) => ({
-      default: m.ThingCard,
+    import('@/entity/planner/tasks/ui/task-card').then((m) => ({
+      default: m.TaskCard,
     })),
   <Skeleton className="h-10 w-full rounded-md" />,
 );
 
 function InboxList() {
-  const { inbox } = useInboxQuery();
-  const [thingId, setThingId] = useState<number>();
-  const { updateThing, isPending } = useUpdateThing();
+  const { inbox } = useGetUserInbox();
+  const [task, setTask] = useState<TaskInboxEntity>();
   const invalidateInbox = useInvalidateInbox();
 
   const isMobile = useIsMobile();
@@ -36,18 +35,18 @@ function InboxList() {
   return (
     <>
       <ul className="flex flex-col gap-1 sm:gap-2 justify-center w-full">
-        {inbox?.things.map((i) =>
+        {inbox?.map((i) =>
           isMobile ? (
             <ThingCardMobileLazy
               key={i.id}
-              thing={i}
-              onSuccess={invalidateInbox}
-              onClick={({ id }) => setThingId(id)}
+              task={i}
+              onDeleteSuccess={invalidateInbox}
+              onClick={(inboxTask) => setTask(inboxTask)}
             />
           ) : (
             <ThingCardLazy
               key={i.id}
-              thing={i}
+              task={i}
               actionsSlot={
                 <div
                   className="contents"
@@ -55,7 +54,7 @@ function InboxList() {
                     evt.stopPropagation();
                   }}
                 >
-                  <ThingDelete thingId={i.id} onSuccess={invalidateInbox}>
+                  <TaskDelete taskId={i.id} onSuccess={invalidateInbox}>
                     {({ isLoading }) => (
                       <Button
                         size="icon"
@@ -67,41 +66,19 @@ function InboxList() {
                         <Trash />
                       </Button>
                     )}
-                  </ThingDelete>
+                  </TaskDelete>
                 </div>
               }
-              onClick={({ id }) => void setThingId(id)}
+              onClick={(inboxTask) => void setTask(inboxTask)}
             />
           ),
         )}
       </ul>
 
-      <ThingOverviewDialog
-        thingId={thingId}
-        isLoading={isPending}
-        onChange={(thing) => {
-          updateThing(
-            {
-              params: { path: { thingId: thing.id } },
-              body: {
-                data: {
-                  name: thing.name,
-                  deadline: thing.deadline,
-                  description: thing.description,
-                  priority: thing.priority,
-                  startDate: thing.startDate,
-                },
-              },
-            },
-            {
-              onSuccess: invalidateInbox,
-            },
-          );
-        }}
-        onOpenChange={(open) => {
-          if (isPending) return;
-          !open && setThingId(undefined);
-        }}
+      <TaskInboxCreateController
+        inboxTask={task}
+        onCancel={() => void setTask(undefined)}
+        onSuccess={() => void setTask(undefined)}
       />
     </>
   );

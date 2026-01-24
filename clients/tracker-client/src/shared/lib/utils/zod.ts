@@ -21,4 +21,4 @@ const transformPlaceholder = {
     value == null ? undefined : dayjs(value).endOf('day').toDate(),
 };
 
-export { transformPlaceholder, zodPlaceholder };
+export { transformPlaceholder };

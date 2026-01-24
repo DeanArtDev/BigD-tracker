@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 import { useFormState } from 'react-hook-form';
 
 interface FormStateEmitterProps {
@@ -14,16 +14,14 @@ function FormStateEmitter({
 }: FormStateEmitterProps) {
   const { isDirty, isLoading: isFormLoading } = useFormState();
 
-  const emitIsDirtyRef = useRef(emitIsDirty);
-  emitIsDirtyRef.current = emitIsDirty;
+  const emitIsDirtyRef = useEffectEvent((v: boolean) => emitIsDirty?.(v));
   useEffect(() => {
-    emitIsDirtyRef.current?.(isDirty);
+    emitIsDirtyRef(isDirty);
   }, [isDirty]);
 
-  const emitIsLoadingRef = useRef(emitIsLoading);
-  emitIsLoadingRef.current = emitIsLoading;
+  const emitIsLoadingRef = useEffectEvent((v: boolean) => emitIsLoading?.(v));
   useEffect(() => {
-    emitIsLoadingRef.current?.(isFormLoading || isLoading);
+    emitIsLoadingRef(isFormLoading || isLoading);
   }, [isLoading, isFormLoading]);
 
   return null;

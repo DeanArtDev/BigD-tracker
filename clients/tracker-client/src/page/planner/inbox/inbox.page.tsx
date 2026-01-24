@@ -1,20 +1,42 @@
-import { useInboxQuery } from '@/entity/planner/groups';
+import { useGetUserInbox } from '@/entity/planner/groups';
 import { PageWrapper } from '@/page/ui/page-wrapper';
+import { AppPlaceholder } from '@/shared/components/app-placeholder';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
-import { AddThingIntoInbox } from './components/add-thing-into-inbox';
+import { TaskInboxCreateController } from './components/task-inbox-create-controller';
 import { InboxList } from './components/inbox-list';
 
+/**
+ * TODO:
+ * [x] нарисовать заглушку когда нет дел
+ * [x] интегрировать запрос дел в inbox
+ * [x] создание дела для inbox в отдельной форме
+ * [x] редактирование дела для inbox в отдельной форме
+ * [] воткнуть визивик в создание дела для inbox
+ * [x] переписать хуки model
+ * [x] удаление дела из inbox
+ * [x] react-textarea-autosize нужна ли вообще??
+ * [x] найти неиспользуемый код и экспорты
+ * [] удалить date-fns
+ * []
+ * []
+ * */
+
 function InboxPage() {
-  const { isLoading } = useInboxQuery();
+  const { isLoading, isEmpty } = useGetUserInbox();
 
   return (
     <PageWrapper className="flex flex-col w-full grow sm:max-w-[80%] mx-auto" title="IN BOX">
-      <DataLoader loadingElement={<AppLoader />} isLoading={isLoading}>
+      <DataLoader
+        isEmpty={isEmpty}
+        emptyElement={<AppPlaceholder message="Дела отсутствуют" />}
+        isLoading={isLoading}
+        loadingElement={<AppLoader />}
+      >
         <InboxList />
       </DataLoader>
 
-      <AddThingIntoInbox />
+      <TaskInboxCreateController />
     </PageWrapper>
   );
 }
