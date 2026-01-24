@@ -5,7 +5,7 @@ import { Inbox, ListOrdered, BookMarked, type LucideProps } from 'lucide-react';
 const plannerRoutesMap: Record<string, PageApplicationRote> = {
   [routes.plannerInBox.path]: {
     to: routes.plannerInBox.path,
-    title: 'In Box',
+    title: 'IN BOX',
     icon: (props: LucideProps) => <Inbox {...props} />,
   },
 

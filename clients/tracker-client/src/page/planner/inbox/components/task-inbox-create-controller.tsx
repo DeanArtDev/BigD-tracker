@@ -1,22 +1,22 @@
 import { useInvalidateInbox } from '@/entity/planner/groups';
-import { useCreateTask, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
+import { useCreateInboxTask, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
 import { AddTaskInboxDialog } from '@/entity/planner/tasks/ui';
 
-function AddDailyThing() {
-  const { createTask, isPending } = useCreateTask();
+function TaskInboxCreateController() {
+  const { createInboxTask, isPending } = useCreateInboxTask();
   const invalidateInbox = useInvalidateInbox();
-  const invalidateThings = useInvalidateDiaryTasks();
+  const invalidateDiaryTasks = useInvalidateDiaryTasks();
 
   return (
     <AddTaskInboxDialog
       loading={isPending}
       onSubmit={(formResult, { close }) => {
-        createTask(
+        createInboxTask(
           { body: { data: formResult } },
           {
             onSuccess: async () => {
+              await invalidateDiaryTasks();
               await invalidateInbox();
-              await invalidateThings();
               close();
             },
           },
@@ -26,4 +26,4 @@ function AddDailyThing() {
   );
 }
 
-export { AddDailyThing };
+export { TaskInboxCreateController };

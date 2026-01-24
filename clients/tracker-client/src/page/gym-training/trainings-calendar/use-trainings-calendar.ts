@@ -9,9 +9,11 @@ import type { Override } from '@/shared/lib/type-helpers';
 import type { EventInput } from '@fullcalendar/core';
 import { useEffect, useMemo, useState } from 'react';
 
-class CalendarEvent<T extends Record<string, any>>
-  implements Override<EventInput, 'start', string | Date>
-{
+class CalendarEvent<T extends Record<string, any>> implements Override<
+  EventInput,
+  'start',
+  string | Date
+> {
   public start: string | Date;
   public extra?: T;
   public allDay?: boolean;

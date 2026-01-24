@@ -4,12 +4,19 @@ import { Textarea } from '@/shared/ui-kit/ui/textarea';
 import { type ComponentProps } from 'react';
 import { type FieldValues, type Path, useFormContext } from 'react-hook-form';
 
-interface TextAreaFormProps<FormValues extends FieldValues = FieldValues>
-  extends ComponentProps<'textarea'> {
+interface TextAreaFormProps<FormValues extends FieldValues = FieldValues> extends Omit<
+  ComponentProps<'textarea'>,
+  'className'
+> {
   readonly name: Path<FormValues>;
   readonly required?: boolean;
   readonly label?: string;
   readonly isErrorMessage?: boolean;
+  readonly classNames?: {
+    textarea?: string;
+    label?: string;
+    wrapper?: string;
+  };
 }
 
 function TextareaForm<FormValues extends FieldValues = FieldValues>({
@@ -17,6 +24,7 @@ function TextareaForm<FormValues extends FieldValues = FieldValues>({
   label,
   isErrorMessage = true,
   required = false,
+  classNames,
   ...textAreaProps
 }: TextAreaFormProps<FormValues>) {
   const context = useFormContext<FormValues>();
@@ -26,15 +34,16 @@ function TextareaForm<FormValues extends FieldValues = FieldValues>({
       name={name}
       render={() => {
         return (
-          <FormItem>
+          <FormItem className={classNames?.wrapper}>
             {label && (
-              <FormLabel>
+              <FormLabel className={classNames?.label}>
                 <RequiredSign on={required}>{label}</RequiredSign>
               </FormLabel>
             )}
 
             <FormControl>
               <Textarea
+                className={classNames?.textarea}
                 {...textAreaProps}
                 {...context.register(name, {
                   setValueAs: (v) => (v === '' || v == null ? undefined : v),

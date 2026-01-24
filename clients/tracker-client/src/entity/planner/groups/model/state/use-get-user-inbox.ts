@@ -1,0 +1,29 @@
+import type { TaskInboxEntity } from '@/entity/planner/tasks';
+import { $privetQueryClient } from '@/shared/api/api-client';
+import { groupsQueryKeys } from './query';
+
+function useGetUserInbox() {
+  const { data, ...others } = $privetQueryClient.useQuery(
+    ...groupsQueryKeys.getInbox(),
+    undefined,
+    {
+      select: (data): TaskInboxEntity[] => {
+        return (data?.data ?? []).map<TaskInboxEntity>((task) => ({
+          id: task.id,
+          name: task.name,
+          description: task.description,
+          priority: task.priority,
+          deadline: task.deadline,
+        }));
+      },
+    },
+  );
+
+  return {
+    inbox: data,
+    isEmpty: data?.length === 0,
+    ...others,
+  };
+}
+
+export { useGetUserInbox };

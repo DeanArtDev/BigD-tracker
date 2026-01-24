@@ -4,8 +4,9 @@ import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import { type ComponentProps } from 'react';
 import { type FieldValues, type Path, useFormContext } from 'react-hook-form';
 
-interface InputFormProps<FormValues extends FieldValues = FieldValues>
-  extends ComponentProps<'input'> {
+interface InputFormProps<
+  FormValues extends FieldValues = FieldValues,
+> extends ComponentProps<'input'> {
   readonly name: Path<FormValues>;
   readonly required?: boolean;
   readonly label?: string;

@@ -366,76 +366,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/goals/{goalId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получение цели по id */
-        get: operations["GoalsController_getGoalById"];
-        put?: never;
-        post?: never;
-        /** Удаление цели */
-        delete: operations["GoalsController_deleteGroup"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/goals": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получение целей юзера */
-        get: operations["GoalsController_getUsersGoals"];
-        put?: never;
-        /** Создание цели */
-        post: operations["GoalsController_createGoal"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/goals/{goalId}/start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Начать цель */
-        post: operations["GoalsController_startGoal"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/goals/{goalId}/finish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Закончить цель */
-        post: operations["GoalsController_finishGoal"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/groups/inbox": {
         parameters: {
             query?: never;
@@ -443,25 +373,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получение IN BOX юзера */
-        get: operations["GroupsController_getUsersGoals"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/groups/my": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получение групп юзера */
-        get: operations["GroupsController_getMyGoals"];
+        /** Получение группы IN BOX с делами */
+        get: operations["GroupsController_getInbox"];
         put?: never;
         post?: never;
         delete?: never;
@@ -477,7 +390,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Получение групп с делами */
+        get: operations["GroupsController_getUserGroups"];
         put?: never;
         /** Создание группы */
         post: operations["GroupsController_createGroup"];
@@ -495,8 +409,8 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Обновление группы */
-        put: operations["GroupsController_updateGroup"];
+        /** Редактирование группы */
+        put: operations["GroupsController_replaceGroup"];
         post?: never;
         /** Удаление группы */
         delete: operations["GroupsController_deleteGroup"];
@@ -505,25 +419,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/things": {
+    "/tasks/diary": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Получение дел */
-        get: operations["ThingsController_getThings"];
+        /** Получение дел для ежедневника */
+        get: operations["TasksController_getDiaryTasks"];
         put?: never;
-        /** Создание дела */
-        post: operations["ThingsController_createThing"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/things/inbox": {
+    "/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Создание дела */
+        post: operations["TasksController_createTask"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/{taskId}/clone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Клонирование дела */
+        post: operations["TasksController_cloneTask"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/{taskId}/groups/{groupId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Перемещение дела в группу */
+        post: operations["TasksController_assignTaskToGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/{taskId}/groups/{groupId}/unassign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Открепление дела от группы */
+        post: operations["TasksController_unassignTaskFromGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/{taskId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Редактирование дела */
+        put: operations["TasksController_replaceTask"];
+        post?: never;
+        /** Удаление дела */
+        delete: operations["TasksController_deleteTask"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/in-box": {
         parameters: {
             query?: never;
             header?: never;
@@ -533,14 +532,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Создание дела в IN BOX */
-        post: operations["ThingsController_createIntoInbox"];
+        post: operations["TasksInboxController_createTaskIntoInbox"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/things/{thingId}": {
+    "/tasks/{taskId}/in-box/assign": {
         parameters: {
             query?: never;
             header?: never;
@@ -549,16 +548,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Обновление дела */
-        post: operations["ThingsController_updateThing"];
-        /** Удаление дела */
-        delete: operations["ThingsController_deleteGroup"];
+        /** Перемещение дела в IN BOX */
+        post: operations["TasksInboxController_assignTaskToInbox"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/things/{thingId}/finish": {
+    "/tasks/{taskId}/inbox": {
         parameters: {
             query?: never;
             header?: never;
@@ -566,9 +564,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        /** Завершение дела */
-        post: operations["ThingsController_finishThing"];
+        /** Редактирование дела в IN BOX */
+        put: operations["TasksInboxController_updateTaskInInbox"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -603,13 +601,13 @@ export interface components {
             /** @description Данные для запроса */
             data: components["schemas"]["RegisterReqData"];
         };
-        ResponseDto: {
+        RegisterResData: {
             /** @example jwt token is here */
             token: string;
         };
         RegisterResponse: {
             /** @description Ответ сервера */
-            data: components["schemas"]["ResponseDto"];
+            data: components["schemas"]["RegisterResData"];
         };
         RefreshDto: {
             /** @example jwt token is here */
@@ -632,6 +630,10 @@ export interface components {
         LoginRequest: {
             /** @description Данные для запроса */
             data: components["schemas"]["RequestDto"];
+        };
+        ResponseDto: {
+            /** @example jwt token is here */
+            token: string;
         };
         LoginResponse: {
             /** @description Ответ сервера */
@@ -1145,7 +1147,7 @@ export interface components {
             /** @description Данные для запроса */
             data: components["schemas"]["UpdateExerciseWithRepetitionsData"];
         };
-        ThingDto: {
+        TaskDto: {
             /** @example 1 */
             id: number;
             /** @example Имя дела */
@@ -1154,8 +1156,6 @@ export interface components {
             description?: string;
             /** @example 1 */
             userId: number;
-            /** @example 1 */
-            groupId?: number;
             /**
              * @description От 1 до 4
              * @example 2
@@ -1169,11 +1169,21 @@ export interface components {
             deadline?: string;
             /**
              * @description От 0 до 100
-             * @example 40
+             * @example 100
              */
-            result: number;
-            /** @example Комментарий по завершению дела */
-            comment?: string;
+            weight: number;
+            /** @example Описание причины не выполнения дела */
+            cancelReason?: string;
+            /**
+             * @description Статус дела
+             * @example NOT_STARTED
+             * @enum {string}
+             */
+            status?: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED";
+        };
+        GetInBoxRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TaskDto"][];
         };
         GroupDto: {
             /** @example 1 */
@@ -1184,161 +1194,66 @@ export interface components {
             description?: string;
             /** @example 1 */
             userId: number;
-            /** @example 1 */
-            goalId?: number;
             /**
              * @description От 0 до 100
              * @example 40
              */
-            result: number;
-            /** @description Список дел */
-            things: components["schemas"]["ThingDto"][];
-        };
-        GoalDto: {
-            /** @example 1 */
-            id: number;
-            /** @example Имя цели */
-            name: string;
-            /** @example Описание */
-            description?: string;
-            /** @example 1 */
-            userId: number;
+            progress: number;
             /**
-             * @description От 0 до 100
-             * @example 40
+             * @description Статус группы
+             * @example NOT_STARTED
+             * @enum {string}
              */
-            result: number;
-            /** @example 2025-05-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
-            endDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
-            deadline?: string;
-            /** @description Список групп */
-            groups: components["schemas"]["GroupDto"][];
-        };
-        GoalResSingle: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GoalDto"];
-        };
-        GoalRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GoalDto"];
-        };
-        CreateGoalReqData: {
-            /** @example 1 */
-            userId: number;
-            /** @example Название цели */
-            name: string;
-            /** @example Описание */
-            description?: string;
-        };
-        CreateGoalReq: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["CreateGoalReqData"];
-        };
-        CreateGoalRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GoalDto"];
-        };
-        StartGoalReqData: {
-            /** @example 2025-05-24T13:01:02.471Z */
-            deadline: string;
-            /** @example 2025-05-24T13:01:02.471Z */
-            startDate: string;
-        };
-        StartGoalReq: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["StartGoalReqData"];
-        };
-        StartGoalRes: Record<string, never>;
-        FinishGoalReqData: {
-            /** @example 2025-05-24T13:01:02.471Z */
-            endDate: string;
-        };
-        FinishGoalReq: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["FinishGoalReqData"];
-        };
-        FinishGoalRes: Record<string, never>;
-        GroupInBoxDto: {
-            /** @example 1 */
-            id: number;
-            /** @example IN BOX */
-            name: string;
-            /** @example 1 */
-            userId: number;
+            status: "NOT_STARTED" | "IN_PROGRESS" | "DONE";
             /** @description Список дел */
-            things: components["schemas"]["ThingDto"][];
+            tasks: components["schemas"]["TaskDto"][];
         };
-        GetInBoxRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GroupInBoxDto"];
-        };
-        GetMyGroupsRes: {
+        GetUserGroupsRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["GroupDto"][];
-        };
-        Thing: {
-            /** @example Название дела */
-            name: string;
-            /** @example Описание */
-            description?: string;
-            /**
-             * @description От 1 до 4
-             * @example 2
-             */
-            priority?: number;
-            /** @example 2025-05-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
-            deadline?: string;
         };
         CreateGroupReqData: {
             /** @example Название группы */
             name: string;
-            /** @example 1 */
-            goalId?: number;
             /** @example Описание */
             description?: string;
-            /** @description Список дел */
-            things: components["schemas"]["Thing"][];
         };
         CreateGroupReq: {
             /** @description Запрос сервера */
             data: components["schemas"]["CreateGroupReqData"];
         };
-        CreateGroupRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GroupDto"];
-        };
-        ReqData: {
+        CreateGroupResData: {
             /** @example 1 */
-            userId: number;
-            /** @example Название группы */
+            id: number;
+            /** @example Группа дел */
             name: string;
-            /** @example 1 */
-            goalId?: number;
             /** @example Описание */
             description?: string;
-            /** @description Список дел */
-            things: components["schemas"]["Thing"][];
+            /** @example 1 */
+            userId: number;
+            /**
+             * @description От 0 до 100
+             * @example 40
+             */
+            progress: number;
+            /**
+             * @description Статус группы
+             * @example NOT_STARTED
+             * @enum {string}
+             */
+            status: "NOT_STARTED" | "IN_PROGRESS" | "DONE";
         };
-        UpdateGroupReq: {
+        CreateGroupRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["ReqData"];
+            data: components["schemas"]["CreateGroupResData"];
         };
-        UpdateGroupRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["GroupDto"];
-        };
-        GetThingsApiGatewayRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["ThingDto"][];
-        };
-        CreateThingIntoInboxReqData: {
+        ReplaceGroupTask: {
+            /** @example 1 */
+            id: number;
             /** @example Имя дела */
             name: string;
+            /** @example Описание */
+            description?: string;
             /**
              * @description От 1 до 4
              * @example 2
@@ -1348,18 +1263,42 @@ export interface components {
             startDate?: string;
             /** @example 2025-05-24T13:01:02.471Z */
             deadline?: string;
-            /** @example Описание дела */
+            /**
+             * @description От 0 до 100
+             * @example 100
+             */
+            weight: number;
+            /**
+             * @description Паттерн повторения дела
+             * @example ----
+             */
+            recurrence?: string;
+        };
+        ReplaceGroupReqData: {
+            /** @example Название группы */
+            name: string;
+            /** @example Описание */
             description?: string;
+            /** @description Список дел */
+            tasks: components["schemas"]["ReplaceGroupTask"][];
         };
-        CreateThingIntoInboxReq: {
+        ReplaceGroupReq: {
             /** @description Запрос сервера */
-            data: components["schemas"]["CreateThingIntoInboxReqData"];
+            data: components["schemas"]["ReplaceGroupReqData"];
         };
-        CreateThingIntoInboxRes: {
+        ReplaceGroupRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["ThingDto"];
+            data: components["schemas"]["GroupDto"];
         };
-        CreateThingReqData: {
+        DeleteGroupRes: {
+            /** @description Ответ сервера */
+            data: boolean;
+        };
+        GetDiaryTasksRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TaskDto"][];
+        };
+        CreateTaskReqData: {
             /** @example 1 */
             groupId?: number;
             /** @example Имя дела */
@@ -1369,22 +1308,93 @@ export interface components {
              * @example 2
              */
             priority?: number;
-            /** @example 2025-05-24T13:01:02.471Z */
+            /**
+             * @description От 0 до 100
+             * @example 100
+             */
+            weight?: number;
+            /** @example 2026-05-24T13:01:02.471Z */
             startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
+            /** @example 2026-08-24T13:01:02.471Z */
             deadline?: string;
             /** @example Описание дела */
             description?: string;
+            /**
+             * @description Паттерн повторения дела
+             * @example ----
+             */
+            recurrence?: string;
         };
-        CreateThingReq: {
+        CreateTaskReq: {
             /** @description Запрос сервера */
-            data: components["schemas"]["CreateThingReqData"];
+            data: components["schemas"]["CreateTaskReqData"];
         };
-        CreateThingRes: {
+        CreateTaskRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["ThingDto"];
+            data: components["schemas"]["TaskDto"];
         };
-        UpdateThingReqData: {
+        CloneTaskReqData: {
+            /** @example 1 */
+            groupId?: number;
+        };
+        CloneTaskReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["CloneTaskReqData"];
+        };
+        CloneTaskRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TaskDto"];
+        };
+        AssignTaskToGroupResData: {
+            /** @example true */
+            success: boolean;
+        };
+        AssignTaskToGroupRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["AssignTaskToGroupResData"];
+        };
+        UnassignTaskFromGroupResData: {
+            /** @example true */
+            success: boolean;
+        };
+        UnassignTaskFromGroupRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["UnassignTaskFromGroupResData"];
+        };
+        ReplaceTaskReqData: {
+            /** @example Имя дела */
+            name: string;
+            /** @example Описание дела */
+            description?: string;
+            /**
+             * @description От 1 до 4
+             * @example 2
+             */
+            priority?: number;
+            /**
+             * @description От 0 до 100
+             * @example 100
+             */
+            weight?: number;
+            /** @example 2025-06-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
+            /**
+             * @description Паттерн повторения дела
+             * @example ----
+             */
+            recurrence?: string;
+        };
+        ReplaceTaskReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["ReplaceTaskReqData"];
+        };
+        ReplaceTaskRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TaskDto"];
+        };
+        CreateTaskInINBOXReqData: {
             /** @example Имя дела */
             name: string;
             /**
@@ -1392,39 +1402,43 @@ export interface components {
              * @example 2
              */
             priority?: number;
-            /** @example 2025-05-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
+            /** @example 2026-06-24T13:01:02.471Z */
             deadline?: string;
             /** @example Описание дела */
             description?: string;
         };
-        UpdateThingReq: {
+        CreateTaskInINBOXReq: {
             /** @description Запрос сервера */
-            data: components["schemas"]["UpdateThingReqData"];
+            data: components["schemas"]["CreateTaskInINBOXReqData"];
         };
-        UpdateThingRes: {
+        AssignTaskToInboxResData: {
+            /** @example true */
+            success: boolean;
+        };
+        AssignTaskToInboxRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["ThingDto"];
+            data: components["schemas"]["AssignTaskToInboxResData"];
         };
-        FinishThingReqData: {
-            /** @example 2025-05-24T13:01:02.471Z */
-            endDate?: string;
-            /** @example Комментарий к завершению дела */
-            comment?: string;
+        UpdateInboxTaskReqData: {
+            /** @example Имя дела */
+            name: string;
+            /** @example Описание дела */
+            description?: string;
             /**
-             * @description От 0 до 100
-             * @example 40
+             * @description От 1 до 4
+             * @example 2
              */
-            result: number;
+            priority: number;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
         };
-        FinishThingReq: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["FinishThingReqData"];
+        UpdateInboxTaskReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["UpdateInboxTaskReqData"];
         };
-        FinishThingRes: {
+        UpdateInboxTaskRes: {
             /** @description Ответ сервера */
-            data: boolean;
+            data: components["schemas"]["TaskDto"];
         };
     };
     responses: never;
@@ -2024,139 +2038,7 @@ export interface operations {
             };
         };
     };
-    GoalsController_getGoalById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                goalId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GoalResSingle"];
-                };
-            };
-        };
-    };
-    GoalsController_deleteGroup: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                goalId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    GoalsController_getUsersGoals: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GoalRes"];
-                };
-            };
-        };
-    };
-    GoalsController_createGoal: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateGoalReq"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CreateGoalRes"];
-                };
-            };
-        };
-    };
-    GoalsController_startGoal: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                goalId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StartGoalReq"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StartGoalRes"];
-                };
-            };
-        };
-    };
-    GoalsController_finishGoal: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                goalId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FinishGoalReq"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FinishGoalRes"];
-                };
-            };
-        };
-    };
-    GroupsController_getUsersGoals: {
+    GroupsController_getInbox: {
         parameters: {
             query?: never;
             header?: never;
@@ -2175,7 +2057,7 @@ export interface operations {
             };
         };
     };
-    GroupsController_getMyGoals: {
+    GroupsController_getUserGroups: {
         parameters: {
             query?: never;
             header?: never;
@@ -2189,7 +2071,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetMyGroupsRes"];
+                    "application/json": components["schemas"]["GetUserGroupsRes"];
                 };
             };
         };
@@ -2217,7 +2099,7 @@ export interface operations {
             };
         };
     };
-    GroupsController_updateGroup: {
+    GroupsController_replaceGroup: {
         parameters: {
             query?: never;
             header?: never;
@@ -2228,7 +2110,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateGroupReq"];
+                "application/json": components["schemas"]["ReplaceGroupReq"];
             };
         };
         responses: {
@@ -2237,7 +2119,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UpdateGroupRes"];
+                    "application/json": components["schemas"]["ReplaceGroupRes"];
                 };
             };
         };
@@ -2257,17 +2139,19 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeleteGroupRes"];
+                };
             };
         };
     };
-    ThingsController_getThings: {
+    TasksController_getDiaryTasks: {
         parameters: {
-            query?: {
+            query: {
                 /** @description ISO String */
-                from?: string;
+                from: string;
                 /** @description ISO String */
-                to?: string;
+                to: string;
             };
             header?: never;
             path?: never;
@@ -2280,12 +2164,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetThingsApiGatewayRes"];
+                    "application/json": components["schemas"]["GetDiaryTasksRes"];
                 };
             };
         };
     };
-    ThingsController_createThing: {
+    TasksController_createTask: {
         parameters: {
             query?: never;
             header?: never;
@@ -2294,7 +2178,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateThingReq"];
+                "application/json": components["schemas"]["CreateTaskReq"];
             };
         };
         responses: {
@@ -2303,46 +2187,23 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CreateThingRes"];
+                    "application/json": components["schemas"]["CreateTaskRes"];
                 };
             };
         };
     };
-    ThingsController_createIntoInbox: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateThingIntoInboxReq"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CreateThingIntoInboxRes"];
-                };
-            };
-        };
-    };
-    ThingsController_updateThing: {
+    TasksController_cloneTask: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                thingId: number;
+                taskId: number;
             };
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
-                "application/json": components["schemas"]["UpdateThingReq"];
+                "application/json": components["schemas"]["CloneTaskReq"];
             };
         };
         responses: {
@@ -2351,17 +2212,86 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UpdateThingRes"];
+                    "application/json": components["schemas"]["CloneTaskRes"];
                 };
             };
         };
     };
-    ThingsController_deleteGroup: {
+    TasksController_assignTaskToGroup: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                thingId: number;
+                taskId: number;
+                groupId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignTaskToGroupRes"];
+                };
+            };
+        };
+    };
+    TasksController_unassignTaskFromGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
+                groupId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnassignTaskFromGroupRes"];
+                };
+            };
+        };
+    };
+    TasksController_replaceTask: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceTaskReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplaceTaskRes"];
+                };
+            };
+        };
+    };
+    TasksController_deleteTask: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
             };
             cookie?: never;
         };
@@ -2375,18 +2305,62 @@ export interface operations {
             };
         };
     };
-    ThingsController_finishThing: {
+    TasksInboxController_createTaskIntoInbox: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTaskInINBOXReq"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateTaskRes"];
+                };
+            };
+        };
+    };
+    TasksInboxController_assignTaskToInbox: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                thingId: number;
+                taskId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignTaskToInboxRes"];
+                };
+            };
+        };
+    };
+    TasksInboxController_updateTaskInInbox: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FinishThingReq"];
+                "application/json": components["schemas"]["UpdateInboxTaskReq"];
             };
         };
         responses: {
@@ -2395,7 +2369,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FinishThingRes"];
+                    "application/json": components["schemas"]["UpdateInboxTaskRes"];
                 };
             };
         };

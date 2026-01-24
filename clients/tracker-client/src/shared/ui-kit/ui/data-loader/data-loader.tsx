@@ -18,7 +18,7 @@ type DataLoaderProps = PropsWithChildren & {
     | { readonly blur: boolean; readonly parallelMount?: never }
     | {
         readonly blur?: never;
-        readonly parallelMount: boolean;
+        readonly parallelMount?: boolean;
       }
   );
 
