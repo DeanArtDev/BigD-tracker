@@ -35,9 +35,9 @@ function AppDialog(props: PropsWithChildren<AppDialogProps>) {
         showCloseButton={false}
         className={cn(
           'p-0 sm:p-0',
-          'h-full sm:h-auto sm:max-h-[95vh]',
+          'h-full sm:max-h-[60vh]',
           'w-full max-w-[100vw] sm:max-w-[80vw] md:max-w-[70vw] lg:max-w-[60vw]',
-          'gap-0 flex flex-col grow items-start overflow-x-scroll',
+          'gap-0 flex flex-col grow items-start overflow-hidden',
           className,
         )}
       >
@@ -49,7 +49,7 @@ function AppDialog(props: PropsWithChildren<AppDialogProps>) {
           onClose={() => void onOpenChange?.(false)}
         />
 
-        <div className="flex flex-col grow flex-wrap w-full">{children}</div>
+        <div className="flex min-h-0 min-w-0 w-full flex-col grow">{children}</div>
 
         {footer && (
           <DialogFooter className="w-full">{isFunction(footer) ? footer() : footer}</DialogFooter>
@@ -101,4 +101,20 @@ function AppDialogHeader(props: {
   );
 }
 
-export { AppDialog, AppDialogHeader, type AppDialogProps };
+function AppDialogTrigger({ className }: { className?: string }) {
+  return (
+    <DialogTrigger asChild>
+      <Button
+        size="sm"
+        variant="ghost"
+        type="button"
+        tabIndex={-1}
+        className={cn('size-7', 'opacity-70 hover:bg-transparent hover:opacity-100', className)}
+      >
+        <XIcon className="size-4" />
+      </Button>
+    </DialogTrigger>
+  );
+}
+
+export { AppDialogTrigger, AppDialog, AppDialogHeader, type AppDialogProps };

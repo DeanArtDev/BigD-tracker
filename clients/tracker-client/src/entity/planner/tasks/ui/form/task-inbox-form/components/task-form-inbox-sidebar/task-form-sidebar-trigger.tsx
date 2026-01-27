@@ -8,7 +8,7 @@ function TaskFormSidebarTrigger({ className }: { className?: string }) {
 
   return (
     <Button
-      className={cn('size-4', className)}
+      className={cn('size-7', className)}
       type="button"
       size="icon"
       variant="ghost"

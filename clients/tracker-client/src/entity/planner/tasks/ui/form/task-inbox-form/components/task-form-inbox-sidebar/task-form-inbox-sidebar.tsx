@@ -22,10 +22,8 @@ function TaskFormInboxSidebar() {
       variant="sidebar"
       collapsible="offcanvas"
       className={cn(
-        'sticky h-full border-t border-b rounded-bl-xl rounded-tl-xl overflow-hidden ml-4 -mr-5',
-        {
-          'w-0': isCollapsed,
-        },
+        'sticky h-full min-h-0 border-t border-b rounded-bl-xl rounded-tl-xl overflow-hidden',
+        { 'w-0': isCollapsed },
       )}
     >
       <SidebarContent>
@@ -33,7 +31,7 @@ function TaskFormInboxSidebar() {
           <TaskFormInboxDates />
         </SidebarGroup>
 
-        <SidebarSeparator className="mx-0" />
+        <SidebarSeparator className="separator mx-0" />
 
         <SidebarGroup key="priority" className="px-4">
           <ToggleGroupForm name="priority" tabIndex={-1} label="Приоритет">

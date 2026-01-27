@@ -45,7 +45,6 @@ describe('GroupWithTasks aggregate', () => {
     const group = buildGroup(GroupStatus.NOT_STARTED);
     const aggregate = GroupWithTasks.create({ group, tasks: [] });
 
-    const newGroup = buildGroup(GroupStatus.NOT_STARTED);
     const newTasks = [buildTaskView(2), buildTaskView(3)];
 
     aggregate.replace({

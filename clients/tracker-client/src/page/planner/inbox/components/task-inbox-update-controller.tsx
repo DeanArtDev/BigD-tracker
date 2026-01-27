@@ -4,7 +4,7 @@ import { useUpdateInboxTask } from '@/entity/planner/tasks/model';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
-import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
+import { AppDialog, AppDialogTrigger } from '@/shared/ui-kit/ui/app-dialog';
 
 const TaskInboxFormLazy = withLazy(() =>
   import('@/entity/planner/tasks/ui/form').then((m) => ({ default: m.TaskInboxForm })),
@@ -48,6 +48,7 @@ function TaskInboxCreateController({
           inboxTask={inboxTask}
           isLoading={isPending}
           {...formStateEmitterProps}
+          afterNameSlot={<AppDialogTrigger />}
           onSubmit={(formResult) => {
             if (inboxTask == null) return;
 

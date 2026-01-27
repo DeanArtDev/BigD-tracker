@@ -3,7 +3,7 @@ import type { ThingManagerSubmitData } from '@/entity/planner/tasks/ui';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
-import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
+import { AppDialog, AppDialogTrigger } from '@/shared/ui-kit/ui/app-dialog';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { cn } from '@/shared/ui-kit/utils';
 import { Plus } from 'lucide-react';
@@ -28,7 +28,6 @@ function AddTaskInboxDialog({ inboxTask, loading, onSubmit }: AddTaskInboxDialog
     <>
       <AppDialog
         open={open}
-        className="sm:h-full sm:max-h-[60vh] p-0 sm:p-0"
         trigger={
           <Button
             size="icon"
@@ -54,6 +53,7 @@ function AddTaskInboxDialog({ inboxTask, loading, onSubmit }: AddTaskInboxDialog
           inboxTask={inboxTask}
           isLoading={loading}
           {...formStateEmitterProps}
+          afterNameSlot={<AppDialogTrigger />}
           onSubmit={(formData) => void onSubmit(formData, { close: () => setOpen(false) })}
         />
       </AppDialog>

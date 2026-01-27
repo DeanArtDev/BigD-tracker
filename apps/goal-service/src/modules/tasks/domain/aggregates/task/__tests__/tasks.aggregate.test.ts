@@ -244,9 +244,9 @@ describe('Task aggregate', () => {
       recurrence: 'weekly',
     });
 
-    task.assignToGroup(TaskStatus.IN_PROGRESS);
+    task.assignToGroup();
 
-    expect(task.status).toBe(TaskStatus.IN_PROGRESS);
+    expect(task.status).toBe(TaskStatus.NOT_STARTED);
     expect(task.startDate).toBeDefined();
     expect(task.deadline).toBeDefined();
     expect(task.recurrence).toBe('weekly');

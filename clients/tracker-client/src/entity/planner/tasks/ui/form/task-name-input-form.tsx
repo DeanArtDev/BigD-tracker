@@ -19,7 +19,7 @@ function TaskNameInputForm({
 }: TaskNameInputFormProps) {
   return (
     <div className="flex w-full items-center gap-1">
-      <InputForm autoFocus className="grow" name="name" placeholder={placeholder} />
+      <InputForm autoFocus className="grow font-normal" name="name" placeholder={placeholder} />
 
       {renderControls && (
         <>
