@@ -30,7 +30,7 @@ function TaskHeaderForm({
   const name = useWatch<FormFieldsUsed>({ name: 'name' });
   const placeholder = 'Задайте имя';
   const { disabled } = useFormState();
-  console.log(afterNameSlot, !editName || isCreate);
+
   return (
     <div className="flex grow gap-2 text-center sm:text-left w-full mb-0 border-b justify-between p-2.5 pb-2 sm:p-4">
       {beforeNameSlot}
