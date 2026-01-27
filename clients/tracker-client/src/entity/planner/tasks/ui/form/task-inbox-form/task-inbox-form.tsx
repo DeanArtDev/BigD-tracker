@@ -4,7 +4,7 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRef } from 'react';
+import { type ReactNode, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { TaskPriority } from '../../../lib/constants';
@@ -20,6 +20,7 @@ import {
 
 interface ThingManagerFormProps extends FormStateEmitterProps {
   readonly inboxTask?: Omit<TaskInboxEntity, 'id'>;
+  readonly afterNameSlot?: ReactNode;
   readonly onSubmit?: (data: {
     name: string;
     priority: number;
@@ -36,7 +37,7 @@ interface ThingManagerFormProps extends FormStateEmitterProps {
  *
  * */
 function TaskInboxForm(props: ThingManagerFormProps) {
-  const { inboxTask, isLoading, emitIsDirty, emitIsLoading, onSubmit } = props;
+  const { inboxTask, isLoading, emitIsDirty, emitIsLoading, afterNameSlot, onSubmit } = props;
 
   const isEdit = inboxTask != null;
 
@@ -73,8 +74,6 @@ function TaskInboxForm(props: ThingManagerFormProps) {
         className="flex grow min-h-0 h-full flex-col"
         onSubmit={form.handleSubmit(async (formData) => {
           const description = wysiwygController.current?.getStateAsString?.();
-          form.setValue('description', description, { shouldValidate: true });
-
           const isValid = await form.trigger('description');
           if (!isValid) {
             toast.error('Описание дела содержит ошибки', {
@@ -91,15 +90,16 @@ function TaskInboxForm(props: ThingManagerFormProps) {
           });
         })}
       >
-        <SidebarProvider defaultOpen={false} className="flex min-h-0 h-full flex-col">
+        <SidebarProvider defaultOpen={false} className="flex min-h-0 h-full min-w-0 flex-col">
           <div className="grid grow grid-rows-[min-content_1fr_min-content] min-h-0 h-full">
             <TaskHeaderForm
               mode={isEdit ? 'edit' : 'create'}
-              beforeNameSlot={<TaskFormSidebarTrigger className="mr-3" />}
+              beforeNameSlot={<TaskFormSidebarTrigger />}
+              afterNameSlot={afterNameSlot}
               onCancel={() => void form.resetField('name', { defaultValue: inboxTask?.name })}
             />
 
-            <div className="flex grow px-4 my-3 min-h-0 flex-1">
+            <div className="flex grow min-h-0 min-w-0 flex-1">
               <TaskWysiwygForm<TaskInboxFormData>
                 name="description"
                 placeholder="Опишите дело"

@@ -1,5 +1,6 @@
 import { useForceRender } from '@/shared/lib/react/use-force-render';
 import { Button } from '@/shared/ui-kit/ui/button';
+import { cn } from '@/shared/ui-kit/utils';
 import { NotebookPen } from 'lucide-react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 
@@ -17,7 +18,7 @@ function EditTogglePlugin({ className }: { className?: string }) {
 
   if (isEditable) return null;
   return (
-    <Button className={className} type="button" size="icon" variant="ghost" onClick={toggle}>
+    <Button className={cn(className)} type="button" size="icon" variant="ghost" onClick={toggle}>
       <NotebookPen className="size-4" color="var(--color-gray-500)" />
     </Button>
   );

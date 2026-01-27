@@ -24,7 +24,7 @@ function TaskWysiwyg({
       placeholder={placeholder}
       state={state}
       controller={controller}
-      afterSlot={<EditTogglePlugin className="toggle-button absolute top-0 right-0" />}
+      afterSlot={<EditTogglePlugin className="toggle-button absolute top-2 right-2" />}
       onDirtyChange={onDirtyChange}
     />
   );

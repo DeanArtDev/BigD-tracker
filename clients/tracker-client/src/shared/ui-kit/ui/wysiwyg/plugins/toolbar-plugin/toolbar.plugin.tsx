@@ -1,12 +1,12 @@
+import { ScrollAreaNativeHorizontal } from '@/shared/ui-kit/ui/scroll-area-native-horizontal';
 import { cn } from '@/shared/ui-kit/utils';
-import { useRef } from 'react';
 import { useWysiwygContext } from '../../context';
 import { HistoryActions } from './history-actions';
 import { TextAlignmentActions } from './text-alignment-actions';
 import { TextFormatActions } from './text-format-actions';
 
 function Divider() {
-  return <div className="mx-2 h-full w-px bg-border" />;
+  return <div className="mx-2 h-6 w-px bg-border shrink-0" />;
 }
 
 function ToolbarPlugin() {
@@ -14,12 +14,11 @@ function ToolbarPlugin() {
     state: { isEditable },
   } = useWysiwygContext();
 
-  const toolbarRef = useRef(null);
-
   return (
-    <div
-      className={cn('toolbar flex flex-wrap mb-2 pb-1 sm:mb-3 border-b', { hidden: !isEditable })}
-      ref={toolbarRef}
+    <ScrollAreaNativeHorizontal
+      className={cn('toolbar sticky p-2 sm:p-3 sm:py-2 border-b', {
+        hidden: !isEditable,
+      })}
     >
       <HistoryActions />
 
@@ -30,7 +29,7 @@ function ToolbarPlugin() {
       <Divider />
 
       <TextAlignmentActions />
-    </div>
+    </ScrollAreaNativeHorizontal>
   );
 }
 

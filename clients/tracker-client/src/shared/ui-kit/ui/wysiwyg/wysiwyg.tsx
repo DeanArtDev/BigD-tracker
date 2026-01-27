@@ -1,4 +1,5 @@
 import type { MakeOptional } from '@/shared/lib/type-helpers';
+import { cn } from '@/shared/ui-kit/utils';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { noop } from 'lodash-es';
 import {
@@ -50,9 +51,10 @@ function Component({
   });
 
   return (
-    <div className="flex flex-col wysiwyg-editor w-full">
+    <div className="wysiwyg-editor relative flex flex-col w-full min-w-0 grow">
       <WysiwygProvider>
         <HistoryPlugin key={historyKey} />
+        <ToolbarPlugin />
 
         <InitialStatePlugin
           state={state}
@@ -60,26 +62,35 @@ function Component({
         />
         <DirtyTrackingPlugin initialStateString={state} onDirtyChange={onDirtyChange} />
 
-        <ToolbarPlugin />
+        <div className="wysiwyg-editor-scroller relative flex flex-col grow min-h-0 flex-1 overflow-y-auto">
+          {beforeSlot}
 
-        <RichTextPlugin
-          contentEditable={
-            <div className="relative flex flex-col grow min-h-0 flex-1 overflow-y-auto">
-              {beforeSlot}
+          <RichTextPlugin
+            contentEditable={
+              <div className="content-editable-resizer flex min-h-0 max-w-full relative resize-y">
+                <div className="content-editable-resizer-wrapper flex-auto max-w-full relative resize-y">
+                  <ContentEditable
+                    className="content-editable grow min-h-[200px] flex-1 p-5 pb-10 sm:pb-7"
+                    aria-placeholder={placeholder}
+                    placeholder={
+                      <div
+                        className={cn(
+                          'placeholder absolute top-5 left-5 right-0',
+                          'text-gray-500 pointer-events-none inline-block truncate overflow-hidden select-none',
+                        )}
+                      >
+                        {placeholder}
+                      </div>
+                    }
+                  />
+                </div>
+              </div>
+            }
+            ErrorBoundary={LexicalErrorBoundary}
+          />
 
-              <ContentEditable
-                className="relative grow min-h-0 flex-1"
-                aria-placeholder={placeholder}
-                placeholder={
-                  <div className="absolute top-0 left-0 right-0 text-gray-500">{placeholder}</div>
-                }
-              />
-
-              {afterSlot}
-            </div>
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
+          {afterSlot}
+        </div>
 
         <TabIndentationPlugin />
       </WysiwygProvider>

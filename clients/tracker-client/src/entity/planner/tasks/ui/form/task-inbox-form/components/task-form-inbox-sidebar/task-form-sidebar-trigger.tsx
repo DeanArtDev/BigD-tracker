@@ -8,12 +8,12 @@ function TaskFormSidebarTrigger({ className }: { className?: string }) {
 
   return (
     <Button
-      className={cn('size-4', className)}
+      className={cn('size-7', className)}
       type="button"
       size="icon"
       variant="ghost"
       tabIndex={-1}
-      onClick={() => void toggleSidebar()}
+      onClick={toggleSidebar}
     >
       <PanelLeftIcon className="size-5" />
     </Button>

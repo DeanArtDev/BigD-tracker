@@ -71,18 +71,18 @@ describe('TaskFactory', () => {
       recurrence: 'weekly',
     });
 
-    TaskFactory.updateInbox(task, {
+    const updatedInboxTask = TaskFactory.updateInbox(task, {
       name: 'Inbox updated',
       description: 'After update',
       priority: 3,
       deadline: futureDate(4),
     });
 
-    expect(task.name).toBe('Inbox updated');
-    expect(task.description).toBe('After update');
-    expect(task.priority).toBe(3);
-    expect(task.weight).toBe(80);
-    expect(task.recurrence).toBe('weekly');
+    expect(updatedInboxTask.name).toBe('Inbox updated');
+    expect(updatedInboxTask.description).toBe('After update');
+    expect(updatedInboxTask.priority).toBe(3);
+    expect(updatedInboxTask.weight).toBe(80);
+    expect(updatedInboxTask.recurrence).toBe(undefined);
   });
 
   it('soft deletes task through factory', () => {

@@ -51,7 +51,7 @@ function TextFormatActions() {
   }, [editor]);
 
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1 shrink-0">
       <ToolbarAction
         ariaLabel="Bold"
         active={isBold}

@@ -44,7 +44,7 @@ function HistoryActions() {
   }, [editor]);
 
   return (
-    <div className="flex">
+    <div className="flex shrink-0">
       <ToolbarAction
         ariaLabel="Undo"
         icon={<Undo />}

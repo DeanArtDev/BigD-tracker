@@ -22,7 +22,7 @@ function TaskFormInboxSidebar() {
       variant="sidebar"
       collapsible="offcanvas"
       className={cn(
-        'sticky h-full min-h-0 border-t border-b rounded-bl-xl rounded-tl-xl overflow-hidden ml-4 -mr-4',
+        'sticky h-full min-h-0 border-t border-b rounded-bl-xl rounded-tl-xl overflow-hidden',
         { 'w-0': isCollapsed },
       )}
     >

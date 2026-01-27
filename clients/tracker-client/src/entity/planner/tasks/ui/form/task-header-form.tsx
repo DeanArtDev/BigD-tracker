@@ -1,14 +1,12 @@
-import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { DialogHeader, DialogTitle, DialogTrigger } from '@/shared/ui-kit/ui/dialog';
-import { cn } from '@/shared/ui-kit/utils';
-import { NotebookPen, XIcon } from 'lucide-react';
+import { NotebookPen } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useFormState, useWatch } from 'react-hook-form';
 import { TaskNameInputForm } from './task-name-input-form';
 
 interface TaskHeaderFormProps {
   readonly beforeNameSlot?: ReactNode;
+  readonly afterNameSlot?: ReactNode;
   readonly mode?: 'edit' | 'create';
   readonly onOk?: () => void;
   readonly onCancel?: () => void;
@@ -18,7 +16,13 @@ interface FormFieldsUsed {
   readonly name?: string;
 }
 
-function TaskHeaderForm({ beforeNameSlot, mode = 'create', onOk, onCancel }: TaskHeaderFormProps) {
+function TaskHeaderForm({
+  beforeNameSlot,
+  afterNameSlot,
+  mode = 'create',
+  onOk,
+  onCancel,
+}: TaskHeaderFormProps) {
   const isCreate = mode === 'create';
   const isEdit = mode === 'edit';
 
@@ -26,67 +30,46 @@ function TaskHeaderForm({ beforeNameSlot, mode = 'create', onOk, onCancel }: Tas
   const name = useWatch<FormFieldsUsed>({ name: 'name' });
   const placeholder = 'Задайте имя';
   const { disabled } = useFormState();
-
-  const isMobile = useIsMobile();
-  const showCloseButton = isMobile && !editName;
-
+  console.log(afterNameSlot, !editName || isCreate);
   return (
-    <DialogHeader className="flex-row w-full gap-0 mb-0 border-b justify-between">
-      <DialogTitle
-        className={cn('p-2.5 sm:p-4 flex items-center', [
-          showCloseButton ? 'w-[95%] pr-0 sm:pr-0' : 'w-full',
-        ])}
-      >
-        {beforeNameSlot}
+    <div className="flex grow gap-2 text-center sm:text-left w-full mb-0 border-b justify-between p-2.5 pb-2 sm:p-4">
+      {beforeNameSlot}
 
-        {editName ? (
-          <TaskNameInputForm
-            renderControls={isEdit}
-            disabled={disabled}
-            placeholder={placeholder}
-            onOk={() => {
-              setEditName(false);
-              onOk?.();
-            }}
-            onCancel={() => {
-              setEditName(false);
-              onCancel?.();
-            }}
-          />
-        ) : (
-          <div className="inline-flex items-center gap-2">
-            <span className="grow text-center md:text-left wrap-break-word break-all">
-              {name ?? placeholder}
-            </span>
+      {editName ? (
+        <TaskNameInputForm
+          renderControls={isEdit}
+          disabled={disabled}
+          placeholder={placeholder}
+          onOk={() => {
+            setEditName(false);
+            onOk?.();
+          }}
+          onCancel={() => {
+            setEditName(false);
+            onCancel?.();
+          }}
+        />
+      ) : (
+        <div className="inline-flex items-center gap-2">
+          <h2 className="flex items-center text-lg leading-none font-semibold wrap-break-word break-all">
+            {name ?? placeholder}
+          </h2>
 
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              onClick={() => void (!disabled && setEditName(true))}
-            >
-              <NotebookPen className="size-4" color="var(--color-gray-500)" />
-            </Button>
-          </div>
-        )}
-      </DialogTitle>
-
-      {(!editName || isCreate) && (
-        <DialogTrigger asChild>
           <Button
-            size="sm"
+            className="size-4 mt-1.5 sm:mt-1 mb-auto"
+            type="button"
+            size="icon"
+            disabled={disabled}
             variant="ghost"
-            tabIndex={-1}
-            className={cn(
-              'size-10 mt-1.5 sm:mt-2 sm:mr-1',
-              'opacity-70 hover:bg-transparent hover:opacity-100',
-            )}
+            onClick={() => void setEditName(true)}
           >
-            <XIcon className="size-4" />
+            <NotebookPen className="size-4" color="var(--color-gray-500)" />
           </Button>
-        </DialogTrigger>
+        </div>
       )}
-    </DialogHeader>
+
+      {(!editName || isCreate) && afterNameSlot}
+    </div>
   );
 }
 

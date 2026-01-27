@@ -62,6 +62,7 @@ function TextAlignmentActions() {
       value={elementFormat}
       disabled={!isEditable}
       variant="outline"
+      className="flex shrink-0"
       spacing={1}
       onValueChange={(value: ElementFormatType) => {
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, value);
@@ -80,48 +81,6 @@ function TextAlignmentActions() {
         <TextAlignJustify />
       </ToggleGroupItem>
     </ToggleGroup>
-
-    // <div className="flex gap-1">
-    //   <ToolbarAction
-    //     ariaLabel="Left Align"
-    //     active={elementFormat === 'left'}
-    //     icon={<TextAlignStart />}
-    //     disabled={!isEditable}
-    //     onClick={() => {
-    //       editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
-    //     }}
-    //   />
-    //
-    //   <ToolbarAction
-    //     ariaLabel="Center Align"
-    //     active={elementFormat === 'center'}
-    //     icon={<TextAlignCenter />}
-    //     disabled={!isEditable}
-    //     onClick={() => {
-    //       editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
-    //     }}
-    //   />
-    //
-    //   <ToolbarAction
-    //     ariaLabel="Right Align"
-    //     active={elementFormat === 'right'}
-    //     icon={<TextAlignEnd />}
-    //     disabled={!isEditable}
-    //     onClick={() => {
-    //       editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
-    //     }}
-    //   />
-    //
-    //   <ToolbarAction
-    //     ariaLabel="Justify"
-    //     active={elementFormat === 'justify'}
-    //     icon={<TextAlignJustify />}
-    //     disabled={!isEditable}
-    //     onClick={() => {
-    //       editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify');
-    //     }}
-    //   />
-    // </div>
   );
 }
 
