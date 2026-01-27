@@ -31,7 +31,7 @@ function TaskHeaderForm({ beforeNameSlot, mode = 'create', onOk, onCancel }: Tas
   const showCloseButton = isMobile && !editName;
 
   return (
-    <DialogHeader className="flex-row w-full gap-0 mb-0 justify-between">
+    <DialogHeader className="flex-row w-full gap-0 mb-0 border-b justify-between">
       <DialogTitle
         className={cn('p-2.5 sm:p-4 flex items-center', [
           showCloseButton ? 'w-[95%] pr-0 sm:pr-0' : 'w-full',
@@ -59,11 +59,14 @@ function TaskHeaderForm({ beforeNameSlot, mode = 'create', onOk, onCancel }: Tas
               {name ?? placeholder}
             </span>
 
-            <NotebookPen
-              className="size-4"
-              color="var(--color-gray-500)"
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
               onClick={() => void (!disabled && setEditName(true))}
-            />
+            >
+              <NotebookPen className="size-4" color="var(--color-gray-500)" />
+            </Button>
           </div>
         )}
       </DialogTitle>

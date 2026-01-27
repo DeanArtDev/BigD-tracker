@@ -19,6 +19,7 @@ const validationSchema = z.object({
     .transform(transformPlaceholder.optional),
 
   description: z.string().optional().transform(transformPlaceholder.optional),
+  isDescriptionDirty: z.boolean(),
 
   deadline: z.date().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
 });

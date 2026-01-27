@@ -6,4 +6,3 @@ export * from './use-orientation';
 export * from './use-sidebar-storage';
 export * from './use-confirm-dialog';
 export * from './use-container-size-observer';
-export * from './use-container-scroll-size-observer';

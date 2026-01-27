@@ -4,6 +4,8 @@ type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type
 > &
   Record<Key, Type>;
 
+type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 type ValueOf<Type> = Type[keyof Type];
 
 type DeepRequired<T> = {
@@ -22,4 +24,4 @@ interface HasId {
   readonly id: number | string;
 }
 
-export type { HasId, Override, ValueOf, Nullable, DeepRequired, DeepPartial };
+export type { HasId, Override, ValueOf, Nullable, DeepRequired, DeepPartial, MakeOptional };
