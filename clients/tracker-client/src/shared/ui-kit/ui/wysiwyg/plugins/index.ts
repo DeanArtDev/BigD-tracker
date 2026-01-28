@@ -9,6 +9,7 @@ import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
 export * from './toolbar-plugin';
 export * from './edit-toggle.plugin';
 export * from './dirty-state.plugin';
+export * from './component-picker-plugen';
 
 export {
   RichTextPlugin,

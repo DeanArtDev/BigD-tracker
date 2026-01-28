@@ -1,4 +1,3 @@
-import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
 
 import { cn } from '@/shared/ui-kit/utils';
@@ -45,12 +44,8 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
 }) {
-  const isMobile = useIsMobile();
-
   return (
     <DialogPortal data-slot="dialog-portal">
-      {!isMobile && <DialogOverlay />}
-
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(

@@ -33,7 +33,8 @@ interface ThingManagerFormProps extends FormStateEmitterProps {
  * [x] логика dirty
  * [x] сохранение в базу
  * [] убрать санитайзер
- * [] чекбоксы
+ * [x] чекбоксы
+ * [] списки
  *
  * */
 function TaskInboxForm(props: ThingManagerFormProps) {

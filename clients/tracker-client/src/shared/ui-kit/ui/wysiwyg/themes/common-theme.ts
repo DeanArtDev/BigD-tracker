@@ -44,40 +44,75 @@ export const commonTheme: EditorThemeClasses = {
   },
   hashtag: 'PlaygroundEditorTheme__hashtag',
   heading: {
-    h1: 'PlaygroundEditorTheme__h1',
-    h2: 'PlaygroundEditorTheme__h2',
-    h3: 'PlaygroundEditorTheme__h3',
-    h4: 'PlaygroundEditorTheme__h4',
+    h1: 'scroll-m-20 text-4xl font-extrabold tracking-tight text-balance mb-4',
+    h2: 'scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 mb-3',
+    h3: 'scroll-m-20 text-2xl font-semibold tracking-tight mb-2',
+    h4: 'scroll-m-20 text-xl font-semibold tracking-tight mb-1',
     h5: 'PlaygroundEditorTheme__h5',
     h6: 'PlaygroundEditorTheme__h6',
   },
-  hr: 'PlaygroundEditorTheme__hr',
+  hr: "border-none before:content-[''] p-0.5 my-4 before:bg-gray-300 before:h-[2px] before:rounded-lg before:block",
   hrSelected: 'PlaygroundEditorTheme__hrSelected',
   image: 'editor-image',
   indent: 'PlaygroundEditorTheme__indent',
   layoutContainer: 'PlaygroundEditorTheme__layoutContainer',
   layoutItem: 'PlaygroundEditorTheme__layoutItem',
   link: 'PlaygroundEditorTheme__link',
+
   list: {
-    checklist: 'PlaygroundEditorTheme__checklist',
-    listitem: 'PlaygroundEditorTheme__listItem',
-    listitemChecked: 'PlaygroundEditorTheme__listItemChecked',
-    listitemUnchecked: 'PlaygroundEditorTheme__listItemUnchecked',
+    checklist: 'checklist p-0 list-none',
+
+    listitem:
+      'listitem relative min-h-7 ' +
+      'group-[&[contenteditable=true]]/content-editable:before:cursor-pointer',
+
+    listitemUnchecked:
+      'checklist:flex checklist:pl-8 ' +
+      "before:content-[''] before:absolute before:left-0 before:top-[0.15rem] " +
+      'before:size-6 before:shrink-0 before:rounded-[6px] before:border before:border-input ' +
+      'before:bg-background dark:before:bg-input/30 before:shadow-xs',
+
+    // ✅ чеклист: checked
+    listitemChecked:
+      'checklist:flex checklist:pl-8 line-through ' +
+      "before:content-[''] before:absolute before:left-0 before:top-[0.15rem] " +
+      'before:size-6 before:shrink-0 before:rounded-[6px] before:border before:border-primary ' +
+      'before:bg-primary before:shadow-xs ' +
+      "after:content-[''] after:absolute after:left-2 after:top-1.5 " +
+      'after:h-[0.9rem] after:w-[0.45rem] after:rotate-45 ' +
+      'after:border-r-[3px] after:border-b-[3px] after:border-primary-foreground',
+
+    // ✅ обычный UL: применяется ТОЛЬКО если ul НЕ checklist
+    ul:
+      'my-2 pl-6 list-disc ' +
+      '[&.checklist]:pl-0 ' +
+      '[&.checklist>.listitem]:pl-8 ' +
+      '[&:not(.checklist)>.listitem]:list-item ' +
+      '[&:not(.checklist)>.listitem]:pl-0 ' +
+      '[&:not(.checklist)>.listitem]:flex-none ' +
+      '[&:not(.checklist)>.listitem]:leading-7',
+
+    // ✅ обычный OL: применяется ТОЛЬКО если ol НЕ checklist (на всякий)
+    ol:
+      'my-2 pl-6 list-decimal ' +
+      '[&:not(.checklist)>.listitem]:list-item ' +
+      '[&:not(.checklist)>.listitem]:pl-0 ' +
+      '[&:not(.checklist)>.listitem]:flex-none ' +
+      '[&:not(.checklist)>.listitem]:leading-7',
+
     nested: {
-      listitem: 'PlaygroundEditorTheme__nestedListItem',
+      listitem: 'my-1',
     },
-    olDepth: [
-      'PlaygroundEditorTheme__ol1',
-      'PlaygroundEditorTheme__ol2',
-      'PlaygroundEditorTheme__ol3',
-      'PlaygroundEditorTheme__ol4',
-      'PlaygroundEditorTheme__ol5',
-    ],
-    ul: 'PlaygroundEditorTheme__ul',
+
+    // глубины для ol (Lexical сам навесит соответствующий класс)
+    olDepth: ['list-decimal', 'list-decimal', 'list-decimal', 'list-decimal', 'list-decimal'],
   },
+
+  checklist: {},
+
   mark: 'PlaygroundEditorTheme__mark',
   markOverlap: 'PlaygroundEditorTheme__markOverlap',
-  paragraph: 'PlaygroundEditorTheme__paragraph',
+  paragraph: 'leading-7 [&:not(:first-child)]:mt-2',
   quote: 'PlaygroundEditorTheme__quote',
   specialText: 'PlaygroundEditorTheme__specialText',
   tab: 'PlaygroundEditorTheme__tabNode',

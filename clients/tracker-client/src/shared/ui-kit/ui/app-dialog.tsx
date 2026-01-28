@@ -16,6 +16,7 @@ import { type PropsWithChildren, type ReactNode } from 'react';
 
 interface AppDialogProps {
   readonly open: boolean;
+  readonly modal?: boolean;
   readonly title?: ReactNode;
   readonly description?: ReactNode;
   readonly className?: string;
@@ -25,10 +26,17 @@ interface AppDialogProps {
 }
 
 function AppDialog(props: PropsWithChildren<AppDialogProps>) {
-  const { open, title, description, trigger, className, footer, children, onOpenChange } = props;
+  const { open, title, description, trigger, className, footer, modal, children, onOpenChange } =
+    props;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={modal}>
+      {open && !modal && (
+        <DialogTrigger>
+          <div className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50"></div>
+        </DialogTrigger>
+      )}
+
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
       <DialogContent

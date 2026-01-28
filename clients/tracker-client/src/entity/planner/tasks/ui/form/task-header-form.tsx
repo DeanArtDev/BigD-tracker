@@ -50,8 +50,8 @@ function TaskHeaderForm({
           }}
         />
       ) : (
-        <div className="inline-flex items-center gap-2">
-          <h2 className="flex items-center text-lg leading-none font-semibold wrap-break-word break-all">
+        <div className="inline-flex grow items-center gap-2">
+          <h2 className="flex text-lg leading-none font-semibold wrap-break-word break-all">
             {name ?? placeholder}
           </h2>
 
