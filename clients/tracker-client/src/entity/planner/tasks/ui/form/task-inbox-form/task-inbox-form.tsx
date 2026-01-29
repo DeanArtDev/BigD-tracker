@@ -29,14 +29,6 @@ interface ThingManagerFormProps extends FormStateEmitterProps {
   }) => void;
 }
 
-/**TODO:
- * [x] логика dirty
- * [x] сохранение в базу
- * [] убрать санитайзер
- * [x] чекбоксы
- * [] списки
- *
- * */
 function TaskInboxForm(props: ThingManagerFormProps) {
   const { inboxTask, isLoading, emitIsDirty, emitIsLoading, afterNameSlot, onSubmit } = props;
 

@@ -6,22 +6,6 @@ import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { TaskInboxCreateController } from './components/task-inbox-create-controller';
 import { InboxList } from './components/inbox-list';
 
-/**
- * TODO:
- * [x] нарисовать заглушку когда нет дел
- * [x] интегрировать запрос дел в inbox
- * [x] создание дела для inbox в отдельной форме
- * [x] редактирование дела для inbox в отдельной форме
- * [] воткнуть визивик в создание дела для inbox
- * [x] переписать хуки model
- * [x] удаление дела из inbox
- * [x] react-textarea-autosize нужна ли вообще??
- * [x] найти неиспользуемый код и экспорты
- * [] удалить date-fns
- * []
- * []
- * */
-
 function InboxPage() {
   const { isLoading, isEmpty } = useGetUserInbox();
 
