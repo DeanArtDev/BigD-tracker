@@ -27,6 +27,7 @@ function AddTaskInboxDialog({ inboxTask, loading, onSubmit }: AddTaskInboxDialog
   return (
     <>
       <AppDialog
+        modal={false}
         open={open}
         trigger={
           <Button

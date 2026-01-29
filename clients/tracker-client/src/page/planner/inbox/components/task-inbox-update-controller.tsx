@@ -32,6 +32,7 @@ function TaskInboxCreateController({
   return (
     <>
       <AppDialog
+        modal={false}
         open={open}
         className="sm:h-full sm:max-h-[60vh] p-0 sm:p-0"
         onOpenChange={(value) => {
