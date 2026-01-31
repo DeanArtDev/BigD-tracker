@@ -1,6 +1,5 @@
 import type { ApiDto } from '@/shared/api/types';
-
-type TaskEntity = Omit<ApiDto['TaskDto'], 'userId'>;
+import type { Override } from '@/shared/lib/type-helpers';
 
 enum TaskStatus {
   NOT_STARTED = 'NOT_STARTED',
@@ -11,5 +10,7 @@ enum TaskStatus {
   ARCHIVED = 'ARCHIVED',
   DELETED = 'DELETED',
 }
+
+type TaskEntity = Override<Omit<ApiDto['TaskDto'], 'userId'>, 'status', TaskStatus>;
 
 export { type TaskEntity, TaskStatus };

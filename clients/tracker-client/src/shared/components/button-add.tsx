@@ -6,7 +6,7 @@ type ButtonAddProps = Omit<ComponentProps<typeof Button>, 'children'>;
 
 function ButtonAdd(props: ButtonAddProps) {
   return (
-    <Button size="icon" variant="outline" {...props}>
+    <Button size="icon" variant="outline" type="button" {...props}>
       <Plus className="size-5" />
     </Button>
   );

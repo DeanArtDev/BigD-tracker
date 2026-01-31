@@ -1,3 +1,4 @@
+import { TaskStatus } from '@/entity/planner/tasks';
 import { taskPrioritySchema } from '@/entity/planner/tasks/lib/validation-schemas';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ const taskSchema = z.object({
   startDate: z.coerce.date().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
   weight: z.number().min(0).max(100),
   recurrence: z.string().optional(),
+  status: z.enum(TaskStatus),
 });
 
 const validationSchema = z.object({

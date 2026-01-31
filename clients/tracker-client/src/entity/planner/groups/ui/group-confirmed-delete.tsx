@@ -2,18 +2,19 @@ import { AlertConfirmDialog } from '@/shared/components/alert-confirm-dialog';
 import type { ReactNode } from 'react';
 import { useGroupDelete } from '../model';
 
-interface GroupDeleteProps {
+interface GroupConfirmedDeleteProps {
   readonly groupId: number;
   readonly children: (props: { isLoading: boolean }) => ReactNode;
   readonly onSuccess?: () => void;
 }
 
-function GroupDelete({ groupId, onSuccess, children }: GroupDeleteProps) {
+function GroupConfirmedDelete({ groupId, onSuccess, children }: GroupConfirmedDeleteProps) {
   const { deleteGroup, isPending } = useGroupDelete();
 
   return (
     <AlertConfirmDialog
-      title="Ты уверен что хочешь удалить?"
+      title="Удалить?"
+      content="В будущем, можно будет восстановить"
       onConfirm={() => void deleteGroup({ params: { path: { groupId } } }, { onSuccess })}
     >
       {children({ isLoading: isPending })}
@@ -21,4 +22,4 @@ function GroupDelete({ groupId, onSuccess, children }: GroupDeleteProps) {
   );
 }
 
-export { GroupDelete, type GroupDeleteProps };
+export { GroupConfirmedDelete, type GroupConfirmedDeleteProps };

@@ -1,6 +1,6 @@
 import { useGroupsQuery } from '@/entity/planner/groups';
 import { PageWrapper } from '@/page/ui/page-wrapper';
-import { AppPlaceholder } from '@/shared/components/app-placeholder';
+import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { useUrlParams } from '@/shared/lib/react/use-url-params';
 import { routes } from '@/shared/lib/routes';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -26,7 +26,7 @@ function GroupPage() {
       <DataLoader
         isLoading={isPending}
         isEmpty={group == null}
-        emptyElement={<AppPlaceholder message="Группа не найдена" />}
+        emptyElement={<AppEmptyPlaceholder message="Группа не найдена" />}
       >
         <GroupEditController group={group!} />
       </DataLoader>

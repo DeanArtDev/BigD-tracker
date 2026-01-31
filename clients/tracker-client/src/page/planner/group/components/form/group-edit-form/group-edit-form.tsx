@@ -1,6 +1,7 @@
+import type { GroupStatus } from '@/entity/planner/groups';
+import { GroupStatusIndication } from '@/entity/planner/groups/ui';
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { WysiwygForm } from '@/shared/components/form';
-import { Typography } from '@/shared/components/typography';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
@@ -8,7 +9,7 @@ import { Progress } from '@/shared/ui-kit/ui/progress';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/shared/ui-kit/ui/resizable';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { GroupEditFormHeader } from './components/group-edit-form-header';
@@ -18,13 +19,16 @@ import {
   type GroupEditSubmitFormData,
   validationSchema,
 } from './validation-schema';
+import { Typography } from '@/shared/components/typography';
 
 interface GroupEditFormProps {
   readonly loading?: boolean;
+  readonly footerSlot?: ReactNode;
   readonly group: {
     readonly name: string;
     readonly description?: string;
     readonly progress: number;
+    readonly status: GroupStatus;
     readonly tasks: TaskEntity[];
   };
 
@@ -35,7 +39,7 @@ interface GroupEditFormProps {
   }) => void;
 }
 
-function GroupEditForm({ loading, group, onSubmit }: GroupEditFormProps) {
+function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormProps) {
   const form = useForm<GroupEditFormData, any, GroupEditSubmitFormData>({
     resolver: zodResolver(validationSchema),
     mode: 'onSubmit',
@@ -68,7 +72,12 @@ function GroupEditForm({ loading, group, onSubmit }: GroupEditFormProps) {
 
         <div className="flex gap-2 items-center mb-3 ">
           <Progress value={group.progress} className="w-full" />
-          <Typography.Small>{group.progress}%</Typography.Small>
+
+          {[0, 100].includes(group.progress) ? (
+            <GroupStatusIndication status={group.status} />
+          ) : (
+            <Typography.Small>{group.progress}%</Typography.Small>
+          )}
         </div>
 
         <ResizablePanelGroup
@@ -107,6 +116,8 @@ function GroupEditForm({ loading, group, onSubmit }: GroupEditFormProps) {
         <Separator />
 
         <div className="footer flex p-2.5 lg:p-0 lg:pt-3">
+          {footerSlot}
+
           <Button
             className="ml-auto"
             disabled={form.formState.disabled || !form.formState.isDirty}
@@ -115,9 +126,7 @@ function GroupEditForm({ loading, group, onSubmit }: GroupEditFormProps) {
               const description = wysiwygController.current?.getStateAsString?.();
               const isValid = await form.trigger('description');
               if (!isValid) {
-                toast.error('Описание содержит ошибки', {
-                  position: 'top-center',
-                });
+                toast.error('Описание содержит ошибки', { position: 'top-center' });
                 return;
               }
 

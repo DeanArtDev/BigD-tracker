@@ -1,10 +1,12 @@
 import type { GroupStatus } from '@/entity/planner/groups';
 import { GroupStatusIndication } from '@/entity/planner/groups/ui';
 import type { TaskEntity } from '@/entity/planner/tasks';
+import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
+import { Typography } from '@/shared/components/typography';
 import dayjs, { getClosestTimeToNow } from '@/shared/lib/time';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
-import { Tooltip, TooltipContent } from '@/shared/ui-kit/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit/ui/tooltip';
 import { Flame } from 'lucide-react';
 
 interface GroupCartProps {
@@ -17,7 +19,7 @@ interface GroupCartProps {
 }
 
 function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartProps) {
-  const { total, overdue, done } = groupTaskCountFormat(tasks);
+  const { total, overdue, done } = getTasksStatusCount(tasks);
 
   const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
   const isDeadlineToday =
@@ -41,16 +43,18 @@ function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartPr
             {isDeadlineToday && <Flame className="size-5 stroke-red-600" />}
 
             <Tooltip>
-              <GroupStatusIndication status={status} />
+              <TooltipTrigger>
+                <GroupStatusIndication status={status} />
+              </TooltipTrigger>
 
               <TooltipContent>
-                <p>
+                <Typography.P>
                   {
                     { NOT_STARTED: 'Еще не начата', DONE: 'Завершена', IN_PROGRESS: 'В процессе' }[
                       status
                     ]
                   }
-                </p>
+                </Typography.P>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -87,27 +91,6 @@ function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartPr
         </div>
       </CardFooter>
     </Card>
-  );
-}
-
-function groupTaskCountFormat(tasks: { status: TaskEntity['status'] }[]): {
-  total: number;
-  overdue: number;
-  done: number;
-} {
-  return tasks.reduce<{ total: number; overdue: number; done: number }>(
-    (acc, task) => {
-      if (task.status === 'COMPLETED') {
-        acc.done += 1;
-      }
-
-      if (task.status === 'OVERDUE') {
-        acc.overdue += 1;
-      }
-
-      return acc;
-    },
-    { done: 0, overdue: 0, total: tasks.length },
   );
 }
 

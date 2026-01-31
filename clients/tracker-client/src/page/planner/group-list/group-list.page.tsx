@@ -1,10 +1,10 @@
 import { useGroupsQuery } from '@/entity/planner/groups';
+import { GroupCart } from '@/entity/planner/groups/ui';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
 import { GroupListHeader } from './components/group-list-header';
 import { PageWrapper } from '@/page/ui/page-wrapper';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
-import { GroupCart } from './components/group-cart';
 
 /* TODO:
  *   [x] перверстать карточку
