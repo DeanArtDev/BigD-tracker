@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { cn } from '@/shared/ui-kit/utils';
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -15,7 +16,6 @@ import {
 } from '@/shared/ui-kit/ui/sheet';
 import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit/ui/tooltip';
-import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
 import { PanelLeftIcon } from 'lucide-react';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';

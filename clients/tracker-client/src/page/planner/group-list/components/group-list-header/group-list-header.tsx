@@ -22,7 +22,7 @@ function GroupListHeader({ onSearch, onFilterChange }: GroupListHeaderProps) {
   });
 
   return (
-    <div className="sticky top-0 z-50 bg-white group-list-header flex flex-wrap gap-2 md:gap-3 py-3 mb-3 border-b">
+    <div className="sticky top-0 z-50 bg-white group-list-header flex flex-wrap gap-2 md:gap-3 py-3 px-2 sm:px-0 mb-3 border-b">
       <div className="flex grow gap-2 md:gap-3 items-center">
         <Form {...form}>
           <form noValidate className="flex grow gap-2 md:gap-3">
