@@ -73,7 +73,11 @@ export const router = createBrowserRouter([
           },
           {
             path: routes.plannerGroupList.path,
-            lazy: () => import('@/page/planner/group-list/group-list.page'),
+            lazy: () => import('@/page/planner/group-list'),
+          },
+          {
+            path: routes.plannerGroup.path,
+            lazy: () => import('@/page/planner/group'),
           },
           {
             path: routes.plannerDailyPlanner.path,

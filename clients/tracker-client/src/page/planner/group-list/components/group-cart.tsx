@@ -1,11 +1,10 @@
 import type { GroupStatus } from '@/entity/planner/groups';
-import { GroupStatusToIconMap } from '@/entity/planner/groups/ui';
-import type { TaskInfoEntity } from '@/entity/planner/tasks';
+import { GroupStatusIndication } from '@/entity/planner/groups/ui';
+import type { TaskEntity } from '@/entity/planner/tasks';
 import dayjs, { getClosestTimeToNow } from '@/shared/lib/time';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit/ui/tooltip';
-import { cn } from '@/shared/ui-kit/utils';
+import { Tooltip, TooltipContent } from '@/shared/ui-kit/ui/tooltip';
 import { Flame } from 'lucide-react';
 
 interface GroupCartProps {
@@ -13,13 +12,11 @@ interface GroupCartProps {
   readonly progress: number;
   readonly status: GroupStatus;
   readonly tags?: string[];
-  readonly tasks: TaskInfoEntity[];
+  readonly tasks: TaskEntity[];
   readonly onClick?: () => void;
 }
 
 function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartProps) {
-  const Icon = GroupStatusToIconMap[status];
-
   const { total, overdue, done } = groupTaskCountFormat(tasks);
 
   const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
@@ -44,15 +41,7 @@ function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartPr
             {isDeadlineToday && <Flame className="size-5 stroke-red-600" />}
 
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Icon
-                  className={cn('size-5 min-w-5 min-h-5  mb-auto', {
-                    'stroke-gray-400': status === 'NOT_STARTED',
-                    'stroke-gray-500': status === 'IN_PROGRESS',
-                    'stroke-green-600': status === 'DONE',
-                  })}
-                />
-              </TooltipTrigger>
+              <GroupStatusIndication status={status} />
 
               <TooltipContent>
                 <p>
@@ -101,7 +90,7 @@ function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartPr
   );
 }
 
-function groupTaskCountFormat(tasks: TaskInfoEntity[]): {
+function groupTaskCountFormat(tasks: { status: TaskEntity['status'] }[]): {
   total: number;
   overdue: number;
   done: number;

@@ -16,7 +16,7 @@ function ToolbarPlugin() {
 
   return (
     <ScrollAreaNativeHorizontal
-      className={cn('toolbar sticky p-2 sm:p-3 sm:py-2 border-b', {
+      className={cn('toolbar min-h-12.25 sticky p-2 sm:p-3 sm:py-2 border-b', {
         hidden: !isEditable,
       })}
     >

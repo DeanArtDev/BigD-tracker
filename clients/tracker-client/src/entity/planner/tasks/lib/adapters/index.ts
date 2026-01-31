@@ -1,1 +1,1 @@
-export * from './task-dto-to-info-entity';
+export * from './task-dto-to-entity';

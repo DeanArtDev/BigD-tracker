@@ -51,7 +51,7 @@ function ThingOverviewHeader({ onOk, onCancel }: ThingOverviewHeaderProps) {
 
         {editName ? (
           <div className="flex w-full items-center gap-1">
-            <InputForm autoFocus className="grow" name="name" />
+            <InputForm autoFocus classNames={{ input: 'grow' }} name="name" />
             <Button
               className="mb-auto mt-0.5"
               type="button"

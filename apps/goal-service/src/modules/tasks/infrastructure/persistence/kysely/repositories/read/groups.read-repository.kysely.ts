@@ -163,6 +163,7 @@ export class GroupsReadRepositoryKysely
 
       const groups = await getAvailableGroupQuery(this.db, trx)
         .where('g.user_id', '=', userId)
+        .orderBy('g.id', 'asc')
         .execute();
       if (groups.length === 0) return [];
 

@@ -1,1 +1,1 @@
-export * from './inbox-list';
+export * from './task-inbox-list';

@@ -25,13 +25,12 @@ class TaskDto {
   @IsInt()
   userId: number;
 
-  @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
+  @ApiProperty({ example: 2, description: 'От 1 до 4' })
   @Expose()
-  @IsOptional()
   @Min(1)
   @Max(4)
   @IsInt()
-  priority?: number;
+  priority: number;
 
   @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
   @Expose()
@@ -67,7 +66,7 @@ class TaskDto {
   @IsString()
   cancelReason?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: TaskStatus.NOT_STARTED,
     description: 'Статус дела',
     enum: TaskStatus,

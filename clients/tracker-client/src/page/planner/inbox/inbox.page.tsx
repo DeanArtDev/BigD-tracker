@@ -4,7 +4,7 @@ import { AppPlaceholder } from '@/shared/components/app-placeholder';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { TaskInboxCreateController } from './components/task-inbox-create-controller';
-import { InboxList } from './components/inbox-list';
+import { TaskInboxList } from './components/inbox-list';
 
 function InboxPage() {
   const { isLoading, isEmpty } = useGetUserInbox();
@@ -17,7 +17,7 @@ function InboxPage() {
         isLoading={isLoading}
         loadingElement={<AppLoader />}
       >
-        <InboxList />
+        <TaskInboxList />
       </DataLoader>
 
       <TaskInboxCreateController />

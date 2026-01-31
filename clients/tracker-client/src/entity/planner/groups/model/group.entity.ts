@@ -1,4 +1,4 @@
-import type { TaskInfoEntity } from '@/entity/planner/tasks';
+import type { TaskEntity } from '@/entity/planner/tasks';
 import type { ApiDto } from '@/shared/api/types';
 
 type GroupDto = ApiDto['GroupDto'];
@@ -10,7 +10,7 @@ interface GroupEntity {
   readonly status: GroupStatus;
   readonly progress: GroupDto['progress'];
   readonly name: GroupDto['name'];
-  readonly tasks: TaskInfoEntity[];
+  readonly tasks: TaskEntity[];
 }
 
 export type { GroupEntity, GroupStatus };
