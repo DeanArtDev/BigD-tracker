@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @layer utilities {
   input[type='number']::-webkit-outer-spin-button,
@@ -24,6 +25,9 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply font-sans bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
