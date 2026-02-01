@@ -68,7 +68,9 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
   return (
     <Form {...form}>
       <form className="group-edit flex flex-col min-h-0 min-w-0 grow">
-        <GroupEditFormHeader />
+        <GroupEditFormHeader
+          onCancel={() => void form.resetField('name', { defaultValue: group.name })}
+        />
 
         <div className="flex gap-2 items-center mb-3 ">
           <Progress value={group.progress} className="w-full" />

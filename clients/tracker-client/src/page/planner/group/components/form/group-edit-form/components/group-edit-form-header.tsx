@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { ReadableInputForm } from '@/shared/components/form';
+import { useState } from 'react';
 
-function GroupEditFormHeader() {
+function GroupEditFormHeader({ onCancel }: { onCancel?: () => void }) {
   const [editName, setEditName] = useState(false);
 
   return (
@@ -13,6 +13,7 @@ function GroupEditFormHeader() {
       }}
       onCancel={() => {
         setEditName(false);
+        onCancel?.();
       }}
       onModeChange={(mode) => void setEditName(mode === 'edit')}
     />
