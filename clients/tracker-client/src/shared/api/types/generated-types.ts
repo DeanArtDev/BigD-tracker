@@ -1160,7 +1160,7 @@ export interface components {
              * @description От 1 до 4
              * @example 2
              */
-            priority?: number;
+            priority: number;
             /** @example 2025-05-24T13:01:02.471Z */
             startDate?: string;
             /** @example 2025-05-24T13:01:02.471Z */
@@ -1179,7 +1179,7 @@ export interface components {
              * @example NOT_STARTED
              * @enum {string}
              */
-            status?: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED";
+            status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED";
         };
         GetInBoxRes: {
             /** @description Ответ сервера */

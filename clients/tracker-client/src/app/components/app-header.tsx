@@ -2,19 +2,28 @@ import { type NavMenuItem, navMenuItems } from '@/feature/sidebar';
 import { gymRoutesMap } from '@/page/gym';
 import type { PageApplicationRoutMap } from '@/page/lib/types';
 import { plannerRoutesMap } from '@/page/planner/lib/constants';
-import type { ValueOf } from '@/shared/lib/type-helpers';
-import { useMemo } from 'react';
 import { type RoutePaths } from '@/shared/lib/routes';
+import type { ValueOf } from '@/shared/lib/type-helpers';
 import { useIsMobile } from '@/shared/ui-kit/helpers/use-mobile';
 import { useSidebarStore } from '@/shared/ui-kit/helpers/use-sidebar-storage';
 import { AppBreadcrumb, type AppBreadcrumbProps } from '@/shared/ui-kit/ui/app-breadcrumb';
 import { Separator } from '@/shared/ui-kit/ui/separator';
-import { useLocation } from 'react-router-dom';
 import { SidebarTrigger } from '@/shared/ui-kit/ui/sidebar';
+import { useMemo } from 'react';
+import { matchPath, useLocation } from 'react-router-dom';
 
 const findPage = (pathname: string): ValueOf<PageApplicationRoutMap> | null => {
   const maps = { ...gymRoutesMap, ...plannerRoutesMap };
-  return maps[pathname] ?? null;
+  for (const [key, value] of Object.entries(maps)) {
+    const match = matchPath(key, pathname);
+    if (match != null) {
+      return {
+        ...value,
+        to: match?.pathname ?? value.to,
+      };
+    }
+  }
+  return null;
 };
 
 const findApplicationNavItem = (target: RoutePaths | string): NavMenuItem | null => {
@@ -55,7 +64,8 @@ function AppHeader() {
           className="-ml-1"
           onClick={() => void (isMobile ? undefined : toggleSidebarState())}
         />
-        <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
+
+        <Separator orientation="vertical" className="mx-2" />
 
         <h1 className="text-base font-medium">
           <AppBreadcrumb items={breadcrumbs} />

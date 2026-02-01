@@ -5,7 +5,7 @@ import {
   DeleteGroupCommand,
   ReplaceGroupCommand,
 } from '@/modules/tasks/application/use-cases';
-import { GroupViewRmqMapper } from '@/modules/tasks/presentation/rmq/mappers/group-view.rmq.mapper';
+import { GroupViewRmqMapper } from './mappers/group-view.rmq.mapper';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
@@ -57,16 +57,18 @@ export class GroupsRmqController {
   async replaceGroup(
     @Payload() { data: payload }: GoalReplaceGroup.Request,
   ): Promise<GoalReplaceGroup.Response> {
+    const groupWithTasks = await this.commandBus.execute(
+      new ReplaceGroupCommand({
+        id: payload.id,
+        userId: payload.userId,
+        name: payload.name,
+        description: payload.description,
+        tasks: payload.tasks,
+      }),
+    );
+
     return {
-      data: await this.commandBus.execute(
-        new ReplaceGroupCommand({
-          id: payload.id,
-          userId: payload.userId,
-          name: payload.name,
-          description: payload.description,
-          tasks: payload.tasks,
-        }),
-      ),
+      data: groupWithTasks.toJSON(),
     };
   }
 

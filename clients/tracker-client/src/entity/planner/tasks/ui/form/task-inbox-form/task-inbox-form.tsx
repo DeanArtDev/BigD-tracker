@@ -1,4 +1,8 @@
-import { FormStateEmitter, type FormStateEmitterProps } from '@/shared/components/form';
+import {
+  FormStateEmitter,
+  type FormStateEmitterProps,
+  WysiwygForm,
+} from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
@@ -9,9 +13,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { TaskPriority } from '../../../lib/constants';
 import type { TaskInboxEntity } from '../../../model';
-import { TaskHeaderForm } from '../task-header-form';
-import { TaskWysiwygForm } from '../task-wysiwyg-form';
-import { TaskFormInboxSidebar, TaskFormSidebarTrigger } from './components/task-form-inbox-sidebar';
+import { TaskFormInboxSidebar } from './components/task-form-inbox-sidebar';
+import { TaskHeaderForm } from './components/task-header-form';
 import {
   type TaskInboxFormData,
   type TaskInboxSubmitFormData,
@@ -29,14 +32,6 @@ interface ThingManagerFormProps extends FormStateEmitterProps {
   }) => void;
 }
 
-/**TODO:
- * [x] логика dirty
- * [x] сохранение в базу
- * [] убрать санитайзер
- * [x] чекбоксы
- * [] списки
- *
- * */
 function TaskInboxForm(props: ThingManagerFormProps) {
   const { inboxTask, isLoading, emitIsDirty, emitIsLoading, afterNameSlot, onSubmit } = props;
 
@@ -94,14 +89,13 @@ function TaskInboxForm(props: ThingManagerFormProps) {
         <SidebarProvider defaultOpen={false} className="flex min-h-0 h-full min-w-0 flex-col">
           <div className="grid grow grid-rows-[min-content_1fr_min-content] min-h-0 h-full">
             <TaskHeaderForm
-              mode={isEdit ? 'edit' : 'create'}
-              beforeNameSlot={<TaskFormSidebarTrigger />}
+              isCreate={!isEdit}
               afterNameSlot={afterNameSlot}
               onCancel={() => void form.resetField('name', { defaultValue: inboxTask?.name })}
             />
 
             <div className="flex grow min-h-0 min-w-0 flex-1">
-              <TaskWysiwygForm<TaskInboxFormData>
+              <WysiwygForm<TaskInboxFormData>
                 name="description"
                 placeholder="Опишите дело"
                 editable={!isEdit}

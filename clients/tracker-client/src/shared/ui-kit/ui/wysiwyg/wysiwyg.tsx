@@ -23,6 +23,7 @@ import {
 } from './plugins';
 import { InitialStatePlugin, type InitialStatePluginProps } from './plugins/initial-state.plugin';
 import { commonTheme } from './themes';
+import { ScrollAreaNativeVertical } from '../scroll-area-native-vertical';
 
 function onError(error: unknown) {
   if (!import.meta.env.PROD) {
@@ -72,13 +73,13 @@ function Component({
         <DirtyTrackingPlugin initialStateString={state} onDirtyChange={onDirtyChange} />
         <ComponentPickerPlugin />
 
-        <div className="wysiwyg-editor-scroller relative flex flex-col grow min-h-0 flex-1 overflow-y-auto">
+        <ScrollAreaNativeVertical className="wysiwyg-editor-scroller relative">
           {beforeSlot}
 
           <RichTextPlugin
             contentEditable={
-              <div className="content-editable-resizer flex min-h-0 max-w-full relative z-0 resize-y">
-                <div className="content-editable-resizer-wrapper flex-auto max-w-full relative -z-1 resize-y">
+              <div className="content-editable-resizer flex min-h-0 max-w-full grow relative resize-y">
+                <div className="content-editable-resizer-wrapper flex-auto max-w-full relative resize-y">
                   <ContentEditable
                     className="group/content-editable grow min-h-[200px] flex-1 p-5 pb-10 sm:pb-7 text-base"
                     aria-placeholder={placeholder}
@@ -100,8 +101,7 @@ function Component({
           />
 
           {afterSlot}
-        </div>
-
+        </ScrollAreaNativeVertical>
         <ListPlugin />
         <CheckListPlugin />
         <TabIndentationPlugin />

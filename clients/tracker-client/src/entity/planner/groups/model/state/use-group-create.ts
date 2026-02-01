@@ -3,10 +3,14 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 
 function useGroupCreate() {
   const options = getDefaultQueryNotifications();
-  const { mutate: create, ...others } = $privetQueryClient.useMutation('post', '/groups', options);
+  const { mutate: createGroup, ...others } = $privetQueryClient.useMutation(
+    'post',
+    '/groups',
+    options,
+  );
 
   return {
-    create,
+    createGroup,
     ...others,
   };
 }

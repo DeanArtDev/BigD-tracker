@@ -15,9 +15,8 @@ class TaskDto {
   @IsString()
   description?: string;
 
-  @IsOptional()
   @IsInt()
-  priority?: number;
+  priority: number;
 
   @IsInt()
   weight: number;

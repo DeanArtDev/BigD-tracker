@@ -57,9 +57,9 @@ const routes = {
 
   plannerGroup: (<Path extends string = string>(path: Path) => ({
     path,
-    link: ({ id }: { id: string }, query?: UrlQueryParams) =>
-      buildLink(path, { urlParams: { id }, queryObject: query }),
-  }))('/planner/group/:id'),
+    link: ({ groupId }: { groupId: number }, query?: UrlQueryParams) =>
+      buildLink(path, { urlParams: { groupId }, queryObject: query }),
+  }))('/planner/group-list/:groupId'),
 
   plannerDailyPlanner: (<Path extends string = string>(path: Path) => ({
     path,

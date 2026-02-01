@@ -26,20 +26,14 @@ class GroupFactory {
     return Group.create({
       userId: input.userId,
       name: Name.create(input.name),
-      description:
-        input.description != null
-          ? DescriptionVo.create(this.options.sanitizer.sanitize(input.description))
-          : undefined,
+      description: input.description != null ? DescriptionVo.create(input.description) : undefined,
     });
   }
 
   replace(group: Group, input: GroupFactoryReplaceInput): Group {
     return group.replace({
       name: Name.create(input.name),
-      description:
-        input.description != null
-          ? DescriptionVo.create(this.options.sanitizer.sanitize(input.description))
-          : undefined,
+      description: input.description != null ? DescriptionVo.create(input.description) : undefined,
     });
   }
 

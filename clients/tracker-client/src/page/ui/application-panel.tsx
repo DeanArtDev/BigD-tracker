@@ -10,6 +10,7 @@ function ApplicationPanel({ routes }: ApplicationPanelProps) {
   return (
     <ul className="gap-6 w-full grid grid-cols-[repeat(auto-fit,80px)] justify-center max-w-[600px]">
       {routes.map((route) => {
+        if (route.internal) return null;
         return (
           <li key={route.title}>
             <Link to={route.to}>

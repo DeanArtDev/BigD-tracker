@@ -1,3 +1,4 @@
+import { ButtonClose } from '@/shared/components/button-close';
 import { Button } from '@/shared/ui-kit/ui/button';
 import {
   Dialog,
@@ -112,15 +113,7 @@ function AppDialogHeader(props: {
 function AppDialogTrigger({ className }: { className?: string }) {
   return (
     <DialogTrigger asChild>
-      <Button
-        size="sm"
-        variant="ghost"
-        type="button"
-        tabIndex={-1}
-        className={cn('size-7', 'opacity-70 hover:bg-transparent hover:opacity-100', className)}
-      >
-        <XIcon className="size-4" />
-      </Button>
+      <ButtonClose className={className} />
     </DialogTrigger>
   );
 }

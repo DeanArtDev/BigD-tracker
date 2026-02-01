@@ -1,10 +1,6 @@
-import { TaskPriority } from '@/entity/planner/tasks';
+import { taskPrioritySchema } from '@/entity/planner/tasks/lib/validation-schemas';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod/v4';
-
-const validationThingPriority = Object.values(TaskPriority)
-  .filter((v) => typeof v === 'number')
-  .map(String);
 
 const validationSchema = z
   .object({
@@ -14,7 +10,7 @@ const validationSchema = z
       .max(254, { error: 'Слишком длинное имя' }),
 
     priority: z
-      .enum(validationThingPriority)
+      .enum(taskPrioritySchema)
       .optional()
       .or(z.literal(null))
       .transform(transformPlaceholder.optional),
