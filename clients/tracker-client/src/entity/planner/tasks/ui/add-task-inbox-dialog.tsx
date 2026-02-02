@@ -1,5 +1,4 @@
 import type { TaskInboxEntity } from '@/entity/planner/tasks';
-import type { ThingManagerSubmitData } from '@/entity/planner/tasks/ui';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
@@ -10,13 +9,21 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 const TaskInboxFormLazy = withLazy(() =>
-  import('@/entity/planner/tasks/ui/form').then((m) => ({ default: m.TaskInboxForm })),
+  import('./form/task-inbox-form').then((m) => ({ default: m.TaskInboxForm })),
 );
 
 interface AddTaskInboxDialogProps {
   readonly loading?: boolean;
   readonly inboxTask?: Omit<TaskInboxEntity, 'id'>;
-  readonly onSubmit: (formData: ThingManagerSubmitData, { close }: { close: () => void }) => void;
+  readonly onSubmit: (
+    formData: {
+      name: string;
+      priority: number;
+      deadline?: string;
+      description?: string;
+    },
+    { close }: { close: () => void },
+  ) => void;
 }
 
 function AddTaskInboxDialog({ inboxTask, loading, onSubmit }: AddTaskInboxDialogProps) {

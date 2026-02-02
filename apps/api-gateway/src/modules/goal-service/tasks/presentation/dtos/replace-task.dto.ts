@@ -23,13 +23,13 @@ class ReplaceTaskReqData {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
+  @ApiProperty({ example: 2, description: 'От 1 до 4' })
   @Min(1)
   @Max(4)
   @IsInt()
   priority: number;
 
-  @ApiPropertyOptional({ example: 100, description: 'От 0 до 100' })
+  @ApiProperty({ example: 100, description: 'От 0 до 100' })
   @Min(0)
   @Max(100)
   @IsInt()

@@ -61,6 +61,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  *   [] сортировка по дате добавления IN BOX
  *   [] сортировка по приоритетам IN BOX
  *   [] вынести регистрацию в отдельный сервис orchestration service
+ *   [] группы и задачи которым стоит уделить внимание, когда дела уже просрочены но пользователь их не завершил сам
  *
  * TODO: -- чистка --
  *   []

@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
 import { useEffect, useEffectEvent, useRef } from 'react';
+import { wysiwygTags } from '../utils';
 
 interface InitialStatePluginProps {
   readonly state?: string | null;
@@ -19,19 +20,26 @@ function InitialStatePlugin({ state, onStateSet }: InitialStatePluginProps) {
     if (lastLoadedRef.current !== state) {
       lastLoadedRef.current = state;
 
-      editor.update(() => {
-        try {
-          const parsed = editor.parseEditorState(state);
-          editor.setEditorState(parsed);
-          onStateSetRef();
-        } catch {
-          const root = $getRoot();
-          root.clear();
-          const p = $createParagraphNode();
-          p.append($createTextNode('Произошла ошибка загрузки данных'));
-          root.append(p);
-        }
-      });
+      editor.update(
+        () => {
+          try {
+            const parsed = editor.parseEditorState(state);
+            editor.setEditorState(parsed);
+            onStateSetRef();
+          } catch {
+            const root = $getRoot();
+            root.clear();
+            const p = $createParagraphNode();
+            p.append(
+              $createTextNode(
+                'Произошла ошибка загрузки данных, любое сохранение дела перезапишет описание!',
+              ),
+            );
+            root.append(p);
+          }
+        },
+        { tag: wysiwygTags.SILENT },
+      );
     }
   }, [editor, state]);
 

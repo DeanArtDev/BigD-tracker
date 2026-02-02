@@ -6,10 +6,11 @@ import { Typography } from '@/shared/components/typography';
 import dayjs, { getClosestTimeToNow } from '@/shared/lib/time';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Card, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
+import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit/ui/tooltip';
 import { Flame } from 'lucide-react';
 
-interface GroupCartProps {
+interface GroupCardProps {
   readonly name: string;
   readonly progress: number;
   readonly status: GroupStatus;
@@ -18,7 +19,7 @@ interface GroupCartProps {
   readonly onClick?: () => void;
 }
 
-function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartProps) {
+function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardProps) {
   const { total, overdue, done } = getTasksStatusCount(tasks);
 
   const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
@@ -94,4 +95,6 @@ function GroupCart({ name, tags, progress, status, tasks, onClick }: GroupCartPr
   );
 }
 
-export { GroupCart, type GroupCartProps };
+const GroupCardSkeleton = () => <Skeleton className="h-18 w-full rounded-xl" />;
+
+export { GroupCard, type GroupCardProps, GroupCardSkeleton };

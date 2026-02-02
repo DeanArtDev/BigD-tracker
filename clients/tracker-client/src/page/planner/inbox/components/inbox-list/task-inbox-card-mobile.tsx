@@ -1,5 +1,5 @@
 import type { TaskInboxEntity } from '@/entity/planner/tasks';
-import { TaskDelete } from '@/entity/planner/tasks/ui';
+import { TaskDeleteWithConfirmHoc } from '@/entity/planner/tasks/ui';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { LeftSwiper } from '@/shared/ui-kit/ui/left-swiper';
 import { Trash } from 'lucide-react';
@@ -17,7 +17,7 @@ function TaskInboxCardMobile({ task, onClick, onDeleteSuccess }: TaskInboxCardPr
       actionsSpace={40}
       actions={
         <div className="flex items-center h-full">
-          <TaskDelete taskId={task.id} onSuccess={onDeleteSuccess}>
+          <TaskDeleteWithConfirmHoc taskId={task.id} onSuccess={onDeleteSuccess}>
             {({ isLoading }) => (
               <Button
                 size="icon"
@@ -28,7 +28,7 @@ function TaskInboxCardMobile({ task, onClick, onDeleteSuccess }: TaskInboxCardPr
                 <Trash />
               </Button>
             )}
-          </TaskDelete>
+          </TaskDeleteWithConfirmHoc>
         </div>
       }
     >

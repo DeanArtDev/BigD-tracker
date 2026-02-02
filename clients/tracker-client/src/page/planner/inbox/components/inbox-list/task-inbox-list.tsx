@@ -1,6 +1,6 @@
 import { useGetUserInbox, useInvalidateInbox } from '@/entity/planner/groups';
 import { type TaskInboxEntity } from '@/entity/planner/tasks';
-import { TaskDelete } from '@/entity/planner/tasks/ui';
+import { TaskDeleteWithConfirmHoc } from '@/entity/planner/tasks/ui';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -54,7 +54,7 @@ function TaskInboxList() {
                     evt.stopPropagation();
                   }}
                 >
-                  <TaskDelete taskId={i.id} onSuccess={invalidateInbox}>
+                  <TaskDeleteWithConfirmHoc taskId={i.id} onSuccess={invalidateInbox}>
                     {({ isLoading }) => (
                       <Button
                         size="icon"
@@ -66,7 +66,7 @@ function TaskInboxList() {
                         <Trash />
                       </Button>
                     )}
-                  </TaskDelete>
+                  </TaskDeleteWithConfirmHoc>
                 </div>
               }
               onClick={() => void setTask(i)}

@@ -5,3 +5,4 @@ export * from './use-delete-task';
 export * from './use-get-diary-tasks';
 export * from './invalidators';
 export * from './use-update-inbox-task';
+export * from './use-task-unassign-from-group';

@@ -1,3 +1,4 @@
+import { formPlaceholderValues } from '@/shared/lib/utils/zod';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Calendar } from '@/shared/ui-kit/ui/calendar';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui-kit/ui/form';
@@ -20,13 +21,16 @@ type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = Calenda
   readonly required?: boolean;
   readonly disabled?: boolean;
   readonly label?: string;
-  readonly classNames?: {
-    readonly container?: string;
-  };
   readonly isErrorMessage?: boolean;
   readonly max?: Date;
   readonly min?: Date;
-  readonly renderInput?: (props: { value: Date }) => ReactNode;
+  readonly classNames?: {
+    readonly label?: string;
+    readonly wrapper?: string;
+    readonly input?: string;
+  };
+  readonly onBeforeValueSet?: (date: Date) => Date;
+  readonly renderInput?: (props: { value: Date; disabled: boolean }) => ReactNode;
   readonly onChange?: () => void;
 };
 
@@ -41,6 +45,7 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
   classNames,
   onChange,
   renderInput,
+  onBeforeValueSet,
   ...props
 }: DatePickerFormProps<FormValues>) {
   return (
@@ -52,9 +57,9 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
         }
 
         return (
-          <FormItem className={classNames?.container}>
+          <FormItem className={classNames?.wrapper}>
             {label && (
-              <FormLabel>
+              <FormLabel className={classNames?.label}>
                 <RequiredSign on={required}>{label}</RequiredSign>
               </FormLabel>
             )}
@@ -63,7 +68,7 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
               <PopoverTrigger asChild>
                 <FormControl>
                   {renderInput != null ? (
-                    renderInput({ value: field.value })
+                    renderInput({ value: field.value, disabled: field.disabled ?? false })
                   ) : (
                     <Button
                       variant="outline"
@@ -83,13 +88,23 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   {...props}
+                  className={classNames?.input}
                   mode="single"
                   locale={ru}
+                  {...field}
+                  disableNavigation={field.disabled}
                   defaultMonth={field.value}
                   selected={field.value}
                   disabled={(date) => date > new Date(max ?? '') || date < new Date(min ?? '')}
                   onSelect={(day) => {
-                    field.onChange(day ?? null);
+                    const newDay = day ?? formPlaceholderValues.date;
+
+                    const v =
+                      newDay != null && onBeforeValueSet != null
+                        ? onBeforeValueSet(newDay)
+                        : newDay;
+
+                    field.onChange(v);
                     onChange?.();
                   }}
                 />

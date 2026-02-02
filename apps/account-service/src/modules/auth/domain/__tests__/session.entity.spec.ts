@@ -1,5 +1,5 @@
 import { DateVo } from '@big-d/api-utils';
-import { subMinutes } from 'date-fns';
+import { subMinutes, setMilliseconds } from 'date-fns';
 import { SessionEntity } from '../session.entity';
 
 describe('SessionEntity', () => {
@@ -10,7 +10,7 @@ describe('SessionEntity', () => {
       userId: 1,
       expiresAt: DateVo.create(date),
     });
-    expect(session.expiresAt).toBe(date);
+    expect(session.expiresAt).toBe(setMilliseconds(date, 0).toISOString());
     expect(session.isExpired).toBe(false);
   });
 

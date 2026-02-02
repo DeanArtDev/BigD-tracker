@@ -2,13 +2,13 @@ import { AlertConfirmDialog } from '@/shared/components/alert-confirm-dialog';
 import type { ReactNode } from 'react';
 import { useDeleteTask } from '../model';
 
-interface TaskDeleteProps {
+interface TaskDeleteWithConfirmHocProps {
   readonly children: (props: { isLoading: boolean }) => ReactNode;
   readonly taskId: number;
-  readonly onSuccess?: () => void;
+  readonly onSuccess?: () => Promise<void> | void;
 }
 
-function TaskDelete({ taskId, onSuccess, children }: TaskDeleteProps) {
+function TaskDeleteWithConfirmHoc({ taskId, onSuccess, children }: TaskDeleteWithConfirmHocProps) {
   const { deleteTask, isPending } = useDeleteTask();
 
   return (
@@ -22,4 +22,4 @@ function TaskDelete({ taskId, onSuccess, children }: TaskDeleteProps) {
   );
 }
 
-export { TaskDelete, type TaskDeleteProps };
+export { TaskDeleteWithConfirmHoc, type TaskDeleteWithConfirmHocProps };

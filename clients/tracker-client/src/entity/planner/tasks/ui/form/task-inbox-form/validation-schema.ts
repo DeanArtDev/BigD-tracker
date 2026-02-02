@@ -1,5 +1,5 @@
 import { taskPrioritySchema } from '@/entity/planner/tasks/lib/validation-schemas';
-import { transformPlaceholder } from '@/shared/lib/utils/zod';
+import { formPlaceholderValues, transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 
 const validationSchema = z.object({
@@ -17,7 +17,11 @@ const validationSchema = z.object({
   description: z.string().optional().transform(transformPlaceholder.optional),
   isDescriptionDirty: z.boolean(),
 
-  deadline: z.date().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
+  deadline: z
+    .date()
+    .optional()
+    .or(z.literal(formPlaceholderValues.date))
+    .transform(transformPlaceholder.isoDate),
 });
 
 type TaskInboxFormData = z.input<typeof validationSchema>;

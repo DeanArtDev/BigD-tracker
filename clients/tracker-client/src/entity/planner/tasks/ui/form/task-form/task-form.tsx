@@ -4,6 +4,7 @@ import {
   type FormStateEmitterProps,
   WysiwygForm,
 } from '@/shared/components/form';
+import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
@@ -12,58 +13,65 @@ import { type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { TaskPriority } from '../../../lib/constants';
-import type { TaskInboxEntity } from '../../../model';
+import type { TaskEntity } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
+import { TaskFormSidebar } from './components/task-form-sidebar';
+import { type TaskFormData, type TaskSubmitFormData, validationSchema } from './validation-schema';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
-import { TaskFormInboxSidebar } from './components/task-form-inbox-sidebar';
-import {
-  type TaskInboxFormData,
-  type TaskInboxSubmitFormData,
-  validationSchema,
-} from './validation-schema';
 
-interface TaskInboxFormProps extends FormStateEmitterProps {
-  readonly inboxTask?: Omit<TaskInboxEntity, 'id'>;
+interface TaskFormProps extends FormStateEmitterProps {
+  readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason' | 'status'>;
   readonly afterNameSlot?: ReactNode;
+  readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
+  readonly defaultSidebarOpen?: boolean;
   readonly onSubmit?: (data: {
     name: string;
     priority: number;
     deadline?: string;
+    startDate?: string;
+    weight: number;
     description?: string;
   }) => void;
 }
 
-function TaskInboxForm(props: TaskInboxFormProps) {
+function TaskForm(props: TaskFormProps) {
+  const isMobile = useIsMobile();
+
   const {
-    inboxTask,
+    task,
     isLoading = false,
     emitIsDirty,
+    footerSlot,
     emitIsLoading,
+    defaultSidebarOpen = !isMobile,
     afterNameSlot,
     onSubmit,
   } = props;
 
-  const isEdit = inboxTask != null;
+  const isEdit = task != null;
 
   const values = isEdit
     ? {
-        name: inboxTask.name,
-        deadline: inboxTask.deadline != null ? new Date(inboxTask.deadline) : undefined,
-        description: inboxTask.description,
-        priority: inboxTask.priority?.toString(),
+        name: task.name,
+        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
+        startDate: task.startDate != null ? new Date(task.startDate) : undefined,
+        description: task.description,
+        priority: task.priority?.toString(),
         isDescriptionDirty: false,
+        weight: task.weight,
       }
     : undefined;
 
-  const form = useForm<TaskInboxFormData, any, TaskInboxSubmitFormData>({
+  const form = useForm<TaskFormData, any, TaskSubmitFormData>({
     resolver: zodResolver(validationSchema),
-    mode: 'onSubmit',
+    mode: isMobile ? 'onChange' : 'onSubmit',
     disabled: isLoading,
     values,
     defaultValues: {
       name: undefined,
       deadline: undefined,
       description: undefined,
+      weight: 100,
       priority: TaskPriority.DELETE.toString(),
       isDescriptionDirty: false,
     },
@@ -80,31 +88,34 @@ function TaskInboxForm(props: TaskInboxFormProps) {
           const description = wysiwygController.current?.getStateAsString?.();
           const isValid = await form.trigger('description');
           if (!isValid) {
-            toast.error('Описание дела содержит ошибки', {
-              position: 'top-center',
-            });
+            toast.error('Описание дела содержит ошибки', { position: 'top-center' });
             return;
           }
 
           onSubmit?.({
             name: formData.name,
+            weight: formData.weight,
+            startDate: formData.startDate,
             deadline: formData.deadline,
             description,
             priority: formData.priority != null ? +formData.priority : TaskPriority.DELETE,
           });
         })}
       >
-        <SidebarProvider defaultOpen={false} className="flex min-h-0 h-full min-w-0 flex-col">
+        <SidebarProvider
+          defaultOpen={defaultSidebarOpen}
+          className="flex min-h-0 h-full min-w-0 flex-col"
+        >
           <div className="grid grow grid-rows-[min-content_1fr_min-content] min-h-0 h-full">
             <TaskHeaderForm
               isCreate={!isEdit}
-              afterNameSlot={afterNameSlot}
               beforeNameSlot={<TaskFormSidebarTrigger />}
-              onCancel={() => void form.resetField('name', { defaultValue: inboxTask?.name })}
+              afterNameSlot={afterNameSlot}
+              onCancel={() => void form.resetField('name', { defaultValue: task?.name })}
             />
 
             <div className="flex grow min-h-0 min-w-0 flex-1">
-              <WysiwygForm<TaskInboxFormData>
+              <WysiwygForm<TaskFormData>
                 name="description"
                 placeholder="Опишите дело"
                 editable={!isEdit}
@@ -114,10 +125,11 @@ function TaskInboxForm(props: TaskInboxFormProps) {
                 }}
               />
 
-              <TaskFormInboxSidebar />
+              <TaskFormSidebar />
             </div>
 
             <div className="border-t p-4 flex items-center justify-end">
+              {footerSlot != null && footerSlot?.({ disabled: form.formState.disabled })}
               <ButtonLoading
                 type="submit"
                 isLoading={isLoading}
@@ -139,4 +151,4 @@ function TaskInboxForm(props: TaskInboxFormProps) {
   );
 }
 
-export { TaskInboxForm, type TaskInboxFormProps };
+export { TaskForm, type TaskFormProps };
