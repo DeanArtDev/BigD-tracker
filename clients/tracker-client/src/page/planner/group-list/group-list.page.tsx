@@ -1,25 +1,20 @@
 import { useGroupsQuery } from '@/entity/planner/groups';
-import { GroupCart } from '@/entity/planner/groups/ui';
+import { GroupCardSkeleton } from '@/entity/planner/groups/ui';
+import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
+import { withLazy } from '@/shared/lib/react/with-lazy';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
 import { GroupListHeader } from './components/group-list-header';
 import { PageWrapper } from '@/page/ui/page-wrapper';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 
-/* TODO:
- *   [x] перверстать карточку
- *   [] новая страница для одной группы
- *   [] удаление на отдельной странице группы
- *   ---------------------------------------------
- *   -- закрепленный хедер с действиями --
- *   [x] создание группы
- *   [] поиск по группам
- *   [] сортировка
- *   [] фильтрация
- * */
+const GroupCard = withLazy(
+  () => import('@/entity/planner/groups/ui').then((m) => ({ default: m.GroupCard })),
+  <GroupCardSkeleton />,
+);
 
 function GroupListPage() {
-  const { groups, isLoading } = useGroupsQuery();
+  const { groups, isLoading, isEmpty } = useGroupsQuery();
   const navigate = useNavigate();
 
   return (
@@ -29,10 +24,21 @@ function GroupListPage() {
     >
       <GroupListHeader onSearch={console.log} onFilterChange={console.log} />
 
-      <DataLoader isLoading={isLoading}>
+      <DataLoader
+        isEmpty={isEmpty}
+        isLoading={isLoading}
+        emptyElement={<AppEmptyPlaceholder message="У вас еще нет ни одно группы, создайте." />}
+        loadingElement={
+          <div className="flex flex-col gap-3 px-1">
+            {new Array(12).fill(0).map((_, index) => (
+              <GroupCardSkeleton key={index} />
+            ))}
+          </div>
+        }
+      >
         <ul className="flex flex-col w-full gap-3 px-1">
           {groups?.items.map((group) => (
-            <GroupCart
+            <GroupCard
               key={group.id}
               name={group.name}
               status={group.status}

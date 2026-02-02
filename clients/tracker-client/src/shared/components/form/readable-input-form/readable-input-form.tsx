@@ -67,7 +67,9 @@ function ReadableInputForm<FormValues extends FieldValues = FieldValues>(
 
       {isRead && (
         <div className="inline-flex grow items-center gap-2">
-          <Typography.H4 className="wrap-break-word">{fieldValue ?? placeholder}</Typography.H4>
+          <Typography.H4 className="wrap-break-word line-clamp-3">
+            {fieldValue ?? placeholder}
+          </Typography.H4>
 
           <Button
             className="size-5 mt-1.5 sm:mt-1 mb-auto"

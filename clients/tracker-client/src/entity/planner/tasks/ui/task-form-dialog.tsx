@@ -12,15 +12,11 @@ const TaskFormLazy = withLazy(() =>
 interface TaskFormDialogProps {
   readonly open: boolean;
   readonly loading?: boolean;
-  readonly task: TaskFormProps['task'];
+  readonly task?: TaskFormProps['task'];
   readonly trigger?: ReactNode;
+  readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly onOpenChange: (open: boolean) => void;
-  readonly onSubmit: (formData: {
-    name: string;
-    priority: number;
-    deadline?: string;
-    description?: string;
-  }) => void;
+  readonly onSubmit: Required<TaskFormProps>['onSubmit'];
 }
 
 function TaskFormDialog({
@@ -28,6 +24,7 @@ function TaskFormDialog({
   task,
   loading,
   trigger,
+  footerSlot,
   onSubmit,
   onOpenChange,
 }: TaskFormDialogProps) {
@@ -55,6 +52,7 @@ function TaskFormDialog({
           isLoading={loading}
           {...formStateEmitterProps}
           afterNameSlot={<AppDialogTrigger />}
+          footerSlot={footerSlot}
           onSubmit={onSubmit}
         />
       </AppDialog>

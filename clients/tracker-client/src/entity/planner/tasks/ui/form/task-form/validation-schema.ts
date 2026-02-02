@@ -1,6 +1,6 @@
-import { taskPrioritySchema } from '../../../lib/validation-schemas';
-import { transformPlaceholder } from '@/shared/lib/utils/zod';
+import { formPlaceholderValues, formTransform, transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
+import { taskPrioritySchema } from '../../../lib/validation-schemas';
 
 const validationSchema = z.object({
   name: z
@@ -17,7 +17,23 @@ const validationSchema = z.object({
   description: z.string().optional().transform(transformPlaceholder.optional),
   isDescriptionDirty: z.boolean(),
 
-  deadline: z.date().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
+  weight: z
+    .number({ error: '' })
+    .max(100, { error: 'Не больше 100' })
+    .positive({ error: 'Только больше 0' })
+    .transform(transformPlaceholder.percentNumber),
+
+  startDate: z
+    .date()
+    .optional()
+    .or(z.literal(formPlaceholderValues.date))
+    .transform(formTransform.dateToISOSFormat),
+
+  deadline: z
+    .date()
+    .optional()
+    .or(z.literal(formPlaceholderValues.date))
+    .transform(formTransform.dateToISOSFormat),
 });
 
 type TaskFormData = z.input<typeof validationSchema>;

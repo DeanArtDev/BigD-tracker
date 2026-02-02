@@ -1,17 +1,22 @@
+import dayjs from 'dayjs';
 import { isISO8601, isBefore, isAfter } from 'validator';
 import { BaseValueObject } from './base-value-object';
 
 type DateVoState = string | Date;
 
 class DateVo implements BaseValueObject {
-  #state: string;
+  #state: Date;
 
   private constructor(state: string) {
-    this.#state = state;
+    const newDate = dayjs(state);
+    if (!newDate.isValid()) {
+      throw new Error(`Date: ${state} has invalid format`);
+    }
+    this.#state = newDate.set('milliseconds', 0).toDate();
   }
 
   get value(): string {
-    return this.#state;
+    return this.#state.toISOString();
   }
 
   public static create(date: DateVoState): DateVo {
@@ -31,15 +36,15 @@ class DateVo implements BaseValueObject {
   }
 
   public equals(other: DateVo): boolean {
-    return this.#state === other.value;
+    return this.#state.valueOf() === dayjs(other.value).valueOf();
   }
 
-  public isBefore(data: DateVoState): boolean {
-    return isBefore(this.#state, data.toString());
+  public isBefore(state: DateVoState): boolean {
+    return isBefore(this.value, new Date(state).toISOString());
   }
 
-  public isAfter(data: DateVoState): boolean {
-    return isAfter(this.#state, data.toString());
+  public isAfter(state: DateVoState): boolean {
+    return isAfter(this.value, new Date(state).toISOString());
   }
 }
 

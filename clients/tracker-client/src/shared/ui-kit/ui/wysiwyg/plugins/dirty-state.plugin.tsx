@@ -1,6 +1,7 @@
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import type { EditorState } from 'lexical';
 import { useCallback, useEffect, useEffectEvent, useRef } from 'react';
+import { wysiwygTags } from '../utils';
 
 interface DirtyTrackingPluginProps {
   initialStateString?: string | null;
@@ -24,7 +25,9 @@ function DirtyTrackingPlugin({ initialStateString, onDirtyChange }: DirtyTrackin
     }
   }, [initialStateString]);
 
-  const handleChange = useCallback((editorState: EditorState) => {
+  const handleChange = useCallback((editorState: EditorState, _: any, tags: Set<string>) => {
+    if (tags.has(wysiwygTags.SILENT)) return;
+
     const baseline = baselineRef.current ?? '';
     const current = stableStringifyEditorState(editorState);
 
@@ -35,7 +38,7 @@ function DirtyTrackingPlugin({ initialStateString, onDirtyChange }: DirtyTrackin
     }
   }, []);
 
-  return <OnChangePlugin onChange={handleChange} />;
+  return <OnChangePlugin ignoreSelectionChange onChange={handleChange} />;
 }
 
 export { DirtyTrackingPlugin };

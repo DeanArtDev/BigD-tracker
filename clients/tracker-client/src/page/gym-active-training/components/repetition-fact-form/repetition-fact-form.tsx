@@ -78,12 +78,12 @@ function RepetitionFactForm({ repetition, onSuccess }: RepetitionFactFormProps) 
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-[max-content_60px] gap-2 items-center justify-end">
             <span>Вес</span>
-            <InputNumberForm className="px-1 text-center" name="factWeight" />
+            <InputNumberForm classNames={{ input: 'px-1 text-center' }} name="factWeight" />
           </div>
 
           <div className="grid grid-cols-[max-content_60px] gap-2 items-center justify-end">
             <span>Повторения</span>
-            <InputNumberForm className="px-1 text-center" name="factCount" />
+            <InputNumberForm classNames={{ input: 'px-1 text-center' }} name="factCount" />
           </div>
 
           <FormField

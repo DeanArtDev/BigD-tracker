@@ -32,6 +32,7 @@ function onError(error: unknown) {
 }
 
 interface WysiwygEditorProps {
+  readonly disabled?: boolean;
   readonly beforeSlot?: ReactNode;
   readonly afterSlot?: ReactNode;
   readonly state?: InitialStatePluginProps['state'];
@@ -115,6 +116,7 @@ function WysiwygEditor({ config, ...props }: WysiwygEditorProps) {
   const cfg: InitialConfigType = {
     ...(config ?? {}),
     onError,
+    editable: !props.disabled && config?.editable,
     nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, HorizontalRuleNode],
     namespace: 'EMPTY EDITOR',
     theme: commonTheme,

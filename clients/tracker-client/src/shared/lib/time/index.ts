@@ -35,8 +35,6 @@ try {
   dayjs.locale('ru');
 }
 
-(window as any).dayjs = dayjs;
-
 export default dayjs;
 export type { Dayjs, ConfigType };
 export * from './helpers';

@@ -34,7 +34,8 @@
     "kysely": "catalog:",
     "lodash": "catalog:",
     "rxjs": "catalog:",
-    "validator": "catalog:"
+    "validator": "catalog:",
+    "dayjs": "^1.11.18"
   },
   "devDependencies": {
     "@big-d/linter": "workspace:*",

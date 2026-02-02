@@ -4,6 +4,7 @@ import {
   type FormStateEmitterProps,
   WysiwygForm,
 } from '@/shared/components/form';
+import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
@@ -21,16 +22,31 @@ import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
 interface TaskFormProps extends FormStateEmitterProps {
   readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason' | 'status'>;
   readonly afterNameSlot?: ReactNode;
+  readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
+  readonly defaultSidebarOpen?: boolean;
   readonly onSubmit?: (data: {
     name: string;
     priority: number;
     deadline?: string;
+    startDate?: string;
+    weight: number;
     description?: string;
   }) => void;
 }
 
 function TaskForm(props: TaskFormProps) {
-  const { task, isLoading = false, emitIsDirty, emitIsLoading, afterNameSlot, onSubmit } = props;
+  const isMobile = useIsMobile();
+
+  const {
+    task,
+    isLoading = false,
+    emitIsDirty,
+    footerSlot,
+    emitIsLoading,
+    defaultSidebarOpen = !isMobile,
+    afterNameSlot,
+    onSubmit,
+  } = props;
 
   const isEdit = task != null;
 
@@ -38,21 +54,24 @@ function TaskForm(props: TaskFormProps) {
     ? {
         name: task.name,
         deadline: task.deadline != null ? new Date(task.deadline) : undefined,
+        startDate: task.startDate != null ? new Date(task.startDate) : undefined,
         description: task.description,
         priority: task.priority?.toString(),
         isDescriptionDirty: false,
+        weight: task.weight,
       }
     : undefined;
 
   const form = useForm<TaskFormData, any, TaskSubmitFormData>({
     resolver: zodResolver(validationSchema),
-    mode: 'onSubmit',
+    mode: isMobile ? 'onChange' : 'onSubmit',
     disabled: isLoading,
     values,
     defaultValues: {
       name: undefined,
       deadline: undefined,
       description: undefined,
+      weight: 100,
       priority: TaskPriority.DELETE.toString(),
       isDescriptionDirty: false,
     },
@@ -75,13 +94,18 @@ function TaskForm(props: TaskFormProps) {
 
           onSubmit?.({
             name: formData.name,
+            weight: formData.weight,
+            startDate: formData.startDate,
             deadline: formData.deadline,
             description,
             priority: formData.priority != null ? +formData.priority : TaskPriority.DELETE,
           });
         })}
       >
-        <SidebarProvider defaultOpen={false} className="flex min-h-0 h-full min-w-0 flex-col">
+        <SidebarProvider
+          defaultOpen={defaultSidebarOpen}
+          className="flex min-h-0 h-full min-w-0 flex-col"
+        >
           <div className="grid grow grid-rows-[min-content_1fr_min-content] min-h-0 h-full">
             <TaskHeaderForm
               isCreate={!isEdit}
@@ -103,7 +127,9 @@ function TaskForm(props: TaskFormProps) {
 
               <TaskFormSidebar />
             </div>
+
             <div className="border-t p-4 flex items-center justify-end">
+              {footerSlot != null && footerSlot?.({ disabled: form.formState.disabled })}
               <ButtonLoading
                 type="submit"
                 isLoading={isLoading}
