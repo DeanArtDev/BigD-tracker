@@ -1,7 +1,9 @@
-import type { GroupStatus } from '@/entity/planner/groups';
+import type { GroupEntity } from '@/entity/planner/groups';
 import { GroupStatusIndication } from '@/entity/planner/groups/ui';
 import type { TaskEntity } from '@/entity/planner/tasks';
+import { GroupTaskListController } from './components/group-task-list-controller';
 import { WysiwygForm } from '@/shared/components/form';
+import { Typography } from '@/shared/components/typography';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
@@ -13,24 +15,16 @@ import { type ReactNode, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { GroupEditFormHeader } from './components/group-edit-form-header';
-import { GroupTaskList } from './components/group-task-list';
 import {
   type GroupEditFormData,
   type GroupEditSubmitFormData,
   validationSchema,
 } from './validation-schema';
-import { Typography } from '@/shared/components/typography';
 
 interface GroupEditFormProps {
   readonly loading?: boolean;
   readonly footerSlot?: ReactNode;
-  readonly group: {
-    readonly name: string;
-    readonly description?: string;
-    readonly progress: number;
-    readonly status: GroupStatus;
-    readonly tasks: TaskEntity[];
-  };
+  readonly group: GroupEntity;
 
   readonly onSubmit: (formData: {
     readonly name: string;
@@ -111,7 +105,7 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
             defaultSize={isMobile ? 0 : 210}
             className="mt-3 md:mt-0 flex min-h-0 min-w-0 grow"
           >
-            <GroupTaskList />
+            <GroupTaskListController groupId={group.id} />
           </ResizablePanel>
         </ResizablePanelGroup>
 

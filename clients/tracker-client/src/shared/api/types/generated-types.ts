@@ -1180,6 +1180,11 @@ export interface components {
              * @enum {string}
              */
             status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED";
+            /**
+             * @description Паттерн повторения дела
+             * @example ----
+             */
+            recurrence?: string;
         };
         GetInBoxRes: {
             /** @description Ответ сервера */

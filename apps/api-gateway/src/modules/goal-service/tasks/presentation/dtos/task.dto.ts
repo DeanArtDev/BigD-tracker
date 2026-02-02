@@ -74,6 +74,14 @@ class TaskDto {
   @Expose()
   @IsEnum(TaskStatus)
   status: TaskStatus;
+
+  @ApiPropertyOptional({
+    example: '----',
+    description: 'Паттерн повторения дела',
+  })
+  @IsOptional()
+  @IsString()
+  recurrence?: string;
 }
 
 export { TaskDto };

@@ -3,7 +3,7 @@ import type { VerticalDndItemRenderProps } from '@/shared/components/vertical-dn
 import { cn } from '@/shared/ui-kit/utils';
 import type { ReactNode } from 'react';
 
-interface TaskFrameProps extends VerticalDndItemRenderProps {
+interface TaskFrameProps extends Partial<VerticalDndItemRenderProps> {
   readonly name: string;
   readonly className?: string;
   readonly priority: number | string;

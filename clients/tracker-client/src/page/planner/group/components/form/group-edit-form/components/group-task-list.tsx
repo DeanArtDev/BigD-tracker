@@ -9,10 +9,24 @@ import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { cn } from '@/shared/ui-kit/utils';
 import { CircleCheckBig, CirclePause, CirclePlus, GripVertical } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { type FieldArrayPath, useFieldArray } from 'react-hook-form';
 import type { GroupEditFormData } from '../validation-schema';
+import dayjs from '@/shared/lib/time';
 
-function GroupTaskList() {
+interface GroupTaskListProps {
+  readonly afterTaskNameSlot?: ({ taskId }: { taskId: number }) => ReactNode;
+  readonly beforeTaskListSlot?: ReactNode;
+  readonly emptyPlaceholderBeforeEndSlot?: ReactNode;
+  readonly onTaskClick?: (task: GroupEditFormData['tasks'][0]) => void;
+}
+
+function GroupTaskList({
+  afterTaskNameSlot,
+  beforeTaskListSlot,
+  emptyPlaceholderBeforeEndSlot,
+  onTaskClick,
+}: GroupTaskListProps) {
   const { fields: tasks, move } = useFieldArray<
     { tasks: GroupEditFormData['tasks'] },
     FieldArrayPath<{ tasks: GroupEditFormData['tasks'] }>,
@@ -35,11 +49,7 @@ function GroupTaskList() {
               className="m-auto"
               size="small"
               message="В группе еще нет дел, добавить?"
-              afterEndSlot={
-                <Button className="mt-2" size="sm" type="button" variant="outline">
-                  Создать
-                </Button>
-              }
+              afterEndSlot={emptyPlaceholderBeforeEndSlot}
             />
           }
         >
@@ -64,20 +74,32 @@ function GroupTaskList() {
             </ul>
           </div>
 
+          {beforeTaskListSlot}
+
           <VerticalDnD
             items={tasks}
             className="gap-2"
             getId={(task) => task.formUid}
             onChange={({ oldIndex, newIndex }) => void move(oldIndex, newIndex)}
             renderItem={({ item: task, setNodeRef, isDragging, style, handleProps }) => {
+              const isDeadlineToday =
+                task.deadline != null ? dayjs(task.deadline).isToday() : false;
+              const isDeadlineTomorrow =
+                task.deadline != null ? dayjs(task.deadline).isTomorrow() : false;
+
               return (
                 <TaskFrame
                   key={task.id}
                   style={style}
-                  className={cn('relative pl-6 sm:pl-6 select-none', { 'select-none': isDragging })}
+                  className={cn('relative pl-6 sm:pl-6 select-none', {
+                    'select-none': isDragging,
+                    'border-red-400': isDeadlineToday,
+                    'border-yellow-500': isDeadlineTomorrow,
+                  })}
                   ref={setNodeRef}
                   name={task.name}
                   priority={task.priority}
+                  actionsSlot={afterTaskNameSlot?.({ taskId: task.id })}
                   beforeNameSlot={
                     <Button
                       type="button"
@@ -88,7 +110,7 @@ function GroupTaskList() {
                       <GripVertical />
                     </Button>
                   }
-                  onClick={() => console.log(444)}
+                  onClick={() => void onTaskClick?.(task)}
                 />
               );
             }}

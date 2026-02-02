@@ -12,18 +12,14 @@ import { type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { TaskPriority } from '../../../lib/constants';
-import type { TaskInboxEntity } from '../../../model';
+import type { TaskEntity } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
+import { TaskFormSidebar } from './components/task-form-sidebar';
+import { type TaskFormData, type TaskSubmitFormData, validationSchema } from './validation-schema';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
-import { TaskFormInboxSidebar } from './components/task-form-inbox-sidebar';
-import {
-  type TaskInboxFormData,
-  type TaskInboxSubmitFormData,
-  validationSchema,
-} from './validation-schema';
 
-interface TaskInboxFormProps extends FormStateEmitterProps {
-  readonly inboxTask?: Omit<TaskInboxEntity, 'id'>;
+interface TaskFormProps extends FormStateEmitterProps {
+  readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason' | 'status'>;
   readonly afterNameSlot?: ReactNode;
   readonly onSubmit?: (data: {
     name: string;
@@ -33,29 +29,22 @@ interface TaskInboxFormProps extends FormStateEmitterProps {
   }) => void;
 }
 
-function TaskInboxForm(props: TaskInboxFormProps) {
-  const {
-    inboxTask,
-    isLoading = false,
-    emitIsDirty,
-    emitIsLoading,
-    afterNameSlot,
-    onSubmit,
-  } = props;
+function TaskForm(props: TaskFormProps) {
+  const { task, isLoading = false, emitIsDirty, emitIsLoading, afterNameSlot, onSubmit } = props;
 
-  const isEdit = inboxTask != null;
+  const isEdit = task != null;
 
   const values = isEdit
     ? {
-        name: inboxTask.name,
-        deadline: inboxTask.deadline != null ? new Date(inboxTask.deadline) : undefined,
-        description: inboxTask.description,
-        priority: inboxTask.priority?.toString(),
+        name: task.name,
+        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
+        description: task.description,
+        priority: task.priority?.toString(),
         isDescriptionDirty: false,
       }
     : undefined;
 
-  const form = useForm<TaskInboxFormData, any, TaskInboxSubmitFormData>({
+  const form = useForm<TaskFormData, any, TaskSubmitFormData>({
     resolver: zodResolver(validationSchema),
     mode: 'onSubmit',
     disabled: isLoading,
@@ -80,9 +69,7 @@ function TaskInboxForm(props: TaskInboxFormProps) {
           const description = wysiwygController.current?.getStateAsString?.();
           const isValid = await form.trigger('description');
           if (!isValid) {
-            toast.error('Описание дела содержит ошибки', {
-              position: 'top-center',
-            });
+            toast.error('Описание дела содержит ошибки', { position: 'top-center' });
             return;
           }
 
@@ -98,13 +85,13 @@ function TaskInboxForm(props: TaskInboxFormProps) {
           <div className="grid grow grid-rows-[min-content_1fr_min-content] min-h-0 h-full">
             <TaskHeaderForm
               isCreate={!isEdit}
-              afterNameSlot={afterNameSlot}
               beforeNameSlot={<TaskFormSidebarTrigger />}
-              onCancel={() => void form.resetField('name', { defaultValue: inboxTask?.name })}
+              afterNameSlot={afterNameSlot}
+              onCancel={() => void form.resetField('name', { defaultValue: task?.name })}
             />
 
             <div className="flex grow min-h-0 min-w-0 flex-1">
-              <WysiwygForm<TaskInboxFormData>
+              <WysiwygForm<TaskFormData>
                 name="description"
                 placeholder="Опишите дело"
                 editable={!isEdit}
@@ -114,9 +101,8 @@ function TaskInboxForm(props: TaskInboxFormProps) {
                 }}
               />
 
-              <TaskFormInboxSidebar />
+              <TaskFormSidebar />
             </div>
-
             <div className="border-t p-4 flex items-center justify-end">
               <ButtonLoading
                 type="submit"
@@ -139,4 +125,4 @@ function TaskInboxForm(props: TaskInboxFormProps) {
   );
 }
 
-export { TaskInboxForm, type TaskInboxFormProps };
+export { TaskForm, type TaskFormProps };

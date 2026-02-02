@@ -1,6 +1,5 @@
 import { ReadableInputForm } from '@/shared/components/form';
 import { type ReactNode, useState } from 'react';
-import { TaskFormSidebarTrigger } from './task-form-inbox-sidebar';
 
 interface TaskHeaderFormProps {
   readonly beforeNameSlot?: ReactNode;
@@ -10,7 +9,13 @@ interface TaskHeaderFormProps {
   readonly onCancel?: () => void;
 }
 
-function TaskHeaderForm({ afterNameSlot, isCreate, onOk, onCancel }: TaskHeaderFormProps) {
+function TaskHeaderForm({
+  afterNameSlot,
+  beforeNameSlot,
+  isCreate,
+  onOk,
+  onCancel,
+}: TaskHeaderFormProps) {
   const [editName, setEditName] = useState(isCreate);
 
   return (
@@ -20,7 +25,7 @@ function TaskHeaderForm({ afterNameSlot, isCreate, onOk, onCancel }: TaskHeaderF
       className="border-b"
       showControls={!isCreate}
       mode={editName ? 'edit' : 'read'}
-      beforeNameSlot={<TaskFormSidebarTrigger />}
+      beforeNameSlot={beforeNameSlot}
       afterNameSlot={(!editName || isCreate) && afterNameSlot}
       onOk={() => {
         setEditName(false);

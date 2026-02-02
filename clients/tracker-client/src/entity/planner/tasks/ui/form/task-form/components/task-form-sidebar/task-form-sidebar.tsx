@@ -1,13 +1,13 @@
 import { SidebarGroup, SidebarSeparator } from '@/shared/ui-kit/ui/sidebar';
 import { TaskPriorityPickerForm } from '../../../task-priority-picker-form';
 import { TaskSidebarRootForm } from '../../../task-sidebar-root-form';
-import { TaskFormInboxDates } from './task-form-inbox-dates';
+import { TaskFormDates } from './task-form-dates';
 
-function TaskFormInboxSidebar() {
+function TaskFormSidebar() {
   return (
     <TaskSidebarRootForm>
       <SidebarGroup key="dates" className="flex gap-2">
-        <TaskFormInboxDates />
+        <TaskFormDates />
       </SidebarGroup>
 
       <SidebarSeparator className="separator mx-0" />
@@ -19,4 +19,4 @@ function TaskFormInboxSidebar() {
   );
 }
 
-export { TaskFormInboxSidebar };
+export { TaskFormSidebar };
