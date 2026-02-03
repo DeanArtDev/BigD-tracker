@@ -3,6 +3,7 @@ import {
   AssignTaskToGroupCommand,
   CloneTaskCommand,
   CreateTaskCommand,
+  FinishTaskCommand,
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
   UnassignTaskFromGroupCommand,
@@ -13,6 +14,7 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalFinishTask,
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalReplaceTask,
@@ -175,5 +177,18 @@ export class TasksRmqController {
         }),
       ),
     };
+  }
+
+  @MessagePattern(GoalFinishTask.pattern)
+  async finishTask(
+    @Payload() { data: payload }: GoalFinishTask.Request,
+  ): Promise<GoalFinishTask.Response> {
+    await this.commandBus.execute(
+      new FinishTaskCommand({
+        userId: payload.userId,
+        taskId: payload.taskId,
+      }),
+    );
+    return { data: true };
   }
 }

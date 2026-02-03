@@ -10,3 +10,4 @@ export * from './assign-task-to-inbox.dto';
 export * from './unassign-task-from-group.dto';
 export * from './get-diary-tasks.dto';
 export * from './get-assignable-tasks.dto';
+export * from './finish-task.dto';

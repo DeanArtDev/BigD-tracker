@@ -7,6 +7,7 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalFinishTask,
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalReplaceTask,
@@ -33,6 +34,7 @@ import {
   CloneTaskRes,
   CreateTaskReq,
   CreateTaskRes,
+  FinishTaskRes,
   GetAssignableTasksQuery,
   GetAssignableTasksRes,
   GetDiaryTasksQuery,
@@ -145,6 +147,29 @@ export class TasksController {
           userId: uid,
           taskId,
           groupId: data?.groupId,
+        },
+      },
+    );
+  }
+
+  @Post('/:taskId/finish')
+  @ApiOperation({ summary: 'Завершение дела' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FinishTaskRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(FinishTaskRes)
+  async finishTask(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+  ): Promise<FinishTaskRes> {
+    return await this.goalClient.send<GoalFinishTask.Response, GoalFinishTask.Request>(
+      GoalFinishTask.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId,
         },
       },
     );
