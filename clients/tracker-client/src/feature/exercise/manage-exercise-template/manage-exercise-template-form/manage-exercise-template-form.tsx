@@ -115,7 +115,7 @@ function ManageExerciseTemplateForm({
           name="description"
           label="Описание"
           placeholder="Опиши особенности выполнения"
-          className="h-[120px] max-h-[350px]"
+          classNames={{ textarea: 'h-[120px] max-h-[350px]' }}
         />
 
         <InputForm

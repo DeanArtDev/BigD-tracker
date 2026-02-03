@@ -65,7 +65,7 @@ function TrainingTemplateManageForm({
           name="description"
           label="Описание"
           placeholder="Опиши на что обратить внимание"
-          className="max-h-[150px]"
+          classNames={{ textarea: 'max-h-[150px]' }}
         />
 
         <div className="grid grid-cols-2 gap-3">

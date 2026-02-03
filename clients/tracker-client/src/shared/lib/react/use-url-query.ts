@@ -2,29 +2,20 @@ import { isEmpty } from 'lodash-es';
 import qs from 'qs';
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { type SetURLSearchParams, useLocation, useSearchParams } from 'react-router-dom';
-import { ZodType } from 'zod';
+import { z } from 'zod';
 
-interface UrlQueryMap {
-  [key: string]:
-    | undefined
-    | string
-    | number
-    | number[]
-    | boolean
-    | boolean[]
-    | string[]
-    | UrlQueryMap
-    | UrlQueryMap[];
-}
+type UrlAllowedQueryTypes = z.ZodObject<{ [key: string]: z.ZodType }>;
 
-type UseUrlQueryResponse<TSchema extends UrlQueryMap> = readonly [
-  TSchema | undefined,
-  (value: TSchema) => void,
+type TValue<TSchema extends UrlAllowedQueryTypes> = z.infer<TSchema>;
+
+type UseUrlQueryResponse<TSchema extends UrlAllowedQueryTypes> = readonly [
+  TValue<TSchema> | undefined,
+  (value: TValue<TSchema>) => void,
 ];
 
-function useUrlQuery<TSchema extends UrlQueryMap = UrlQueryMap>(
-  schema: ZodType,
-  defaultInit?: TSchema,
+function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes>(
+  schema: TSchema,
+  defaultInit?: TValue<TSchema>,
 ): UseUrlQueryResponse<TSchema> {
   const { 1: setSearchParams } = useSearchParams();
 
@@ -42,10 +33,11 @@ function useUrlQuery<TSchema extends UrlQueryMap = UrlQueryMap>(
     const parsed = schema.safeParse(
       qs.parse(currentQuery, { ignoreQueryPrefix: true, interpretNumericEntities: true }),
     );
-    return parsed.success && !isEmpty(parsed.data) ? parsed.data : undefined;
+    const successData = parsed.success && !isEmpty(parsed.data) ? parsed.data : undefined;
+    return successData as TValue<TSchema>;
   }, [currentQuery, schema]);
 
-  const searchQueryWithDefaultUntilFirstSet = useDefaultResponse(
+  const searchQueryWithDefaultUntilFirstSet = useDefaultResponse<TSchema>(
     searchQuery,
     setSearchParams,
     defaultInit,
@@ -54,11 +46,11 @@ function useUrlQuery<TSchema extends UrlQueryMap = UrlQueryMap>(
   return [searchQueryWithDefaultUntilFirstSet, setSearchQuery];
 }
 
-function useDefaultResponse<TSchema extends UrlQueryMap = UrlQueryMap>(
-  search: TSchema | undefined,
+function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(
+  search: TValue<TSchema> | undefined,
   setter: SetURLSearchParams,
-  defaultInit?: TSchema,
-): TSchema | undefined {
+  defaultInit?: TValue<TSchema>,
+): TValue<TSchema> | undefined {
   const defaultInitRef = useRef(defaultInit);
   defaultInitRef.current = defaultInit;
   const firstResponse = useRef(true);
@@ -76,4 +68,4 @@ function useDefaultResponse<TSchema extends UrlQueryMap = UrlQueryMap>(
   return defaultInit == null ? search : withDefault;
 }
 
-export { type UseUrlQueryResponse, type UrlQueryMap, useUrlQuery };
+export { type UseUrlQueryResponse, type UrlAllowedQueryTypes, useUrlQuery };

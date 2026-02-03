@@ -69,7 +69,7 @@ function FormDateTimePickerComboBox<FormValues extends FieldValues = FieldValues
           name={name}
           disabled={allDay}
           defaultMonth={defaultMonth?.toDate()}
-          classNames={{ container: 'grow' }}
+          classNames={{ wrapper: 'grow' }}
           onChange={onFormDateChange}
         />
 
