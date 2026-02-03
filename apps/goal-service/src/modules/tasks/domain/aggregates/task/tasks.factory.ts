@@ -76,6 +76,10 @@ class TaskFactory {
     return task.replace(state);
   }
 
+  static finish(task: Task): Task {
+    return task.finish();
+  }
+
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {
     const state: TaskReplaceInput = {
       name: Name.create(input.name),

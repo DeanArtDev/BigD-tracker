@@ -6,7 +6,7 @@ import {
   GoalCreateTask,
   GoalDeleteTask,
   GoalGetDiaryTasks,
-  GoalGetAssignableTasksToGroup,
+  GoalGetAssignableTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
@@ -1128,18 +1128,15 @@ describe('TasksRmqController (rmq e2e)', () => {
     });
   });
 
-  describe(`${GoalGetAssignableTasksToGroup.pattern}`, () => {
+  describe(`${GoalGetAssignableTasks.pattern}`, () => {
     test('should return assignable tasks', async () => {
       const userId = 90;
       const groupId = 120;
       const taskView = getTaskView({ id: 9010, userId, name: 'Assignable' });
 
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: groupId, user_id: userId }),
-      );
       tasksReadRepoMock.getMany.mockResolvedValueOnce([taskView]);
 
-      const payload: GoalGetAssignableTasksToGroup.Request = buildPayload({
+      const payload: GoalGetAssignableTasks.Request = buildPayload({
         data: {
           userId,
           groupId,
@@ -1148,52 +1145,14 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
 
       const res = await sendMessage<
-        GoalGetAssignableTasksToGroup.Response,
-        GoalGetAssignableTasksToGroup.Request
-      >(GoalGetAssignableTasksToGroup.pattern, payload);
+        GoalGetAssignableTasks.Response,
+        GoalGetAssignableTasks.Request
+      >(GoalGetAssignableTasks.pattern, payload);
 
-      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(1);
-      const [, groupTrx] = groupWriteRepoMock.getGroupById.mock.calls[0];
-      expect(groupTrx).toEqual(expectTransaction());
       expect(tasksReadRepoMock.getMany).toHaveBeenCalledTimes(1);
       const [, , tasksTrx] = tasksReadRepoMock.getMany.mock.calls[0];
       expect(tasksTrx).toEqual(expectTransaction());
       expect(res).toEqual({ data: [toTaskResponse(taskView)] });
-    });
-
-    test('should throw when group missing', async () => {
-      const userId = 91;
-      const groupId = 121;
-
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(null);
-
-      const payload: GoalGetAssignableTasksToGroup.Request = buildPayload({
-        data: {
-          userId,
-          groupId,
-        },
-      });
-
-      let error: unknown;
-      try {
-        await sendMessage<
-          GoalGetAssignableTasksToGroup.Response,
-          GoalGetAssignableTasksToGroup.Request
-        >(GoalGetAssignableTasksToGroup.pattern, payload);
-      } catch (err) {
-        error = err;
-      }
-
-      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(1);
-      const [, groupTrx] = groupWriteRepoMock.getGroupById.mock.calls[0];
-      expect(groupTrx).toEqual(expectTransaction());
-      expect(tasksReadRepoMock.getMany).not.toHaveBeenCalled();
-      expect(unwrapRpcError(error)).toMatchObject({
-        code: exceptionCode.groupNotExist.code,
-        key: 'GROUP_NOT_EXIST',
-        kind: RmqErrorKind.NOT_FOUND,
-        details: { groupId },
-      });
     });
   });
 });

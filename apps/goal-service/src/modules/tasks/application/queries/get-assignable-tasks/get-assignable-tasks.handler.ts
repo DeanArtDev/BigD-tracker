@@ -1,5 +1,4 @@
 import { TaskView } from '@/modules/tasks/application/dto';
-import { GroupCheckerService } from '@/modules/tasks/application/services';
 import {
   TaskBySearch,
   TaskByStatus,
@@ -13,23 +12,20 @@ import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
-import { GetAssignableTasksToGroupQuery } from './get-assignable-tasks-to-group.query';
+import { GetAssignableTasksQuery } from './get-assignable-tasks.query';
 
 const { and, not } = tasksCombinators;
 
-@QueryHandler(GetAssignableTasksToGroupQuery)
-export class GetAssignableTasksToGroupHandler implements IQueryHandler<GetAssignableTasksToGroupQuery> {
+@QueryHandler(GetAssignableTasksQuery)
+export class GetAssignableTasksHandler implements IQueryHandler<GetAssignableTasksQuery> {
   constructor(
-    private readonly groupCheckerService: GroupCheckerService,
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepository: TasksReadRepository,
   ) {}
 
-  async execute({ input }: GetAssignableTasksToGroupQuery): Promise<TaskView[]> {
+  async execute({ input }: GetAssignableTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
-      const { userId, groupId, search } = input;
-
-      await this.groupCheckerService.ensureGroupExists({ userId, groupId }, { trx });
+      const { userId, search } = input;
 
       const specifications = and(
         TaskByUserId(userId),

@@ -1,9 +1,10 @@
 import {
   TaskDatabase,
-  TaskTransaction,
   TasksWriteRepository,
+  TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
+import { statusByNameQuery } from '@/modules/tasks/infrastructure/persistence/kysely/repositories/utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
@@ -38,12 +39,11 @@ export class TasksWriteRepositoryKysely
 
   async createTask(agr: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.creation', async () => {
-      const { statusId, statusName } = await this.db
-        .qb(trx)
-        .selectFrom('task_statuses')
-        .where('task_statuses.name', '=', agr.status)
-        .select(['id as statusId', 'name as statusName'])
-        .executeTakeFirstOrThrow();
+      const { id: status_id, name: status_name } = await statusByNameQuery(
+        [agr.status],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
 
       const task = await this.db
         .qb(trx)
@@ -57,7 +57,7 @@ export class TasksWriteRepositoryKysely
           description: agr.description,
           user_id: agr.userId,
           priority: agr.priority,
-          status_id: statusId,
+          status_id,
         })
         .returning([
           'id',
@@ -74,18 +74,17 @@ export class TasksWriteRepositoryKysely
         ])
         .executeTakeFirstOrThrow();
 
-      return TasksWriteKyselyMapper.fromRawToAgr({ ...task, status: statusName });
+      return TasksWriteKyselyMapper.fromRawToAgr({ ...task, status: status_name });
     });
   }
 
   async replaceTask(task: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.replace', async () => {
-      const { id: status_id } = await this.db
-        .qb(trx)
-        .selectFrom('task_statuses')
-        .where('task_statuses.name', '=', task.status)
-        .selectAll()
-        .executeTakeFirstOrThrow();
+      const { id: status_id } = await statusByNameQuery(
+        [task.status],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
 
       const result = await this.db
         .qb(trx)
@@ -172,17 +171,16 @@ export class TasksWriteRepositoryKysely
     return await this.errorCatcher('tasks.change-task-status', async () => {
       const { id, userId, status } = task;
 
-      const { statusId } = await this.db
-        .qb(trx)
-        .selectFrom('task_statuses as ts')
-        .where('ts.name', '=', status)
-        .select(['id as statusId'])
-        .executeTakeFirstOrThrow();
+      const { id: status_id } = await statusByNameQuery(
+        [status],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
 
       await this.db
         .qb(trx)
         .updateTable(this.#tableName)
-        .set({ status_id: statusId })
+        .set({ status_id })
         .where('id', '=', id)
         .where('user_id', '=', userId)
         .executeTakeFirst();
