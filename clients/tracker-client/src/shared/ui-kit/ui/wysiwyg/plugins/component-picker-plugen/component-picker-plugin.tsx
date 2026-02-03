@@ -65,7 +65,7 @@ function ComponentPickerPlugin() {
       ) => {
         return anchorElementRef.current && options.length
           ? createPortal(
-              <ScrollAreaNativeVertical className="w-50 max-h-40 grow shadow-2xl bg-white rounded-md border relative">
+              <ScrollAreaNativeVertical className="w-50 max-h-40 grow shadow-2xl bg-background rounded-md border relative">
                 <ul className="grow min-w-0">
                   {options.map((option, i) => (
                     <ComponentsDropdownItem

@@ -87,7 +87,7 @@ function Component({
                     placeholder={
                       <div
                         className={cn(
-                          'placeholder absolute top-5 left-5 right-0',
+                          'placeholder absolute top-6 left-5 right-0',
                           'text-gray-500 pointer-events-none inline-block truncate overflow-hidden select-none',
                         )}
                       >

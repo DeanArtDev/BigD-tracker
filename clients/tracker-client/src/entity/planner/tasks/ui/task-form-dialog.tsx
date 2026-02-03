@@ -14,7 +14,8 @@ interface TaskFormDialogProps {
   readonly loading?: boolean;
   readonly task?: TaskFormProps['task'];
   readonly trigger?: ReactNode;
-  readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
+  readonly footerSlot?: TaskFormProps['footerSlot'];
+  readonly footerSidebarSlot?: TaskFormProps['footerSidebarSlot'];
   readonly onOpenChange: (open: boolean) => void;
   readonly onSubmit: Required<TaskFormProps>['onSubmit'];
 }
@@ -25,6 +26,7 @@ function TaskFormDialog({
   loading,
   trigger,
   footerSlot,
+  footerSidebarSlot,
   onSubmit,
   onOpenChange,
 }: TaskFormDialogProps) {
@@ -53,6 +55,7 @@ function TaskFormDialog({
           {...formStateEmitterProps}
           afterNameSlot={<AppDialogTrigger />}
           footerSlot={footerSlot}
+          footerSidebarSlot={footerSidebarSlot}
           onSubmit={onSubmit}
         />
       </AppDialog>

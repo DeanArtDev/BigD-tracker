@@ -23,6 +23,7 @@ interface TaskFormProps extends FormStateEmitterProps {
   readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason' | 'status'>;
   readonly afterNameSlot?: ReactNode;
   readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
+  readonly footerSidebarSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly defaultSidebarOpen?: boolean;
   readonly onSubmit?: (data: {
     name: string;
@@ -42,6 +43,7 @@ function TaskForm(props: TaskFormProps) {
     isLoading = false,
     emitIsDirty,
     footerSlot,
+    footerSidebarSlot,
     emitIsLoading,
     defaultSidebarOpen = !isMobile,
     afterNameSlot,
@@ -125,7 +127,9 @@ function TaskForm(props: TaskFormProps) {
                 }}
               />
 
-              <TaskFormSidebar />
+              <TaskFormSidebar
+                footerSidebarSlot={footerSidebarSlot?.({ disabled: form.formState.disabled })}
+              />
             </div>
 
             <div className="border-t p-4 flex items-center justify-end">

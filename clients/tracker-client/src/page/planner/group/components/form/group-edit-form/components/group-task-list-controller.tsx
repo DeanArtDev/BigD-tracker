@@ -85,6 +85,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
 
       <TaskEdit
         task={taskForUpdate}
+        groupId={groupId}
         onCansel={() => void setTaskForUpdate(null)}
         onSuccess={() => void setTaskForUpdate(null)}
       />
