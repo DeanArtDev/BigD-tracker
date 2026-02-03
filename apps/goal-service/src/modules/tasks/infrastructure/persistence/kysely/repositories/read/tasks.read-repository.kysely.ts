@@ -3,7 +3,9 @@ import {
   TaskDatabase,
   TaskTransaction,
   TasksReadRepository,
+  TasksShapeTypes,
 } from '@/modules/tasks/application/ports';
+import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
@@ -11,6 +13,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
+import { taskFullSelect, tasksWithStatusQuery, taskWithGroupLinksJoin } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -31,20 +34,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .executeTakeFirst();
       if (result == null) return null;
 
-      return TasksReadKyselyMapper.fromRawToView({
-        id: result.id,
-        user_id: result.user_id,
-        name: result.name,
-        description: result.description,
-        priority: result.priority,
-        weight: result.weight,
-        cancel_reason: result.cancel_reason,
-        start_date: result.start_date,
-        end_date: result.end_date,
-        deadline: result.deadline,
-        recurrence: result.recurrence,
-        status: result.status as TaskStatus,
-      });
+      return this.#map(result);
     });
   }
 
@@ -98,22 +88,64 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .orderBy('t.start_date', 'asc')
         .execute();
 
-      return tasks.map((task) => {
-        return TasksReadKyselyMapper.fromRawToView({
-          id: task.id,
-          user_id: task.user_id,
-          name: task.name,
-          description: task.description,
-          priority: task.priority,
-          weight: task.weight,
-          cancel_reason: task.cancel_reason,
-          start_date: task.start_date,
-          end_date: task.end_date,
-          deadline: task.deadline,
-          recurrence: task.recurrence,
-          status: task.status as TaskStatus,
-        });
-      });
+      return tasks.map(this.#map);
     });
   }
+
+  async getMany(
+    shapes: TasksShapeTypes[],
+    specifications: TasksSpecification,
+    trx?: TaskTransaction,
+  ): Promise<TaskView[]> {
+    return await this.errorCatcher('tasks.get-many.read', async () => {
+      let query = tasksWithStatusQuery(this.db, trx);
+
+      const shapeMap = {
+        with_group_links_left_join: taskWithGroupLinksJoin('leftJoin'),
+        with_group_links_inner_join: taskWithGroupLinksJoin('innerJoin'),
+      };
+
+      for (const shape of shapes) {
+        const apply = shapeMap[shape](query);
+        apply != null && (query = apply);
+      }
+
+      const tasks = await taskFullSelect(query)
+        .where((eb) => specifications.toExpr(eb))
+        .orderBy('id', 'asc')
+        .execute();
+
+      return tasks.map(this.#map);
+    });
+  }
+
+  #map = (raw: {
+    status: string;
+    id: number;
+    user_id: number;
+    name: string;
+    description: string | null;
+    priority: number;
+    weight: number;
+    cancel_reason: string | null;
+    start_date: Date | null;
+    end_date: Date | null;
+    deadline: Date | null;
+    recurrence: string | null;
+  }): TaskView => {
+    return TasksReadKyselyMapper.fromRawToView({
+      id: raw.id,
+      user_id: raw.user_id,
+      name: raw.name,
+      description: raw.description,
+      priority: raw.priority,
+      weight: raw.weight,
+      cancel_reason: raw.cancel_reason,
+      start_date: raw.start_date,
+      end_date: raw.end_date,
+      deadline: raw.deadline,
+      recurrence: raw.recurrence,
+      status: raw.status as TaskStatus,
+    });
+  };
 }

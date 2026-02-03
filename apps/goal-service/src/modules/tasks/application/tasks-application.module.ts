@@ -5,6 +5,8 @@ import {
   GetUserGroupsQuery,
   GetDiaryTasksQuery,
   GetDiaryTasksHandler,
+  GetAssignableTasksToGroupQuery,
+  GetAssignableTasksToGroupHandler,
 } from './queries';
 import {
   GroupCheckerService,
@@ -59,7 +61,12 @@ import {
   DeleteGroupUseCase,
 } from './use-cases';
 
-const queries = [GetInboxByUserIdQuery, GetUserGroupsQuery, GetDiaryTasksQuery];
+const queries = [
+  GetInboxByUserIdQuery,
+  GetUserGroupsQuery,
+  GetDiaryTasksQuery,
+  GetAssignableTasksToGroupQuery,
+];
 const commands = [
   CreateTaskCommand,
   CreateTaskInInboxCommand,
@@ -92,6 +99,7 @@ const handlers = [
   DeleteGroupHandler,
   GetUserGroupsHandler,
   GetDiaryTasksHandler,
+  GetAssignableTasksToGroupHandler,
 ];
 const useCases = [
   CreateTaskUseCase,

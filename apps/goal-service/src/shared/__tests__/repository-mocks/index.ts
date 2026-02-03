@@ -12,6 +12,7 @@ const tasksReadRepoMock: Record<keyof TasksReadRepository, jest.Mock> = {
   getTaskToGroupLink: jest.fn(),
   isTaskIntoGroup: jest.fn(),
   getByRange: jest.fn(),
+  getMany: jest.fn(),
 };
 
 const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {

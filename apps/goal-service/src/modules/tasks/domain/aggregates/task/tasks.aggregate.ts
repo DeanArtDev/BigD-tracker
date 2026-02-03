@@ -76,6 +76,10 @@ class Task extends AggregateRoot {
     assertTaskDates({ start: input.startDate, deadline: input.deadline });
     assertDeadlineInThePast({ deadline: input.deadline });
 
+    if (input.startDate?.value != null) {
+      this.#setStatus(TaskStatus.IN_PROGRESS);
+    }
+
     this.#state.name = input.name;
     this.#state.description = input.description;
     this.#state.priority = input.priority;
