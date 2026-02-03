@@ -1,7 +1,4 @@
-import {
-  GetAssignableTasksToGroupQuery,
-  GetDiaryTasksQuery,
-} from '@/modules/tasks/application/queries';
+import { GetAssignableTasksQuery, GetDiaryTasksQuery } from '@/modules/tasks/application/queries';
 import {
   AssignTaskToGroupCommand,
   CloneTaskCommand,
@@ -16,7 +13,7 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
-  GoalGetAssignableTasksToGroup,
+  GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
@@ -166,15 +163,14 @@ export class TasksRmqController {
     };
   }
 
-  @MessagePattern(GoalGetAssignableTasksToGroup.pattern)
-  async getAssignableTasksToGroup(
-    @Payload() { data: payload }: GoalGetAssignableTasksToGroup.Request,
-  ): Promise<GoalGetAssignableTasksToGroup.Response> {
+  @MessagePattern(GoalGetAssignableTasks.pattern)
+  async getAssignableTasks(
+    @Payload() { data: payload }: GoalGetAssignableTasks.Request,
+  ): Promise<GoalGetAssignableTasks.Response> {
     return {
       data: await this.queryBus.execute(
-        new GetAssignableTasksToGroupQuery({
+        new GetAssignableTasksQuery({
           userId: payload.userId,
-          groupId: payload.groupId,
           search: payload.search,
         }),
       ),
