@@ -7,6 +7,7 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalGetAssignableTasksToGroup,
   GoalGetDiaryTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
@@ -32,6 +33,8 @@ import {
   CloneTaskRes,
   CreateTaskReq,
   CreateTaskRes,
+  GetAssignableTasksQuery,
+  GetAssignableTasksRes,
   GetDiaryTasksQuery,
   GetDiaryTasksRes,
   ReplaceTaskReq,
@@ -66,6 +69,31 @@ export class TasksController {
         },
       },
     );
+  }
+
+  @Get('/assignable/groups/:groupId')
+  @ApiOperation({ summary: 'Получение дел доступных к группировке для одной группы' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetAssignableTasksRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GetAssignableTasksRes)
+  async getAssignableTasksToGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Query() { search }: GetAssignableTasksQuery,
+  ): Promise<GetAssignableTasksRes> {
+    return await this.goalClient.send<
+      GoalGetAssignableTasksToGroup.Response,
+      GoalGetAssignableTasksToGroup.Request
+    >(GoalGetAssignableTasksToGroup.pattern, {
+      data: {
+        userId: uid,
+        groupId,
+        search,
+      },
+    });
   }
 
   @Post()

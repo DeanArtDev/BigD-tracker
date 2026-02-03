@@ -1,7 +1,10 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
+import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskTransaction } from '../transaction-manager.port';
 
 interface TasksReadRepository {
+  getMany(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
+
   getByRange(
     input: { userId: number; from: string; to: string },
     trx?: TaskTransaction,

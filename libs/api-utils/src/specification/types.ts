@@ -1,4 +1,4 @@
-import { ExpressionBuilder, ExpressionWrapper, SqlBool } from 'kysely';
+import { Expression, ExpressionBuilder, ExpressionWrapper, SqlBool } from 'kysely';
 
 /**
  * Тип комбинатора
@@ -31,7 +31,7 @@ interface SpecificationObject<TTable extends TDB, TKind extends SpecKind = SpecK
    */
   toExpr(
     eb: ExpressionBuilder<TTable, keyof TTable>,
-  ): ExpressionWrapper<TTable, keyof TTable, SqlBool>;
+  ): ExpressionWrapper<TTable, keyof TTable, SqlBool> | Expression<SqlBool>;
 }
 
 type LeafSpecParams<TTable extends TDB> = {
