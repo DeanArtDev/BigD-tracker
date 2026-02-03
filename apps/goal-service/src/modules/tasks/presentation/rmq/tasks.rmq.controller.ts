@@ -1,11 +1,9 @@
-import {
-  GetAssignableTasksToGroupQuery,
-  GetDiaryTasksQuery,
-} from '@/modules/tasks/application/queries';
+import { GetAssignableTasksQuery, GetDiaryTasksQuery } from '@/modules/tasks/application/queries';
 import {
   AssignTaskToGroupCommand,
   CloneTaskCommand,
   CreateTaskCommand,
+  FinishTaskCommand,
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
   UnassignTaskFromGroupCommand,
@@ -16,7 +14,8 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
-  GoalGetAssignableTasksToGroup,
+  GoalFinishTask,
+  GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
@@ -166,18 +165,30 @@ export class TasksRmqController {
     };
   }
 
-  @MessagePattern(GoalGetAssignableTasksToGroup.pattern)
-  async getAssignableTasksToGroup(
-    @Payload() { data: payload }: GoalGetAssignableTasksToGroup.Request,
-  ): Promise<GoalGetAssignableTasksToGroup.Response> {
+  @MessagePattern(GoalGetAssignableTasks.pattern)
+  async getAssignableTasks(
+    @Payload() { data: payload }: GoalGetAssignableTasks.Request,
+  ): Promise<GoalGetAssignableTasks.Response> {
     return {
       data: await this.queryBus.execute(
-        new GetAssignableTasksToGroupQuery({
+        new GetAssignableTasksQuery({
           userId: payload.userId,
-          groupId: payload.groupId,
           search: payload.search,
         }),
       ),
     };
+  }
+
+  @MessagePattern(GoalFinishTask.pattern)
+  async finishTask(
+    @Payload() { data: payload }: GoalFinishTask.Request,
+  ): Promise<GoalFinishTask.Response> {
+    await this.commandBus.execute(
+      new FinishTaskCommand({
+        userId: payload.userId,
+        taskId: payload.taskId,
+      }),
+    );
+    return { data: true };
   }
 }

@@ -1,9 +1,9 @@
-import { GetAssignableTasksToGroupReq, GetAssignableTasksToGroupRes } from './dtos';
+import { GetAssignableTasksReq, GetAssignableTasksRes } from './dtos';
 
-export namespace GoalGetAssignableTasksToGroup {
-  export const pattern = 'goal.get-assignable-tasks-to-group.query';
+export namespace GoalGetAssignableTasks {
+  export const pattern = 'goal.get-assignable-tasks.query';
 
-  export class Request extends GetAssignableTasksToGroupReq {}
+  export class Request extends GetAssignableTasksReq {}
 
-  export class Response extends GetAssignableTasksToGroupRes {}
+  export class Response extends GetAssignableTasksRes {}
 }

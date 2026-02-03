@@ -118,6 +118,25 @@ function assertTaskAssignToGroup(input: { status: TaskStatus }): void {
   }
 }
 
+function assertFinishTask(input: { status: TaskStatus }): void {
+  const { status } = input;
+
+  if (
+    [
+      TaskStatus.COMPLETED,
+      TaskStatus.OVERDUE,
+      TaskStatus.CANCELLED,
+      TaskStatus.ARCHIVED,
+      TaskStatus.DELETED,
+    ].includes(status)
+  ) {
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be finished at current status: ${status}`,
+      field: 'status',
+    });
+  }
+}
+
 function assertTaskUnassignFromGroup(input: { status: TaskStatus }): void {
   const { status } = input;
 
@@ -147,4 +166,5 @@ export {
   assertEndDateNotInThePast,
   assertDeadlineInThePast,
   assertStartDateNotInThePast,
+  assertFinishTask,
 };

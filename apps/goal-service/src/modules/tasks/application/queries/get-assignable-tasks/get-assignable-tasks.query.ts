@@ -1,8 +1,7 @@
-export class GetAssignableTasksToGroupQuery {
+export class GetAssignableTasksQuery {
   constructor(
     readonly input: {
       readonly userId: number;
-      readonly groupId: number;
       readonly search: string;
     },
   ) {}

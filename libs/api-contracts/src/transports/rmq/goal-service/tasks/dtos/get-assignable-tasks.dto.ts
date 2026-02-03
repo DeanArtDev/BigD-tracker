@@ -6,24 +6,21 @@ class GetAssignableTasksReqData {
   @IsInt()
   userId: number;
 
-  @IsInt()
-  groupId: number;
-
   @IsString()
   search: string;
 }
 
-class GetAssignableTasksToGroupReq {
+class GetAssignableTasksReq {
   @Type(() => GetAssignableTasksReqData)
   @ValidateNested()
   data: GetAssignableTasksReqData;
 }
 
-class GetAssignableTasksToGroupRes {
+class GetAssignableTasksRes {
   @ValidateNested({ each: true })
   @Type(() => TaskDto)
   @IsArray()
   data: TaskDto[];
 }
 
-export { GetAssignableTasksToGroupReq, GetAssignableTasksToGroupRes };
+export { GetAssignableTasksReq, GetAssignableTasksRes };

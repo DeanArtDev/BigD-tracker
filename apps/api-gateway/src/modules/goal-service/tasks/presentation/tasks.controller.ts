@@ -7,7 +7,8 @@ import {
   GoalCloneTask,
   GoalCreateTask,
   GoalDeleteTask,
-  GoalGetAssignableTasksToGroup,
+  GoalFinishTask,
+  GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
@@ -33,6 +34,7 @@ import {
   CloneTaskRes,
   CreateTaskReq,
   CreateTaskRes,
+  FinishTaskRes,
   GetAssignableTasksQuery,
   GetAssignableTasksRes,
   GetDiaryTasksQuery,
@@ -71,26 +73,24 @@ export class TasksController {
     );
   }
 
-  @Get('/assignable/groups/:groupId')
-  @ApiOperation({ summary: 'Получение дел доступных к группировке для одной группы' })
+  @Get('/assignable')
+  @ApiOperation({ summary: 'Получение дел доступных к группировке' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: GetAssignableTasksRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @ValidateRpcResponse(GetAssignableTasksRes)
-  async getAssignableTasksToGroup(
+  async getAssignableTasks(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('groupId', ParseIntPipe) groupId: number,
     @Query() { search }: GetAssignableTasksQuery,
   ): Promise<GetAssignableTasksRes> {
     return await this.goalClient.send<
-      GoalGetAssignableTasksToGroup.Response,
-      GoalGetAssignableTasksToGroup.Request
-    >(GoalGetAssignableTasksToGroup.pattern, {
+      GoalGetAssignableTasks.Response,
+      GoalGetAssignableTasks.Request
+    >(GoalGetAssignableTasks.pattern, {
       data: {
         userId: uid,
-        groupId,
         search,
       },
     });
@@ -147,6 +147,29 @@ export class TasksController {
           userId: uid,
           taskId,
           groupId: data?.groupId,
+        },
+      },
+    );
+  }
+
+  @Post('/:taskId/finish')
+  @ApiOperation({ summary: 'Завершение дела' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: FinishTaskRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(FinishTaskRes)
+  async finishTask(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+  ): Promise<FinishTaskRes> {
+    return await this.goalClient.send<GoalFinishTask.Response, GoalFinishTask.Request>(
+      GoalFinishTask.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId,
         },
       },
     );

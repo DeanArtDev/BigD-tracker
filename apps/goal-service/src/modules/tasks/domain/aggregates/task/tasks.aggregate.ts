@@ -1,9 +1,11 @@
 import { availableTransitionsByTaskStatuses } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskStatus } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
 import {
   assertDeadlineInThePast,
+  assertFinishTask,
   assertStartDateNotInThePast,
   assertTaskAssignToGroup,
   assertTaskDates,
@@ -142,6 +144,20 @@ class Task extends AggregateRoot {
       status,
       recurrence: this.#state.recurrence,
     });
+  }
+
+  public finish() {
+    assertFinishTask({ status: this.#state.status });
+    this.#state.startDate = this.#state.startDate ?? DateVo.create(new Date());
+    this.#state.endDate = DateVo.create(new Date());
+
+    if (this.#state.deadline != null && this.#state.deadline.isBefore(new Date())) {
+      this.#setStatus(TaskStatus.OVERDUE);
+    } else {
+      this.#setStatus(TaskStatus.COMPLETED);
+    }
+
+    return this;
   }
 
   get id() {
