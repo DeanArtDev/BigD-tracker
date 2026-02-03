@@ -6,6 +6,7 @@ import {
   GoalCreateTask,
   GoalDeleteTask,
   GoalGetDiaryTasks,
+  GoalGetAssignableTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
@@ -1123,6 +1124,34 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
       const [, trxArg] = tasksReadRepoMock.getByRange.mock.calls[0];
       expect(trxArg).toEqual(expectTransaction());
+      expect(res).toEqual({ data: [toTaskResponse(taskView)] });
+    });
+  });
+
+  describe(`${GoalGetAssignableTasks.pattern}`, () => {
+    test('should return assignable tasks', async () => {
+      const userId = 90;
+      const groupId = 120;
+      const taskView = getTaskView({ id: 9010, userId, name: 'Assignable' });
+
+      tasksReadRepoMock.getMany.mockResolvedValueOnce([taskView]);
+
+      const payload: GoalGetAssignableTasks.Request = buildPayload({
+        data: {
+          userId,
+          groupId,
+          search: 'Assign',
+        },
+      });
+
+      const res = await sendMessage<
+        GoalGetAssignableTasks.Response,
+        GoalGetAssignableTasks.Request
+      >(GoalGetAssignableTasks.pattern, payload);
+
+      expect(tasksReadRepoMock.getMany).toHaveBeenCalledTimes(1);
+      const [, , tasksTrx] = tasksReadRepoMock.getMany.mock.calls[0];
+      expect(tasksTrx).toEqual(expectTransaction());
       expect(res).toEqual({ data: [toTaskResponse(taskView)] });
     });
   });
