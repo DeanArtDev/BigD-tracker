@@ -151,7 +151,7 @@ class Task extends AggregateRoot {
     this.#state.startDate = this.#state.startDate ?? DateVo.create(new Date());
     this.#state.endDate = DateVo.create(new Date());
 
-    if (this.#state.deadline != null && this.#state.deadline.isAfter(new Date())) {
+    if (this.#state.deadline != null && this.#state.deadline.isBefore(new Date())) {
       this.#setStatus(TaskStatus.OVERDUE);
     } else {
       this.#setStatus(TaskStatus.COMPLETED);

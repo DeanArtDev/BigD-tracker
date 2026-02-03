@@ -23,7 +23,12 @@ class FinishTaskUseCase {
 
       await this.tasksWriteRepo.replaceTask(finishedTask, trx);
 
-      if (await this.inboxGroupCheckerService.ensureTaskInInboxGroup({ taskId, userId })) {
+      if (
+        await this.inboxGroupCheckerService.ensureTaskInInboxGroup(
+          { taskId, userId },
+          { trx, skipException: true },
+        )
+      ) {
         await this.tasksWriteRepo.removeTaskFromGroup({ taskId: finishedTask.id }, trx);
       }
 
