@@ -19,6 +19,13 @@ const TaskByGroupId = (groupId: number) =>
     toExpr: (eb) => eb('task_to_group.group_id', '=', groupId),
   });
 
+const TaskInGroup = () =>
+  leaf({
+    key: 'tasks.byGroupId',
+    purpose: 'filter',
+    toExpr: (eb) => eb('task_to_group.group_id', 'is not', null),
+  });
+
 const TaskByStatus = (statuses: TaskStatus[]) =>
   leaf({
     key: 'tasks.byStatus',
@@ -40,4 +47,4 @@ const TaskBySearch = (search: string) =>
       }),
   });
 
-export { TaskByUserId, TaskByGroupId, TaskBySearch, TaskByStatus };
+export { TaskByUserId, TaskByGroupId, TaskBySearch, TaskByStatus, TaskInGroup };

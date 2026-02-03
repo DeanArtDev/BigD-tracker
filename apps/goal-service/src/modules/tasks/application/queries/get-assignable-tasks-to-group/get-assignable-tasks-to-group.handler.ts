@@ -1,10 +1,10 @@
 import { TaskView } from '@/modules/tasks/application/dto';
 import { GroupCheckerService } from '@/modules/tasks/application/services';
 import {
-  TaskByGroupId,
   TaskBySearch,
   TaskByStatus,
   TaskByUserId,
+  TaskInGroup,
   tasksCombinators,
 } from '@/modules/tasks/application/specifications';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -33,12 +33,12 @@ export class GetAssignableTasksToGroupHandler implements IQueryHandler<GetAssign
 
       const specifications = and(
         TaskByUserId(userId),
-        TaskByStatus([TaskStatus.NOT_STARTED]),
+        TaskByStatus([TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS]),
+        not(TaskInGroup()),
         TaskBySearch(search),
-        not(TaskByGroupId(groupId)),
       );
 
-      return this.tasksReadRepository.getMany(specifications, trx);
+      return this.tasksReadRepository.getMany(['with_group_links_left_join'], specifications, trx);
     });
   }
 }

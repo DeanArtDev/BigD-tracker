@@ -3,18 +3,17 @@ import {
   TaskDatabase,
   TaskTransaction,
   TasksReadRepository,
+  TasksShapeTypes,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { tasksQuerySpec } from '@/modules/tasks/domain';
-import { taskFullSelect } from '../selects';
-import { tasksWithStatusQuery } from '../queries';
-import { taskWithGroupLinksJoin } from '../joins';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
+import { taskFullSelect, tasksWithStatusQuery, taskWithGroupLinksJoin } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -93,14 +92,29 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async getMany(specification: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]> {
+  async getMany(
+    shapes: TasksShapeTypes[],
+    specifications: TasksSpecification,
+    trx?: TaskTransaction,
+  ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-many.read', async () => {
-      const query = taskWithGroupLinksJoin(tasksWithStatusQuery(this.db, trx));
-      const queryWithSelect = taskFullSelect(query);
-      const tasks = await queryWithSelect
-        .where((eb) => specification.toExpr(eb))
+      let query = tasksWithStatusQuery(this.db, trx);
+
+      const shapeMap = {
+        with_group_links_left_join: taskWithGroupLinksJoin('leftJoin'),
+        with_group_links_inner_join: taskWithGroupLinksJoin('innerJoin'),
+      };
+
+      for (const shape of shapes) {
+        const apply = shapeMap[shape](query);
+        apply != null && (query = apply);
+      }
+
+      const tasks = await taskFullSelect(query)
+        .where((eb) => specifications.toExpr(eb))
         .orderBy('id', 'asc')
         .execute();
+
       return tasks.map(this.#map);
     });
   }
