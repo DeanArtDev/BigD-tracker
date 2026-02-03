@@ -1,12 +1,11 @@
 import { useUrlQuery } from '@/shared/lib/react/use-url-query';
 import { z } from 'zod';
 
-const schema = z.object({ my: z.boolean({ coerce: true }).optional() });
+const schema = z.object({ my: z.coerce.boolean().optional() });
+type TSchema = z.infer<typeof schema>;
 
 function useExerciseUrlParams() {
-  type TSchema = z.infer<typeof schema>;
-
-  const [search, setSearch] = useUrlQuery<TSchema>(schema);
+  const [search, setSearch] = useUrlQuery(schema);
 
   return {
     isMy: Boolean(search?.my),
