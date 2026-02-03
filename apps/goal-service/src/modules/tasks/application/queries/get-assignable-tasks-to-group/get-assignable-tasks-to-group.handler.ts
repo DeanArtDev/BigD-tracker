@@ -29,7 +29,7 @@ export class GetAssignableTasksToGroupHandler implements IQueryHandler<GetAssign
     return this.db.runTransaction(async (trx) => {
       const { userId, groupId, search } = input;
 
-      await this.groupCheckerService.ensureGroupExists({ userId, groupId });
+      await this.groupCheckerService.ensureGroupExists({ userId, groupId }, { trx });
 
       const specifications = and(
         TaskByUserId(userId),
