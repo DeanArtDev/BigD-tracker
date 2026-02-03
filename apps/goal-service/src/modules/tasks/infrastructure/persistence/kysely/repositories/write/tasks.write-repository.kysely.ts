@@ -80,6 +80,13 @@ export class TasksWriteRepositoryKysely
 
   async replaceTask(task: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.replace', async () => {
+      const { id: status_id } = await this.db
+        .qb(trx)
+        .selectFrom('task_statuses')
+        .where('task_statuses.name', '=', task.status)
+        .selectAll()
+        .executeTakeFirstOrThrow();
+
       const result = await this.db
         .qb(trx)
         .updateTable(this.#tableName)
@@ -94,6 +101,7 @@ export class TasksWriteRepositoryKysely
           end_date: task.endDate,
           deadline: task.deadline ?? null,
           recurrence: task.recurrence ?? null,
+          status_id,
         })
         .returning([
           'id',
