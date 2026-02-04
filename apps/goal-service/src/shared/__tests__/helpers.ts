@@ -37,8 +37,8 @@ function firstArg<T extends (...args: any[]) => any>(fn: jest.MockedFunction<T>)
   return fn.mock.calls[0]?.[0] as Parameters<T>[0];
 }
 
-function nthCallArgs<T extends (...args: any[]) => any>(fn: jest.MockedFunction<T>, n: number) {
-  return fn.mock.calls[n] as Parameters<T> | undefined;
+function nthArgs<T extends (...args: any[]) => any>(n: number, fn: jest.MockedFunction<T>) {
+  return fn.mock.calls[0]?.[n] as Parameters<T>[0] | undefined;
 }
 
 const TEST_DATE = '2023-01-01T00:00:00.000Z';
@@ -65,5 +65,5 @@ export {
   unwrapRpcError,
   expectTransaction,
   firstArg,
-  nthCallArgs,
+  nthArgs,
 };

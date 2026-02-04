@@ -1,5 +1,6 @@
 import { RequestContextService } from '@/modules/tasks/infrastructure/observability';
 import { Module } from '@nestjs/common';
+import { CursorPaginationService } from '@shared/cursor-pagination';
 import { GroupsInboxRmqController } from './rmq/groups-inbox.rmq.controller';
 import { GroupsRmqController } from './rmq/groups.rmq.controller';
 import { TasksInboxRmqController } from './rmq/tasks-inbox.rmq.controller';
@@ -12,6 +13,6 @@ import { TasksRmqController } from './rmq/tasks.rmq.controller';
     GroupsInboxRmqController,
     GroupsRmqController,
   ],
-  providers: [RequestContextService],
+  providers: [RequestContextService, CursorPaginationService],
 })
 export class TasksPresentationModule {}

@@ -5,6 +5,7 @@ import {
   DeleteGroupCommand,
   ReplaceGroupCommand,
 } from '@/modules/tasks/application/use-cases';
+import { CursorPaginationService } from '@shared/cursor-pagination';
 import { GroupViewRmqMapper } from './mappers/group-view.rmq.mapper';
 import {
   GoalCreateGroup,
@@ -22,6 +23,7 @@ import { RequestContextPayloadGuard } from '@shared/request-context';
 @UseGuards(RequestContextPayloadGuard)
 export class GroupsRmqController {
   constructor(
+    private readonly cursorPaginationService: CursorPaginationService,
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
   ) {}
@@ -30,12 +32,30 @@ export class GroupsRmqController {
   async getUserGroups(
     @Payload() { data: payload }: GoalGetUserGroups.Request,
   ): Promise<GoalGetUserGroups.Response> {
+    const { userId, cursor, sort, search, filter, limit } = payload;
+    const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
+
     const groups = await this.queryBus.execute<GetUserGroupsQuery, GroupWithTasksView[]>(
-      new GetUserGroupsQuery({ userId: payload.userId }),
+      new GetUserGroupsQuery(
+        { userId },
+        { sort, search, filter, limit, lasiId: requestCursorPayload?.lastId },
+      ),
     );
 
+    const { nextCursor } = this.cursorPaginationService.getNextCursor(cursor, {
+      sort,
+      search,
+      filter,
+      limit,
+      lastId: groups.at(-1)?.id,
+      currentPartLength: groups.length,
+    });
+
     return {
-      data: groups.map(GroupViewRmqMapper.fromViewToDtoWithTasks),
+      data: {
+        items: groups.map(GroupViewRmqMapper.fromViewToDtoWithTasks),
+        meta: { cursor: nextCursor },
+      },
     };
   }
 

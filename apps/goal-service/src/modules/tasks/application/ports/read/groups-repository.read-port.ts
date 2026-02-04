@@ -43,8 +43,10 @@ interface GroupsReadRepository {
     trx?: TaskTransaction,
   ): Promise<boolean>;
 
-  getGroupListWithTasksByUserId(
-    input: { userId: number },
+  getGroupListWithTasks(
+    groupSpecifications: TasksSpecification,
+    taskSpecifications: TasksSpecification,
+    params: { limit?: number },
     trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]>;
 }

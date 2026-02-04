@@ -1,3 +1,5 @@
+import { TasksDB } from '@/modules/tasks/application/ports';
+import { pgLikeExpr } from '@/modules/tasks/application/specifications/utils';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { groupsCombinators } from './init';
 
@@ -24,4 +26,25 @@ const GroupInbox = () =>
     toExpr: (eb) => eb('groups.name', '=', groupsQuerySpec.inboxName),
   });
 
-export { GroupById, GroupInbox, GroupByUserId };
+const GroupAfterId = (groupId: number) =>
+  leaf({
+    key: 'groups.afterId',
+    purpose: 'filter',
+    toExpr: (eb) => eb('groups.id', '>', groupId),
+  });
+
+const GroupBySearch = (search: string) =>
+  leaf({
+    key: 'tasks.bySearch',
+    purpose: 'filter',
+    toExpr: () =>
+      pgLikeExpr<TasksDB, 'groups', 'name'>({
+        table: 'groups',
+        column: 'name',
+        value: search,
+        mode: 'contains',
+        caseInsensitive: true,
+      }),
+  });
+
+export { GroupById, GroupInbox, GroupByUserId, GroupBySearch, GroupAfterId };

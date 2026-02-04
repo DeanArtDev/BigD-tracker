@@ -12,15 +12,15 @@ import {
   ThrowErrorOptions,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { flow } from 'lodash';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { firstOrThrowError, getAvailableGroupQuery, getTasksWithStatusQuery } from '../helpers';
-import { groupWithStatusQuery } from '../utils';
+import { groupWithStatusQuery, taskFullSelect, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupsReadRepositoryKysely
@@ -58,7 +58,7 @@ export class GroupsReadRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get.read', async () => {
-      const result = await this.#getGroup(specifications, trx);
+      const result = await this.#getGroupQuery(specifications, trx).executeTakeFirst();
       if (result == null) return null;
 
       return GroupReadKyselyMapper.fromRawToView({
@@ -77,10 +77,13 @@ export class GroupsReadRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<GroupDetailedView | null> {
     return await this.errorCatcher('groups.get-detailed.read', async () => {
-      const result = await this.#getGroup(specifications, trx);
+      const result = await this.#getGroupQuery(specifications, trx).executeTakeFirst();
       if (result == null) return null;
 
-      const tasks = await this.#getTasks(result.id, trx);
+      const tasks = await this.#getTasksByGroupIdQuery(result.id, trx)
+        .orderBy('ttg.position', 'asc')
+        .execute();
+
       return GroupReadKyselyMapper.fromRawToDetailedView({
         id: result.id,
         name: result.name,
@@ -130,7 +133,9 @@ export class GroupsReadRepositoryKysely
       const result = await firstOrThrowError(query, { throwError });
       if (result == null) return null;
 
-      const tasks = await this.#getTasks(input.groupId, trx);
+      const tasks = await this.#getTasksByGroupIdQuery(input.groupId, trx)
+        .orderBy('ttg.position', 'asc')
+        .execute();
 
       return GroupReadKyselyMapper.fromRawToWithTaskView({
         id: result.id,
@@ -179,32 +184,38 @@ export class GroupsReadRepositoryKysely
     });
   }
 
-  async getGroupListWithTasksByUserId(
-    input: { userId: number },
+  /**
+   * Если сортировка id будет desc, то и cursor должен менять направление выборки c g.id > lastId на g.id < lastId
+   * */
+  async getGroupListWithTasks(
+    groupSpecifications: TasksSpecification,
+    taskSpecifications: TasksSpecification,
+    params?: { limit?: number },
     trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]> {
-    return await this.errorCatcher('groups.get-group-list-with-tasks-by-user-id', async () => {
-      const { userId } = input;
+    return await this.errorCatcher('groups.get-group-list-with-tasks', async () => {
+      const groupsQuery = this.#getGroupQuery(groupSpecifications, trx);
 
-      const groups = await getAvailableGroupQuery(this.db, trx)
-        .where('g.user_id', '=', userId)
-        .orderBy('g.id', 'asc')
+      const groups = await groupsQuery
+        .limit(params?.limit ?? null)
+        .orderBy('groups.id', 'asc')
         .execute();
       if (groups.length === 0) return [];
 
       const response: GroupWithTasksView[] = [];
 
-      const tasks = await getTasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-        .where('t.user_id', '=', userId)
+      const taskQuery = flow(tasksWithStatusQuery, taskFullSelect);
+
+      const tasks = await taskQuery(this.db, trx)
+        .innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id')
+        .where((eb) => taskSpecifications.toExpr(eb))
         .where(
-          'ttg.group_id',
+          'task_to_group.group_id',
           'in',
           groups.map((group) => group.id),
         )
-        .where('ts.name', 'in', tasksQuerySpec.readableStatuses)
-        .select(['ttg.group_id as group_id'])
-        .orderBy('ttg.position', 'asc')
+        .select(['task_to_group.group_id as group_id'])
+        .orderBy('task_to_group.position', 'asc')
         .execute();
 
       const tasksByGroupIdMap = new Map<(typeof tasks)[0]['group_id'], TaskView[]>([]);
@@ -248,17 +259,13 @@ export class GroupsReadRepositoryKysely
     });
   }
 
-  async #getGroup(specifications: TasksSpecification, trx?: TaskTransaction) {
-    return await groupWithStatusQuery(this.db, trx)
-      .where((eb) => specifications.toExpr(eb))
-      .executeTakeFirst();
+  #getGroupQuery(specifications: TasksSpecification, trx?: TaskTransaction) {
+    return groupWithStatusQuery(this.db, trx).where((eb) => specifications.toExpr(eb));
   }
 
-  async #getTasks(groupId: number, trx?: TaskTransaction) {
-    return await getTasksWithStatusQuery(this.db, trx)
+  #getTasksByGroupIdQuery(groupId: number, trx?: TaskTransaction) {
+    return getTasksWithStatusQuery(this.db, trx)
       .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-      .where('ttg.group_id', '=', groupId)
-      .orderBy('ttg.position', 'asc')
-      .execute();
+      .where('ttg.group_id', '=', groupId);
   }
 }

@@ -13,7 +13,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
-import { taskFullSelect, tasksWithStatusQuery, taskWithGroupLinksJoin } from '../utils';
+import { taskFullSelect, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -101,8 +101,10 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
       let query = tasksWithStatusQuery(this.db, trx);
 
       const shapeMap = {
-        with_group_links_left_join: taskWithGroupLinksJoin('leftJoin'),
-        with_group_links_inner_join: taskWithGroupLinksJoin('innerJoin'),
+        with_group_links_left_join: (qb: typeof query) =>
+          qb.innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
+        with_group_links_inner_join: (qb: typeof query) =>
+          qb.leftJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
       };
 
       for (const shape of shapes) {
