@@ -26,19 +26,20 @@ const validationSchema = z
 
     startDate: z
       .date()
+      .min(new Date(), { error: 'Начало не должно быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
       .transform(formTransform.dateToISOSFormat),
 
     deadline: z
       .date()
+      .min(new Date(), { error: 'Дедлайн не должен быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
       .transform(formTransform.dateToISOSFormat),
   })
   .check((ctx) => {
     const { startDate, deadline } = ctx.value;
-
     if (deadline != null && startDate != null) {
       if (startDate >= deadline) {
         ctx.issues.push({

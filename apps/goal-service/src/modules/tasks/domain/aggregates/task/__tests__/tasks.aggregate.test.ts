@@ -218,7 +218,6 @@ describe('Task aggregate', () => {
       weight: Weight.create(40),
       status: TaskStatus.IN_PROGRESS,
       startDate: DateVo.create(futureDate(2)),
-      endDate: DateVo.create(futureDate(3)),
       recurrence: 'weekly',
     });
 

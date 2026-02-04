@@ -24,8 +24,11 @@ function TaskFormDates() {
       formState: { errors: true },
       callback: (data) => {
         const deadlineError = data.errors?.['deadline'];
-        if (deadlineError) {
-          toast.error(deadlineError.message, { position: 'top-center' });
+        const startDateError = data.errors?.['startDate'];
+        if (deadlineError || startDateError) {
+          toast.error(deadlineError?.message ?? startDateError?.message, {
+            position: 'top-center',
+          });
         }
       },
     });

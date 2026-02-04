@@ -2,7 +2,6 @@ import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Calendar } from '@/shared/ui-kit/ui/calendar';
-import { ru } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 
 interface AssignTemplateDialogProps {
@@ -40,13 +39,7 @@ function AssignTemplateDialog({
       }
       onOpenChange={onOpenChange}
     >
-      <Calendar
-        locale={ru}
-        mode="multiple"
-        selected={date}
-        onSelect={setDate}
-        className="rounded-md border"
-      />
+      <Calendar mode="multiple" selected={date} onSelect={setDate} className="rounded-md border" />
     </AppDialog>
   );
 }

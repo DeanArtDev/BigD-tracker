@@ -6,6 +6,7 @@ import { AggregateRoot } from '@nestjs/cqrs';
 import {
   assertDeadlineInThePast,
   assertFinishTask,
+  assertStartDateInThePast,
   assertStartDateNotInThePast,
   assertTaskAssignToGroup,
   assertTaskDates,
@@ -73,10 +74,28 @@ class Task extends AggregateRoot {
     });
   }
 
+  #changeBlock() {
+    if (this.#state.startDate?.isBefore(new Date().toISOString())) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: `Task is overdue, it can't be changed any more startDate:${this.startDate}`,
+        field: 'startDate',
+      });
+    }
+
+    if (this.#state.endDate != null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: `Task can't be changed after ending`,
+        field: 'endDate',
+      });
+    }
+  }
+
   public replace(input: TaskReplaceInput): this {
+    this.#changeBlock();
     assertTaskReplace({ status: this.#state.status, endDate: this.#state.endDate?.value });
     assertTaskDates({ start: input.startDate, deadline: input.deadline });
     assertDeadlineInThePast({ deadline: input.deadline });
+    assertStartDateInThePast({ start: input.startDate });
 
     if (input.startDate?.value != null) {
       this.#setStatus(TaskStatus.IN_PROGRESS);
@@ -95,10 +114,12 @@ class Task extends AggregateRoot {
 
   public deleteSoft(): this {
     assertTaskDeleteSoft({ status: this.#state.status });
+    this.#changeBlock();
     return this.#setStatus(TaskStatus.DELETED);
   }
 
   public assignToGroup(status?: TaskStatus.NOT_STARTED): this {
+    this.#changeBlock();
     assertTaskAssignToGroup({ status: this.#state.status });
 
     if (status === TaskStatus.NOT_STARTED) {
@@ -114,6 +135,7 @@ class Task extends AggregateRoot {
   }
 
   public unassignFromGroup(): this {
+    this.#changeBlock();
     assertTaskUnassignFromGroup({ status: this.#state.status });
     return this;
   }
@@ -146,6 +168,9 @@ class Task extends AggregateRoot {
     });
   }
 
+  /**
+   * Дело можно завершить даже когда оно просрочено
+   * */
   public finish() {
     assertFinishTask({ status: this.#state.status });
     this.#state.startDate = this.#state.startDate ?? DateVo.create(new Date());

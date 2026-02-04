@@ -1,4 +1,4 @@
-import { useGroupInvalidate } from '@/entity/planner/groups';
+import { useInvalidateGroupById, useInvalidateGroups } from '@/entity/planner/groups';
 import { useInvalidateDiaryTasks, useUpdateTask } from '@/entity/planner/tasks';
 import {
   TaskDeleteWithConfirmHoc,
@@ -10,7 +10,7 @@ import { ButtonTrash } from '@/shared/components/button-trash';
 
 interface TaskEditProps {
   readonly task: TaskFormDialogProps['task'] | null;
-  readonly groupId?: number;
+  readonly groupId: number;
   readonly onSuccess?: () => void;
   readonly onCansel?: () => void;
 }
@@ -20,8 +20,16 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
 
   const { updateTask, isPending } = useUpdateTask();
   const invalidateTasks = useInvalidateDiaryTasks();
-  const invalidateGroups = useGroupInvalidate();
+  const invalidateGroups = useInvalidateGroups();
   const invalidateDiaryTasks = useInvalidateDiaryTasks();
+  const invalidateGroupById = useInvalidateGroupById();
+
+  const invalidate = async () => {
+    await invalidateTasks();
+    await invalidateGroups();
+    await invalidateDiaryTasks();
+    await invalidateGroupById({ groupId });
+  };
 
   const DeleteTaskSlot = (props: { disabled: boolean }) => {
     if (task == null) return null;
@@ -29,8 +37,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
       <TaskDeleteWithConfirmHoc
         taskId={task.id}
         onSuccess={async () => {
-          await invalidateTasks();
-          await invalidateGroups();
+          await invalidate();
           onCansel?.();
         }}
       >
@@ -54,9 +61,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
             taskId={task.id}
             groupId={groupId}
             onSuccess={async () => {
-              await invalidateTasks();
-              await invalidateGroups();
-              await invalidateDiaryTasks();
+              await invalidate();
             }}
           >
             Клонировать в группу
@@ -77,8 +82,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
 
           {
             onSuccess: async () => {
-              await invalidateGroups();
-              await invalidateTasks();
+              await invalidate();
               onSuccess?.();
             },
           },

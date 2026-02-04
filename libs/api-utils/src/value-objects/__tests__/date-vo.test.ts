@@ -16,7 +16,7 @@ describe('DateVo', () => {
   });
 
   it('throws for non-ISO input', () => {
-    expect(() => DateVo.create('not-a-date')).toThrowError('must be ISO8601 format');
+    expect(() => DateVo.create('not-a-date')).toThrowError('Date: not-a-date has invalid format');
   });
 
   it('compares equality', () => {
