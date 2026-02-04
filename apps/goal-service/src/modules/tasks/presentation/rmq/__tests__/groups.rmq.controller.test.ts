@@ -129,7 +129,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
   describe(`${GoalCreateGroup.pattern}`, () => {
     test('should work', async () => {
       const groupRaw = getGroupRaw({ user_id: 1, name: 'G1', description: '<b>hi</b>' });
-      groupReadRepoMock.getGroupById.mockResolvedValueOnce(
+      groupReadRepoMock.getGroup.mockResolvedValueOnce(
         GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRaw, tasks: [] }),
       );
       groupWriteRepoMock.createGroup.mockResolvedValueOnce(
@@ -153,9 +153,19 @@ describe('GroupsRmqController (rmq e2e)', () => {
       expect(groupArg.userId).toEqual(groupRaw.user_id);
       expect(groupArg.progress).toEqual(groupRaw.progress);
       expect(trxArg).toEqual(expect.anything());
-      expect(groupReadRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId: groupRaw.id, userId: groupRaw.user_id },
-        { trx: expectTransaction() },
+
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroup))).toMatchInlineSnapshot(`
+          "AND(
+            groups.byId,
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+      expect(groupReadRepoMock.getGroup).toHaveBeenCalledWith(
+        expect.anything(),
+        expectTransaction(),
       );
       expect(res).toEqual({
         data: {
@@ -175,7 +185,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       groupWriteRepoMock.createGroup.mockResolvedValueOnce(
         GroupWriteKyselyMapper.fromRawToAgr(groupRaw),
       );
-      groupReadRepoMock.getGroupById.mockResolvedValueOnce(null);
+      groupReadRepoMock.getGroup.mockResolvedValueOnce(null);
       const payload: GoalCreateGroup.Request = buildPayload({
         data: { userId: groupRaw.user_id, name: groupRaw.name, description: groupRaw.description },
       });
@@ -191,9 +201,19 @@ describe('GroupsRmqController (rmq e2e)', () => {
       }
 
       expect(groupWriteRepoMock.createGroup).toHaveBeenCalledTimes(1);
-      expect(groupReadRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId: groupRaw.id, userId: groupRaw.user_id },
-        { trx: expectTransaction() },
+
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroup))).toMatchInlineSnapshot(`
+          "AND(
+            groups.byId,
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+      expect(groupReadRepoMock.getGroup).toHaveBeenCalledWith(
+        expect.anything(),
+        expectTransaction(),
       );
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.groupNotFound.code,
@@ -470,14 +490,14 @@ describe('GroupsRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(specToDebugString(firstArg(groupWriteRepoMock.delete))).toMatchInlineSnapshot(`
-"AND[groups.policy.delete-by-user](
-  groups.byId,
-  groups.byUserId,
-  NOT(
-    groups.inbox
-  )
-)"
-`);
+          "AND[groups.policy.delete-by-user](
+            groups.byId,
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
       expect(groupWriteRepoMock.delete).toHaveBeenCalledWith(
         expect.anything(),
         expectTransaction(),
