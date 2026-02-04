@@ -2,6 +2,7 @@ import {
   GroupInboxView,
   GroupView,
   GroupWithTasksView,
+  GroupDetailedView,
   TaskView,
 } from '@/modules/tasks/application/dto';
 import { GroupStatus } from '@big-d/api-contracts';
@@ -40,6 +41,20 @@ class GroupReadKyselyMapper {
 
   static fromRawToWithTaskView(raw: RawGroupWithTasks): GroupWithTasksView {
     return GroupWithTasksView.restore({
+      tasks: raw.tasks,
+      group: GroupReadKyselyMapper.fromRawToView({
+        id: raw.id,
+        name: raw.name,
+        description: raw.description,
+        user_id: raw.user_id,
+        progress: raw.progress,
+        status: raw.status,
+      }),
+    });
+  }
+
+  static fromRawToDetailedView(raw: RawGroupWithTasks): GroupDetailedView {
+    return GroupDetailedView.restore({
       tasks: raw.tasks,
       group: GroupReadKyselyMapper.fromRawToView({
         id: raw.id,

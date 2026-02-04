@@ -1,0 +1,32 @@
+import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
+import { Type } from 'class-transformer';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { GroupStatus } from '../types';
+
+class GroupDetailedDto {
+  @IsInt()
+  id: number;
+
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsInt()
+  userId: number;
+
+  @IsInt()
+  progress: number;
+
+  @IsEnum(GroupStatus)
+  status: GroupStatus;
+
+  @ValidateNested({ each: true })
+  @Type(() => TaskDto)
+  @IsArray()
+  tasks: TaskDto[];
+}
+
+export { GroupDetailedDto };
