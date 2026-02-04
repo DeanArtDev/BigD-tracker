@@ -401,6 +401,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/{groupId}/detailed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение групп с подробностями */
+        get: operations["GroupsController_getDetailedGroup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{groupId}": {
         parameters: {
             query?: never;
@@ -428,6 +445,23 @@ export interface paths {
         };
         /** Получение дел для ежедневника */
         get: operations["TasksController_getDiaryTasks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/assignable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение дел доступных к группировке */
+        get: operations["TasksController_getAssignableTasks"];
         put?: never;
         post?: never;
         delete?: never;
@@ -464,6 +498,23 @@ export interface paths {
         put?: never;
         /** Клонирование дела */
         post: operations["TasksController_cloneTask"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/{taskId}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Завершение дела */
+        post: operations["TasksController_finishTask"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1213,9 +1264,49 @@ export interface components {
             /** @description Список дел */
             tasks: components["schemas"]["TaskDto"][];
         };
+        CursorPaginationResDto: {
+            /**
+             * @description Курсор пагинации
+             * @example eyJsYXN0SWQiOjEyMywic29ydCI6ImNyZWF0ZWRfYXQiLCJvcmRlc
+             */
+            cursor?: string;
+        };
+        GetUserGroupsResData: {
+            /** @description Ответ сервера */
+            items: components["schemas"]["GroupDto"][];
+            /** @description Метаинформация */
+            meta: components["schemas"]["CursorPaginationResDto"];
+        };
         GetUserGroupsRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["GroupDto"][];
+            data: components["schemas"]["GetUserGroupsResData"];
+        };
+        GroupDetailedDto: {
+            /** @example 1 */
+            id: number;
+            /** @example Группа дел */
+            name: string;
+            /** @example Описание */
+            description?: string;
+            /** @example 1 */
+            userId: number;
+            /**
+             * @description От 0 до 100
+             * @example 40
+             */
+            progress: number;
+            /**
+             * @description Статус группы
+             * @example NOT_STARTED
+             * @enum {string}
+             */
+            status: "NOT_STARTED" | "IN_PROGRESS" | "DONE";
+            /** @description Список дел */
+            tasks: components["schemas"]["TaskDto"][];
+        };
+        GetDetailedGroupsRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupDetailedDto"];
         };
         CreateGroupReqData: {
             /** @example Название группы */
@@ -1303,6 +1394,10 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"][];
         };
+        GetAssignableTasksRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TaskDto"][];
+        };
         CreateTaskReqData: {
             /** @example 1 */
             groupId?: number;
@@ -1350,6 +1445,10 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"];
         };
+        FinishTaskRes: {
+            /** @description Ответ сервера */
+            data: boolean;
+        };
         AssignTaskToGroupResData: {
             /** @example true */
             success: boolean;
@@ -1375,12 +1474,12 @@ export interface components {
              * @description От 1 до 4
              * @example 2
              */
-            priority?: number;
+            priority: number;
             /**
              * @description От 0 до 100
              * @example 100
              */
-            weight?: number;
+            weight: number;
             /** @example 2025-06-24T13:01:02.471Z */
             startDate?: string;
             /** @example 2026-05-24T13:01:02.471Z */
@@ -2064,7 +2163,18 @@ export interface operations {
     };
     GroupsController_getUserGroups: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Курсор пагинации */
+                cursor?: string;
+                /** @description Шаг пагинации */
+                limit?: number;
+                /** @description Очень важная группа */
+                search?: string;
+                /** @description Сортировка по дефолту id */
+                sort?: string[];
+                /** @description Фильтрация */
+                filter?: string[];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2100,6 +2210,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateGroupRes"];
+                };
+            };
+        };
+    };
+    GroupsController_getDetailedGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetDetailedGroupsRes"];
                 };
             };
         };
@@ -2174,6 +2305,28 @@ export interface operations {
             };
         };
     };
+    TasksController_getAssignableTasks: {
+        parameters: {
+            query: {
+                /** @description Очень важное дело */
+                search: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetAssignableTasksRes"];
+                };
+            };
+        };
+    };
     TasksController_createTask: {
         parameters: {
             query?: never;
@@ -2218,6 +2371,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CloneTaskRes"];
+                };
+            };
+        };
+    };
+    TasksController_finishTask: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinishTaskRes"];
                 };
             };
         };

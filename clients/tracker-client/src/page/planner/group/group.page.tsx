@@ -1,4 +1,4 @@
-import { useGroupsQuery } from '@/entity/planner/groups';
+import { useGroupByIdQuery } from '@/entity/planner/groups';
 import { PageWrapper } from '@/page/ui/page-wrapper';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { useUrlParams } from '@/shared/lib/react/use-url-params';
@@ -13,22 +13,20 @@ const schema = z.object({ groupId: z.coerce.number() });
 function GroupPage() {
   const params = useUrlParams(schema);
 
-  const { groups, isPending } = useGroupsQuery();
+  const { groupById, isPending } = useGroupByIdQuery({ groupId: params?.groupId });
 
   if (params?.groupId == null) {
     return <Navigate to={routes.planner.path} />;
   }
 
-  const group = groups?.byId[params?.groupId];
-
   return (
     <PageWrapper title="Группа" className="flex w-full min-h-0 min-w-0 grow p-0 lg:pt-0">
       <DataLoader
         isLoading={isPending}
-        isEmpty={group == null}
+        isEmpty={groupById == null}
         emptyElement={<AppEmptyPlaceholder message="Группа не найдена" />}
       >
-        <GroupEditController group={group!} />
+        <GroupEditController group={groupById!} />
       </DataLoader>
     </PageWrapper>
   );

@@ -38,7 +38,7 @@ const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> = {
   getGroupDetailed: jest.fn(),
   getGroupWithTasksById: jest.fn(),
   ensureTaskInGroup: jest.fn(),
-  getGroupListWithTasksByUserId: jest.fn(),
+  getGroupListWithTasks: jest.fn(),
 };
 
 const inboxReadRepoMock: Record<keyof GroupInboxReadRepository, jest.Mock> = {

@@ -21,6 +21,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
@@ -30,6 +31,7 @@ import {
   DeleteGroupRes,
   GetDetailedGroupsRes,
   GetInBoxRes,
+  GetUserGroupsQuery,
   GetUserGroupsRes,
   ReplaceGroupReq,
   ReplaceGroupRes,
@@ -63,10 +65,13 @@ export class GroupsController {
   })
   @ValidateRpcResponse(GetUserGroupsRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getUserGroups(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetUserGroupsRes> {
+  async getUserGroups(
+    @Query() { search, cursor, limit, filter, sort }: GetUserGroupsQuery,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GetUserGroupsRes> {
     return await this.goalClient.send<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
       GoalGetUserGroups.pattern,
-      { data: { userId: uid } },
+      { data: { userId: uid, search, cursor, limit, filter, sort } },
     );
   }
 

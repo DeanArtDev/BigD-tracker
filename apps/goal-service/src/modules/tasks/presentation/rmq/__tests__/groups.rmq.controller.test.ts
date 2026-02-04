@@ -1,3 +1,4 @@
+import { initTestEnvironment } from '@/../jest.setup';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupReadKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.write-mapper';
@@ -20,11 +21,11 @@ import {
   expectTransaction,
   firstArg,
   mockDate,
+  nthArgs,
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupRaw, getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
-import { initTestEnvironment } from '@/../jest.setup';
 import {
   groupReadRepoMock,
   groupWriteRepoMock,
@@ -68,12 +69,12 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const taskView = getTaskView({ id: 91, userId: 7, name: 'T1', priority: 3, weight: 10 });
       const groupRaw = getGroupRaw({ id: 11, user_id: 7, name: 'Group 1' });
       const groupRawTwo = getGroupRaw({ id: 22, user_id: 7, name: 'Group 2' });
-      groupReadRepoMock.getGroupListWithTasksByUserId.mockResolvedValueOnce([
+      groupReadRepoMock.getGroupListWithTasks.mockResolvedValueOnce([
         GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRaw, tasks: [taskView] }),
         GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRawTwo, tasks: [] }),
       ]);
       const payload: GoalGetUserGroups.Request = buildPayload({
-        data: { userId: 7 },
+        data: { userId: 7, limit: 10 },
       });
 
       const res = await sendMessage<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
@@ -81,47 +82,71 @@ describe('GroupsRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(groupReadRepoMock.getGroupListWithTasksByUserId).toHaveBeenCalledTimes(1);
-      expect(groupReadRepoMock.getGroupListWithTasksByUserId).toHaveBeenCalledWith(
-        { userId: 7 },
+      expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
+      expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        { limit: 10 },
         expectTransaction(),
       );
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+
+      const secondArgs = nthArgs(1, groupReadRepoMock.getGroupListWithTasks);
+      expect(specToDebugString(secondArgs)).toMatchInlineSnapshot(`
+          "AND(
+            tasks.byUserId,
+            tasks.byStatus
+          )"
+      `);
+
       expect(res).toEqual({
-        data: [
-          {
-            id: groupRaw.id,
-            name: groupRaw.name,
-            description: groupRaw.description,
-            status: groupRaw.status,
-            userId: groupRaw.user_id,
-            progress: groupRaw.progress,
-            tasks: [
-              {
-                id: taskView.id,
-                userId: taskView.userId,
-                name: taskView.name,
-                description: taskView.description,
-                priority: taskView.priority,
-                weight: taskView.weight,
-                cancelReason: taskView.cancelReason,
-                startDate: taskView.startDate,
-                endDate: taskView.endDate,
-                deadline: taskView.deadline,
-                status: taskView.status,
-                recurrence: taskView.recurrence,
-              },
-            ],
-          },
-          {
-            id: groupRawTwo.id,
-            name: groupRawTwo.name,
-            description: groupRawTwo.description,
-            status: groupRawTwo.status,
-            userId: groupRawTwo.user_id,
-            progress: groupRawTwo.progress,
-            tasks: [],
-          },
-        ],
+        data: {
+          items: [
+            {
+              id: groupRaw.id,
+              name: groupRaw.name,
+              description: groupRaw.description,
+              status: groupRaw.status,
+              userId: groupRaw.user_id,
+              progress: groupRaw.progress,
+              tasks: [
+                {
+                  id: taskView.id,
+                  userId: taskView.userId,
+                  name: taskView.name,
+                  description: taskView.description,
+                  priority: taskView.priority,
+                  weight: taskView.weight,
+                  cancelReason: taskView.cancelReason,
+                  startDate: taskView.startDate,
+                  endDate: taskView.endDate,
+                  deadline: taskView.deadline,
+                  status: taskView.status,
+                  recurrence: taskView.recurrence,
+                },
+              ],
+            },
+            {
+              id: groupRawTwo.id,
+              name: groupRawTwo.name,
+              description: groupRawTwo.description,
+              status: groupRawTwo.status,
+              userId: groupRawTwo.user_id,
+              progress: groupRawTwo.progress,
+              tasks: [],
+            },
+          ],
+
+          meta: { cursor: 'eyJsYXN0SWQiOjIyfQ==' },
+        },
       });
     });
   });

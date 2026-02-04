@@ -4,6 +4,7 @@ import { LoggerMiddleware } from '@big-d/api-utils';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ExceptionRequestDataValidation, HttpExceptionFactory } from '@shared/exceptions';
 import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
@@ -11,7 +12,9 @@ import { ObservabilityInterceptor } from '@shared/interceptors/observability.int
 import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.set('query parser', 'extended');
 
   app.use(LoggerMiddleware);
 
