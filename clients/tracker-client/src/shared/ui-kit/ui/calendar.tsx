@@ -27,14 +27,13 @@ function Calendar({
   const defaultClassNames = getDefaultClassNames();
 
   const [locale, setLocale] = useState<DayPickerLocale | undefined>();
-  console.log(locale);
+
   useEffect(() => {
     const browserLocale = navigator.language || navigator.languages?.[0] || 'ru-RU';
-    const localeCode = browserLocale.split('-')[0].toLowerCase();
+    const localeCode = browserLocale.split('-')[0].toLowerCase() as keyof typeof localeImports;
 
     loadDateFnsLocale(localeCode).then(setLocale);
   }, []);
-
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -196,15 +195,14 @@ function CalendarDayButton({
   );
 }
 
-const localeImports: Record<string, () => Promise<{ default?: DayPickerLocale } | any>> = {
-  en: () => import('react-day-picker/locale').then((m) => ({ default: m.enUS ?? m.enCA })),
-  ru: () => import('react-day-picker/locale').then((m) => ({ default: m.ru })),
+const localeImports: Record<'en' | 'ru', () => Promise<DayPickerLocale>> = {
+  en: () => import('react-day-picker/locale').then((m) => m.enUS ?? m.enCA),
+  ru: () => import('react-day-picker/locale').then((m) => m.ru),
 };
 
-async function loadDateFnsLocale(localeCode: string): Promise<Locale> {
+async function loadDateFnsLocale(localeCode: keyof typeof localeImports): Promise<DayPickerLocale> {
   try {
-    const mod = await localeImports[localeCode]?.();
-    const locale = (mod?.default ?? mod) as Locale;
+    const locale = await localeImports[localeCode]?.();
     if (locale) return locale;
   } catch (e) {
     if (!import.meta.env.PROD) {
@@ -212,8 +210,7 @@ async function loadDateFnsLocale(localeCode: string): Promise<Locale> {
     }
   }
 
-  const fallbackMod = await localeImports.ru();
-  return fallbackMod.default ?? fallbackMod;
+  return await localeImports.ru();
 }
 
 export { Calendar, CalendarDayButton };

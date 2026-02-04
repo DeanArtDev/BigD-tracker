@@ -17,7 +17,6 @@ function useInvalidateGroups() {
 
 function useInvalidateGroupById() {
   return (param: { groupId: number }) => {
-    console.log('useInvalidateGroupById');
     return queryClient.invalidateQueries({
       queryKey: groupsQueryKeys.getGroupById(param),
     });

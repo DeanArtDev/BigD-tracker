@@ -75,13 +75,6 @@ class Task extends AggregateRoot {
   }
 
   #changeBlock() {
-    if (this.#state.startDate?.isBefore(new Date().toISOString())) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Task is overdue, it can't be changed any more startDate:${this.startDate}`,
-        field: 'startDate',
-      });
-    }
-
     if (this.#state.endDate != null) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Task can't be changed after ending`,
