@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
 
 class ReplaceTaskReqData {
@@ -15,7 +15,7 @@ class ReplaceTaskReqData {
   @IsInt()
   priority: number;
 
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @IsISO8601()

@@ -4,6 +4,7 @@ import { Expose, Type } from 'class-transformer';
 import {
   IsInt,
   IsISO8601,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -32,7 +33,7 @@ class ReplaceTaskReqData {
   @ApiProperty({ example: 100, description: 'От 0 до 100' })
   @Min(0)
   @Max(100)
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @ApiPropertyOptional({ example: '2025-06-24T13:01:02.471Z' })

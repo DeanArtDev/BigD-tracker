@@ -5,6 +5,7 @@ import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
+  GoalGetDetailedGroups,
   GoalGetGroupInBox,
   GoalGetUserGroups,
   GoalReplaceGroup,
@@ -27,6 +28,7 @@ import {
   CreateGroupReq,
   CreateGroupRes,
   DeleteGroupRes,
+  GetDetailedGroupsRes,
   GetInBoxRes,
   GetUserGroupsRes,
   ReplaceGroupReq,
@@ -66,6 +68,24 @@ export class GroupsController {
       GoalGetUserGroups.pattern,
       { data: { userId: uid } },
     );
+  }
+
+  @Get('/:groupId/detailed')
+  @ApiOperation({ summary: 'Получение групп с подробностями' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetDetailedGroupsRes,
+  })
+  @ValidateRpcResponse(GetDetailedGroupsRes)
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async getDetailedGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<GetDetailedGroupsRes> {
+    return await this.goalClient.send<
+      GoalGetDetailedGroups.Response,
+      GoalGetDetailedGroups.Request
+    >(GoalGetDetailedGroups.pattern, { data: { userId: uid, groupId } });
   }
 
   @Post()

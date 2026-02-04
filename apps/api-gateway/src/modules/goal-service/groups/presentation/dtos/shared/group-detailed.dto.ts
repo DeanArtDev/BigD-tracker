@@ -14,7 +14,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class GroupDto {
+class GroupDetailedDto {
   @ApiProperty({ example: 1 })
   @Expose()
   @IsInt()
@@ -64,4 +64,4 @@ class GroupDto {
   tasks: TaskDto[];
 }
 
-export { GroupDto };
+export { GroupDetailedDto };

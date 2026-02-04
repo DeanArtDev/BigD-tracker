@@ -1,7 +1,16 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEnum, IsInt, IsISO8601, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 class TaskDto {
   @ApiProperty({ example: 1 })
@@ -57,7 +66,7 @@ class TaskDto {
   @Expose()
   @Min(0)
   @Max(100)
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @ApiPropertyOptional({ example: 'Описание причины не выполнения дела' })

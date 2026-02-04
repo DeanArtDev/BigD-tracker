@@ -1,5 +1,5 @@
 import { GroupWithTasksView } from '@/modules/tasks/application/dto';
-import { GetUserGroupsQuery } from '@/modules/tasks/application/queries';
+import { GetDetailedGroupsQuery, GetUserGroupsQuery } from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
   DeleteGroupCommand,
@@ -9,6 +9,7 @@ import { GroupViewRmqMapper } from './mappers/group-view.rmq.mapper';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
+  GoalGetDetailedGroups,
   GoalGetUserGroups,
   GoalReplaceGroup,
 } from '@big-d/api-contracts';
@@ -64,6 +65,22 @@ export class GroupsRmqController {
         name: payload.name,
         description: payload.description,
         tasks: payload.tasks,
+      }),
+    );
+
+    return {
+      data: groupWithTasks.toJSON(),
+    };
+  }
+
+  @MessagePattern(GoalGetDetailedGroups.pattern)
+  async getDetailedGroup(
+    @Payload() { data: payload }: GoalGetDetailedGroups.Request,
+  ): Promise<GoalGetDetailedGroups.Response> {
+    const groupWithTasks = await this.queryBus.execute(
+      new GetDetailedGroupsQuery({
+        userId: payload.userId,
+        groupId: payload.groupId,
       }),
     );
 

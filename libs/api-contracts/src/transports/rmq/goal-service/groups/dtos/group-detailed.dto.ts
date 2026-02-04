@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { GroupStatus } from '../types';
 
-class GroupDto {
+class GroupDetailedDto {
   @IsInt()
   id: number;
 
@@ -37,4 +37,4 @@ class GroupDto {
   tasks: TaskDto[];
 }
 
-export { GroupDto };
+export { GroupDetailedDto };

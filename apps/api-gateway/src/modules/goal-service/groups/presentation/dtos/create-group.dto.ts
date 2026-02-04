@@ -4,6 +4,7 @@ import { Expose, Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -52,7 +53,7 @@ class CreateGroupResData {
   @Expose()
   @Min(0)
   @Max(100)
-  @IsInt()
+  @IsNumber()
   progress: number;
 
   @ApiProperty({
