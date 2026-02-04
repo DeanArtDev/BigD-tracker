@@ -6,7 +6,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui-kit/ui/popo
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import { cn } from '@/shared/ui-kit/utils';
 import { format, isDate } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { type FieldValues, type Path } from 'react-hook-form';
@@ -90,7 +89,6 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
                   {...props}
                   className={classNames?.input}
                   mode="single"
-                  locale={ru}
                   {...field}
                   disableNavigation={field.disabled}
                   defaultMonth={field.value}

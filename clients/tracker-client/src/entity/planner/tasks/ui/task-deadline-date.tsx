@@ -1,8 +1,8 @@
 import { cn } from '@/shared/ui-kit/utils';
-import { format } from 'date-fns';
 import { CalendarClock } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { isDateInTodayAndTomorrow } from '../lib/utils';
+import dayjs from '@/shared/lib/time';
 
 type TaskDeadlineDateProps = ComponentProps<typeof CalendarClock> & {
   readonly deadline?: Date;
@@ -20,7 +20,7 @@ function TaskDeadlineDate({ deadline, showDate = false, ...svgProps }: TaskDeadl
       })}
     >
       <CalendarClock color={isWarning ? 'var(--destructive)' : undefined} {...svgProps} />
-      {showDate && format(deadline, 'd MMM')}
+      {showDate && dayjs(deadline).format('D MMM')}
     </span>
   );
 }

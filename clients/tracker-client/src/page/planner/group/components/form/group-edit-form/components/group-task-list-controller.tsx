@@ -1,4 +1,4 @@
-import { useGroupInvalidate } from '@/entity/planner/groups';
+import { useInvalidateGroups } from '@/entity/planner/groups';
 import { type TaskEntity, useTaskUnassignFromGroup } from '@/entity/planner/tasks';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
@@ -19,7 +19,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
 
   const [taskForUpdate, setTaskForUpdate] = useState<TaskEntity | null>(null);
   const { unassignTaskFromGroup, isPending } = useTaskUnassignFromGroup();
-  const invalidateGroups = useGroupInvalidate();
+  const invalidateGroups = useInvalidateGroups();
 
   return (
     <>

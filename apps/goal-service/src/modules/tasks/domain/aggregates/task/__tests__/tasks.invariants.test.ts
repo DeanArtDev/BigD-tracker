@@ -101,15 +101,6 @@ describe('task invariants', () => {
     ).toThrow();
   });
 
-  it('rejects updates after ending', () => {
-    expect(() =>
-      assertTaskReplace({
-        status: TaskStatus.NOT_STARTED,
-        endDate: futureDate(1),
-      }),
-    ).toThrow();
-  });
-
   it('rejects soft delete for completed tasks', () => {
     expect(() =>
       assertTaskDeleteSoft({

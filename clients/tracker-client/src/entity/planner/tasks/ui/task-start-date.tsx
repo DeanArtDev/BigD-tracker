@@ -1,8 +1,8 @@
 import { cn } from '@/shared/ui-kit/utils';
-import { format } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { isDateInTodayAndTomorrow } from '../lib/utils';
+import dayjs from '@/shared/lib/time';
 
 type ThingStartDateProps = ComponentProps<typeof Calendar> & {
   readonly startDate?: Date;
@@ -21,7 +21,7 @@ function TaskStartDate({ startDate, showDate = false, ...svgProps }: ThingStartD
       })}
     >
       <Calendar color={isWarning ? 'var(--destructive)' : undefined} {...svgProps} />
-      {showDate && format(startDate, 'd MMM')}
+      {showDate && dayjs(startDate).format('D MMM')}
     </span>
   );
 }

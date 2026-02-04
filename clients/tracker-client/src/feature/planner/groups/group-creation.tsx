@@ -1,4 +1,4 @@
-import { useGroupCreate, useGroupInvalidate } from '@/entity/planner/groups';
+import { useGroupCreate, useInvalidateGroups } from '@/entity/planner/groups';
 import { GroupFormDialog } from '@/entity/planner/groups/ui/form';
 import { type PropsWithChildren, useState } from 'react';
 
@@ -11,7 +11,7 @@ function GroupCreation({ children, onCansel, onSuccess }: GroupCreationProps) {
   const [open, setOpen] = useState(false);
 
   const { createGroup, isPending } = useGroupCreate();
-  const groupInvalidate = useGroupInvalidate();
+  const groupInvalidate = useInvalidateGroups();
 
   return (
     <GroupFormDialog

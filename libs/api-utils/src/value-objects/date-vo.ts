@@ -8,10 +8,15 @@ class DateVo implements BaseValueObject {
   #state: Date;
 
   private constructor(state: string) {
-    const newDate = dayjs(state);
-    if (!newDate.isValid()) {
+    if (!isISO8601(state)) {
       throw new Error(`Date: ${state} has invalid format`);
     }
+
+    const newDate = dayjs(state);
+    if (!newDate.isValid()) {
+      throw new Error(`Date: ${state} is invalid`);
+    }
+
     this.#state = newDate.set('milliseconds', 0).toDate();
   }
 
@@ -23,12 +28,7 @@ class DateVo implements BaseValueObject {
     if (date instanceof Date) {
       return new DateVo(date.toISOString());
     }
-
-    if (isISO8601(date)) {
-      return new DateVo(date);
-    }
-
-    throw new Error(`Date: ${date} must be ISO8601 format`);
+    return new DateVo(date);
   }
 
   public static restore(date: string): DateVo {

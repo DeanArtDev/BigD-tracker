@@ -46,6 +46,17 @@ function assertDeadlineInThePast(input: { deadline?: DateVo }): void {
   }
 }
 
+function assertStartDateInThePast(input: { start?: DateVo }): void {
+  const { start } = input;
+
+  if (start != null && start.isBefore(new Date().toISOString())) {
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `startDate:${start.value} can't be in the past`,
+      field: 'startDate',
+    });
+  }
+}
+
 function assertStartDateNotInThePast(input: { start?: DateVo }): void {
   const { start } = input;
 
@@ -67,7 +78,7 @@ function assertHasCancelReason(input: { status: TaskStatus; reason?: string }): 
 }
 
 function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): void {
-  const { status, endDate } = input;
+  const { status } = input;
 
   if (
     [TaskStatus.DELETED, TaskStatus.ARCHIVED, TaskStatus.OVERDUE, TaskStatus.COMPLETED].includes(
@@ -77,13 +88,6 @@ function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): voi
     throw new ExceptionTaskDomainInvalidInvariant({
       message: `Task can't be updated at current status: ${status}`,
       field: 'status',
-    });
-  }
-
-  if (endDate != null) {
-    throw new ExceptionTaskDomainInvalidInvariant({
-      message: `Task can't be updated after ending`,
-      field: 'endDate',
     });
   }
 }
@@ -167,4 +171,5 @@ export {
   assertDeadlineInThePast,
   assertStartDateNotInThePast,
   assertFinishTask,
+  assertStartDateInThePast,
 };
