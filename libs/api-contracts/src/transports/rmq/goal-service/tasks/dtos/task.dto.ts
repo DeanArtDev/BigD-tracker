@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsISO8601, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TaskStatus } from '../types';
 
 class TaskDto {
@@ -18,7 +18,7 @@ class TaskDto {
   @IsInt()
   priority: number;
 
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @IsISO8601()

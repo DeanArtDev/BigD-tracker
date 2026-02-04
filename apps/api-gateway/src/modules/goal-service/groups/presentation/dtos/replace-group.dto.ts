@@ -4,6 +4,7 @@ import {
   IsArray,
   IsInt,
   IsISO8601,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -55,7 +56,7 @@ class ReplaceGroupTask {
   @Expose()
   @Min(0)
   @Max(100)
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @ApiPropertyOptional({

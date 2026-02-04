@@ -3,6 +3,7 @@ import {
   IsArray,
   IsInt,
   IsISO8601,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -24,7 +25,7 @@ class ReplaceGroupTask {
   @IsInt()
   priority: number;
 
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @IsISO8601()

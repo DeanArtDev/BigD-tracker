@@ -3,6 +3,7 @@ import { ExceptionGroupNotFound } from '@/modules/tasks/application/exceptions';
 import {
   GroupById,
   GroupByUserId,
+  GroupInbox,
   groupsCombinators,
 } from '@/modules/tasks/application/specifications';
 import { GroupsToken } from '@/modules/tasks/tokens';
@@ -12,7 +13,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { TaskDatabase, GroupsReadRepository } from '../../ports';
 import { GetDetailedGroupsQuery } from './get-detailed-groups.query';
 
-const { and } = groupsCombinators;
+const { and, not } = groupsCombinators;
 
 @QueryHandler(GetDetailedGroupsQuery)
 export class GetDetailedGroupsHandler implements IQueryHandler<GetDetailedGroupsQuery> {
@@ -24,7 +25,7 @@ export class GetDetailedGroupsHandler implements IQueryHandler<GetDetailedGroups
   async execute({ input }: GetDetailedGroupsQuery): Promise<GroupDetailedView> {
     return this.db.runTransaction(async (trx) => {
       const detailedGroup = await this.groupsReadRepo.getGroupDetailed(
-        and(GroupById(input.groupId), GroupByUserId(input.userId)),
+        and(GroupById(input.groupId), GroupByUserId(input.userId), not(GroupInbox())),
         trx,
       );
 

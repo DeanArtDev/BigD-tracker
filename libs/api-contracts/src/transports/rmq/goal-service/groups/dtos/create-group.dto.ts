@@ -1,6 +1,14 @@
 import { GroupStatus } from '../types';
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
 
 class CreateGroupReqData {
   @IsInt()
@@ -29,10 +37,10 @@ class CreateGroupResData {
   @IsInt()
   userId: number;
 
-  @IsInt()
+  @IsNumber()
   progress: number;
 
-  @IsInt()
+  @IsNumber()
   weight: number;
 
   @IsEnum(GroupStatus)

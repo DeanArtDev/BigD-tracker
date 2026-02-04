@@ -6,6 +6,7 @@ import {
   IsArray,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Max,
@@ -39,7 +40,7 @@ class GroupDto {
   @Expose()
   @Min(0)
   @Max(100)
-  @IsInt()
+  @IsNumber()
   progress: number;
 
   @ApiProperty({
