@@ -102,9 +102,9 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
       const shapeMap = {
         with_group_links_left_join: (qb: typeof query) =>
-          qb.innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
-        with_group_links_inner_join: (qb: typeof query) =>
           qb.leftJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
+        with_group_links_inner_join: (qb: typeof query) =>
+          qb.innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
       };
 
       for (const shape of shapes) {
