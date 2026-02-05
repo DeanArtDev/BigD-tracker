@@ -1,9 +1,9 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
 import { SelectQueryBuilder } from 'kysely';
 
-function taskFullSelect(
-  qb: SelectQueryBuilder<TasksDB, 'tasks' | 'task_statuses', { status: string }>,
-) {
+type TasksBaseQB<O = unknown> = SelectQueryBuilder<TasksDB, 'tasks', O>;
+
+function taskFullSelect<O>(qb: TasksBaseQB<O>) {
   return qb.select([
     'tasks.id as id',
     'tasks.user_id as user_id',

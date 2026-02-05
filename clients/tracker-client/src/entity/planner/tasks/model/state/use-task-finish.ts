@@ -1,7 +1,7 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
 
-function useFinishTask() {
+function useTaskFinish() {
   const options = getDefaultQueryNotifications();
 
   const { mutate: finishTask, ...states } = $privetQueryClient.useMutation(
@@ -16,4 +16,4 @@ function useFinishTask() {
   };
 }
 
-export { useFinishTask };
+export { useTaskFinish };

@@ -23,4 +23,19 @@ function useInvalidateGroupById() {
   };
 }
 
-export { useInvalidateInbox, useInvalidateGroups, useInvalidateGroupById };
+function useInvalidateAllGroups() {
+  return () => {
+    return queryClient.invalidateQueries({
+      predicate: (query) => {
+        if (Array.isArray(query.queryKey)) {
+          const endpoint = query.queryKey[1];
+          const mainEndpointStart = groupsQueryKeys.mainKey[1];
+          return endpoint?.startsWith(mainEndpointStart);
+        }
+        return undefined;
+      },
+    });
+  };
+}
+
+export { useInvalidateInbox, useInvalidateGroups, useInvalidateGroupById, useInvalidateAllGroups };

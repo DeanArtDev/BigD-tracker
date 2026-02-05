@@ -2,7 +2,7 @@ import { useGetUserInbox, useInvalidateInbox } from '@/entity/planner/groups';
 import {
   type TaskInboxEntity,
   useDeleteTask,
-  useFinishTask,
+  useTaskFinish,
   useInvalidateDiaryTasks,
 } from '@/entity/planner/tasks';
 import { withLazy } from '@/shared/lib/react/with-lazy';
@@ -44,7 +44,7 @@ function TaskInboxList() {
   };
 
   const { deleteTask, isPending: isDeletePending } = useDeleteTask();
-  const { finishTask, isPending: isFinishPending } = useFinishTask();
+  const { finishTask, isPending: isFinishPending } = useTaskFinish();
   const isLoading = isDeletePending || isFinishPending;
 
   const handleFinish = (taskId: number) => {

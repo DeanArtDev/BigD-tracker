@@ -9,4 +9,4 @@ export * from './use-task-clone';
 export * from './use-assignable-tasks.query';
 export * from './use-unassign-task-from-group';
 export * from './use-assign-task-to-group';
-export * from './use-finish-task';
+export * from './use-task-finish';

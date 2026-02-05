@@ -1,11 +1,11 @@
-import { useInvalidateGroupById, useInvalidateGroups } from '@/entity/planner/groups';
+import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useInvalidateDiaryTasks, useUpdateTask } from '@/entity/planner/tasks';
 import {
   TaskDeleteWithConfirmHoc,
   TaskFormDialog,
   type TaskFormDialogProps,
 } from '@/entity/planner/tasks/ui';
-import { TaskCloningButton } from '@/feature/planner/tasks/task-cloning-button';
+import { SidebarActions } from './components/sidebar-actions';
 import { ButtonTrash } from '@/shared/components/button-trash';
 
 interface TaskEditProps {
@@ -20,15 +20,14 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
 
   const { updateTask, isPending } = useUpdateTask();
   const invalidateTasks = useInvalidateDiaryTasks();
-  const invalidateGroups = useInvalidateGroups();
   const invalidateDiaryTasks = useInvalidateDiaryTasks();
-  const invalidateGroupById = useInvalidateGroupById();
+  const invalidateAllGroups = useInvalidateAllGroups();
 
   const invalidate = async () => {
     await invalidateTasks();
-    await invalidateGroups();
     await invalidateDiaryTasks();
-    await invalidateGroupById({ groupId });
+    await invalidateAllGroups();
+    onSuccess?.();
   };
 
   const DeleteTaskSlot = (props: { disabled: boolean }) => {
@@ -54,20 +53,14 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
       open={open}
       loading={isPending}
       footerSlot={DeleteTaskSlot}
-      footerSidebarSlot={() =>
-        task != null ? (
-          <TaskCloningButton
-            className="w-fit ml-auto"
-            taskId={task.id}
-            groupId={groupId}
-            onSuccess={async () => {
-              await invalidate();
-            }}
-          >
-            Клонировать в группу
-          </TaskCloningButton>
-        ) : null
-      }
+      footerSidebarSlot={() => (
+        <SidebarActions
+          groupId={groupId}
+          taskId={task?.id}
+          onFinishSuccess={invalidate}
+          onCloneSuccess={invalidate}
+        />
+      )}
       onOpenChange={(isOpen) => {
         !isOpen && onCansel?.();
       }}
@@ -79,13 +72,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
             params: { path: { taskId: task.id } },
             body: { data: formData },
           },
-
-          {
-            onSuccess: async () => {
-              await invalidate();
-              onSuccess?.();
-            },
-          },
+          { onSuccess: invalidate },
         );
       }}
     />
