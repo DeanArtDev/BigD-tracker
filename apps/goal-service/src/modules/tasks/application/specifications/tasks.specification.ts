@@ -21,7 +21,7 @@ const TaskByGroupId = (groupId: number) =>
 
 const TaskInGroup = () =>
   leaf({
-    key: 'tasks.byGroupId',
+    key: 'tasks.inGroup',
     purpose: 'filter',
     toExpr: (eb) => eb('task_to_group.group_id', 'is not', null),
   });

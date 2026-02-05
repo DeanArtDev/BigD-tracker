@@ -1,5 +1,9 @@
-import { TaskView } from '@/modules/tasks/application/dto';
+import { GroupDetailedView, TaskView } from '@/modules/tasks/application/dto';
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import {
+  GroupReadKyselyMapper,
+  RawGroupWithTasks,
+} from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.write-mapper';
 import { RawGroup } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupStatus } from '@big-d/api-contracts';
@@ -27,4 +31,13 @@ const getGroupWithTasks = (
   });
 };
 
-export { getGroupRaw, getGroupWithTasks };
+const getGroupDetailedView = (data: Partial<RawGroupWithTasks> = {}): GroupDetailedView => {
+  const groupRaw = getGroupRaw(data);
+
+  return GroupReadKyselyMapper.fromRawToDetailedView({
+    ...groupRaw,
+    tasks: data.tasks ?? [],
+  });
+};
+
+export { getGroupDetailedView, getGroupRaw, getGroupWithTasks };
