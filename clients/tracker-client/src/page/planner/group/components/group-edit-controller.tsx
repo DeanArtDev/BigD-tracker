@@ -32,7 +32,7 @@ function GroupEditController({ group }: GroupEditControllerProps) {
           {({ isLoading }) => <ButtonTrash variant="ghost" isLoading={isLoading} />}
         </GroupConfirmedDelete>
       }
-      onSubmit={(formData) => {
+      onSubmit={(formData, { reset }) => {
         if (group == null) return;
 
         const tasks = formData.tasks.map((task) => ({
@@ -55,6 +55,7 @@ function GroupEditController({ group }: GroupEditControllerProps) {
             onSuccess: async () => {
               await invalidateGroupById({ groupId: group.id });
               await groupInvalidate();
+              reset();
             },
           },
         );

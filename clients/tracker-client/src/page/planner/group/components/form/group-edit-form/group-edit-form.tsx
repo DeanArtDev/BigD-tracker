@@ -27,11 +27,14 @@ interface GroupEditFormProps {
   readonly footerSlot?: ReactNode;
   readonly group: GroupEntity;
 
-  readonly onSubmit: (formData: {
-    readonly name: string;
-    readonly description?: string;
-    readonly tasks: GroupEditSubmitFormData['tasks'];
-  }) => void;
+  readonly onSubmit: (
+    formData: {
+      readonly name: string;
+      readonly description?: string;
+      readonly tasks: GroupEditSubmitFormData['tasks'];
+    },
+    params: { reset: () => void },
+  ) => void;
 }
 
 function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormProps) {
@@ -69,11 +72,13 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
           }
           const response = { name: formData.name, description, tasks: formData.tasks };
 
-          onSubmit(response);
-          form.reset(
-            { ...response, isDescriptionDirty: false },
-            { keepDirty: false, keepDirtyValues: false, keepValues: false },
-          );
+          onSubmit(response, {
+            reset: () =>
+              void form.reset(
+                { ...response, isDescriptionDirty: false },
+                { keepDirty: false, keepDirtyValues: false, keepValues: false },
+              ),
+          });
         })}
       >
         <GroupEditFormHeader
