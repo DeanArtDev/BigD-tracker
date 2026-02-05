@@ -1,3 +1,4 @@
+import { TaskStatus } from '@/entity/planner/tasks';
 import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
 import { TaskFrame } from '@/entity/planner/tasks/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
@@ -8,7 +9,7 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { cn } from '@/shared/ui-kit/utils';
-import { CircleCheckBig, CirclePause, CirclePlus, GripVertical } from 'lucide-react';
+import { Check, CircleCheckBig, CirclePause, CirclePlus, GripVertical } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { type FieldArrayPath, useFieldArray } from 'react-hook-form';
 import type { GroupEditFormData } from '../validation-schema';
@@ -98,8 +99,16 @@ function GroupTaskList({
                   })}
                   ref={setNodeRef}
                   name={task.name}
+                  showPriority={task.status !== TaskStatus.COMPLETED}
                   priority={task.priority}
-                  actionsSlot={afterTaskNameSlot?.({ taskId: task.id })}
+                  actionsSlot={
+                    <div className="flex flex-row items-center gap-1">
+                      {task.status === TaskStatus.COMPLETED && (
+                        <Check className="size-4 absolute -top-1 -right-px z-1 stroke-5 stroke-green-600" />
+                      )}
+                      {afterTaskNameSlot?.({ taskId: task.id })}
+                    </div>
+                  }
                   beforeNameSlot={
                     <Button
                       type="button"
