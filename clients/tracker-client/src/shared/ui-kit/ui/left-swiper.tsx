@@ -67,7 +67,7 @@ const SwipeableItem = ({
   const { attributes, listeners, setNodeRef } = useDraggable({ id: draggableId });
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative">
       <div className="absolute top-0 right-0 h-full flex ml-auto">{content}</div>
 
       <div
