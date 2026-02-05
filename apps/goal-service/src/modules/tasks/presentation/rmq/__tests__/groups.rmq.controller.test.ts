@@ -6,6 +6,7 @@ import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
+  GoalGetDetailedGroups,
   GoalGetUserGroups,
   GoalReplaceGroup,
   RmqErrorKind,
@@ -25,7 +26,13 @@ import {
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
-import { getGroupRaw, getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
+import {
+  getGroupDetailedView,
+  getGroupRaw,
+  getGroupWithTasks,
+  getTask,
+  getTaskView,
+} from '@shared/__tests__/entities';
 import {
   groupReadRepoMock,
   groupWriteRepoMock,
@@ -610,6 +617,74 @@ describe('GroupsRmqController (rmq e2e)', () => {
         key: 'GROUP_WRITE_CONFLICT',
         kind: RmqErrorKind.INTERNAL,
         details: { subjectId: 83, message: 'Group could not be deleted' },
+      });
+    });
+  });
+
+  describe(`${GoalGetDetailedGroups.pattern}`, () => {
+    test('should return group details', async () => {
+      const userId = 90;
+      const groupId = 321;
+      const taskView = getTaskView({ id: 701, userId, name: 'Detailed task' });
+      const detailedGroup = getGroupDetailedView({
+        id: groupId,
+        user_id: userId,
+        name: 'Detailed',
+        tasks: [taskView],
+      });
+      groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(detailedGroup);
+
+      const payload: GoalGetDetailedGroups.Request = buildPayload({
+        data: { groupId, userId },
+      });
+
+      const res = await sendMessage<GoalGetDetailedGroups.Response, GoalGetDetailedGroups.Request>(
+        GoalGetDetailedGroups.pattern,
+        payload,
+      );
+
+      expect(groupReadRepoMock.getGroupDetailed).toHaveBeenCalledTimes(1);
+      const [specArg, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
+      expect(trxArg).toEqual(expectTransaction());
+      expect(specToDebugString(specArg)).toMatchInlineSnapshot(`
+          "AND(
+            groups.byId,
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+      expect(res).toEqual({ data: detailedGroup.toJSON() });
+    });
+
+    test('should throw when group missing', async () => {
+      const userId = 91;
+      const groupId = 322;
+      groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(null);
+
+      const payload: GoalGetDetailedGroups.Request = buildPayload({
+        data: { groupId, userId },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalGetDetailedGroups.Response, GoalGetDetailedGroups.Request>(
+          GoalGetDetailedGroups.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(groupReadRepoMock.getGroupDetailed).toHaveBeenCalledTimes(1);
+      const [, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
+      expect(trxArg).toEqual(expectTransaction());
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.groupNotFound.code,
+        key: 'GROUP_NOT_FOUND',
+        kind: RmqErrorKind.NOT_FOUND,
+        details: { groupId },
       });
     });
   });
