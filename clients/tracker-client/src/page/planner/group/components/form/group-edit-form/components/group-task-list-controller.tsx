@@ -1,12 +1,16 @@
-import { useInvalidateGroups } from '@/entity/planner/groups';
-import { type TaskEntity, useTaskUnassignFromGroup } from '@/entity/planner/tasks';
+import { useInvalidateGroupById, useInvalidateGroups } from '@/entity/planner/groups';
+import {
+  type TaskEntity,
+  useAssignTaskToGroup,
+  useUnassignTaskFromGroup,
+} from '@/entity/planner/tasks';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
+import { GroupTaskAutocomplete } from './group-task-autocomplete';
 import { ButtonAdd } from '@/shared/components/button-add';
 import { ButtonClose } from '@/shared/components/button-close';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 import { Button } from '@/shared/ui-kit/ui/button';
-import { Input } from '@/shared/ui-kit/ui/input';
 import { useState } from 'react';
 import { GroupTaskList } from './group-task-list';
 
@@ -18,8 +22,16 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
 
   const [taskForUpdate, setTaskForUpdate] = useState<TaskEntity | null>(null);
-  const { unassignTaskFromGroup, isPending } = useTaskUnassignFromGroup();
+
+  const { unassignTaskFromGroup, isPending } = useUnassignTaskFromGroup();
+  const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
+
   const invalidateGroups = useInvalidateGroups();
+  const invalidateGroupById = useInvalidateGroupById();
+  const invalidate = async () => {
+    await invalidateGroups();
+    await invalidateGroupById({ groupId });
+  };
 
   return (
     <>
@@ -27,7 +39,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
         afterTaskNameSlot={({ taskId }) => {
           return (
             <ButtonClose
-              size="xs"
+              className="size-5"
               disabled={isPending}
               onClick={(event) => {
                 event.preventDefault();
@@ -38,7 +50,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
                   callback: () =>
                     void unassignTaskFromGroup(
                       { params: { path: { taskId, groupId } } },
-                      { onSuccess: invalidateGroups },
+                      { onSuccess: invalidate },
                     ),
 
                   dialog: {
@@ -52,7 +64,16 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
         }}
         beforeTaskListSlot={
           <div className="flex gap-2 mb-2">
-            <Input placeholder="Найти дело?" />
+            <GroupTaskAutocomplete
+              loading={isAssignTaskToGroupPending}
+              onTaskSelect={(taskId) => {
+                assignTaskToGroup(
+                  { params: { path: { taskId, groupId } } },
+                  { onSuccess: invalidate },
+                );
+              }}
+            />
+
             <TaskCreation groupId={groupId} trigger={<ButtonAdd />} />
           </div>
         }
