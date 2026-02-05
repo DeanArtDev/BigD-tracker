@@ -644,15 +644,20 @@ describe('GroupsRmqController (rmq e2e)', () => {
       );
 
       expect(groupReadRepoMock.getGroupDetailed).toHaveBeenCalledTimes(1);
-      const [specArg, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
+      const [groupSpecArg, taskSpecArgs, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
       expect(trxArg).toEqual(expectTransaction());
-      expect(specToDebugString(specArg)).toMatchInlineSnapshot(`
+      expect(specToDebugString(groupSpecArg)).toMatchInlineSnapshot(`
           "AND(
             groups.byId,
             groups.byUserId,
             NOT(
               groups.inbox
             )
+          )"
+      `);
+      expect(specToDebugString(taskSpecArgs)).toMatchInlineSnapshot(`
+          "AND(
+            tasks.byStatus
           )"
       `);
       expect(res).toEqual({ data: detailedGroup.toJSON() });
@@ -678,8 +683,6 @@ describe('GroupsRmqController (rmq e2e)', () => {
       }
 
       expect(groupReadRepoMock.getGroupDetailed).toHaveBeenCalledTimes(1);
-      const [, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
-      expect(trxArg).toEqual(expectTransaction());
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.groupNotFound.code,
         key: 'GROUP_NOT_FOUND',

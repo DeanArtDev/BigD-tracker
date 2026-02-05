@@ -21,7 +21,8 @@ interface GroupsReadRepository {
   getGroup(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null>;
 
   getGroupDetailed(
-    specifications: TasksSpecification,
+    groupSpecifications: TasksSpecification,
+    taskSpecifications?: TasksSpecification,
     trx?: TaskTransaction,
   ): Promise<GroupDetailedView | null>;
 

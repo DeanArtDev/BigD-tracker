@@ -5,15 +5,16 @@ import {
   GroupByUserId,
   GroupInbox,
   groupsCombinators,
+  TaskByStatus,
+  tasksCombinators,
 } from '@/modules/tasks/application/specifications';
+import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { TaskDatabase, GroupsReadRepository } from '../../ports';
+import { GroupsReadRepository, TaskDatabase } from '../../ports';
 import { GetDetailedGroupsQuery } from './get-detailed-groups.query';
-
-const { and, not } = groupsCombinators;
 
 @QueryHandler(GetDetailedGroupsQuery)
 export class GetDetailedGroupsHandler implements IQueryHandler<GetDetailedGroupsQuery> {
@@ -25,7 +26,14 @@ export class GetDetailedGroupsHandler implements IQueryHandler<GetDetailedGroups
   async execute({ input }: GetDetailedGroupsQuery): Promise<GroupDetailedView> {
     return this.db.runTransaction(async (trx) => {
       const detailedGroup = await this.groupsReadRepo.getGroupDetailed(
-        and(GroupById(input.groupId), GroupByUserId(input.userId), not(GroupInbox())),
+        groupsCombinators.and(
+          GroupById(input.groupId),
+          GroupByUserId(input.userId),
+          groupsCombinators.not(GroupInbox()),
+        ),
+
+        tasksCombinators.and(TaskByStatus(tasksQuerySpec.readableStatuses)),
+
         trx,
       );
 

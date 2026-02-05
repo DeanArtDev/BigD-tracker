@@ -19,7 +19,7 @@ import { flow } from 'lodash';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { firstOrThrowError, getAvailableGroupQuery, getTasksWithStatusQuery } from '../helpers';
+import { firstOrThrowError, getAvailableGroupQuery } from '../helpers';
 import { groupWithStatusQuery, taskFullSelect, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
@@ -58,39 +58,47 @@ export class GroupsReadRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get.read', async () => {
-      const result = await this.#getGroupQuery(specifications, trx).executeTakeFirst();
-      if (result == null) return null;
+      const group = await groupWithStatusQuery(this.db, trx)
+        .where((eb) => specifications.toExpr(eb))
+        .executeTakeFirst();
+      if (group == null) return null;
 
       return GroupReadKyselyMapper.fromRawToView({
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        user_id: result.user_id,
-        progress: result.progress,
-        status: result.status as GroupStatus,
+        id: group.id,
+        name: group.name,
+        description: group.description,
+        user_id: group.user_id,
+        progress: group.progress,
+        status: group.status as GroupStatus,
       });
     });
   }
 
   async getGroupDetailed(
-    specifications: TasksSpecification,
+    groupSpecifications: TasksSpecification,
+    taskSpecifications?: TasksSpecification,
     trx?: TaskTransaction,
   ): Promise<GroupDetailedView | null> {
     return await this.errorCatcher('groups.get-detailed.read', async () => {
-      const result = await this.#getGroupQuery(specifications, trx).executeTakeFirst();
-      if (result == null) return null;
+      const group = await groupWithStatusQuery(this.db, trx)
+        .where((eb) => groupSpecifications.toExpr(eb))
+        .executeTakeFirst();
+      if (group == null) return null;
 
-      const tasks = await this.#getTasksByGroupIdQuery(result.id, trx)
-        .orderBy('ttg.position', 'asc')
+      const tasks = await tasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
+        .where('task_to_group.group_id', '=', group.id)
+        .$if(taskSpecifications != null, (eb) => eb.where((eb) => taskSpecifications!.toExpr(eb)))
+        .orderBy('task_to_group.position', 'asc')
         .execute();
 
       return GroupReadKyselyMapper.fromRawToDetailedView({
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        user_id: result.user_id,
-        progress: result.progress,
-        status: result.status as GroupStatus,
+        id: group.id,
+        name: group.name,
+        description: group.description,
+        user_id: group.user_id,
+        progress: group.progress,
+        status: group.status as GroupStatus,
         tasks: tasks.map((task) =>
           TasksReadKyselyMapper.fromRawToView({
             id: task.id,
@@ -130,20 +138,22 @@ export class GroupsReadRepositoryKysely
         .where('g.id', '=', input.groupId)
         .where('g.user_id', '=', input.userId);
 
-      const result = await firstOrThrowError(query, { throwError });
-      if (result == null) return null;
+      const group = await firstOrThrowError(query, { throwError });
+      if (group == null) return null;
 
-      const tasks = await this.#getTasksByGroupIdQuery(input.groupId, trx)
-        .orderBy('ttg.position', 'asc')
+      const tasks = await tasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
+        .where('task_to_group.group_id', '=', group.id)
+        .orderBy('task_to_group.position', 'asc')
         .execute();
 
       return GroupReadKyselyMapper.fromRawToWithTaskView({
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        user_id: result.user_id,
-        progress: result.progress,
-        status: result.status as GroupStatus,
+        id: group.id,
+        name: group.name,
+        description: group.description,
+        user_id: group.user_id,
+        progress: group.progress,
+        status: group.status as GroupStatus,
         tasks: tasks.map((task) =>
           TasksReadKyselyMapper.fromRawToView({
             id: task.id,
@@ -194,7 +204,9 @@ export class GroupsReadRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]> {
     return await this.errorCatcher('groups.get-group-list-with-tasks', async () => {
-      const groupsQuery = this.#getGroupQuery(groupSpecifications, trx);
+      const groupsQuery = groupWithStatusQuery(this.db, trx).where((eb) =>
+        groupSpecifications.toExpr(eb),
+      );
 
       const groups = await groupsQuery
         .limit(params?.limit ?? null)
@@ -257,15 +269,5 @@ export class GroupsReadRepositoryKysely
 
       return response;
     });
-  }
-
-  #getGroupQuery(specifications: TasksSpecification, trx?: TaskTransaction) {
-    return groupWithStatusQuery(this.db, trx).where((eb) => specifications.toExpr(eb));
-  }
-
-  #getTasksByGroupIdQuery(groupId: number, trx?: TaskTransaction) {
-    return getTasksWithStatusQuery(this.db, trx)
-      .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-      .where('ttg.group_id', '=', groupId);
   }
 }

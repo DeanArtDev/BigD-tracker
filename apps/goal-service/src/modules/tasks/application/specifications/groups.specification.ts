@@ -1,6 +1,7 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
 import { pgLikeExpr } from '@/modules/tasks/application/specifications/utils';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
+import { GroupStatus } from '@big-d/api-contracts';
 import { groupsCombinators } from './init';
 
 const { leaf } = groupsCombinators;
@@ -33,6 +34,13 @@ const GroupAfterId = (groupId: number) =>
     toExpr: (eb) => eb('groups.id', '>', groupId),
   });
 
+const GroupByStatus = (statuses: GroupStatus[]) =>
+  leaf({
+    key: 'groups.byStatus',
+    purpose: 'filter',
+    toExpr: (eb) => eb('group_statuses.name', 'in', statuses),
+  });
+
 const GroupBySearch = (search: string) =>
   leaf({
     key: 'tasks.bySearch',
@@ -47,4 +55,4 @@ const GroupBySearch = (search: string) =>
       }),
   });
 
-export { GroupById, GroupInbox, GroupByUserId, GroupBySearch, GroupAfterId };
+export { GroupById, GroupInbox, GroupByUserId, GroupBySearch, GroupAfterId, GroupByStatus };
