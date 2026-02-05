@@ -156,6 +156,148 @@ describe('GroupsRmqController (rmq e2e)', () => {
         },
       });
     });
+
+    test('should include search and cursor in specifications and omit next cursor when last part', async () => {
+      const userId = 8;
+      const cursor = Buffer.from(
+        JSON.stringify({ lastId: 10, search: 'Old', sort: ['name'], filter: ['active'] }),
+        'utf8',
+      ).toString('base64');
+      const groupRaw = getGroupRaw({ id: 21, user_id: userId, name: 'Group A' });
+      const groupRawTwo = getGroupRaw({ id: 22, user_id: userId, name: 'Group B' });
+      groupReadRepoMock.getGroupListWithTasks.mockResolvedValueOnce([
+        GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRaw, tasks: [] }),
+        GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRawTwo, tasks: [] }),
+      ]);
+      const payload: GoalGetUserGroups.Request = buildPayload({
+        data: { userId, limit: 5, search: 'Group', cursor },
+      });
+
+      const res = await sendMessage<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
+        GoalGetUserGroups.pattern,
+        payload,
+      );
+
+      expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            groups.byUserId,
+            groups.bySearch,
+            groups.afterId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            tasks.byUserId,
+            tasks.byStatus
+          )"
+      `);
+      expect(nthArgs(3, groupReadRepoMock.getGroupListWithTasks)).toEqual(expectTransaction());
+      expect(res).toEqual({
+        data: {
+          items: [
+            {
+              id: groupRaw.id,
+              name: groupRaw.name,
+              description: groupRaw.description,
+              status: groupRaw.status,
+              userId: groupRaw.user_id,
+              progress: groupRaw.progress,
+              tasks: [],
+            },
+            {
+              id: groupRawTwo.id,
+              name: groupRawTwo.name,
+              description: groupRawTwo.description,
+              status: groupRawTwo.status,
+              userId: groupRawTwo.user_id,
+              progress: groupRawTwo.progress,
+              tasks: [],
+            },
+          ],
+          meta: { cursor: undefined },
+        },
+      });
+    });
+
+    test('should return next cursor when cursor provided and page is full', async () => {
+      const userId = 9;
+      const search = 'Group';
+      const sort = ['name'];
+      const filter = ['active'];
+      const cursor = Buffer.from(
+        JSON.stringify({ lastId: 30, search, sort, filter }),
+        'utf8',
+      ).toString('base64');
+      const groupRaw = getGroupRaw({ id: 31, user_id: userId, name: 'Group C' });
+      const groupRawTwo = getGroupRaw({ id: 32, user_id: userId, name: 'Group D' });
+      groupReadRepoMock.getGroupListWithTasks.mockResolvedValueOnce([
+        GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRaw, tasks: [] }),
+        GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRawTwo, tasks: [] }),
+      ]);
+      const payload: GoalGetUserGroups.Request = buildPayload({
+        data: { userId, limit: 2, search, sort, filter, cursor },
+      });
+
+      const res = await sendMessage<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
+        GoalGetUserGroups.pattern,
+        payload,
+      );
+
+      expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            groups.byUserId,
+            groups.bySearch,
+            groups.afterId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            tasks.byUserId,
+            tasks.byStatus
+          )"
+      `);
+      expect(nthArgs(3, groupReadRepoMock.getGroupListWithTasks)).toEqual(expectTransaction());
+      expect(res).toEqual({
+        data: {
+          items: [
+            {
+              id: groupRaw.id,
+              name: groupRaw.name,
+              description: groupRaw.description,
+              status: groupRaw.status,
+              userId: groupRaw.user_id,
+              progress: groupRaw.progress,
+              tasks: [],
+            },
+            {
+              id: groupRawTwo.id,
+              name: groupRawTwo.name,
+              description: groupRawTwo.description,
+              status: groupRawTwo.status,
+              userId: groupRawTwo.user_id,
+              progress: groupRawTwo.progress,
+              tasks: [],
+            },
+          ],
+          meta: {
+            cursor:
+              'eyJsYXN0SWQiOjMyLCJzb3J0IjpbIm5hbWUiXSwic2VhcmNoIjoiR3JvdXAiLCJmaWx0ZXIiOlsiYWN0aXZlIl19',
+          },
+        },
+      });
+    });
   });
 
   describe(`${GoalCreateGroup.pattern}`, () => {
@@ -365,6 +507,57 @@ describe('GroupsRmqController (rmq e2e)', () => {
               recurrence: responseTask.recurrence,
             },
           ],
+        },
+      });
+    });
+
+    test('should replace group without tasks', async () => {
+      const userId = 15;
+      const groupId = 120;
+      const groupWithTasks = getGroupWithTasks({ id: groupId, user_id: userId, tasks: [] });
+
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(groupWithTasks);
+      groupWriteRepoMock.replaceGroupWithTasks.mockResolvedValueOnce(undefined);
+      groupReadRepoMock.getGroupWithTasksById.mockResolvedValueOnce(
+        GroupReadKyselyMapper.fromRawToWithTaskView({
+          ...getGroupRaw({ id: groupId, user_id: userId, name: 'Updated', description: 'New' }),
+          tasks: [],
+        }),
+      );
+
+      const payload: GoalReplaceGroup.Request = buildPayload({
+        data: {
+          id: groupId,
+          userId,
+          name: 'Updated',
+          description: 'New',
+          tasks: [],
+        },
+      });
+
+      const res = await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
+        GoalReplaceGroup.pattern,
+        payload,
+      );
+
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, groupWriteRepoMock.getGroupById)).toEqual(expectTransaction());
+      expect(tasksWriteRepoMock.getTaskById).not.toHaveBeenCalled();
+      expect(groupReadRepoMock.ensureTaskInGroup).not.toHaveBeenCalled();
+      expect(groupWriteRepoMock.replaceGroupWithTasks).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, groupWriteRepoMock.replaceGroupWithTasks)).toEqual(expectTransaction());
+      expect(groupReadRepoMock.getGroupWithTasksById).toHaveBeenCalledTimes(1);
+      const optionsArg = nthArgs(1, groupReadRepoMock.getGroupWithTasksById);
+      expect(optionsArg?.trx).toEqual(expectTransaction());
+      expect(res).toEqual({
+        data: {
+          id: groupId,
+          name: 'Updated',
+          description: 'New',
+          status: getGroupRaw().status,
+          userId,
+          progress: getGroupRaw().progress,
+          tasks: [],
         },
       });
     });

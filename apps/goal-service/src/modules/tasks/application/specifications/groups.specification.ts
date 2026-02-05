@@ -43,7 +43,7 @@ const GroupByStatus = (statuses: GroupStatus[]) =>
 
 const GroupBySearch = (search: string) =>
   leaf({
-    key: 'tasks.bySearch',
+    key: 'groups.bySearch',
     purpose: 'filter',
     toExpr: () =>
       pgLikeExpr<TasksDB, 'groups', 'name'>({

@@ -7,6 +7,7 @@ interface TaskFrameProps extends Partial<VerticalDndItemRenderProps> {
   readonly name: string;
   readonly className?: string;
   readonly priority: number | string;
+  readonly showPriority?: boolean;
   readonly beforeNameSlot?: ReactNode;
   readonly actionsSlot?: ReactNode;
   readonly footerSlot?: ReactNode;
@@ -20,12 +21,13 @@ function TaskFrame({
   style,
   footerSlot,
   className,
+  showPriority = true,
   beforeNameSlot,
   actionsSlot,
   onClick,
 }: TaskFrameProps) {
   const prior = Number(priority);
-  const showPriority = [1, 2, 3].includes(prior);
+  const isPriorityValid = [1, 2, 3].includes(prior);
 
   return (
     <li
@@ -54,7 +56,7 @@ function TaskFrame({
 
       {actionsSlot}
 
-      {showPriority && (
+      {isPriorityValid && showPriority && (
         <div
           className={cn(
             'absolute top-0 right-0 w-4 h-4 [clip-path:polygon(100%_0,0_0,100%_100%)] rounded-tr-sm',
