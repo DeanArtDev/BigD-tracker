@@ -7,6 +7,7 @@ function ButtonTrash({ isLoading, ...props }: ButtonTrashProps) {
   return (
     <ButtonLoading
       size="icon"
+      hideContent
       isLoading={isLoading}
       variant="ghost"
       onClick={(evt) => void evt.stopPropagation()}

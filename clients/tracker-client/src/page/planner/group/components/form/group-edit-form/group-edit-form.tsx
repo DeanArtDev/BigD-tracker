@@ -1,7 +1,6 @@
 import type { GroupEntity } from '@/entity/planner/groups';
 import { GroupStatusIndication } from '@/entity/planner/groups/ui';
 import type { TaskEntity } from '@/entity/planner/tasks';
-import { GroupTaskListController } from './components/group-task-list-controller';
 import { WysiwygForm } from '@/shared/components/form';
 import { Typography } from '@/shared/components/typography';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
@@ -10,11 +9,13 @@ import { Form } from '@/shared/ui-kit/ui/form';
 import { Progress } from '@/shared/ui-kit/ui/progress';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/shared/ui-kit/ui/resizable';
 import { Separator } from '@/shared/ui-kit/ui/separator';
+import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { GroupEditFormHeader } from './components/group-edit-form-header';
+import { GroupTaskListController } from './components/group-task-list-controller';
 import {
   type GroupEditFormData,
   type GroupEditSubmitFormData,
@@ -34,40 +35,53 @@ interface GroupEditFormProps {
 }
 
 function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormProps) {
+  const values = {
+    name: group.name,
+    description: group.description,
+    tasks: tasksConvert(group.tasks),
+    isDescriptionDirty: false,
+  };
+
   const form = useForm<GroupEditFormData, any, GroupEditSubmitFormData>({
     resolver: zodResolver(validationSchema),
     mode: 'onSubmit',
     disabled: loading,
-    values: {
-      name: group.name,
-      description: group.description,
-      isDescriptionDirty: false,
-      tasks: tasksConvert(group.tasks),
+    values,
+    resetOptions: {
+      keepDirtyValues: true,
     },
   });
 
-  const wysiwygController = useRef<{ readonly getStateAsString?: () => string } | null>(null);
+  const { wysiwygController } = useWysiwygController();
   const isMobile = useIsMobile();
   const orientation = isMobile ? 'vertical' : 'horizontal';
 
-  useEffect(() => {
-    form.reset({
-      name: group.name,
-      description: group.description,
-      tasks: tasksConvert(group.tasks),
-      isDescriptionDirty: false,
-    });
-  }, [group]);
-
   return (
     <Form {...form}>
-      <form className="group-edit flex flex-col min-h-0 min-w-0 grow">
+      <form
+        className="group-edit flex flex-col min-h-0 min-w-0 grow"
+        onSubmit={form.handleSubmit(async (formData) => {
+          const description = wysiwygController.current?.getStateAsString?.();
+          const isValid = await form.trigger('description');
+          if (!isValid) {
+            toast.error('Описание содержит ошибки', { position: 'top-center' });
+            return;
+          }
+          const response = { name: formData.name, description, tasks: formData.tasks };
+
+          onSubmit(response);
+          form.reset(
+            { ...response, isDescriptionDirty: false },
+            { keepDirty: false, keepDirtyValues: false, keepValues: false },
+          );
+        })}
+      >
         <GroupEditFormHeader
           onCancel={() => void form.resetField('name', { defaultValue: group.name })}
         />
 
-        <div className="flex gap-2 items-center mb-3 ">
-          <Progress value={group.progress} className="w-full" />
+        <div className="flex gap-2 items-center mb-3">
+          <Progress value={group.progress} className="w-full bg-primary/30" />
 
           {[0, 100].includes(group.progress) ? (
             <GroupStatusIndication status={group.status} />
@@ -118,16 +132,6 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
             className="ml-auto"
             disabled={form.formState.disabled || !form.formState.isDirty}
             type="submit"
-            onClick={form.handleSubmit(async (formData) => {
-              const description = wysiwygController.current?.getStateAsString?.();
-              const isValid = await form.trigger('description');
-              if (!isValid) {
-                toast.error('Описание содержит ошибки', { position: 'top-center' });
-                return;
-              }
-
-              onSubmit({ name: formData.name, description, tasks: formData.tasks });
-            })}
           >
             Сохранить
           </Button>

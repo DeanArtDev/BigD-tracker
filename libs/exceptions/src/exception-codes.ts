@@ -39,7 +39,7 @@ const tasks = {
   // Domain
   taskInvariantFailed: {
     code: 'GT-D-0000',
-    details: Details.Define<{ message: string; field: string }>(),
+    details: Details.Define<{ message: string; field: string; taskId?: number }>(),
   },
 
   // Infrastructure

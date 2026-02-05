@@ -6,7 +6,6 @@ import { AggregateRoot } from '@nestjs/cqrs';
 import {
   assertDeadlineInThePast,
   assertFinishTask,
-  assertStartDateInThePast,
   assertStartDateNotInThePast,
   assertTaskAssignToGroup,
   assertTaskDates,
@@ -87,8 +86,6 @@ class Task extends AggregateRoot {
     this.#changeBlock();
     assertTaskReplace({ status: this.#state.status, endDate: this.#state.endDate?.value });
     assertTaskDates({ start: input.startDate, deadline: input.deadline });
-    assertDeadlineInThePast({ deadline: input.deadline });
-    assertStartDateInThePast({ start: input.startDate });
 
     if (input.startDate?.value != null) {
       this.#setStatus(TaskStatus.IN_PROGRESS);

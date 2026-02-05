@@ -4,16 +4,18 @@ import type { ReactNode } from 'react';
 
 interface ThingInboxCardProps {
   readonly task: TaskInboxEntity;
+  readonly className?: string;
   readonly onClick?: () => void;
   readonly actionsSlot?: ReactNode;
 }
 
-function TaskInboxCard({ task, actionsSlot, onClick }: ThingInboxCardProps) {
+function TaskInboxCard({ task, className, actionsSlot, onClick }: ThingInboxCardProps) {
   const { name, priority, deadline } = task;
 
   return (
     <TaskFrame
       name={name}
+      className={className}
       priority={priority}
       footerSlot={deadline != null && <TaskDeadlineDate deadline={new Date(deadline)} size={12} />}
       actionsSlot={actionsSlot}
