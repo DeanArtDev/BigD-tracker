@@ -51,19 +51,18 @@ function ReadableInputForm<FormValues extends FieldValues = FieldValues>(
     >
       {beforeNameSlot}
 
-      {isEdit && (
-        <ControlledInputForm<FormValues>
-          name={name}
-          showControls={showControls}
-          disabled={disabled || !isFieldValid}
-          placeholder={placeholder}
-          onOk={() => void onOk?.()}
-          onCancel={() => {
-            onCancel?.();
-            onModeChange?.('read');
-          }}
-        />
-      )}
+      <ControlledInputForm<FormValues>
+        name={name}
+        className={cn({ hidden: !isEdit })}
+        showControls={showControls}
+        disabled={disabled || !isFieldValid}
+        placeholder={placeholder}
+        onOk={() => void onOk?.()}
+        onCancel={() => {
+          onCancel?.();
+          onModeChange?.('read');
+        }}
+      />
 
       {isRead && (
         <div className="inline-flex grow items-center gap-2">

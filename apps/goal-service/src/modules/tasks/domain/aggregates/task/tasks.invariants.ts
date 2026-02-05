@@ -35,24 +35,26 @@ function assertEndDateNotInThePast(input: { end?: DateVo }): void {
   }
 }
 
-function assertDeadlineInThePast(input: { deadline?: DateVo }): void {
-  const { deadline } = input;
+function assertDeadlineInThePast(input: { taskId?: number; deadline?: DateVo }): void {
+  const { deadline, taskId } = input;
 
   if (deadline != null && deadline.isBefore(new Date().toISOString())) {
     throw new ExceptionTaskDomainInvalidInvariant({
       message: `deadline:${deadline.value} can't be in the past`,
       field: 'deadline',
+      taskId,
     });
   }
 }
 
-function assertStartDateInThePast(input: { start?: DateVo }): void {
-  const { start } = input;
+function assertStartDateInThePast(input: { taskId?: number; start?: DateVo }): void {
+  const { start, taskId } = input;
 
   if (start != null && start.isBefore(new Date().toISOString())) {
     throw new ExceptionTaskDomainInvalidInvariant({
       message: `startDate:${start.value} can't be in the past`,
       field: 'startDate',
+      taskId,
     });
   }
 }

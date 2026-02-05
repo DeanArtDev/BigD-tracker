@@ -1,13 +1,16 @@
 import { useGetUserInbox, useInvalidateInbox } from '@/entity/planner/groups';
-import { type TaskInboxEntity } from '@/entity/planner/tasks';
-import { TaskDeleteWithConfirmHoc } from '@/entity/planner/tasks/ui';
+import {
+  type TaskInboxEntity,
+  useDeleteTask,
+  useFinishTask,
+  useInvalidateDiaryTasks,
+} from '@/entity/planner/tasks';
 import { withLazy } from '@/shared/lib/react/with-lazy';
-import { useIsMobile } from '@/shared/ui-kit/helpers';
-import { Button } from '@/shared/ui-kit/ui/button';
+import { useConfirmDialog, useIsMobile } from '@/shared/ui-kit/helpers';
 import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
-import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import { TaskInboxCreateController } from '../task-inbox-update-controller';
+import { InboxCardActions } from './inbox-card-actions';
 
 const TaskInboxCardMobileLazy = withLazy(
   () =>
@@ -27,10 +30,39 @@ const TaskInboxCardLazy = withLazy(
 
 function TaskInboxList() {
   const { inbox } = useGetUserInbox();
-  const [task, setTask] = useState<TaskInboxEntity>();
-  const invalidateInbox = useInvalidateInbox();
 
+  const [task, setTask] = useState<TaskInboxEntity>();
+
+  const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const isMobile = useIsMobile();
+
+  const invalidateInbox = useInvalidateInbox();
+  const invalidateDiaryTasks = useInvalidateDiaryTasks();
+  const invalidate = async () => {
+    await invalidateDiaryTasks();
+    await invalidateInbox();
+  };
+
+  const { deleteTask, isPending: isDeletePending } = useDeleteTask();
+  const { finishTask, isPending: isFinishPending } = useFinishTask();
+  const isLoading = isDeletePending || isFinishPending;
+
+  const handleFinish = (taskId: number) => {
+    finishTask({ params: { path: { taskId } } }, { onSuccess: invalidate });
+  };
+
+  const handleDelete = (taskId: number) => {
+    viaConfirmation({
+      isNeedConfirm: () => true,
+      callback: () => void deleteTask({ params: { path: { taskId } } }, { onSuccess: invalidate }),
+      dialog: {
+        title: 'Удалить?',
+        content: 'В будущем, дело можно будет восстановить',
+      },
+    });
+  };
+
+  const [swipedTaskId, setSwipedTaskId] = useState<number>();
 
   return (
     <>
@@ -40,34 +72,24 @@ function TaskInboxList() {
             <TaskInboxCardMobileLazy
               key={i.id}
               task={i}
-              onDeleteSuccess={invalidateInbox}
+              loading={isLoading}
+              openId={swipedTaskId}
+              setOpenId={setSwipedTaskId}
               onClick={() => setTask(i)}
+              onFinish={() => handleFinish(i.id)}
+              onDelete={() => handleDelete(i.id)}
             />
           ) : (
             <TaskInboxCardLazy
               key={i.id}
               task={i}
               actionsSlot={
-                <div
-                  className="contents"
-                  onClick={(evt) => {
-                    evt.stopPropagation();
-                  }}
-                >
-                  <TaskDeleteWithConfirmHoc taskId={i.id} onSuccess={invalidateInbox}>
-                    {({ isLoading }) => (
-                      <Button
-                        size="icon"
-                        className="my-auto w-7 h-7 opacity-0 group-hover:opacity-100"
-                        variant="ghost"
-                        disabled={isLoading}
-                        onClick={(evt) => void evt.stopPropagation()}
-                      >
-                        <Trash />
-                      </Button>
-                    )}
-                  </TaskDeleteWithConfirmHoc>
-                </div>
+                <InboxCardActions
+                  className="opacity-0 group-hover/task-frame:opacity-100"
+                  loading={isLoading}
+                  onFinish={() => handleFinish(i.id)}
+                  onDelete={() => handleDelete(i.id)}
+                />
               }
               onClick={() => void setTask(i)}
             />
@@ -80,6 +102,7 @@ function TaskInboxList() {
         onCancel={() => void setTask(undefined)}
         onSuccess={() => void setTask(undefined)}
       />
+      {confirmHolder}
     </>
   );
 }

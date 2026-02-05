@@ -1,38 +1,57 @@
 import type { TaskInboxEntity } from '@/entity/planner/tasks';
-import { TaskDeleteWithConfirmHoc } from '@/entity/planner/tasks/ui';
-import { Button } from '@/shared/ui-kit/ui/button';
 import { LeftSwiper } from '@/shared/ui-kit/ui/left-swiper';
-import { Trash } from 'lucide-react';
+import { InboxCardActions } from './inbox-card-actions';
 import { TaskInboxCard } from './task-inbox-card';
 
 interface TaskInboxCardProps {
   readonly task: TaskInboxEntity;
+  readonly openId?: number;
+  readonly loading: boolean;
   readonly onClick?: () => void;
-  readonly onDeleteSuccess?: () => void;
+  readonly onFinish: () => void;
+  readonly onDelete: () => void;
+  readonly setOpenId?: (openId?: number) => void;
 }
 
-function TaskInboxCardMobile({ task, onClick, onDeleteSuccess }: TaskInboxCardProps) {
+function TaskInboxCardMobile({
+  task,
+  openId,
+  loading,
+  onClick,
+  onDelete,
+  onFinish,
+  setOpenId,
+}: TaskInboxCardProps) {
   return (
     <LeftSwiper
-      actionsSpace={40}
-      actions={
-        <div className="flex items-center h-full">
-          <TaskDeleteWithConfirmHoc taskId={task.id} onSuccess={onDeleteSuccess}>
-            {({ isLoading }) => (
-              <Button
-                size="icon"
-                disabled={isLoading}
-                variant="ghost"
-                onClick={(evt) => void evt.stopPropagation()}
-              >
-                <Trash />
-              </Button>
-            )}
-          </TaskDeleteWithConfirmHoc>
-        </div>
-      }
+      id={task.id}
+      openId={openId}
+      setOpenId={setOpenId}
+      actionsSpace={75}
+      content={({ reset }) => (
+        <InboxCardActions
+          loading={loading}
+          onDelete={() => {
+            reset();
+            onDelete();
+          }}
+          onFinish={() => {
+            reset();
+            onFinish();
+          }}
+        />
+      )}
     >
-      <TaskInboxCard task={task} onClick={onClick} />
+      {({ reset }) => (
+        <TaskInboxCard
+          className="min-h-[50px]"
+          task={task}
+          onClick={() => {
+            reset();
+            onClick?.();
+          }}
+        />
+      )}
     </LeftSwiper>
   );
 }

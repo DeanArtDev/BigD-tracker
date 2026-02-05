@@ -30,7 +30,7 @@ function TaskFrame({
   return (
     <li
       className={cn(
-        'task-frame bg-background relative p-2 sm:p-2 flex justify-center w-full rounded-md border shadow-md hover:shadow',
+        'group/task-frame bg-background relative p-2 sm:p-2 flex justify-center w-full rounded-md border shadow-md hover:shadow',
         className,
       )}
       ref={ref}
@@ -45,7 +45,9 @@ function TaskFrame({
         <div className="flex grow w-full items-center mb-auto">
           {beforeNameSlot}
 
-          <Typography.H4 className="text-sm font-normal truncate pr-2">{name}</Typography.H4>
+          <Typography.H4 className="text-sm font-normal truncate pr-2 mb-auto">
+            {name}
+          </Typography.H4>
         </div>
         <div className="flex flex-wrap gap-1.5 mr-auto">{footerSlot}</div>
       </div>

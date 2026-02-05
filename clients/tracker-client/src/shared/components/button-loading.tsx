@@ -3,14 +3,21 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import type { ComponentProps } from 'react';
 
 interface ButtonLoadingProps extends ComponentProps<typeof Button> {
+  readonly hideContent?: boolean;
   readonly isLoading: boolean;
 }
 
-function ButtonLoading({ isLoading, children, disabled, ...buttonProps }: ButtonLoadingProps) {
+function ButtonLoading({
+  isLoading,
+  hideContent = false,
+  children,
+  disabled,
+  ...buttonProps
+}: ButtonLoadingProps) {
   return (
     <Button {...buttonProps} disabled={isLoading || disabled}>
-      {isLoading ? <AppLoader inverse size={20} /> : null}
-      {children}
+      {isLoading && <AppLoader inverse size={20} />}
+      {isLoading && hideContent ? null : children}
     </Button>
   );
 }
