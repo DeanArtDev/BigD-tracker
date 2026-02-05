@@ -1,19 +1,19 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
 
-function useTaskUnassignFromGroup() {
+function useAssignTaskToGroup() {
   const options = getDefaultQueryNotifications();
 
-  const { mutate: unassignTaskFromGroup, ...states } = $privetQueryClient.useMutation(
+  const { mutate: assignTaskToGroup, ...states } = $privetQueryClient.useMutation(
     'post',
-    '/tasks/{taskId}/groups/{groupId}/unassign',
+    '/tasks/{taskId}/groups/{groupId}',
     options,
   );
 
   return {
-    unassignTaskFromGroup,
+    assignTaskToGroup,
     ...states,
   };
 }
 
-export { useTaskUnassignFromGroup };
+export { useAssignTaskToGroup };

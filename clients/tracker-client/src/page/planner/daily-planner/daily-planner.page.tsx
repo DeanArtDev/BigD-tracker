@@ -1,4 +1,4 @@
-import { useGetDiaryTasks } from '@/entity/planner/tasks';
+import { useDiaryTasksQuery } from '@/entity/planner/tasks';
 import { PageWrapper } from '@/page/ui/page-wrapper';
 import { TimeView } from '@/shared/lib/time-view';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
@@ -7,10 +7,10 @@ import { useMemo, useState } from 'react';
 
 function DailyPlannerPage() {
   const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
-  const { things, isLoading } = useGetDiaryTasks({ filters: dateSet });
+  const { tasks, isLoading } = useDiaryTasksQuery({ filters: dateSet });
 
   const events = useMemo(() => {
-    return things.map((thing) => {
+    return tasks.map((thing) => {
       return {
         name: thing.name,
         from: thing.startDate != null ? new Date(thing.startDate) : 0,
@@ -18,7 +18,7 @@ function DailyPlannerPage() {
         extra: { id: thing.id },
       };
     });
-  }, [things]);
+  }, [tasks]);
 
   return (
     <PageWrapper className="relative grow min-h-0" title="Ежедневник">
