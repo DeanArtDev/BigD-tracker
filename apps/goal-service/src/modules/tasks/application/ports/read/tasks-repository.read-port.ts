@@ -11,10 +11,7 @@ interface TasksReadRepository {
     trx?: TaskTransaction,
   ): Promise<TaskView[]>;
 
-  getByRange(
-    input: { userId: number; from: string; to: string },
-    trx?: TaskTransaction,
-  ): Promise<TaskView[]>;
+  getByRange(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
 
   getById(input: { id: number; userId: number }, trx?: TaskTransaction): Promise<TaskView | null>;
 

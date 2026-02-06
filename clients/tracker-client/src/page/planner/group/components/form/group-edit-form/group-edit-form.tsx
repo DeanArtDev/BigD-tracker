@@ -11,7 +11,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/shared/u
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactNode } from 'react';
+import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { GroupEditFormHeader } from './components/group-edit-form-header';
@@ -38,6 +38,8 @@ interface GroupEditFormProps {
 }
 
 function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormProps) {
+  const formId = useId();
+
   const values = {
     name: group.name,
     description: group.description,
@@ -62,24 +64,30 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
   return (
     <Form {...form}>
       <form
+        id={formId}
         className="group-edit flex flex-col min-h-0 min-w-0 grow"
-        onSubmit={form.handleSubmit(async (formData) => {
-          const description = wysiwygController.current?.getStateAsString?.();
-          const isValid = await form.trigger('description');
-          if (!isValid) {
-            toast.error('Описание содержит ошибки', { position: 'top-center' });
-            return;
-          }
-          const response = { name: formData.name, description, tasks: formData.tasks };
+        onSubmit={(evt) => {
+          evt.preventDefault();
+          evt.stopPropagation();
 
-          onSubmit(response, {
-            reset: () =>
-              void form.reset(
-                { ...response, isDescriptionDirty: false },
-                { keepDirty: false, keepDirtyValues: false, keepValues: false },
-              ),
-          });
-        })}
+          form.handleSubmit(async (formData) => {
+            const description = wysiwygController.current?.getStateAsString?.();
+            const isValid = await form.trigger('description');
+            if (!isValid) {
+              toast.error('Описание содержит ошибки', { position: 'top-center' });
+              return;
+            }
+            const response = { name: formData.name, description, tasks: formData.tasks };
+
+            onSubmit(response, {
+              reset: () =>
+                void form.reset(
+                  { ...response, isDescriptionDirty: false },
+                  { keepDirty: false, keepDirtyValues: false, keepValues: false },
+                ),
+            });
+          })(evt);
+        }}
       >
         <GroupEditFormHeader
           onCancel={() => void form.resetField('name', { defaultValue: group.name })}
@@ -134,6 +142,7 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
           {footerSlot}
 
           <Button
+            form={formId}
             className="ml-auto"
             disabled={form.formState.disabled || !form.formState.isDirty}
             type="submit"

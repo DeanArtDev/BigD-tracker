@@ -9,7 +9,7 @@ import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactNode } from 'react';
+import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { TaskPriority } from '../../../lib/constants';
@@ -50,7 +50,19 @@ function TaskForm(props: TaskFormProps) {
     onSubmit,
   } = props;
 
+  const formId = useId();
   const isEdit = task != null;
+
+  const defaultValues = isEdit
+    ? undefined
+    : {
+        name: undefined,
+        deadline: undefined,
+        description: undefined,
+        weight: 100,
+        priority: TaskPriority.DELETE.toString(),
+        isDescriptionDirty: false,
+      };
 
   const values = isEdit
     ? {
@@ -69,14 +81,7 @@ function TaskForm(props: TaskFormProps) {
     mode: isMobile ? 'onChange' : 'onSubmit',
     disabled: isLoading,
     values,
-    defaultValues: {
-      name: undefined,
-      deadline: undefined,
-      description: undefined,
-      weight: 100,
-      priority: TaskPriority.DELETE.toString(),
-      isDescriptionDirty: false,
-    },
+    defaultValues,
   });
 
   const { wysiwygController } = useWysiwygController();
@@ -84,25 +89,31 @@ function TaskForm(props: TaskFormProps) {
   return (
     <Form {...form}>
       <form
+        id={formId}
         noValidate
         className="flex grow min-h-0 h-full flex-col"
-        onSubmit={form.handleSubmit(async (formData) => {
-          const description = wysiwygController.current?.getStateAsString?.();
-          const isValid = await form.trigger('description');
-          if (!isValid) {
-            toast.error('Описание дела содержит ошибки', { position: 'top-center' });
-            return;
-          }
+        onSubmit={(evt) => {
+          evt.preventDefault();
+          evt.stopPropagation();
 
-          onSubmit?.({
-            name: formData.name,
-            weight: formData.weight,
-            startDate: formData.startDate,
-            deadline: formData.deadline,
-            description,
-            priority: formData.priority != null ? +formData.priority : TaskPriority.DELETE,
-          });
-        })}
+          form.handleSubmit(async (formData) => {
+            const description = wysiwygController.current?.getStateAsString?.();
+            const isValid = await form.trigger('description');
+            if (!isValid) {
+              toast.error('Описание дела содержит ошибки', { position: 'top-center' });
+              return;
+            }
+
+            onSubmit?.({
+              name: formData.name,
+              weight: formData.weight,
+              startDate: formData.startDate,
+              deadline: formData.deadline,
+              description,
+              priority: formData.priority != null ? +formData.priority : TaskPriority.DELETE,
+            });
+          })(evt);
+        }}
       >
         <SidebarProvider
           defaultOpen={defaultSidebarOpen}
@@ -134,7 +145,9 @@ function TaskForm(props: TaskFormProps) {
 
             <div className="border-t p-4 flex items-center justify-end">
               {footerSlot != null && footerSlot?.({ disabled: form.formState.disabled })}
+
               <ButtonLoading
+                form={formId}
                 type="submit"
                 isLoading={isLoading}
                 disabled={!form.formState.isDirty || form.formState.disabled}

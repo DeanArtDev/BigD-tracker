@@ -1,19 +1,18 @@
-import { TaskStatus } from '@/entity/planner/tasks';
 import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
-import { TaskFrame } from '@/entity/planner/tasks/ui';
+import { TaskFrame, TaskStatusToIconMap } from '@/entity/planner/tasks/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { Typography } from '@/shared/components/typography';
 import { VerticalDnD } from '@/shared/components/vertical-dnd';
+import dayjs from '@/shared/lib/time';
 import { pluralize } from '@/shared/lib/utils/pluralize';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { cn } from '@/shared/ui-kit/utils';
-import { Check, CircleCheckBig, CirclePause, CirclePlus, GripVertical } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { CircleCheckBig, CirclePause, CirclePlus, GripVertical } from 'lucide-react';
+import { type ReactNode } from 'react';
 import { type FieldArrayPath, useFieldArray } from 'react-hook-form';
 import type { GroupEditFormData } from '../validation-schema';
-import dayjs from '@/shared/lib/time';
 
 interface GroupTaskListProps {
   readonly afterTaskNameSlot?: ({ taskId }: { taskId: number }) => ReactNode;
@@ -88,6 +87,8 @@ function GroupTaskList({
               const isDeadlineTomorrow =
                 task.deadline != null ? dayjs(task.deadline).isTomorrow() : false;
 
+              const StatusIcon = TaskStatusToIconMap[task.status];
+
               return (
                 <TaskFrame
                   key={task.id}
@@ -99,13 +100,11 @@ function GroupTaskList({
                   })}
                   ref={setNodeRef}
                   name={task.name}
-                  showPriority={task.status !== TaskStatus.COMPLETED}
                   priority={task.priority}
                   actionsSlot={
                     <div className="flex flex-row items-center gap-1">
-                      {task.status === TaskStatus.COMPLETED && (
-                        <Check className="size-4 absolute -top-1 -right-px z-1 stroke-5 stroke-green-600" />
-                      )}
+                      <StatusIcon className="size-4 absolute -top-1 -right-px z-1 stroke-3" />
+
                       {afterTaskNameSlot?.({ taskId: task.id })}
                     </div>
                   }

@@ -1,13 +1,18 @@
-import type { TimeViewEvent } from '@/shared/lib/time-view/core';
+import type { TimeEvent, TimeViewEvent } from '@/shared/lib/time-view/core';
 import { cn } from '@/shared/ui-kit/utils';
 import { upperFirst } from 'lodash-es';
 import { useMemo } from 'react';
 import { useEventsState, useSelectedDateState } from '../model/selectors';
 import { NavActions } from './nav-actions';
 
-function NavBar<TExtra extends { id: number }>({ events }: { events: TimeViewEvent<TExtra>[] }) {
+interface NavBarProps<TExtra extends { id: number }> {
+  readonly events: TimeViewEvent<TExtra>[];
+  readonly onEventClick?: (event: TimeEvent<TExtra>) => void;
+}
+
+function NavBar<TExtra extends { id: number }>({ events, onEventClick }: NavBarProps<TExtra>) {
   const { selectedDate } = useSelectedDateState();
-  const { allDayEvents } = useEventsState({ events });
+  const { allDayEvents } = useEventsState<TExtra>({ events });
 
   const date = useMemo(() => {
     return `${selectedDate.format('DD')} ${upperFirst(selectedDate.format('MMMM'))} ${selectedDate.format('YYYY')}`;
@@ -43,9 +48,12 @@ function NavBar<TExtra extends { id: number }>({ events }: { events: TimeViewEve
                   'bg-gray-200 rounded-sm border border-gray-400 shadow-sm',
                 )}
               >
-                <span className="text-xs grow md:text-sm font-medium max-h-[20px] break-words break-all">
+                <li
+                  className="text-xs grow md:text-sm font-medium max-h-[20px] wrap-break-word break-all"
+                  onClick={() => void onEventClick?.(event)}
+                >
                   {event.name}
-                </span>
+                </li>
               </article>
             );
           })}

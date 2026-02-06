@@ -74,7 +74,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
               }}
             />
 
-            <TaskCreation groupId={groupId} trigger={<ButtonAdd />} />
+            <TaskCreation groupId={groupId} trigger={<ButtonAdd />} onSuccess={invalidate} />
           </div>
         }
         emptyPlaceholderBeforeEndSlot={

@@ -6,7 +6,6 @@ import {
   TasksShapeTypes,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -75,17 +74,11 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async getByRange(
-    input: { userId: number; from: string; to: string },
-    trx?: TaskTransaction,
-  ): Promise<TaskView[]> {
+  async getByRange(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
-      const tasks = await getTasksWithStatusQuery(this.db, trx)
-        .where('ts.name', 'in', tasksQuerySpec.readableStatuses)
-        .where('t.user_id', '=', input.userId)
-        .where('t.start_date', '<=', new Date(input.to))
-        .where('t.deadline', '>=', new Date(input.from))
-        .orderBy('t.start_date', 'asc')
+      const tasks = await tasksWithStatusQuery(this.db, trx)
+        .where((eb) => specifications.toExpr(eb))
+        .orderBy('tasks.start_date', 'asc')
         .execute();
 
       return tasks.map(this.#map);
