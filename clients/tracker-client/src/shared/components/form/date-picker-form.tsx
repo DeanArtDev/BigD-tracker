@@ -8,7 +8,7 @@ import { cn } from '@/shared/ui-kit/utils';
 import { format, isDate } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
-import { type FieldValues, type Path } from 'react-hook-form';
+import { type ControllerRenderProps, type FieldValues, type Path } from 'react-hook-form';
 
 type CalendarFormProps = Omit<
   ComponentProps<typeof Calendar>,
@@ -29,7 +29,7 @@ type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = Calenda
     readonly input?: string;
   };
   readonly onBeforeValueSet?: (date: Date) => Date;
-  readonly renderInput?: (props: { value: Date; disabled: boolean }) => ReactNode;
+  readonly renderInput?: (props: ControllerRenderProps<Record<string, Date>, string>) => ReactNode;
   readonly onChange?: () => void;
 };
 
@@ -67,11 +67,14 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
               <PopoverTrigger asChild>
                 <FormControl>
                   {renderInput != null ? (
-                    renderInput({ value: field.value, disabled: field.disabled ?? false })
+                    renderInput(field)
                   ) : (
                     <Button
+                      type="button"
                       variant="outline"
                       disabled={disabled || field.disabled}
+                      ref={field.ref}
+                      onBlur={field.onBlur}
                       className={cn(
                         'f-full pl-3 text-left font-normal',
                         !field.value && 'text-muted-foreground',
@@ -89,7 +92,6 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
                   {...props}
                   className={classNames?.input}
                   mode="single"
-                  {...field}
                   disableNavigation={field.disabled}
                   defaultMonth={field.value}
                   selected={field.value}

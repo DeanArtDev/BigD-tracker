@@ -4,7 +4,7 @@ import { TaskFormDialog } from '@/entity/planner/tasks/ui';
 import { type ReactNode, useState } from 'react';
 
 interface TaskCreationProps {
-  readonly groupId: number;
+  readonly groupId?: number;
   readonly trigger: ReactNode;
   readonly onSuccess?: () => void;
   readonly onCansel?: () => void;

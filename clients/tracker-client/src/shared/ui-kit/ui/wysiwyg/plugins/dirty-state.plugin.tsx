@@ -1,3 +1,4 @@
+import { formPlaceholderValues } from '@/shared/lib/utils/zod';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import type { EditorState } from 'lexical';
 import { useCallback, useEffect, useEffectEvent, useRef } from 'react';
@@ -13,23 +14,33 @@ function stableStringifyEditorState(state: EditorState): string {
 }
 
 function DirtyTrackingPlugin({ initialStateString, onDirtyChange }: DirtyTrackingPluginProps) {
-  const baselineRef = useRef<string | null>(null);
+  const baselineRef = useRef<string | typeof formPlaceholderValues.textInputs>(
+    formPlaceholderValues.textInputs,
+  );
+  const initState =
+    typeof initialStateString === 'string' ? initialStateString : formPlaceholderValues.textInputs;
+
   const dirtyRef = useRef<boolean>(false);
   const onDirtyChangeRef = useEffectEvent((value: boolean) => onDirtyChange(value));
 
   useEffect(() => {
-    baselineRef.current = initialStateString ?? '';
+    baselineRef.current = initState;
     if (dirtyRef.current) {
       dirtyRef.current = false;
       onDirtyChangeRef(dirtyRef.current);
     }
-  }, [initialStateString]);
+  }, [initState]);
 
   const handleChange = useCallback((editorState: EditorState, _: any, tags: Set<string>) => {
     if (tags.has(wysiwygTags.SILENT)) return;
 
-    const baseline = baselineRef.current ?? '';
     const current = stableStringifyEditorState(editorState);
+    if (baselineRef.current === formPlaceholderValues.textInputs) {
+      baselineRef.current = current;
+      return;
+    }
+
+    const baseline = baselineRef.current;
 
     const nextDirty = current !== baseline;
     if (nextDirty !== dirtyRef.current) {

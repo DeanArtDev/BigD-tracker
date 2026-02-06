@@ -57,6 +57,7 @@ function TaskForm(props: TaskFormProps) {
     ? undefined
     : {
         name: undefined,
+        startDate: undefined,
         deadline: undefined,
         description: undefined,
         weight: 100,
@@ -67,8 +68,8 @@ function TaskForm(props: TaskFormProps) {
   const values = isEdit
     ? {
         name: task.name,
-        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
         startDate: task.startDate != null ? new Date(task.startDate) : undefined,
+        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
         description: task.description,
         priority: task.priority?.toString(),
         isDescriptionDirty: false,
