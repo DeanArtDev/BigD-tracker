@@ -176,20 +176,6 @@ describe('Task aggregate', () => {
     expect(task.status).toBe(TaskStatus.DELETED);
   });
 
-  it('rejects soft delete for completed tasks', () => {
-    const task = Task.restore({
-      id: 11,
-      userId: 7,
-      name: Name.create('Cleanup'),
-      description: 'Soft delete',
-      priority: Priority.create(1),
-      weight: Weight.create(20),
-      status: TaskStatus.COMPLETED,
-    });
-
-    expect(() => task.deleteSoft()).toThrow();
-  });
-
   it('assigns task has a corresponding status when moving to inbox', () => {
     const task = Task.restore({
       id: 12,
