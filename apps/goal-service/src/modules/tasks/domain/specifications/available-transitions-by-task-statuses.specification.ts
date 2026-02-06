@@ -21,9 +21,9 @@ const allowTaskStatusTransitions: Record<TaskStatus, TaskStatus[]> = {
 
   [TaskStatus.CANCELLED]: [TaskStatus.ARCHIVED, TaskStatus.DELETED],
 
-  [TaskStatus.COMPLETED]: [],
+  [TaskStatus.COMPLETED]: [TaskStatus.DELETED],
 
-  [TaskStatus.OVERDUE]: [],
+  [TaskStatus.OVERDUE]: [TaskStatus.DELETED],
 
   [TaskStatus.ARCHIVED]: [TaskStatus.DELETED],
 
