@@ -1,16 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
-import {
-  assertDeadlineInThePast,
-  assertEndDateNotInThePast,
-  assertHasCancelReason,
-  assertStartDateNotInThePast,
-  assertTaskAssignToGroup,
-  assertTaskDates,
-  assertTaskDeleteSoft,
-  assertTaskReplace,
-  assertTaskUnassignFromGroup,
-} from '../tasks.invariants';
+import { taskAsserts, assertHasCancelReason, assertTaskReplace } from '../tasks.invariants';
 
 const futureDate = (offsetDays: number) =>
   new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
@@ -21,7 +11,7 @@ const pastDate = (offsetDays: number) =>
 describe('task invariants', () => {
   it('rejects start dates in the past', () => {
     expect(() =>
-      assertStartDateNotInThePast({
+      taskAsserts.startDateInThePast({
         start: DateVo.create(pastDate(1)),
       }),
     ).toThrow();
@@ -29,7 +19,7 @@ describe('task invariants', () => {
 
   it('allows start dates in the future', () => {
     expect(() =>
-      assertStartDateNotInThePast({
+      taskAsserts.startDateInThePast({
         start: DateVo.create(futureDate(1)),
       }),
     ).not.toThrow();
@@ -37,7 +27,7 @@ describe('task invariants', () => {
 
   it('rejects end dates in the past', () => {
     expect(() =>
-      assertEndDateNotInThePast({
+      taskAsserts.endDateNotInThePast({
         end: DateVo.create(pastDate(1)),
       }),
     ).toThrow();
@@ -45,7 +35,7 @@ describe('task invariants', () => {
 
   it('rejects deadlines in the past', () => {
     expect(() =>
-      assertDeadlineInThePast({
+      taskAsserts.deadlineInThePast({
         deadline: DateVo.create(pastDate(1)),
       }),
     ).toThrow();
@@ -53,14 +43,14 @@ describe('task invariants', () => {
 
   it('rejects end dates before or equal start dates', () => {
     expect(() =>
-      assertTaskDates({
+      taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(2)),
         end: DateVo.create(futureDate(1)),
       }),
     ).toThrow();
 
     expect(() =>
-      assertTaskDates({
+      taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(2)),
         end: DateVo.create(futureDate(2)),
       }),
@@ -69,14 +59,14 @@ describe('task invariants', () => {
 
   it('rejects deadlines before or equal start dates', () => {
     expect(() =>
-      assertTaskDates({
+      taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(3)),
         deadline: DateVo.create(futureDate(2)),
       }),
     ).toThrow();
 
     expect(() =>
-      assertTaskDates({
+      taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(3)),
         deadline: DateVo.create(futureDate(3)),
       }),
@@ -85,7 +75,7 @@ describe('task invariants', () => {
 
   it('allows valid date ordering', () => {
     expect(() =>
-      assertTaskDates({
+      taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(1)),
         end: DateVo.create(futureDate(2)),
         deadline: DateVo.create(futureDate(3)),
@@ -97,30 +87,6 @@ describe('task invariants', () => {
     expect(() =>
       assertTaskReplace({
         status: TaskStatus.COMPLETED,
-      }),
-    ).toThrow();
-  });
-
-  it('rejects soft delete for completed tasks', () => {
-    expect(() =>
-      assertTaskDeleteSoft({
-        status: TaskStatus.COMPLETED,
-      }),
-    ).toThrow();
-  });
-
-  it('rejects moving tasks in terminal states', () => {
-    expect(() =>
-      assertTaskAssignToGroup({
-        status: TaskStatus.CANCELLED,
-      }),
-    ).toThrow();
-  });
-
-  it('rejects unassigning tasks in terminal states', () => {
-    expect(() =>
-      assertTaskUnassignFromGroup({
-        status: TaskStatus.ARCHIVED,
       }),
     ).toThrow();
   });

@@ -1,18 +1,13 @@
-import { availableTransitionsByTaskStatuses } from '@/modules/tasks/domain';
-import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
+import { ExceptionTaskDomainInvalidInvariant } from '../../exceptions';
 import {
-  assertDeadlineInThePast,
-  assertFinishTask,
-  assertStartDateNotInThePast,
-  assertTaskAssignToGroup,
-  assertTaskDates,
-  assertTaskDeleteSoft,
-  assertTaskReplace,
-  assertTaskUnassignFromGroup,
-} from './tasks.invariants';
+  allowedTaskStatusByAction,
+  allowTaskStatusTransitions,
+  TaskStatusActions,
+} from '../../specifications';
+import { taskAsserts } from './tasks.invariants';
 import { TaskCreateInput, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
 
 class Task extends AggregateRoot {
@@ -24,23 +19,21 @@ class Task extends AggregateRoot {
     this.#state = input;
   }
 
-  static create(input: TaskCreateInput): Task {
-    assertStartDateNotInThePast({ start: input.startDate });
-    assertDeadlineInThePast({ deadline: input.deadline });
-    assertTaskDates({ start: input.startDate, deadline: input.deadline });
+  static calculateStatusByDates({
+    startDate,
+    endDate,
+    deadline,
+  }: {
+    startDate?: DateVo;
+    deadline?: DateVo;
+    endDate?: DateVo;
+  }): TaskStatus {
+    if (endDate) {
+      return deadline?.isBefore(new Date()) ? TaskStatus.OVERDUE : TaskStatus.COMPLETED;
+    }
 
-    return new Task({
-      id: NaN,
-      userId: input.userId,
-      name: input.name,
-      description: input.description,
-      priority: input.priority,
-      weight: input.weight,
-      startDate: input.startDate,
-      deadline: input.deadline,
-      status: TaskStatus.NOT_STARTED,
-      recurrence: input.recurrence,
-    });
+    if (startDate) return TaskStatus.IN_PROGRESS;
+    return TaskStatus.NOT_STARTED;
   }
 
   static restore(input: TaskRestoreInput): Task {
@@ -60,119 +53,135 @@ class Task extends AggregateRoot {
     });
   }
 
-  #setStatus(status: TaskStatus): this {
-    if (status === this.#state.status) return this;
-    if (availableTransitionsByTaskStatuses[this.#state.status].includes(status)) {
-      this.#state.status = status;
+  static create(input: TaskCreateInput): Task {
+    taskAsserts.startDateInThePast({ start: input.startDate });
+    taskAsserts.deadlineInThePast({ deadline: input.deadline });
+    taskAsserts.datesIntersections({ start: input.startDate, deadline: input.deadline });
+
+    return new Task({
+      id: NaN,
+      userId: input.userId,
+      name: input.name,
+      description: input.description,
+      priority: input.priority,
+      weight: input.weight,
+      startDate: input.startDate,
+      deadline: input.deadline,
+      status: Task.calculateStatusByDates({ startDate: input.startDate }),
+      recurrence: input.recurrence,
+    });
+  }
+
+  public replace(input: TaskReplaceInput): this {
+    taskAsserts.datesIntersections({ start: input.startDate, deadline: input.deadline });
+
+    // возможность обновлять name and description на любом статусе кроме DELETED
+
+    if (this.#isAllowTo('REPLACE')) {
+      this.#state.status = Task.calculateStatusByDates({ startDate: input.startDate });
+      this.#state.name = input.name;
+      this.#state.description = input.description;
+      this.#state.priority = input.priority;
+      this.#state.weight = input.weight;
+      this.#state.startDate = input.startDate;
+      this.#state.deadline = input.deadline;
+      this.#state.recurrence = input.recurrence;
+
       return this;
     }
 
     throw new ExceptionTaskDomainInvalidInvariant({
-      message: `Task status transition is unavailable from:{${this.#state.status} to:{${status}} status`,
+      message: `Task can't be updated at current status: ${this.#state.status}`,
       field: 'status',
+      taskId: this.#state.id,
     });
-  }
-
-  #changeBlock() {
-    if (this.#state.endDate != null) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Task can't be changed after ending`,
-        field: 'endDate',
-      });
-    }
-  }
-
-  public replace(input: TaskReplaceInput): this {
-    this.#changeBlock();
-    assertTaskReplace({ status: this.#state.status, endDate: this.#state.endDate?.value });
-    assertTaskDates({ start: input.startDate, deadline: input.deadline });
-
-    if (input.startDate?.value != null) {
-      this.#setStatus(TaskStatus.IN_PROGRESS);
-    }
-
-    this.#state.name = input.name;
-    this.#state.description = input.description;
-    this.#state.priority = input.priority;
-    this.#state.weight = input.weight;
-    this.#state.startDate = input.startDate;
-    this.#state.deadline = input.deadline;
-    this.#state.recurrence = input.recurrence;
-
-    return this;
   }
 
   public deleteSoft(): this {
-    assertTaskDeleteSoft({ status: this.#state.status });
-    this.#changeBlock();
-    return this.#setStatus(TaskStatus.DELETED);
-  }
-
-  public assignToGroup(status?: TaskStatus.NOT_STARTED): this {
-    this.#changeBlock();
-    assertTaskAssignToGroup({ status: this.#state.status });
-
-    if (status === TaskStatus.NOT_STARTED) {
-      this.#state.startDate = undefined;
-      this.#state.endDate = undefined;
-      this.#state.recurrence = undefined;
+    if (this.#isAllowTo('DELETE')) {
+      return this.#setStatus(TaskStatus.DELETED);
     }
 
-    if (status != null) {
-      return this.#setStatus(status);
-    }
-    return this;
-  }
-
-  public unassignFromGroup(): this {
-    this.#changeBlock();
-    assertTaskUnassignFromGroup({ status: this.#state.status });
-    return this;
-  }
-
-  public clone(): Task {
-    let status = this.#state.status;
-    if (
-      [
-        TaskStatus.COMPLETED,
-        TaskStatus.OVERDUE,
-        TaskStatus.CANCELLED,
-        TaskStatus.ARCHIVED,
-        TaskStatus.DELETED,
-      ].includes(status)
-    ) {
-      status = TaskStatus.NOT_STARTED;
-    }
-
-    return new Task({
-      id: NaN,
-      userId: this.#state.userId,
-      name: this.#state.name,
-      description: this.#state.description,
-      priority: this.#state.priority,
-      weight: this.#state.weight,
-      startDate: this.#state.startDate,
-      deadline: this.#state.deadline,
-      status,
-      recurrence: this.#state.recurrence,
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be deleted at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
     });
   }
 
-  /**
-   * Дело можно завершить даже когда оно просрочено
-   * */
-  public finish() {
-    assertFinishTask({ status: this.#state.status });
-    this.#state.startDate = this.#state.startDate ?? DateVo.create(new Date());
-    this.#state.endDate = DateVo.create(new Date());
-
-    if (this.#state.deadline != null && this.#state.deadline.isBefore(new Date())) {
-      this.#setStatus(TaskStatus.OVERDUE);
-    } else {
-      this.#setStatus(TaskStatus.COMPLETED);
+  public assignToGroup({ reset = false }: { reset?: boolean } = {}): this {
+    if (this.#isAllowTo('ASSIGN')) {
+      if (reset) {
+        this.#state.startDate = undefined;
+        this.#state.deadline = undefined;
+        this.#state.recurrence = undefined;
+      }
+      return this;
     }
 
-    return this;
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be assigned at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
+  }
+
+  public unassignFromGroup(): this {
+    if (this.#isAllowTo('UNASSIGN')) {
+      return this;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be unassigned at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
+  }
+
+  public clone(): Task {
+    if (this.#isAllowTo('CLONE')) {
+      return new Task({
+        id: NaN,
+        userId: this.#state.userId,
+        name: this.#state.name,
+        description: this.#state.description,
+        priority: this.#state.priority,
+        weight: this.#state.weight,
+        startDate: undefined,
+        deadline: undefined,
+        recurrence: undefined,
+        status: TaskStatus.NOT_STARTED,
+      });
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be cloned at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
+  }
+
+  public finish() {
+    if (this.#isAllowTo('FINISH')) {
+      this.#state.endDate = DateVo.create(new Date());
+      this.#state.startDate = this.#state.startDate ?? DateVo.create(new Date());
+
+      this.#setStatus(
+        Task.calculateStatusByDates({
+          startDate: this.#state.startDate,
+          deadline: this.#state.deadline,
+          endDate: this.#state.endDate,
+        }),
+      );
+
+      return this;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be finished at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
   }
 
   get id() {
@@ -213,6 +222,39 @@ class Task extends AggregateRoot {
   }
   get isDraft(): boolean {
     return Number.isNaN(this.#state.id);
+  }
+
+  get isNotStarted(): boolean {
+    return this.#state.status === TaskStatus.NOT_STARTED && this.#state.startDate == null;
+  }
+
+  get isInProgress(): boolean {
+    return this.#state.status === TaskStatus.IN_PROGRESS && this.#state.startDate != null;
+  }
+
+  get isFinished(): boolean {
+    return (
+      this.#state.endDate != null &&
+      [TaskStatus.COMPLETED, TaskStatus.OVERDUE].includes(this.#state.status)
+    );
+  }
+
+  #isAllowTo(action: TaskStatusActions): boolean {
+    return allowedTaskStatusByAction[action].includes(this.#state.status);
+  }
+
+  #setStatus(status: TaskStatus): this {
+    if (status === this.#state.status) return this;
+    if (allowTaskStatusTransitions[this.#state.status].includes(status)) {
+      this.#state.status = status;
+      return this;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task status transition is unavailable from:{${this.#state.status} to:{${status}} status`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
   }
 }
 

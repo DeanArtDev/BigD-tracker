@@ -51,7 +51,9 @@ function mockDate(dataToUse: ReturnType<Date['toISOString']> = TEST_DATE): void 
   (_global.Date as unknown) = jest.fn((t: Date | string = DATE_TO_USE) => new _Date(t));
   _global.Date.UTC = _Date.UTC;
   _global.Date.parse = _Date.parse;
-  _global.Date.now = _Date.now;
+  _global.Date.now = jest.fn(() => new _Date(DATE_TO_USE).getTime());
+  _global.Date.constructor = _Date.constructor;
+  _global.Date.prototype = _Date.prototype;
 
   afterAll(() => {
     _global.Date = _Date;

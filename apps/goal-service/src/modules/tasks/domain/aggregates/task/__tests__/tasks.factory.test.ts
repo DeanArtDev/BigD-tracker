@@ -10,8 +10,6 @@ describe('TaskFactory', () => {
       userId: 21,
       name: 'Factory task',
       description: 'Created by factory',
-      startDate: futureDate(1),
-      deadline: futureDate(2),
     });
 
     expect(task.priority).toBe(4);
@@ -104,8 +102,6 @@ describe('TaskFactory', () => {
       userId: 26,
       name: 'Assign me',
       description: 'Move to inbox',
-      startDate: futureDate(1),
-      deadline: futureDate(2),
     });
 
     TaskFactory.assignToGroup(task, 'IN_BOX');

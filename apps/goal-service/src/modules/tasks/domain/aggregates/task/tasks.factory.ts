@@ -1,6 +1,5 @@
 import { Priority, TaskReplaceInput, Weight } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
-import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput } from './tasks.types';
@@ -54,7 +53,7 @@ class TaskFactory {
 
     if (!clonedTask.isDraft) {
       throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Cloned task from task:${task.id} must be a draft`,
+        message: `Cloned task aggregate from task:${task.id} must be a draft`,
         field: 'clone',
       });
     }
@@ -97,7 +96,7 @@ class TaskFactory {
   }
 
   static assignToGroup(task: Task, type: 'COMMON' | 'IN_BOX' = 'COMMON'): Task {
-    return task.assignToGroup(type === 'IN_BOX' ? TaskStatus.NOT_STARTED : undefined);
+    return task.assignToGroup({ reset: type === 'IN_BOX' });
   }
 
   static unassignFromGroup(task: Task): Task {
