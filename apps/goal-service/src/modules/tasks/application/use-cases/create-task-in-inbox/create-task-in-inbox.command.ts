@@ -5,7 +5,6 @@ export class CreateTaskInInboxCommand {
       readonly userId: number;
       readonly description?: string;
       readonly priority?: number;
-      readonly startDate?: string;
       readonly deadline?: string;
     },
   ) {}

@@ -18,7 +18,15 @@ export class TasksInboxRmqController {
     @Payload() { data: payload }: GoalCreateTaskInInbox.Request,
   ): Promise<GoalCreateTaskInInbox.Response> {
     return {
-      data: await this.commandBus.execute(new CreateTaskInInboxCommand(payload)),
+      data: await this.commandBus.execute(
+        new CreateTaskInInboxCommand({
+          userId: payload.userId,
+          name: payload.name,
+          description: payload.description,
+          priority: payload.priority,
+          deadline: payload.deadline,
+        }),
+      ),
     };
   }
 

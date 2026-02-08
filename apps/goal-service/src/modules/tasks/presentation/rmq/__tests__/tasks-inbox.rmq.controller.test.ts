@@ -1,6 +1,11 @@
 import { Task } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
-import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, RmqErrorKind } from '@big-d/api-contracts';
+import {
+  GoalAssignTaskToInbox,
+  GoalCreateTaskInInbox,
+  TaskStatus,
+  RmqErrorKind,
+} from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -9,6 +14,7 @@ import {
   connectRmqClients,
   createTestingModule,
   expectTransaction,
+  nthArgs,
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
@@ -239,6 +245,48 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(res).toEqual({ data: { success: true } });
+    });
+
+    test('should throw when task status not assignable', async () => {
+      const userId = 114;
+      const taskId = 9105;
+      const existingTask = getTask({ id: taskId, userId, status: TaskStatus.COMPLETED });
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
+      inboxReadRepoMock.ensureTaskInInbox.mockResolvedValueOnce({
+        success: false,
+        inboxId: 902,
+      });
+
+      const payload: GoalAssignTaskToInbox.Request = buildPayload({
+        data: {
+          userId,
+          taskId,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalAssignTaskToInbox.Response, GoalAssignTaskToInbox.Request>(
+          GoalAssignTaskToInbox.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(nthArgs(1, inboxReadRepoMock.ensureTaskInInbox)).toEqual(expectTransaction());
+      expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.removeTaskFromGroup).toHaveBeenCalledTimes(0);
+      expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
+      });
     });
 
     test('should throw when task missing', async () => {

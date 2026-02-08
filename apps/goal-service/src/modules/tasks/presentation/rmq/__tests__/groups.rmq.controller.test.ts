@@ -9,6 +9,7 @@ import {
   GoalGetDetailedGroups,
   GoalGetUserGroups,
   GoalReplaceGroup,
+  GroupStatus,
   RmqErrorKind,
 } from '@big-d/api-contracts';
 import { specToDebugString } from '@big-d/api-utils';
@@ -562,6 +563,45 @@ describe('GroupsRmqController (rmq e2e)', () => {
       });
     });
 
+    test('should throw when group status not replaceable', async () => {
+      const userId = 16;
+      const groupId = 121;
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
+        getGroupWithTasks({ id: groupId, user_id: userId, status: GroupStatus.DONE, tasks: [] }),
+      );
+
+      const payload: GoalReplaceGroup.Request = buildPayload({
+        data: {
+          id: groupId,
+          userId,
+          name: 'Updated',
+          description: 'New',
+          tasks: [],
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
+          GoalReplaceGroup.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, groupWriteRepoMock.getGroupById)).toEqual(expectTransaction());
+      expect(groupWriteRepoMock.replaceGroupWithTasks).toHaveBeenCalledTimes(0);
+      expect(groupReadRepoMock.getGroupWithTasksById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status' },
+      });
+    });
+
     test('should throw when group missing', async () => {
       const payload: GoalReplaceGroup.Request = buildPayload({
         data: {
@@ -728,6 +768,35 @@ describe('GroupsRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(res).toEqual({ data: true });
+    });
+
+    test('should throw when group status done', async () => {
+      const payload: GoalDeleteGroup.Request = buildPayload({
+        data: { groupId: 84, userId: 54 },
+      });
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
+        getGroupWithTasks({ id: 84, user_id: 54, status: GroupStatus.DONE, tasks: [] }),
+      );
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
+          GoalDeleteGroup.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, groupWriteRepoMock.getGroupById)).toEqual(expectTransaction());
+      expect(groupWriteRepoMock.delete).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status' },
+      });
     });
 
     test('should throw when group missing', async () => {
