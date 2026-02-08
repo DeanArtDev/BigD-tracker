@@ -51,36 +51,35 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
       );
     }
 
-    const map = this.#findIntersectionsBetweenOrEqual(
+    const hashFn = (event: TimeEvent<TExtra>) => event.from.toString() + event.to.toString();
+    const intersectionsBetweenOrEqualMap = this.#findIntersectionsBetweenOrEqual(
       buffer.filter((i) => !i.isAllDay(selectedDate.toDate())),
+      hashFn,
     );
 
     for (const bufferElement of buffer) {
-      const hashKey = bufferElement.from.toString() + bufferElement.to.toString();
-      const set = map.get(hashKey);
+      const hashKey = hashFn(bufferElement);
+      const set = intersectionsBetweenOrEqualMap.get(hashKey);
+      if (set == null || set.size === 0) return buffer;
 
-      if (set != null) {
-        if (set.size > 0) {
-          const container = 100;
-          const part = container / (set.size + 1);
-          const right = container - part;
-          const overCover = 20;
+      const container = 100;
+      const part = container / (set.size + 1);
+      const right = container - part;
+      const overCoverPercent = 20;
 
-          bufferElement.setPosition({ right: `${right}%`, left: '0%' });
+      bufferElement.setPosition({ right: `${right}%`, left: '0%' });
 
-          Array.from(set).forEach((event, index) => {
-            const shift = index + 1;
-            const shiftedRight = right - part * shift;
-            const left = part * shift;
+      Array.from(set).forEach((event, index) => {
+        const shift = index + 1;
+        const shiftedRight = right - part * shift;
+        const left = part * shift;
 
-            event.setPosition({
-              right: `${shiftedRight}%`,
-              left: `${left - getPercentFromPercent(overCover, left)}%`,
-            });
-            event.setStyle({ zIndex: shift });
-          });
-        }
-      }
+        event.setPosition({
+          right: `${shiftedRight}%`,
+          left: `${left - getPercentFromPercent(overCoverPercent, left)}%`,
+        });
+        event.setStyle({ zIndex: shift });
+      });
     }
 
     return buffer;
@@ -106,13 +105,14 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
 
   #findIntersectionsBetweenOrEqual(
     events: TimeEvent<TExtra>[],
+    hashFn: (parentEvent: TimeEvent<TExtra>) => string,
   ): Map<string, Set<TimeEvent<TExtra>>> {
     const map = new Map<string, Set<TimeEvent<TExtra>>>();
 
     let i = 0;
     while (i < events.length) {
       const parentEvent = events[i];
-      const hashKey = parentEvent.from.toString() + parentEvent.to.toString();
+      const hashKey = hashFn(parentEvent);
 
       let j = i + 1;
       while (j < events.length) {
@@ -120,7 +120,7 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
 
         const isBetween = this.#time
           .createDate(nextEvent.from)
-          .isBetween(parentEvent.from, parentEvent.to, 'minutes', '()');
+          .isBetween(parentEvent.from, parentEvent.to, 'minutes', '[]');
 
         if (isBetween) {
           const set =

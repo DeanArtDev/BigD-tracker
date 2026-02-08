@@ -45,7 +45,7 @@ function ReadableInputForm<FormValues extends FieldValues = FieldValues>(
   return (
     <div
       className={cn(
-        'readable-input-form flex grow gap-2 text-center sm:text-left w-full mb-0 justify-between p-2.5 pb-2 sm:p-4',
+        'readable-input-form flex grow min-w-0 gap-2 text-center sm:text-left w-full mb-0 justify-between p-2.5 pb-2 sm:p-4',
         className,
       )}
     >
@@ -65,10 +65,8 @@ function ReadableInputForm<FormValues extends FieldValues = FieldValues>(
       />
 
       {isRead && (
-        <div className="inline-flex grow items-center gap-2">
-          <Typography.H4 className="wrap-break-word line-clamp-3">
-            {fieldValue ?? placeholder}
-          </Typography.H4>
+        <div className="inline-flex grow items-center gap-2 min-w-0">
+          <Typography.H4 className="line-clamp-3">{fieldValue ?? placeholder}</Typography.H4>
 
           <Button
             className="size-5 mt-1.5 sm:mt-1 mb-auto"
