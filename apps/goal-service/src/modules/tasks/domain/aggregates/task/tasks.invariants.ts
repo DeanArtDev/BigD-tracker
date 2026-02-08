@@ -104,7 +104,7 @@ const taskAsserts = {
       });
     }
 
-    if (path.recurrence != null && currentState.recurrence !== currentState.recurrence) {
+    if (path.recurrence != null && currentState.recurrence !== path.recurrence) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Field can't be updated at this status: ${currentState.status}`,
         field: 'recurrence',
