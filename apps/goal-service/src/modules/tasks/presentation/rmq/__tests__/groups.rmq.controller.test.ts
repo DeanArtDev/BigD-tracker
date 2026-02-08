@@ -10,6 +10,7 @@ import {
   GoalGetUserGroups,
   GoalReplaceGroup,
   GroupStatus,
+  TaskStatus,
   RmqErrorKind,
 } from '@big-d/api-contracts';
 import { specToDebugString } from '@big-d/api-utils';
@@ -560,6 +561,59 @@ describe('GroupsRmqController (rmq e2e)', () => {
           progress: getGroupRaw().progress,
           tasks: [],
         },
+      });
+    });
+
+    test('should throw when task status not replaceable', async () => {
+      const userId = 17;
+      const groupId = 122;
+      const taskId = 601;
+
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
+        getGroupWithTasks({ id: groupId, user_id: userId }),
+      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
+      );
+      groupReadRepoMock.ensureTaskInGroup.mockResolvedValueOnce(true);
+
+      const payload: GoalReplaceGroup.Request = buildPayload({
+        data: {
+          id: groupId,
+          userId,
+          name: 'Updated',
+          description: 'New',
+          tasks: [
+            {
+              id: taskId,
+              name: 'Task',
+              priority: 2,
+              weight: 10,
+            },
+          ],
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
+          GoalReplaceGroup.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(groupReadRepoMock.ensureTaskInGroup).toHaveBeenCalledTimes(1);
+      expect(groupWriteRepoMock.replaceGroupWithTasks).toHaveBeenCalledTimes(0);
+      expect(groupReadRepoMock.getGroupWithTasksById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
       });
     });
 
