@@ -4,6 +4,7 @@ const formPlaceholderValues = {
   number: NaN,
   string: '',
   date: null,
+  textInputs: undefined,
 };
 
 const transformPlaceholder = {

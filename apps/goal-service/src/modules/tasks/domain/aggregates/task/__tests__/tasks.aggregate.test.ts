@@ -1,8 +1,11 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
+import { mockDate } from '@shared/__tests__';
 import { Priority } from '../../../value-objects/priority.vo';
 import { Weight } from '../../../value-objects/weight.vo';
 import { Task } from '../tasks.aggregate';
+
+mockDate();
 
 const futureDate = (offsetDays: number) =>
   new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
@@ -24,7 +27,7 @@ const buildCreateInput = (overrides?: Partial<Parameters<typeof Task.create>[0]>
 
 describe('Task aggregate', () => {
   it('creates task with default status and exposes state', () => {
-    const task = Task.create(buildCreateInput());
+    const task = Task.create(buildCreateInput({ startDate: undefined, deadline: undefined }));
 
     expect(task.isDraft).toBe(true);
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
@@ -32,9 +35,13 @@ describe('Task aggregate', () => {
     expect(task.description).toBe('Add aggregate tests');
     expect(task.priority).toBe(2);
     expect(task.weight).toBe(80);
-    expect(task.startDate).toBeDefined();
-    expect(task.deadline).toBeDefined();
     expect(task.recurrence).toBe('weekly');
+  });
+
+  it('created task can be started immediately', () => {
+    const task = Task.create(buildCreateInput());
+
+    expect(task.status).toBe(TaskStatus.IN_PROGRESS);
   });
 
   it('rejects creation with past start date', () => {
@@ -138,31 +145,6 @@ describe('Task aggregate', () => {
     ).toThrow();
   });
 
-  it('rejects updates after end date is set', () => {
-    const task = Task.restore({
-      id: 14,
-      userId: 8,
-      name: Name.create('Ended task'),
-      description: 'Cannot update',
-      priority: Priority.create(1),
-      weight: Weight.create(10),
-      status: TaskStatus.IN_PROGRESS,
-      endDate: DateVo.create(futureDate(2)),
-    });
-
-    expect(() =>
-      task.replace({
-        name: Name.create('Should fail'),
-        description: 'No updates',
-        priority: Priority.create(2),
-        weight: Weight.create(20),
-        startDate: DateVo.create(futureDate(3)),
-        deadline: DateVo.create(futureDate(4)),
-        recurrence: 'weekly',
-      }),
-    ).toThrow();
-  });
-
   it('rejects updates when dates are invalid', () => {
     const task = Task.create(buildCreateInput());
 
@@ -194,21 +176,7 @@ describe('Task aggregate', () => {
     expect(task.status).toBe(TaskStatus.DELETED);
   });
 
-  it('rejects soft delete for completed tasks', () => {
-    const task = Task.restore({
-      id: 11,
-      userId: 7,
-      name: Name.create('Cleanup'),
-      description: 'Soft delete',
-      priority: Priority.create(1),
-      weight: Weight.create(20),
-      status: TaskStatus.COMPLETED,
-    });
-
-    expect(() => task.deleteSoft()).toThrow();
-  });
-
-  it('assigns task back to not started when moving to inbox', () => {
+  it('assigns task has a corresponding status when moving to inbox', () => {
     const task = Task.restore({
       id: 12,
       userId: 15,
@@ -221,12 +189,26 @@ describe('Task aggregate', () => {
       recurrence: 'weekly',
     });
 
-    task.assignToGroup(TaskStatus.NOT_STARTED);
+    task.assignToGroup({ reset: true });
 
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
     expect(task.startDate).toBeUndefined();
     expect(task.endDate).toBeUndefined();
     expect(task.recurrence).toBeUndefined();
+
+    const taskNotStarted = Task.restore({
+      id: 12,
+      userId: 15,
+      name: Name.create('Inbox task'),
+      description: 'Move back',
+      priority: Priority.create(2),
+      weight: Weight.create(40),
+      status: TaskStatus.NOT_STARTED,
+    });
+
+    task.assignToGroup({ reset: true });
+
+    expect(taskNotStarted.status).toBe(TaskStatus.NOT_STARTED);
   });
 
   it('assigns task to another status without clearing dates', () => {
@@ -262,7 +244,7 @@ describe('Task aggregate', () => {
       status: TaskStatus.CANCELLED,
     });
 
-    expect(() => task.assignToGroup(TaskStatus.NOT_STARTED)).toThrow();
+    expect(() => task.assignToGroup({ reset: true })).toThrow();
   });
 
   it('allows unassigning when task is active', () => {
@@ -310,7 +292,7 @@ describe('Task aggregate', () => {
     expect(clone.status).toBe(TaskStatus.NOT_STARTED);
   });
 
-  it('keeps status on clone for active tasks', () => {
+  it('reset status and dates on clone', () => {
     const task = Task.restore({
       id: 19,
       userId: 9,
@@ -323,6 +305,65 @@ describe('Task aggregate', () => {
 
     const clone = task.clone();
 
-    expect(clone.status).toBe(TaskStatus.IN_PROGRESS);
+    expect(clone.status).toBe(TaskStatus.NOT_STARTED);
+    expect(task.startDate).not.toBeDefined();
+    expect(task.deadline).not.toBeDefined();
+    expect(task.recurrence).not.toBeDefined();
+  });
+
+  describe('Task finish', () => {
+    it(`task should be finished with status: ${TaskStatus.COMPLETED}`, () => {
+      const restoredTask = Task.restore({
+        id: 19,
+        userId: 9,
+        name: Name.create('Keep status'),
+        priority: Priority.create(4),
+        weight: Weight.create(10),
+        startDate: DateVo.create(futureDate(1)),
+        deadline: DateVo.create(futureDate(2)),
+        status: TaskStatus.IN_PROGRESS,
+      });
+
+      const finishedTask = restoredTask.finish();
+
+      expect(finishedTask.status).toBe(TaskStatus.COMPLETED);
+    });
+
+    it(`overdue task should be finished with status: ${TaskStatus.OVERDUE}`, () => {
+      const restoredTask = Task.restore({
+        id: 19,
+        userId: 9,
+        name: Name.create('Keep status'),
+        priority: Priority.create(4),
+        weight: Weight.create(10),
+        startDate: DateVo.create(pastDate(2)),
+        deadline: DateVo.create(pastDate(1)),
+        status: TaskStatus.IN_PROGRESS,
+      });
+
+      const finishedTask = restoredTask.finish();
+
+      expect(finishedTask.status).toBe(TaskStatus.OVERDUE);
+    });
+
+    it(`task should be finished with correct dates`, () => {
+      const restoredTask = Task.restore({
+        id: 19,
+        userId: 9,
+        name: Name.create('Keep status'),
+        priority: Priority.create(4),
+        weight: Weight.create(10),
+        startDate: DateVo.create(futureDate(1)),
+        deadline: DateVo.create(futureDate(2)),
+        status: TaskStatus.IN_PROGRESS,
+      });
+
+      const finishedTask = restoredTask.finish();
+
+      expect(finishedTask.startDate).toBeDefined();
+      expect(finishedTask.deadline).toBeDefined();
+      expect(finishedTask.endDate).toBeDefined();
+      expect(new Date(finishedTask.endDate!).toISOString()).toBe('2023-01-01T00:00:00.000Z');
+    });
   });
 });

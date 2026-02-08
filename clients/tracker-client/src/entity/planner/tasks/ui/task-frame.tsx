@@ -32,7 +32,7 @@ function TaskFrame({
   return (
     <li
       className={cn(
-        'group/task-frame bg-background relative p-2 sm:p-2 flex justify-center w-full rounded-md border shadow-md hover:shadow',
+        'group/task-frame bg-background relative p-2 pl-3 flex justify-center w-full rounded-md border shadow-md hover:shadow',
         className,
       )}
       ref={ref}
@@ -59,7 +59,7 @@ function TaskFrame({
       {isPriorityValid && showPriority && (
         <div
           className={cn(
-            'absolute top-0 right-0 w-4 h-4 [clip-path:polygon(100%_0,0_0,100%_100%)] rounded-tr-sm',
+            'absolute top-0 left-0 bottom-0 w-[3px] h-full rounded-tl-md rounded-bl-md',
             {
               [`bg-(--priority-1)`]: prior === 1,
               [`bg-(--priority-2)`]: prior === 2,

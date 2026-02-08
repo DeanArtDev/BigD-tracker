@@ -3,7 +3,7 @@ import { ButtonLoading } from '@/shared/components/button-loading';
 
 interface SidebarActionsProps {
   readonly taskId?: number;
-  readonly groupId: number;
+  readonly groupId?: number;
   readonly onCloneSuccess?: () => Promise<void> | void;
   readonly onFinishSuccess?: () => Promise<void> | void;
 }

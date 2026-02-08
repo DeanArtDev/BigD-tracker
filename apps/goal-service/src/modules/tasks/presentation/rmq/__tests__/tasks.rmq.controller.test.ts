@@ -11,6 +11,7 @@ import {
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
+  TaskStatus,
   RmqErrorKind,
 } from '@big-d/api-contracts';
 import { specToDebugString } from '@big-d/api-utils';
@@ -22,6 +23,8 @@ import {
   connectRmqClients,
   createTestingModule,
   expectTransaction,
+  firstArg,
+  nthArgs,
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
@@ -163,6 +166,37 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(res).toEqual({ data: toTaskResponse(taskView) });
+    });
+
+    test('should throw when startDate in past', async () => {
+      const userId = 14;
+      const payload: GoalCreateTask.Request = buildPayload({
+        data: {
+          userId,
+          name: 'Past task',
+          startDate: '2000-01-01T00:00:00.000Z',
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalCreateTask.Response, GoalCreateTask.Request>(
+          GoalCreateTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(0);
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'startDate' },
+      });
     });
 
     test('should throw when group missing', async () => {
@@ -498,9 +532,47 @@ describe('TasksRmqController (rmq e2e)', () => {
           startDate: '2099-01-01T00:00:00.000Z',
           endDate: undefined,
           deadline: '2099-02-01T00:00:00.000Z',
-          status: existingTask.status,
+          status: TaskStatus.IN_PROGRESS,
           recurrence: 'weekly',
         },
+      });
+    });
+
+    test('should throw when task status not replaceable', async () => {
+      const userId = 33;
+      const taskId = 4013;
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED }),
+      );
+
+      const payload: GoalReplaceTask.Request = buildPayload({
+        data: {
+          id: taskId,
+          userId,
+          name: 'Updated',
+          priority: 2,
+          weight: 3,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
+          GoalReplaceTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
       });
     });
 
@@ -605,6 +677,50 @@ describe('TasksRmqController (rmq e2e)', () => {
           status: existingTask.status,
           recurrence: undefined,
         },
+      });
+    });
+
+    test('should throw when task status not replaceable', async () => {
+      const userId = 44;
+      const taskId = 5005;
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED }),
+      );
+      inboxReadRepoMock.ensureTaskInInbox.mockResolvedValueOnce({
+        success: true,
+        inboxId: 777,
+      });
+
+      const payload: GoalUpdateInboxTask.Request = buildPayload({
+        data: {
+          id: taskId,
+          userId,
+          name: 'Inbox Updated',
+          priority: 1,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
+          GoalUpdateInboxTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(nthArgs(1, inboxReadRepoMock.ensureTaskInInbox)).toEqual(expectTransaction());
+      expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
       });
     });
 
@@ -776,6 +892,42 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(res).toEqual({ data: { id: taskId } });
     });
 
+    test('should throw when task status not deleteable', async () => {
+      const userId = 52;
+      const taskId = 6003;
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
+      );
+
+      const payload: GoalDeleteTask.Request = buildPayload({
+        data: {
+          id: taskId,
+          userId,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(
+          GoalDeleteTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(firstArg(tasksWriteRepoMock.getTaskById)).toEqual({ taskId, userId });
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(tasksWriteRepoMock.changeTaskStatus).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
+      });
+    });
+
     test('should throw when task missing', async () => {
       const userId = 51;
       const taskId = 6002;
@@ -861,6 +1013,47 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(res).toEqual({ data: { success: true } });
+    });
+
+    test('should throw when task status not assignable', async () => {
+      const userId = 64;
+      const taskId = 7005;
+      const groupId = 904;
+      const existingTask = getTask({ id: taskId, userId, status: TaskStatus.COMPLETED });
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
+      groupReadRepoMock.ensureTaskInGroup.mockResolvedValueOnce(false);
+
+      const payload: GoalAssignTaskToGroup.Request = buildPayload({
+        data: {
+          taskId,
+          userId,
+          groupId,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
+          GoalAssignTaskToGroup.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(nthArgs(1, groupReadRepoMock.ensureTaskInGroup)).toEqual(expectTransaction());
+      expect(groupReadRepoMock.ensureTaskInGroup).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.removeTaskFromGroup).toHaveBeenCalledTimes(0);
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
+      });
     });
 
     test('should throw when task missing', async () => {
@@ -1024,6 +1217,46 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(res).toEqual({ data: { success: true } });
+    });
+
+    test('should throw when task status not unassignable', async () => {
+      const userId = 73;
+      const taskId = 8004;
+      const groupId = 913;
+      const existingTask = getTask({ id: taskId, userId, status: TaskStatus.COMPLETED });
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
+      groupReadRepoMock.ensureTaskInGroup.mockResolvedValueOnce(true);
+
+      const payload: GoalUnassignTaskFromGroup.Request = buildPayload({
+        data: {
+          taskId,
+          userId,
+          groupId,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
+          GoalUnassignTaskFromGroup.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(nthArgs(1, groupReadRepoMock.ensureTaskInGroup)).toEqual(expectTransaction());
+      expect(groupReadRepoMock.ensureTaskInGroup).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.removeTaskFromGroup).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
+      });
     });
 
     test('should throw when task missing', async () => {
@@ -1228,6 +1461,39 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.removeTaskFromGroup).not.toHaveBeenCalled();
       expect(res).toEqual({ data: true });
+    });
+
+    test('should throw when task status not finishable', async () => {
+      const userId = 99;
+      const taskId = 9104;
+      const existingTask = getTask({ id: taskId, userId, status: TaskStatus.DELETED });
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
+
+      const payload: GoalFinishTask.Request = buildPayload({
+        data: { userId, taskId },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
+          GoalFinishTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(nthArgs(1, tasksWriteRepoMock.getTaskById)).toEqual(expectTransaction());
+      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(0);
+      expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'status', taskId },
+      });
     });
 
     test('should throw when task missing', async () => {

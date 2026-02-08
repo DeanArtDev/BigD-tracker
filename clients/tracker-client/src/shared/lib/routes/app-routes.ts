@@ -61,10 +61,10 @@ const routes = {
       buildLink(path, { urlParams: { groupId }, queryObject: query }),
   }))('/planner/group-list/:groupId'),
 
-  plannerDailyPlanner: (<Path extends string = string>(path: Path) => ({
+  plannerDiary: (<Path extends string = string>(path: Path) => ({
     path,
     link: () => buildLink(path),
-  }))('/planner/daily-planner'),
+  }))('/planner/diary'),
 
   /* SYSTEM */
   signUp: (<Path extends string = string>(path: Path) => ({

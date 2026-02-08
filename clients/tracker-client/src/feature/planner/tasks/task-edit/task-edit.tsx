@@ -10,7 +10,7 @@ import { ButtonTrash } from '@/shared/components/button-trash';
 
 interface TaskEditProps {
   readonly task: TaskFormDialogProps['task'] | null;
-  readonly groupId: number;
+  readonly groupId?: number;
   readonly onSuccess?: () => void;
   readonly onCansel?: () => void;
 }

@@ -23,8 +23,8 @@ const plannerRoutesMap: Record<string, PageApplicationRote> = {
     internal: true,
   },
 
-  [routes.plannerDailyPlanner.path]: {
-    to: routes.plannerDailyPlanner.path,
+  [routes.plannerDiary.path]: {
+    to: routes.plannerDiary.path,
     title: 'Ежедневник',
     internal: false,
     icon: (props: LucideProps) => <BookMarked {...props} />,

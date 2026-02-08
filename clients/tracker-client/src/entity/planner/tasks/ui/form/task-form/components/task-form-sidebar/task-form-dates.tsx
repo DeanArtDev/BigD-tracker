@@ -40,18 +40,21 @@ function TaskFormDates() {
         <Typography.H4 className="text-md font-normal">Начало:</Typography.H4>
 
         <div className="flex gap-2 items-center">
-          <DatePickerForm
+          <DatePickerForm<TaskFormData>
             name="startDate"
             isErrorMessage={false}
             min={dateLimits.startDate.min}
             max={dateLimits.startDate.max}
-            renderInput={({ value, disabled }) => {
+            renderInput={({ ref, value, disabled, onBlur }) => {
               return (
                 <Button
+                  ref={ref}
+                  type="button"
                   className={cn({ 'size-5': value == null })}
                   disabled={disabled}
                   variant="ghost"
                   tabIndex={-1}
+                  onBlur={onBlur}
                 >
                   {value != null ? (
                     <TaskStartDate startDate={value} size={15} showDate />
@@ -86,18 +89,21 @@ function TaskFormDates() {
         <Typography.H4 className="text-md font-normal">Дедлайн:</Typography.H4>
 
         <div className="flex gap-2 items-center">
-          <DatePickerForm
+          <DatePickerForm<TaskFormData>
             name="deadline"
             isErrorMessage={false}
             min={dateLimits.deadline.min}
             max={dateLimits.deadline.max}
             onBeforeValueSet={(date) => dayjs(date).endOf('day').set('milliseconds', 0).toDate()}
-            renderInput={({ value, disabled }) => {
+            renderInput={({ ref, value, disabled, onBlur }) => {
               return (
                 <Button
+                  ref={ref}
                   className={cn({ 'size-5': value == null })}
                   disabled={disabled}
+                  type="button"
                   variant="ghost"
+                  onBlur={onBlur}
                   tabIndex={-1}
                 >
                   {value != null ? (

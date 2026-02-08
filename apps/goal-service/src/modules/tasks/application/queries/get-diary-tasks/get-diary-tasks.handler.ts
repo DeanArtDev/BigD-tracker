@@ -1,5 +1,14 @@
 import { TaskView } from '@/modules/tasks/application/dto';
+import {
+  TaskByDeadlineGreaterOrEqual,
+  TaskByStartDateLessOrEqual,
+  TaskByStatus,
+  TaskByUserId,
+  tasksCombinators,
+} from '@/modules/tasks/application/specifications';
+import { tasksQuerySpec } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
+import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
@@ -16,7 +25,19 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
   async execute({ input }: GetDiaryTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
       const { userId, from, to } = input;
-      return await this.tasksReadRepository.getByRange({ from, to, userId }, trx);
+
+      const specifications = tasksCombinators.and(
+        TaskByUserId(userId),
+        TaskByStatus(
+          [TaskStatus.IN_PROGRESS].filter((status) =>
+            tasksQuerySpec.readableStatuses.includes(status),
+          ),
+        ),
+        TaskByStartDateLessOrEqual(new Date(to)),
+        TaskByDeadlineGreaterOrEqual(new Date(from)),
+      );
+
+      return await this.tasksReadRepository.getByRange(specifications, trx);
     });
   }
 }

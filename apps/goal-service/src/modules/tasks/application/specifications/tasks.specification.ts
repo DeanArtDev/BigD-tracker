@@ -5,6 +5,20 @@ import { pgLikeExpr } from './utils';
 
 const { leaf } = tasksCombinators;
 
+const TaskByStartDateLessOrEqual = (date: Date) =>
+  leaf({
+    key: 'tasks.byStartDateLessOrEqual',
+    purpose: 'filter',
+    toExpr: (eb) => eb('tasks.start_date', '<=', date),
+  });
+
+const TaskByDeadlineGreaterOrEqual = (date: Date) =>
+  leaf({
+    key: 'tasks.byDeadlineGreaterOrEqual',
+    purpose: 'filter',
+    toExpr: (eb) => eb('tasks.deadline', '>=', date),
+  });
+
 const TaskByUserId = (userId: number) =>
   leaf({
     key: 'tasks.byUserId',
@@ -47,4 +61,12 @@ const TaskBySearch = (search: string) =>
       }),
   });
 
-export { TaskByUserId, TaskByGroupId, TaskBySearch, TaskByStatus, TaskInGroup };
+export {
+  TaskByUserId,
+  TaskByGroupId,
+  TaskBySearch,
+  TaskByStatus,
+  TaskInGroup,
+  TaskByStartDateLessOrEqual,
+  TaskByDeadlineGreaterOrEqual,
+};
