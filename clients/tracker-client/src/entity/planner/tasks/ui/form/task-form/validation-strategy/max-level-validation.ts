@@ -1,8 +1,8 @@
 import { formPlaceholderValues, formTransform, transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
-import { taskPrioritySchema } from '../../../lib/validation-schemas';
+import { taskPrioritySchema } from '../../../../lib/validation-schemas';
 
-const validationSchema = z
+const maxLevelValidation = z
   .object({
     name: z
       .string({ error: '' })
@@ -52,7 +52,4 @@ const validationSchema = z
     }
   });
 
-type TaskFormData = z.input<typeof validationSchema>;
-type TaskSubmitFormData = z.output<typeof validationSchema>;
-
-export { validationSchema, type TaskFormData, type TaskSubmitFormData };
+export { maxLevelValidation };

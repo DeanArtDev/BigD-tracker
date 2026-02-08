@@ -2,9 +2,9 @@ import { ToggleGroupForm } from '@/shared/components/form';
 import { ToggleGroupItem } from '@/shared/ui-kit/ui/toggle-group';
 import { Circle } from 'lucide-react';
 
-function TaskPriorityPickerForm() {
+function TaskPriorityPickerForm({ disabled }: { disabled?: boolean }) {
   return (
-    <ToggleGroupForm name="priority" tabIndex={-1} label="Приоритет">
+    <ToggleGroupForm name="priority" disabled={disabled} tabIndex={-1} label="Приоритет">
       <ToggleGroupItem value="1" className="w-[30px] data-[state=on]:bg-[var(--priority-1)]/20">
         <Circle strokeWidth={3} color="var(--priority-1)" />
       </ToggleGroupItem>

@@ -5,6 +5,7 @@ interface TasksStatusCount {
   overdue: number;
   done: number;
   notStarted: number;
+  inProgress: number;
 }
 
 function getTasksStatusCount(
@@ -24,9 +25,13 @@ function getTasksStatusCount(
         acc.notStarted += 1;
       }
 
+      if (task.status === TaskStatus.IN_PROGRESS) {
+        acc.inProgress += 1;
+      }
+
       return acc;
     },
-    { done: 0, overdue: 0, total: tasks.length, notStarted: 0 },
+    { done: 0, overdue: 0, total: tasks.length, notStarted: 0, inProgress: 0 },
   );
 }
 
