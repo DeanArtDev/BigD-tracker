@@ -199,6 +199,69 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
     });
 
+    test('should throw when deadline in past', async () => {
+      const userId = 15;
+      const payload: GoalCreateTask.Request = buildPayload({
+        data: {
+          userId,
+          name: 'Past deadline task',
+          deadline: '2000-01-01T00:00:00.000Z',
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalCreateTask.Response, GoalCreateTask.Request>(
+          GoalCreateTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(0);
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'deadline' },
+      });
+    });
+
+    test('should throw when startDate after deadline', async () => {
+      const userId = 16;
+      const payload: GoalCreateTask.Request = buildPayload({
+        data: {
+          userId,
+          name: 'Invalid date range',
+          startDate: '2099-02-01T00:00:00.000Z',
+          deadline: '2099-01-01T00:00:00.000Z',
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalCreateTask.Response, GoalCreateTask.Request>(
+          GoalCreateTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(0);
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'startDate' },
+      });
+    });
+
     test('should throw when group missing', async () => {
       const userId = 12;
       const groupId = 300;
@@ -538,11 +601,51 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
     });
 
-    test('should throw when task status not replaceable', async () => {
+    test('should throw when startDate after deadline', async () => {
       const userId = 33;
       const taskId = 4013;
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED }),
+        getTask({ id: taskId, userId, status: TaskStatus.NOT_STARTED }),
+      );
+
+      const payload: GoalReplaceTask.Request = buildPayload({
+        data: {
+          id: taskId,
+          userId,
+          name: 'Updated',
+          description: 'Updated desc',
+          priority: 2,
+          weight: 3,
+          startDate: '2099-02-01T00:00:00.000Z',
+          deadline: '2099-01-01T00:00:00.000Z',
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
+          GoalReplaceTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'startDate' },
+      });
+    });
+
+    test('should throw when task status not replaceable', async () => {
+      const userId = 34;
+      const taskId = 4014;
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
       );
 
       const payload: GoalReplaceTask.Request = buildPayload({
@@ -573,6 +676,43 @@ describe('TasksRmqController (rmq e2e)', () => {
         key: 'INVARIANT_FAILED',
         kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
         details: { field: 'status', taskId },
+      });
+    });
+
+    test('should throw when task status allows partial replace but fields differ', async () => {
+      const userId = 35;
+      const taskId = 4015;
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED, weight: 1 }),
+      );
+
+      const payload: GoalReplaceTask.Request = buildPayload({
+        data: {
+          id: taskId,
+          userId,
+          name: 'Updated',
+          priority: 2,
+          weight: 4,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
+          GoalReplaceTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'weight', taskId },
       });
     });
 
@@ -685,7 +825,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const taskId = 5005;
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED }),
+        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
       );
       inboxReadRepoMock.ensureTaskInInbox.mockResolvedValueOnce({
         success: true,
@@ -1346,6 +1486,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const payload: GoalGetDiaryTasks.Request = buildPayload({
         data: {
           userId,
+
           from: '2024-01-01T00:00:00.000Z',
           to: '2024-01-31T00:00:00.000Z',
         },
@@ -1357,7 +1498,15 @@ describe('TasksRmqController (rmq e2e)', () => {
       );
 
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
-      const [, trxArg] = tasksReadRepoMock.getByRange.mock.calls[0];
+      const [specArg, trxArg] = tasksReadRepoMock.getByRange.mock.calls[0];
+      expect(specToDebugString(specArg)).toMatchInlineSnapshot(`
+          "AND(
+            tasks.byUserId,
+            tasks.byStatus,
+            tasks.byStartDateLessOrEqual,
+            tasks.byDeadlineGreaterOrEqual
+          )"
+      `);
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({ data: [toTaskResponse(taskView)] });
     });

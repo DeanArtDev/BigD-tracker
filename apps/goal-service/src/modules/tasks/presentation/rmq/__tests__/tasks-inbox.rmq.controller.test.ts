@@ -118,6 +118,39 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       expect(res).toEqual({ data: toTaskResponse(taskView) });
     });
 
+    test('should throw when deadline in past', async () => {
+      const userId = 104;
+      const payload: GoalCreateTaskInInbox.Request = buildPayload({
+        data: {
+          userId,
+          name: 'Inbox Task',
+          priority: 2,
+          deadline: '2000-01-01T00:00:00.000Z',
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalCreateTaskInInbox.Response, GoalCreateTaskInInbox.Request>(
+          GoalCreateTaskInInbox.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(0);
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledTimes(0);
+      expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledTimes(0);
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskInvariantFailed.code,
+        key: 'INVARIANT_FAILED',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { field: 'deadline' },
+      });
+    });
+
     test('should throw when inbox missing', async () => {
       const userId = 102;
       const createdTask = getTask({ id: 9002, userId, name: 'Inbox Task' });

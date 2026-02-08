@@ -4,8 +4,10 @@ import {
   useAssignTaskToGroup,
   useUnassignTaskFromGroup,
 } from '@/entity/planner/tasks';
+import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
+import { useFormContext } from 'react-hook-form';
 import { GroupTaskAutocomplete } from './group-task-autocomplete';
 import { ButtonAdd } from '@/shared/components/button-add';
 import { ButtonClose } from '@/shared/components/button-close';
@@ -20,6 +22,7 @@ interface GroupTaskListControllerProps {
 
 function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
+  const { formState } = useFormContext();
 
   const [taskForUpdate, setTaskForUpdate] = useState<TaskEntity | null>(null);
 
@@ -36,7 +39,9 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   return (
     <>
       <GroupTaskList
-        afterTaskNameSlot={({ taskId }) => {
+        afterTaskNameSlot={({ taskInfo: { status, id: taskId } }) => {
+          if (!isAllowTaskAction('UNASSIGN', status)) return null;
+
           return (
             <ButtonClose
               className="size-5"
@@ -65,6 +70,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
         beforeTaskListSlot={
           <div className="flex gap-2 mb-2">
             <GroupTaskAutocomplete
+              disabled={formState.disabled}
               loading={isAssignTaskToGroupPending}
               onTaskSelect={(taskId) => {
                 assignTaskToGroup(

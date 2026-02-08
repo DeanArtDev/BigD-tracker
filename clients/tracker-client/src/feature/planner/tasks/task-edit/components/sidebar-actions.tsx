@@ -1,14 +1,21 @@
-import { useTaskClone, useTaskFinish } from '@/entity/planner/tasks';
+import { TaskStatus, useTaskClone, useTaskFinish } from '@/entity/planner/tasks';
+import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { ButtonLoading } from '@/shared/components/button-loading';
 
 interface SidebarActionsProps {
-  readonly taskId?: number;
-  readonly groupId?: number;
+  readonly taskInfo: {
+    readonly id: number;
+    readonly status: TaskStatus;
+    readonly groupId?: number;
+  };
+
   readonly onCloneSuccess?: () => Promise<void> | void;
   readonly onFinishSuccess?: () => Promise<void> | void;
 }
 
-function SidebarActions({ groupId, taskId, onCloneSuccess, onFinishSuccess }: SidebarActionsProps) {
+function SidebarActions({ taskInfo, onCloneSuccess, onFinishSuccess }: SidebarActionsProps) {
+  const { status, groupId, id: taskId } = taskInfo;
+
   const { finishTask, isPending: isTaskFinishPending } = useTaskFinish();
   const { cloneTask, isPending: isTaskCloningPending } = useTaskClone();
 
@@ -16,14 +23,13 @@ function SidebarActions({ groupId, taskId, onCloneSuccess, onFinishSuccess }: Si
     <div className="sidebar-actions flex flex-row gap-2">
       <ButtonLoading
         className="flex-1"
+        disabled={!isAllowTaskAction('FINISH', status)}
         isLoading={isTaskFinishPending}
         size="xs"
         variant="outline"
         type="button"
         onClick={() => {
-          if (taskId != null) {
-            finishTask({ params: { path: { taskId } } }, { onSuccess: onFinishSuccess });
-          }
+          finishTask({ params: { path: { taskId } } }, { onSuccess: onFinishSuccess });
         }}
       >
         Завершить
@@ -34,14 +40,13 @@ function SidebarActions({ groupId, taskId, onCloneSuccess, onFinishSuccess }: Si
         size="xs"
         variant="outline"
         type="button"
+        disabled={!isAllowTaskAction('CLONE', status)}
         isLoading={isTaskCloningPending}
         onClick={() => {
-          if (taskId != null) {
-            cloneTask(
-              { params: { path: { taskId } }, body: { data: { groupId } } },
-              { onSuccess: onCloneSuccess },
-            );
-          }
+          cloneTask(
+            { params: { path: { taskId } }, body: { data: { groupId } } },
+            { onSuccess: onCloneSuccess },
+          );
         }}
       >
         Клонировать

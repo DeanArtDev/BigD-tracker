@@ -1,3 +1,4 @@
+import type { TaskEntity } from '@/entity/planner/tasks';
 import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
 import { TaskFrame, TaskStatusToIconMap } from '@/entity/planner/tasks/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
@@ -9,13 +10,15 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { cn } from '@/shared/ui-kit/utils';
-import { CircleCheckBig, CirclePause, CirclePlus, GripVertical } from 'lucide-react';
+import { CircleCheckBig, CirclePause, CirclePlus, ClockFading, GripVertical } from 'lucide-react';
 import { type ReactNode } from 'react';
 import { type FieldArrayPath, useFieldArray } from 'react-hook-form';
 import type { GroupEditFormData } from '../validation-schema';
 
 interface GroupTaskListProps {
-  readonly afterTaskNameSlot?: ({ taskId }: { taskId: number }) => ReactNode;
+  readonly afterTaskNameSlot?: (props: {
+    taskInfo: { id: TaskEntity['id']; status: TaskEntity['status'] };
+  }) => ReactNode;
   readonly beforeTaskListSlot?: ReactNode;
   readonly emptyPlaceholderBeforeEndSlot?: ReactNode;
   readonly onTaskClick?: (task: GroupEditFormData['tasks'][0]) => void;
@@ -36,7 +39,7 @@ function GroupTaskList({
     keyName: 'formUid',
   });
 
-  const { total, notStarted, overdue, done } = getTasksStatusCount(tasks);
+  const { total, notStarted, overdue, inProgress, done } = getTasksStatusCount(tasks);
   const header = `В группе ${total} ${pluralize(total, { one: 'дело', few: 'дела', many: 'дел' })}`;
 
   return (
@@ -63,13 +66,18 @@ function GroupTaskList({
               </li>
 
               <li className="inline-flex items-center gap-1">
-                <CirclePause className="size-5 stroke-gray-400" />
-                <Typography.Small>{notStarted}</Typography.Small>
+                <ClockFading className="size-5 stroke-gray-500 rotate-45" />
+                <Typography.Small>{inProgress}</Typography.Small>
               </li>
 
               <li className="inline-flex items-center gap-1">
                 <CirclePlus className="size-5 stroke-red-500 rotate-45" />
                 <Typography.Small>{overdue}</Typography.Small>
+              </li>
+
+              <li className="inline-flex items-center gap-1">
+                <CirclePause className="size-5 stroke-gray-400" />
+                <Typography.Small>{notStarted}</Typography.Small>
               </li>
             </ul>
           </div>
@@ -105,7 +113,7 @@ function GroupTaskList({
                     <div className="flex flex-row items-center gap-1">
                       <StatusIcon className="size-4 absolute -top-1 -right-px z-1 stroke-3" />
 
-                      {afterTaskNameSlot?.({ taskId: task.id })}
+                      {afterTaskNameSlot?.({ taskInfo: task })}
                     </div>
                   }
                   beforeNameSlot={

@@ -12,15 +12,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod/v4';
 import { TaskPriority } from '../../../lib/constants';
-import type { TaskEntity } from '../../../model';
+import { type TaskEntity } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
-import { TaskFormSidebar } from './components/task-form-sidebar';
-import { type TaskFormData, type TaskSubmitFormData, validationSchema } from './validation-schema';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
+import { TaskFormSidebar } from './components/task-form-sidebar';
+import { TaskFieldsRulesProvider, useTaskFieldsRulesContext } from './context';
+import { validationStrategyByStatus } from './validation-strategy';
 
 interface TaskFormProps extends FormStateEmitterProps {
-  readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason' | 'status'>;
+  readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason'>;
   readonly afterNameSlot?: ReactNode;
   readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly footerSidebarSlot?: (props: { disabled: boolean }) => ReactNode;
@@ -35,7 +37,12 @@ interface TaskFormProps extends FormStateEmitterProps {
   }) => void;
 }
 
-function TaskForm(props: TaskFormProps) {
+function Component(props: TaskFormProps) {
+  const { status } = useTaskFieldsRulesContext();
+  const validationSchema = validationStrategyByStatus(status);
+  type TaskFormData = z.input<typeof validationSchema>;
+  type TaskSubmitFormData = z.output<typeof validationSchema>;
+
   const isMobile = useIsMobile();
 
   const {
@@ -166,6 +173,14 @@ function TaskForm(props: TaskFormProps) {
         </SidebarProvider>
       </form>
     </Form>
+  );
+}
+
+function TaskForm(props: TaskFormProps) {
+  return (
+    <TaskFieldsRulesProvider status={props?.task?.status}>
+      <Component {...props} />
+    </TaskFieldsRulesProvider>
   );
 }
 

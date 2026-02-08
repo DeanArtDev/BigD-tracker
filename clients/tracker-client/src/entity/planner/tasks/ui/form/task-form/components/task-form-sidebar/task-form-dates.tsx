@@ -9,9 +9,16 @@ import { Plus } from 'lucide-react';
 import { Fragment, useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
-import type { TaskFormData } from '../../validation-schema';
+import { z } from 'zod';
+import { useTaskFieldsRulesContext } from '../../context';
+import { validationStrategyByStatus } from '../../validation-strategy';
 
-function TaskFormDates() {
+function TaskFormDates(props: { disabled?: boolean }) {
+  const { status } = useTaskFieldsRulesContext();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const validationSchema = validationStrategyByStatus(status);
+  type TaskFormData = z.input<typeof validationSchema>;
+
   const startDate = useWatch<{ startDate: TaskFormData['startDate'] }>({ name: 'startDate' });
   const deadline = useWatch<{ deadline: TaskFormData['deadline'] }>({ name: 'deadline' });
 
@@ -51,7 +58,7 @@ function TaskFormDates() {
                   ref={ref}
                   type="button"
                   className={cn({ 'size-5': value == null })}
-                  disabled={disabled}
+                  disabled={disabled || props.disabled}
                   variant="ghost"
                   tabIndex={-1}
                   onBlur={onBlur}
@@ -75,6 +82,7 @@ function TaskFormDates() {
                 name="startDate"
                 format="HH:mm"
                 step="60"
+                disabled={props.disabled}
                 isErrorMessage={false}
                 tabIndex={-1}
               />
@@ -100,7 +108,7 @@ function TaskFormDates() {
                 <Button
                   ref={ref}
                   className={cn({ 'size-5': value == null })}
-                  disabled={disabled}
+                  disabled={disabled || props.disabled}
                   type="button"
                   variant="ghost"
                   onBlur={onBlur}
@@ -124,6 +132,7 @@ function TaskFormDates() {
                 classNames={{ wrapper: 'max-w-18' }}
                 name="deadline"
                 format="HH:mm"
+                disabled={props.disabled}
                 step="60"
                 isErrorMessage={false}
                 tabIndex={-1}
@@ -137,8 +146,8 @@ function TaskFormDates() {
 }
 
 function getMinMaxValues(dates: {
-  startDate: TaskFormData['startDate'];
-  deadline: TaskFormData['deadline'];
+  startDate: Date | null | undefined;
+  deadline: Date | null | undefined;
 }): {
   startDate: { min: Date | undefined; max: Date | undefined };
   deadline: { min: Date | undefined; max: Date | undefined };

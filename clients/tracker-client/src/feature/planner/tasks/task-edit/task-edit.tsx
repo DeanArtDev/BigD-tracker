@@ -1,5 +1,6 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useInvalidateDiaryTasks, useUpdateTask } from '@/entity/planner/tasks';
+import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import {
   TaskDeleteWithConfirmHoc,
   TaskFormDialog,
@@ -32,6 +33,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
 
   const DeleteTaskSlot = (props: { disabled: boolean }) => {
     if (task == null) return null;
+    const deleteButtonDisabled = props.disabled || !isAllowTaskAction('DELETE', task.status);
     return (
       <TaskDeleteWithConfirmHoc
         taskId={task.id}
@@ -41,7 +43,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
         }}
       >
         {({ isLoading }) => (
-          <ButtonTrash disabled={props.disabled} className="mr-auto" isLoading={isLoading} />
+          <ButtonTrash disabled={deleteButtonDisabled} className="mr-auto" isLoading={isLoading} />
         )}
       </TaskDeleteWithConfirmHoc>
     );
@@ -53,14 +55,19 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
       open={open}
       loading={isPending}
       footerSlot={DeleteTaskSlot}
-      footerSidebarSlot={() => (
-        <SidebarActions
-          groupId={groupId}
-          taskId={task?.id}
-          onFinishSuccess={invalidate}
-          onCloneSuccess={invalidate}
-        />
-      )}
+      footerSidebarSlot={() =>
+        task != null && (
+          <SidebarActions
+            taskInfo={{
+              groupId,
+              id: task?.id,
+              status: task?.status,
+            }}
+            onFinishSuccess={invalidate}
+            onCloneSuccess={invalidate}
+          />
+        )
+      }
       onOpenChange={(isOpen) => {
         !isOpen && onCansel?.();
       }}

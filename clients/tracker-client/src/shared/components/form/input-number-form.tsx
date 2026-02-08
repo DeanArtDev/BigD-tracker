@@ -45,16 +45,16 @@ function InputNumberForm<FormValues extends FieldValues = FieldValues>({
 
             <FormControl>
               <Input
-                {...inputProps}
+                className={classNames?.input}
                 inputMode={inputMode}
-                type="number"
                 {...context.register(name, {
+                  disabled: inputProps.disabled,
                   setValueAs: (v) =>
                     v === '' || v == null ? undefined : normalizeToNumber(String(v)),
                   onChange: (evt) =>
                     evt.target.value.trim() === '' ? null : normalizeToNumber(evt.target.value),
                 })}
-                className={classNames?.input}
+                {...inputProps}
               />
             </FormControl>
 

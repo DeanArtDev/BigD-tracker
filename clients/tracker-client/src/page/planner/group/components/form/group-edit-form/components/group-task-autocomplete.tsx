@@ -14,10 +14,11 @@ import { useDebounceValue } from 'usehooks-ts';
 
 interface GroupTaskAutocompleteProps {
   readonly loading?: boolean;
+  readonly disabled?: boolean;
   readonly onTaskSelect: (taskId: number) => void;
 }
 
-function GroupTaskAutocomplete({ onTaskSelect, loading }: GroupTaskAutocompleteProps) {
+function GroupTaskAutocomplete({ onTaskSelect, disabled, loading }: GroupTaskAutocompleteProps) {
   const [taskSearch, setTaskSearch] = useState<string>('');
 
   const isMobile = useIsMobile();
@@ -31,6 +32,7 @@ function GroupTaskAutocomplete({ onTaskSelect, loading }: GroupTaskAutocompleteP
       items={tasks}
       itemToStringLabel={(task) => task.name}
       autoHighlight
+      disabled={disabled}
       inputValue={taskSearch}
       onValueChange={(task) => {
         if (task != null) {

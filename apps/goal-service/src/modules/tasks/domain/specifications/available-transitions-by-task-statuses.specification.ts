@@ -33,7 +33,15 @@ const allowTaskStatusTransitions: Record<TaskStatus, TaskStatus[]> = {
 type TaskStatusActions = keyof typeof allowedTaskStatusByAction;
 
 const allowedTaskStatusByAction = {
-  REPLACE: [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED],
+  REPLACE_EVERYTHING: [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED],
+  REPLACE_PARTLY: [
+    TaskStatus.NOT_STARTED,
+    TaskStatus.IN_PROGRESS,
+    TaskStatus.COMPLETED,
+    TaskStatus.OVERDUE,
+    TaskStatus.CANCELLED,
+    TaskStatus.ARCHIVED,
+  ],
   ASSIGN: [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED],
   UNASSIGN: [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED],
   FINISH: getStatusesToRich([TaskStatus.COMPLETED, TaskStatus.OVERDUE]),
