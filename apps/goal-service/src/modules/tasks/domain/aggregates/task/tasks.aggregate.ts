@@ -113,8 +113,17 @@ class Task extends AggregateRoot {
     if (this.#isAllowTo('ASSIGN')) {
       if (reset) {
         this.#state.startDate = undefined;
+        this.#state.endDate = undefined;
         this.#state.deadline = undefined;
         this.#state.recurrence = undefined;
+
+        this.#setStatus(
+          Task.calculateStatusByDates({
+            startDate: this.#state.startDate,
+            deadline: this.#state.deadline,
+            endDate: this.#state.endDate,
+          }),
+        );
       }
       return this;
     }
