@@ -191,7 +191,7 @@ describe('Task aggregate', () => {
 
     task.assignToGroup({ reset: true });
 
-    expect(task.status).toBe(TaskStatus.IN_PROGRESS);
+    expect(task.status).toBe(TaskStatus.NOT_STARTED);
     expect(task.startDate).toBeUndefined();
     expect(task.endDate).toBeUndefined();
     expect(task.recurrence).toBeUndefined();
