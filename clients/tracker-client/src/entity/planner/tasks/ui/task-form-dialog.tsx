@@ -12,6 +12,7 @@ const TaskFormLazy = withLazy(() =>
 interface TaskFormDialogProps {
   readonly open: boolean;
   readonly loading?: boolean;
+  readonly defaultValue?: TaskFormProps['defaultValue'];
   readonly task?: TaskFormProps['task'];
   readonly trigger?: ReactNode;
   readonly footerSlot?: TaskFormProps['footerSlot'];
@@ -24,6 +25,7 @@ function TaskFormDialog({
   open,
   task,
   loading,
+  defaultValue,
   trigger,
   footerSlot,
   footerSidebarSlot,
@@ -52,6 +54,7 @@ function TaskFormDialog({
         <TaskFormLazy
           task={task}
           isLoading={loading}
+          defaultValue={defaultValue}
           {...formStateEmitterProps}
           afterNameSlot={<AppDialogTrigger />}
           footerSlot={footerSlot}

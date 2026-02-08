@@ -35,11 +35,11 @@ function NavBar<TExtra extends { id: number }>({ events, onEventClick }: NavBarP
 
       <div className="w-full h-[2px] bg-gray-400 rounded-md" />
 
-      <div className="grid grid-rows-[minmax(min_content,190px)] grid-cols-[60px_1fr] my-1">
-        <h4 className="text-xs pl-2">all-day</h4>
+      <div className="grid grid-cols-[60px_1fr] my-1">
+        <h4 className="text-xs pl-2 min-h-0">all-day</h4>
 
-        <ScrollAreaNativeVertical>
-          <ul className="flex flex-col grow gap-1">
+        <ScrollAreaNativeVertical className="min-h-0 max-h-[100px] sm:max-h-[190px]">
+          <ul className="flex flex-col min-h-0 grow gap-1">
             {allDayEvents.map((event) => {
               return (
                 <article

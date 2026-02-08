@@ -51,7 +51,7 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
       );
     }
 
-    const hashFn = (event: TimeEvent<TExtra>) => event.from.toString() + event.to.toString();
+    const hashFn = (event: TimeEvent<TExtra>) => event.extra.name;
     const intersectionsBetweenOrEqualMap = this.#findIntersectionsBetweenOrEqual(
       buffer.filter((i) => !i.isAllDay(selectedDate.toDate())),
       hashFn,
@@ -60,7 +60,7 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
     for (const bufferElement of buffer) {
       const hashKey = hashFn(bufferElement);
       const set = intersectionsBetweenOrEqualMap.get(hashKey);
-      if (set == null || set.size === 0) return buffer;
+      if (set == null || set.size === 0) continue;
 
       const container = 100;
       const part = container / (set.size + 1);
