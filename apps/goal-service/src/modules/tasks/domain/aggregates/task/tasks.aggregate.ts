@@ -75,9 +75,7 @@ class Task extends AggregateRoot {
   public replace(input: TaskReplaceInput): this {
     taskAsserts.datesIntersections({ start: input.startDate, deadline: input.deadline });
 
-    // возможность обновлять name and description на любом статусе кроме DELETED
-
-    if (this.#isAllowTo('REPLACE')) {
+    if (this.#isAllowTo('REPLACE_EVERYTHING')) {
       this.#state.status = Task.calculateStatusByDates({ startDate: input.startDate });
       this.#state.name = input.name;
       this.#state.description = input.description;
@@ -86,6 +84,32 @@ class Task extends AggregateRoot {
       this.#state.startDate = input.startDate;
       this.#state.deadline = input.deadline;
       this.#state.recurrence = input.recurrence;
+
+      return this;
+    }
+
+    if (this.#isAllowTo('REPLACE_PARTLY')) {
+      this.#state.name = input.name;
+      this.#state.description = input.description;
+
+      taskAsserts.partlyReplaceableFields(
+        {
+          id: this.#state.id,
+          status: this.#state.status,
+          priority: this.#state.priority,
+          weight: this.#state.weight,
+          startDate: this.#state.startDate,
+          deadline: this.#state.deadline,
+          recurrence: this.#state.recurrence,
+        },
+        {
+          priority: input.priority,
+          weight: input.weight,
+          startDate: input.startDate,
+          deadline: input.deadline,
+          recurrence: input.recurrence,
+        },
+      );
 
       return this;
     }
