@@ -4,9 +4,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 ARG VITE_API_BASE_URL="/api"
-ARG VITE_CLIENT_PORT=3003
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-ENV VITE_CLIENT_PORT=$VITE_CLIENT_PORT
 
 RUN corepack enable && \
     corepack prepare pnpm@10.10.0 --activate && \

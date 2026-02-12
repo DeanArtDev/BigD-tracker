@@ -1,0 +1,10 @@
+.scripts:
+  install_frontend_dependencies:
+    - npm install --global corepack@latest
+    - corepack enable
+    - corepack prepare pnpm@10.10.0 --activate
+    - export PNPM_HOME="/pnpm"
+    - export PATH="$PNPM_HOME:$PATH"
+    - pnpm install turbo --global
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install

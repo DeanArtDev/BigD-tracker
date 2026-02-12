@@ -41,7 +41,7 @@
   "sideEffects": false,
   "packageManager": "pnpm@10.10.0",
   "engines": {
-    "node": "22.15.0",
+    "node": "^24.13",
     "pnpm": "10.10.0"
   }
 }
