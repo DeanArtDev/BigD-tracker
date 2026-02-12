@@ -1,4 +1,5 @@
 import type { TimeEvent, TimeViewEvent } from '@/shared/lib/time-view/core';
+import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { cn } from '@/shared/ui-kit/utils';
 import { upperFirst } from 'lodash-es';
 import { useMemo } from 'react';
@@ -35,29 +36,31 @@ function NavBar<TExtra extends { id: number }>({ events, onEventClick }: NavBarP
       <div className="w-full h-[2px] bg-gray-400 rounded-md" />
 
       <div className="grid grid-cols-[60px_1fr] my-1">
-        <h4 className="text-xs pl-2">all-day</h4>
+        <h4 className="text-xs pl-2 min-h-0">all-day</h4>
 
-        <ul className="flex flex-col gap-1">
-          {allDayEvents.map((event) => {
-            return (
-              <article
-                key={event.extra?.id}
-                className={cn(
-                  'grid px-2 overflow-hidden',
-                  'cursor-pointer',
-                  'bg-gray-200 rounded-sm border border-gray-400 shadow-sm',
-                )}
-              >
-                <li
-                  className="text-xs grow md:text-sm font-medium max-h-[20px] wrap-break-word break-all"
-                  onClick={() => void onEventClick?.(event)}
+        <ScrollAreaNativeVertical className="min-h-0 max-h-[100px] sm:max-h-[190px]">
+          <ul className="flex flex-col min-h-0 grow gap-1">
+            {allDayEvents.map((event) => {
+              return (
+                <article
+                  key={event.extra?.id}
+                  className={cn(
+                    'grid px-2 overflow-hidden',
+                    'cursor-pointer',
+                    'bg-gray-200 rounded-sm border border-gray-400 shadow-sm',
+                  )}
                 >
-                  {event.name}
-                </li>
-              </article>
-            );
-          })}
-        </ul>
+                  <li
+                    className="text-xs grow md:text-sm font-medium max-h-[20px] wrap-break-word break-all"
+                    onClick={() => void onEventClick?.(event)}
+                  >
+                    {event.name}
+                  </li>
+                </article>
+              );
+            })}
+          </ul>
+        </ScrollAreaNativeVertical>
       </div>
 
       <div className="w-full h-[4px] bg-gray-400 rounded-md" />
