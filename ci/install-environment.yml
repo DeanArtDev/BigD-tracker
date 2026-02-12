@@ -1,0 +1,14 @@
+.install_environment:
+  cache:
+    key:
+      files: [pnpm-lock.yaml]
+    paths:
+      - .pnpm-store/
+      - .pnpm/
+
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@10.10.0 --activate
+    - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
+    - pnpm install --frozen-lockfile
+    - pnpm build:all

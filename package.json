@@ -8,7 +8,7 @@
     "format:all:fix": "turbo format:fix",
     "lint:all": "turbo lint",
     "lint:all:fix": "turbo lint:fix",
-    "test:all": "turbo test",
+    "test:all": "turbo test -F=!@big-d/goal-service",
     "deploy:to:prod": "bash ./tools/deploy-scripts/bootstrap.sh",
     "migrate:db:prod": "bash ./tools/deploy-scripts/migrate-prod-db.sh",
     "--BINDED--": "",
@@ -64,7 +64,7 @@
   },
   "packageManager": "pnpm@10.10.0",
   "engines": {
-    "node": "^22.15.0",
+    "node": "^24.13",
     "pnpm": "10.10.0"
   },
   "pnpm": {

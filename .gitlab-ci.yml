@@ -1,0 +1,113 @@
+include:
+  - local: ci/install-environment.yml
+
+image: node:24.13
+
+stages:
+  - monorepo
+  - docker-build
+  - docker-deploy-dev
+
+lint:
+  interruptible: true
+  stage: monorepo
+  tags: [docker]
+  extends: .install_environment
+  script:
+    - pnpm run format:all
+    - pnpm run lint:all
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+test:
+  interruptible: true
+  stage: monorepo
+  tags: [docker]
+  extends: .install_environment
+  script:
+    - pnpm run test:all
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+tracker-client:build:
+  stage: docker-build
+  when: manual
+  image: docker:27.4.1-cli
+  services:
+    - name: docker:27.4.1-dind
+      alias: docker
+      command: ['--tls=false']
+  tags: [registry, dind]
+
+  variables:
+    DOCKER_HOST: 'tcp://docker:2375'
+    DOCKER_TLS_CERTDIR: ''
+
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+
+    - IMAGE_REF="${CI_REGISTRY_IMAGE}:tracker-client-sha-${CI_COMMIT_SHORT_SHA}"
+
+    - |
+      docker build \
+        -f ./clients/tracker-client/Dockerfile \
+        --build-arg VITE_API_BASE_URL="$TRACKER_CLIENT_API_URL" \
+        --build-arg HUSKY="0" \
+        -t "$IMAGE_REF" \
+        .
+
+    - docker push "$IMAGE_REF"
+
+    - echo "Frontend are pushed ✅"
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+tracker-client:deploy:dev-stage:
+  stage: docker-deploy-dev
+  when: manual
+  image: alpine:3.20
+  needs: ['tracker-client:build']
+  tags: [registry, dind]
+
+  variables:
+    DEPLOY_HOST: '192.168.0.89'
+    DEPLOY_USER: 'deployer'
+    REMOTE_DIR: '/opt/clients/tracker-client'
+
+  after_script:
+    - rm -rf ~/.ssh
+
+  before_script:
+  - apk add --no-cache openssh-client gettext bash
+  - eval "$(ssh-agent -s)"
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-keyscan -H $SSH_KNOWN_HOSTS > ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  - ssh-add ~/.ssh/id_rsa
+
+  script:
+    - envsubst < sources/docker-compose.temp.yml > docker-compose.yml
+
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${REMOTE_DIR}'"
+    - scp docker-compose.yml "${DEPLOY_USER}@${DEPLOY_HOST}:${REMOTE_DIR}/docker-compose.yml"
+
+    - |
+      ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "
+        set -euo pipefail
+        cd '${REMOTE_DIR}'
+        echo '${CI_REGISTRY_PASSWORD}' | docker login '${CI_REGISTRY}' -u '${CI_REGISTRY_USER}' --password-stdin
+        docker compose pull
+        docker compose up -d
+        docker image ls | head -n 20
+      "
+
+    - echo "Deployed"
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
