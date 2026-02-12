@@ -1,44 +1,100 @@
 services:
-  rabbitmq_dev:
-    profiles: ['dev']
-    image: rabbitmq:4.1.1-management
-    healthcheck:
-      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
-      interval: 1s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
-    ports:
-      - ${RMQ_PORT}:${RMQ_PORT}
-      - ${RMQ_MANAGER_PORT}:${RMQ_MANAGER_PORT}
-    volumes:
-      - rabbitmq_data_dev:/var/lib/rabbitmq
-
-
-  tracker_db_dev:
-    profiles: ['dev']
-    image: postgres:17.5
+  account_service:
+    container_name: account_service
+    image: account_service_image:lts
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      tracker_db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./apps/account-service/Dockerfile
     env_file:
       - .env.development
-      - .env.data-base-secrets.development
-    container_name: tracker_db_dev
-    restart: always
-    ports:
-      - ${DB_PORT}:${DB_PORT}
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE}
+      API_PORT: ${ACCOUNT_SERVICE_PORT}
+    ports:
+      - ${ACCOUNT_SERVICE_PORT}:${ACCOUNT_SERVICE_PORT}
+    networks:
+      - tracker_net
+
+  training_service:
+    container_name: training_service
+    image: training_service_image:lts
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      tracker_db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./apps/training-service/Dockerfile
+    environment:
+      API_PORT: ${TRAINING_SERVICE_PORT}
+    env_file:
+      - .env.development
+    ports:
+      - ${TRAINING_SERVICE_PORT}:${TRAINING_SERVICE_PORT}
+    networks:
+      - tracker_net
+
+  goal_service:
+    container_name: goal_service
+    image: goal_service_image:lts
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      tracker_db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./apps/goal-service/Dockerfile
+    environment:
+      API_PORT: ${GOAL_SERVICE_PORT}
+    env_file:
+      - .env.development
+    ports:
+      - ${GOAL_SERVICE_PORT}:${GOAL_SERVICE_PORT}
+    networks:
+      - tracker_net
+
+  api_gateway:
+    container_name: api_gateway
+    image: api_gateway_image:lts
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      tracker_db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./apps/api-gateway/Dockerfile
+    env_file:
+      - .env.development
+    environment:
+      API_PORT: ${API_GATEWAY_PORT}
+    ports:
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     volumes:
-      - db_data_dev:/var/lib/postgresql/data
-      - ./tools/data-base/init:/docker-entrypoint-initdb.d
+      - ./apps/api-gateway/db/dumps:/db-dumps
+    networks:
+      - tracker_net
 
+  tracker_client:
+    container_name: tracker_client
+    image: tracker_client_image:lts
+    ports:
+      - ${VITE_CLIENT_PORT:-3000}:80
+    env_file:
+      - .env.development
+    build:
+      context: .
+      dockerfile: ./clients/tracker-client/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        HUSKY: 0
 
-volumes:
-  rabbitmq_data_dev:
-    name: rabbitmq_data_dev
-  db_data_dev:
-    name: tracker_db_dev_data
+networks:
+  tracker_net:
+    name: tracker_net

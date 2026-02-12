@@ -9,7 +9,7 @@ class RequestDto {
   @IsString()
   login: string;
 
-  @ApiProperty({ example: '1234567890' })
+  @ApiProperty({ example: '123456' })
   @IsNotEmpty()
   @MinLength(6)
   @IsString()
