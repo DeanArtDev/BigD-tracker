@@ -7,7 +7,7 @@ function H4({
 }: PropsWithChildren<DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>>) {
   return (
     <h4
-      className={cn('text-xl font-semibold tracking-tight wrap-break-word', className)}
+      className={cn('text-xl font-semibold tracking-tight wrap-break-word min-w-0', className)}
       {...props}
     />
   );

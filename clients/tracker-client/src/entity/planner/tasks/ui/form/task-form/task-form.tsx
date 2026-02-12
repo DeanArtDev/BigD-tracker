@@ -24,6 +24,10 @@ import { validationStrategyByStatus } from './validation-strategy';
 interface TaskFormProps extends FormStateEmitterProps {
   readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason'>;
   readonly afterNameSlot?: ReactNode;
+  readonly defaultValue?: {
+    readonly startDate?: Date;
+    readonly deadline?: Date;
+  };
   readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly footerSidebarSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly defaultSidebarOpen?: boolean;
@@ -64,12 +68,12 @@ function Component(props: TaskFormProps) {
     ? undefined
     : {
         name: undefined,
-        startDate: undefined,
-        deadline: undefined,
         description: undefined,
         weight: 100,
         priority: TaskPriority.DELETE.toString(),
         isDescriptionDirty: false,
+        startDate: props.defaultValue?.startDate,
+        deadline: props.defaultValue?.deadline,
       };
 
   const values = isEdit
@@ -83,6 +87,8 @@ function Component(props: TaskFormProps) {
         weight: task.weight,
       }
     : undefined;
+
+  console.log(defaultValues);
 
   const form = useForm<TaskFormData, any, TaskSubmitFormData>({
     resolver: zodResolver(validationSchema),

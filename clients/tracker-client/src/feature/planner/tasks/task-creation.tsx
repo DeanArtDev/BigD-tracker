@@ -21,6 +21,7 @@ function TaskCreation({ trigger, groupId, onSuccess, onCansel }: TaskCreationPro
     <TaskFormDialog
       open={open}
       loading={isPending}
+      defaultValue={{ startDate: new Date() }}
       trigger={trigger}
       onOpenChange={(isOpen) => {
         setOpen(isOpen);
