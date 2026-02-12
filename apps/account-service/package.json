@@ -14,7 +14,6 @@
     "start": "nest start",
     "start:prod": "node dist/src/main",
     "=== TOOLS ===": "",
-    "migrate:account": "ts-node tools/migrator.ts lts",
     "db:typegen": "kysely-codegen --config-file .kysely-codegenrc.json",
     "=== CI ===": "",
     "format": "prettier \"src/**/*.ts\" \"db/**/*.ts\"  --check",

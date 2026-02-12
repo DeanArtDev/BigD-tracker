@@ -11,13 +11,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 
 class RegisterReqData {
-  @ApiProperty({ example: 'example@example.com' })
+  @ApiProperty({ example: 'email2@mail.com' })
   @IsEmail()
   @IsNotEmpty()
   @IsString()
   login: string;
 
-  @ApiProperty({ example: '12345678' })
+  @ApiProperty({ example: '123456' })
   @IsNotEmpty()
   @MinLength(6)
   @IsString()
