@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { TaskPriority } from '../../../lib/constants';
 import { type TaskEntity } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
