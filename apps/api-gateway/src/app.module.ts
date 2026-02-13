@@ -1,5 +1,6 @@
 import { appConfigFactory } from '@/infrastructure/configs/app-config-factory';
 import { RmqClientsModule } from '@/infrastructure/rmq-clients/';
+import { SwaggerAuthModule } from '@/infrastructure/swagger-auth/swagger-auth.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { ExercisesModule } from '@/modules/exercises';
 import { GoalServiceModule } from '@/modules/goal-service';
@@ -16,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
       load: [appConfigFactory],
       envFilePath: ['.env.production', '.env.development'],
     }),
+    SwaggerAuthModule,
     UsersModule,
     AuthModule,
     TrainingsModule,

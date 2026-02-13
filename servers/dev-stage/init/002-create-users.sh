@@ -8,7 +8,7 @@ export PGDATABASE="$POSTGRES_DB"
 psql <<EOSQL
   CREATE ROLE goal_tracker_service
     WITH LOGIN
-    PASSWORD '${GOAL_TRACKER_USER_DB_PASSWORD}';
+    PASSWORD '${GOAL_TRACKER_DB_PASSWORD}';
 
   GRANT CONNECT, CREATE, TEMPORARY ON DATABASE goal_tracker TO goal_tracker_service;
 

@@ -2,6 +2,9 @@ services:
   tracker-client:
     image: $CI_REGISTRY_IMAGE:tracker-client-sha-${CI_COMMIT_SHORT_SHA}
     restart: always
-    container_name: tracker-client
     ports:
       - '80:80'
+
+networks:
+  tracker_net:
+    name: tracker_net

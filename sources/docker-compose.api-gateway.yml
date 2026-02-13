@@ -1,0 +1,19 @@
+# файл вызывается в /apps
+
+services:
+  api_gateway:
+    image: $CI_REGISTRY_IMAGE:api-gateway-sha-${CI_COMMIT_SHORT_SHA}
+    restart: always
+    volumes:
+      - .env:/usr/src/app/apps/api-gateway/.env
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    networks:
+      - tracker_net
+
+networks:
+  tracker_net:
+    external: true
+    name: tracker_net

@@ -26,6 +26,8 @@ services:
     image: rabbitmq:4.1.1-management
     container_name: tracker_rmq
     restart: unless-stopped
+    networks:
+      - tracker_net
     ports:
       - ${RMQ_PORT}:${RMQ_PORT}
       - ${RMQ_MANAGER_PORT}:${RMQ_MANAGER_PORT}
@@ -49,4 +51,5 @@ volumes:
 
 networks:
   tracker_net:
+    external: true
     name: tracker_net
