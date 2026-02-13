@@ -1,0 +1,17 @@
+# файл вызывается в /apps
+
+services:
+  training-service:
+    image: $CI_REGISTRY_IMAGE:training-service-sha-${CI_COMMIT_SHORT_SHA}
+    restart: always
+    volumes:
+      - .env:/usr/src/app/apps/training-service/.env
+    env_file:
+      - .env
+    networks:
+      - tracker_net
+
+networks:
+  tracker_net:
+    external: true
+    name: tracker_net

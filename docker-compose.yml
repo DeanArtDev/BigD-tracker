@@ -2,16 +2,11 @@ services:
   account_service:
     container_name: account_service
     image: account_service_image:lts
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      tracker_db:
-        condition: service_healthy
     build:
       context: .
       dockerfile: ./apps/account-service/Dockerfile
     env_file:
-      - .env.development
+      - .env
     environment:
       API_PORT: ${ACCOUNT_SERVICE_PORT}
     ports:
@@ -22,18 +17,13 @@ services:
   training_service:
     container_name: training_service
     image: training_service_image:lts
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      tracker_db:
-        condition: service_healthy
     build:
       context: .
       dockerfile: ./apps/training-service/Dockerfile
     environment:
       API_PORT: ${TRAINING_SERVICE_PORT}
     env_file:
-      - .env.development
+      - .env
     ports:
       - ${TRAINING_SERVICE_PORT}:${TRAINING_SERVICE_PORT}
     networks:
@@ -42,18 +32,13 @@ services:
   goal_service:
     container_name: goal_service
     image: goal_service_image:lts
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      tracker_db:
-        condition: service_healthy
     build:
       context: .
       dockerfile: ./apps/goal-service/Dockerfile
     environment:
       API_PORT: ${GOAL_SERVICE_PORT}
     env_file:
-      - .env.development
+      - .env
     ports:
       - ${GOAL_SERVICE_PORT}:${GOAL_SERVICE_PORT}
     networks:
@@ -62,38 +47,31 @@ services:
   api_gateway:
     container_name: api_gateway
     image: api_gateway_image:lts
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      tracker_db:
-        condition: service_healthy
     build:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
     env_file:
-      - .env.development
+      - .env
     environment:
       API_PORT: ${API_GATEWAY_PORT}
     ports:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
-    volumes:
-      - ./apps/api-gateway/db/dumps:/db-dumps
     networks:
       - tracker_net
-
-  tracker_client:
-    container_name: tracker_client
-    image: tracker_client_image:lts
-    ports:
-      - ${VITE_CLIENT_PORT:-3000}:80
-    env_file:
-      - .env.development
-    build:
-      context: .
-      dockerfile: ./clients/tracker-client/Dockerfile
-      args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
-        HUSKY: 0
+#
+#  tracker_client:
+#    container_name: tracker_client
+#    image: tracker_client_image:lts
+#    ports:
+#      - ${VITE_CLIENT_PORT:-3000}:80
+#    env_file:
+#      - .env
+#    build:
+#      context: .
+#      dockerfile: ./clients/tracker-client/Dockerfile
+#      args:
+#        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+#        HUSKY: 0
 
 networks:
   tracker_net:

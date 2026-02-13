@@ -1,4 +1,4 @@
-FROM node:22.15.0-slim AS base
+FROM node:24.13-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@big-d/account-service
 
 
-FROM node:22.15.0-slim AS runner
+FROM node:24.13-slim AS runner
 WORKDIR /usr/src/app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -52,9 +52,9 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/account-service/pa
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/account-service/dist ./apps/account-service/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/account-service/node_modules ./apps/account-service/node_modules
 
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/dist ./libs/api-exceptions/dist
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/package.json ./libs/api-exceptions/package.json
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/node_modules ./libs/api-exceptions/node_modules
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/dist ./libs/exceptions/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/package.json ./libs/exceptions/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/node_modules ./libs/exceptions/node_modules
 
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/dist ./libs/api-contracts/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/package.json ./libs/api-contracts/package.json

@@ -13,6 +13,7 @@ import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.setGlobalPrefix('/api');
 
   app.set('query parser', 'extended');
 

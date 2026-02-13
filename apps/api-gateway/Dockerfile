@@ -1,4 +1,4 @@
-FROM node:22.15.0-slim AS base
+FROM node:24.13-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@big-d/api-gateway
 
 
-FROM node:22.15.0-slim AS runner
+FROM node:24.13-slim AS runner
 WORKDIR /usr/src/app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -52,9 +52,9 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/api-gateway/packag
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/api-gateway/dist ./apps/api-gateway/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/api-gateway/node_modules ./apps/api-gateway/node_modules
 
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/dist ./libs/api-exceptions/dist
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/package.json ./libs/api-exceptions/package.json
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-exceptions/node_modules ./libs/api-exceptions/node_modules
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/dist ./libs/exceptions/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/package.json ./libs/exceptions/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/node_modules ./libs/exceptions/node_modules
 
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/dist ./libs/api-contracts/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-contracts/package.json ./libs/api-contracts/package.json
@@ -68,17 +68,12 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/dist ./l
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/package.json ./libs/api-utils/package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/node_modules ./libs/api-utils/node_modules
 
-#COPY scripts/bootstrap.sh /usr/src/app/bootstrap.sh
-COPY ./apps/api-gateway/swagger /usr/src/app/apps/api-gateway/swagger
-
 
 ARG API_PORT=4002
 ENV API_PORT=${API_PORT}
 EXPOSE ${API_PORT}
 
-#USER root
-#RUN chmod +x /usr/src/app/bootstrap.sh
-#ENTRYPOINT ["/usr/src/app/bootstrap.sh"]
+
 USER nodejs
 WORKDIR /usr/src/app/apps/api-gateway
 CMD node dist/main.js
