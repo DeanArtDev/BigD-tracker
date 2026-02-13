@@ -14,7 +14,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/shared/ui-kit/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Ban, Flame, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 interface RepetitionFactFormProps {
   readonly repetition: { targetCount: number; targetWeight: number; targetBreak: number };

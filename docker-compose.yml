@@ -58,20 +58,20 @@ services:
       - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     networks:
       - tracker_net
-#
-#  tracker_client:
-#    container_name: tracker_client
-#    image: tracker_client_image:lts
-#    ports:
-#      - ${VITE_CLIENT_PORT:-3000}:80
-#    env_file:
-#      - .env
-#    build:
-#      context: .
-#      dockerfile: ./clients/tracker-client/Dockerfile
-#      args:
-#        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
-#        HUSKY: 0
+
+  tracker_client:
+    container_name: tracker_client
+    image: tracker_client_image:lts
+    ports:
+      - ${VITE_CLIENT_PORT:-3000}:80
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./clients/tracker-client/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        HUSKY: 0
 
 networks:
   tracker_net:

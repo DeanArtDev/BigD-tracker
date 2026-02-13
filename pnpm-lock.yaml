@@ -967,8 +967,8 @@ importers:
         specifier: ^6.1.17
         version: 6.1.20(@fullcalendar/core@6.1.20)
       '@hookform/resolvers':
-        specifier: 5.2.0
-        version: 5.2.0(react-hook-form@7.71.1(react@19.2.3))
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.71.1(react@19.2.3))
       '@lexical/link':
         specifier: 0.39.0
         version: 0.39.0
@@ -1062,9 +1062,6 @@ importers:
       recharts:
         specifier: ^2.15.3
         version: 2.15.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      shadcn:
-        specifier: ^3.8.1
-        version: 3.8.1(@types/node@22.19.7)(babel-plugin-macros@3.1.0)(hono@4.11.7)(typescript@5.8.3)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1162,6 +1159,9 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
+      shadcn:
+        specifier: ^3.8.1
+        version: 3.8.1(@types/node@22.19.7)(babel-plugin-macros@3.1.0)(hono@4.11.7)(typescript@5.8.3)
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -2503,8 +2503,8 @@ packages:
       react: ^16.8.0 || ^17 || ^18 || ^19
       react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
-  '@hookform/resolvers@5.2.0':
-    resolution: {integrity: sha512-3YI+VqxJQH6ryRWG+j3k+M19Wf37LeSKJDg6Vdjq6makLOqZGYn77iTaYLMLpVi/uHc1N6OTCmcxJwhOQV979g==}
+  '@hookform/resolvers@5.2.2':
+    resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
     peerDependencies:
       react-hook-form: ^7.55.0
 
@@ -10739,7 +10739,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@hookform/resolvers@5.2.0(react-hook-form@7.71.1(react@19.2.3))':
+  '@hookform/resolvers@5.2.2(react-hook-form@7.71.1(react@19.2.3))':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.71.1(react@19.2.3)

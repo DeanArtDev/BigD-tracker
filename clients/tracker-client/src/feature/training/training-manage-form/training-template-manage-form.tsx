@@ -6,7 +6,7 @@ import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { ExerciseAddingBlock } from './exercise-adding-block/exercise-adding-block';
 import { trainingManageValidationSchema } from './training-manage-validation';
 import { useSubmit } from './use-submit';

@@ -7,7 +7,7 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { validationSchema } from './manage-exercise-template-validation';
 import { RepetitionsBlock } from './repetitions-block';
 

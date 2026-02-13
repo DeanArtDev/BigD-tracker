@@ -1,5 +1,5 @@
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 const validationSchema = z.object({
   name: z

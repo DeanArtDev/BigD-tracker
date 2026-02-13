@@ -1,6 +1,6 @@
 import { taskPrioritySchema } from '@/entity/planner/tasks/lib/validation-schemas';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 const validationSchema = z
   .object({

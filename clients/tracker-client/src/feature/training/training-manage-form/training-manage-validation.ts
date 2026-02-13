@@ -1,4 +1,4 @@
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
 
 const requiredMessage = 'Обязательное поле';

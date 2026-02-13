@@ -14,7 +14,7 @@ import { isFunction } from 'lodash-es';
 import { Circle } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useForm, type UseFormReturn } from 'react-hook-form';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { validationSchema } from './validation-schema';
 
 type ThingManagerFormData = z.input<typeof validationSchema>;
