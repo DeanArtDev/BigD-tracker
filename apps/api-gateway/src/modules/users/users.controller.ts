@@ -1,20 +1,17 @@
-import { AccountServiceClientProxy } from '@/infrastructure/rmq-clients';
+import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { MeRes } from '@/modules/users/me.dto';
 import { AccountGetMe } from '@big-d/api-contracts';
-import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 
-/* TODO:
-     При удалении юзера не забыть удалить IN BOX
-  */
 @ApiTags('Account')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly accountClient: AccountServiceClientProxy) {}
+  constructor(@Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient) {}
 
   @Get('me')
   @ApiBearerAuth(ACCESS_TOKEN_KEY)

@@ -1,4 +1,5 @@
-import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
+import { AppRmqClient } from '@/infrastructure/rmq-clients';
+import { GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients/clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
@@ -17,6 +18,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -40,7 +42,7 @@ import {
 @ApiTags('Groups')
 @Controller('/groups')
 export class GroupsController {
-  constructor(private readonly goalClient: GoalServiceClientProxy) {}
+  constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
   @Get('inbox')
   @ApiOperation({ summary: 'Получение группы IN BOX с делами' })

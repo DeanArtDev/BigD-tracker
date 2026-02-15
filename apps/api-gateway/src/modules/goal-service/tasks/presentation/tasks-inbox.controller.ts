@@ -1,4 +1,5 @@
-import { GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
+import { AppRmqClient } from '@/infrastructure/rmq-clients';
+import { GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients/clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
@@ -12,6 +13,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -31,7 +33,7 @@ import {
 @ApiTags('Tasks Inbox manipulation')
 @Controller('tasks')
 export class TasksInboxController {
-  constructor(private readonly goalClient: GoalServiceClientProxy) {}
+  constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
   @Post('/in-box')
   @ApiOperation({ summary: 'Создание дела в IN BOX' })

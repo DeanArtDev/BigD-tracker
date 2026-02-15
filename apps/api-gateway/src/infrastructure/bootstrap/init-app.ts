@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ExceptionRequestDataValidation, HttpExceptionFactory } from '@shared/exceptions';
 import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
-import { CorrelationMiddleware } from '@shared/observability';
+import { HttpCorrelationMiddleware } from '@shared/observability';
 import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
@@ -16,7 +16,7 @@ const initApp = async (): Promise<INestApplication> => {
 
   app.set('query parser', 'extended');
 
-  app.use(CorrelationMiddleware);
+  app.use(HttpCorrelationMiddleware);
 
   app.useGlobalPipes(
     new ValidationPipe({

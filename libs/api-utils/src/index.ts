@@ -2,7 +2,6 @@ export * from './type-helpers';
 export * from './value-objects';
 export * from './domain-validator';
 export * from './mapper';
-export * from './middlewares';
 export * from './interceptors';
 export * from './uow';
 export * from './repository';

@@ -1,12 +1,15 @@
 import { APP_ENV } from '@/infrastructure/configs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LoggerModule as PinoLogger } from 'nestjs-pino';
+import { RmqLogger } from './rmq-logger';
+import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { getCorrelationId } from './utils';
 
 @Module({
+  exports: [RmqLogger],
+  providers: [RmqLogger],
   imports: [
-    PinoLogger.forRootAsync({
+    PinoLoggerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService<APP_ENV>) => {
@@ -16,8 +19,7 @@ import { getCorrelationId } from './utils';
           pinoHttp: {
             level: 'info',
             base: {
-              env: config.get('NODE_ENV') ?? 'borken',
-              service: 'API-GATEWAY',
+              env: config.get('NODE_ENV') ?? 'broken!',
             },
 
             redact: {

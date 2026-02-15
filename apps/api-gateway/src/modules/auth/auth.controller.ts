@@ -1,7 +1,17 @@
-import { AccountServiceClientProxy } from '@/infrastructure/rmq-clients';
+import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { RegisterSage } from '@/modules/auth/application';
 import { AccountLogin, AccountLogout, AccountRefresh } from '@big-d/api-contracts';
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
@@ -21,7 +31,7 @@ import { RefreshTokenGuard } from './guards/refresh-token.guard';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly accountClient: AccountServiceClientProxy,
+    @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
     private readonly cookieService: CookieService,
     private readonly registerSage: RegisterSage,
   ) {}
