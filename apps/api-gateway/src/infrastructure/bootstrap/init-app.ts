@@ -1,6 +1,5 @@
 import { AppModule } from '@/app.module';
 import { APP_ENV } from '@/infrastructure/configs';
-import { LoggerMiddleware } from '@big-d/api-utils';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -8,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ExceptionRequestDataValidation, HttpExceptionFactory } from '@shared/exceptions';
 import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
-import { ObservabilityInterceptor } from '@shared/interceptors/observability.interceptor';
+import { CorrelationMiddleware } from '@shared/observability';
 import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
@@ -17,7 +16,7 @@ const initApp = async (): Promise<INestApplication> => {
 
   app.set('query parser', 'extended');
 
-  app.use(LoggerMiddleware);
+  app.use(CorrelationMiddleware);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -30,8 +29,6 @@ const initApp = async (): Promise<INestApplication> => {
         ),
     }),
   );
-
-  app.useGlobalInterceptors(new ObservabilityInterceptor());
 
   app.useGlobalFilters(new DomainErrorFilter());
   app.useGlobalFilters(new GateWayExceptionFilter());

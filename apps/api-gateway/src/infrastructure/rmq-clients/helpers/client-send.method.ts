@@ -1,5 +1,5 @@
+import { CORRELATION_HEADER_KEY } from '@/shared/observability';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
-import { CORRELATION_HEADER_KEY } from '@shared/interceptors/observability.interceptor';
 import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { catchError, firstValueFrom, throwError, timeout, TimeoutError } from 'rxjs';

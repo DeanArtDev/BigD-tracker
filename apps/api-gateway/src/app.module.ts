@@ -1,5 +1,5 @@
 import { appConfigFactory } from '@/infrastructure/configs/app-config-factory';
-import { RmqClientsModule } from '@/infrastructure/rmq-clients/';
+import { RmqClientsModule } from '@/infrastructure/rmq-clients';
 import { SwaggerAuthModule } from '@/infrastructure/swagger-auth/swagger-auth.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { ExercisesModule } from '@/modules/exercises';
@@ -9,6 +9,7 @@ import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from '@shared/observability';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConfigModule } from '@nestjs/config';
     GoalServiceModule,
 
     RmqClientsModule,
+    LoggerModule,
   ],
 })
 export class AppModule {}
