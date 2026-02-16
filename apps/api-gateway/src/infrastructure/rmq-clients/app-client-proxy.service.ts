@@ -23,13 +23,6 @@ class AppRmqClient {
       source: 'rmq',
     });
 
-    this.logger.setBindings({
-      pattern,
-      direction: 'out',
-      durationMs: Date.now() - started,
-      ...requestContext.state,
-    });
-
     const builtPayload = new RmqRecordBuilder<TReq>(payload)
       .setOptions({
         headers: {
@@ -38,7 +31,15 @@ class AppRmqClient {
       })
       .build();
 
-    this.logger.log('rmq.request');
+    this.logger.log(
+      {
+        pattern,
+        direction: 'out',
+        durationMs: Date.now() - started,
+        context: requestContext.state,
+      },
+      'rmq.request',
+    );
 
     try {
       const response = await firstValueFrom(
@@ -57,7 +58,15 @@ class AppRmqClient {
         ),
       );
 
-      this.logger.log('rmq.reply');
+      this.logger.log(
+        {
+          pattern,
+          direction: 'out',
+          durationMs: Date.now() - started,
+          context: requestContext.state,
+        },
+        'rmq.reply',
+      );
 
       return response;
     } catch (error: unknown) {
@@ -66,6 +75,10 @@ class AppRmqClient {
       if (isBaseRpcException(err)) {
         this.logger.error(
           {
+            pattern,
+            direction: 'out',
+            durationMs: Date.now() - started,
+            context: requestContext.state,
             err: {
               key: err.key,
               code: err.code,
@@ -81,6 +94,10 @@ class AppRmqClient {
       if (isBaseException(err)) {
         this.logger.error(
           {
+            pattern,
+            direction: 'out',
+            durationMs: Date.now() - started,
+            context: requestContext.state,
             err: {
               key: err.key,
               code: err.code,

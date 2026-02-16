@@ -18,7 +18,7 @@ export class RmqLogger implements ILoggerService {
   logger: Logger;
 
   constructor(private readonly configService: ConfigService) {
-    const isDev = this.configService.get('NODE_ENV', 'development');
+    const isDev = this.configService.get('NODE_ENV', 'development') === 'development';
 
     this.logger = pino({
       redact: {
