@@ -19,7 +19,7 @@ export class CookieService {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'strict' : 'lax',
-        path: '/auth/refresh',
+        path: '/api/auth/refresh',
         maxAge,
       });
       return;
@@ -29,7 +29,7 @@ export class CookieService {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'strict' : 'lax',
-      path: '/auth/refresh',
+      path: '/api/auth/refresh',
       maxAge,
     });
   }
