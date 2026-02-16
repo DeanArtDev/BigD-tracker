@@ -1,8 +1,4 @@
-import {
-  isBaseRpcException,
-  isDefaultRpcException,
-  unwrapDefaultRpcException,
-} from '@big-d/api-contracts';
+import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
 import { isBaseExceptionInstance } from '@big-d/exceptions';
 import {
   ArgumentsHost,
@@ -20,29 +16,26 @@ export class GateWayExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const error = unwrapDefaultRpcException(exception) ?? exception;
 
     // RPC errors
-    if (isDefaultRpcException(exception)) {
-      const error = unwrapDefaultRpcException(exception);
-
-      if (isBaseRpcException(error)) {
-        const httpException = BaseHttpException.createFromRpc(error);
-        return response.status(httpException.getStatus()).json(httpException.getResponse());
-      }
+    if (isBaseRpcException(error)) {
+      const httpException = BaseHttpException.createFromRpc(error);
+      return response.status(httpException.getStatus()).json(httpException.getResponse());
     }
 
     // HTTP errors
+    if (isBaseExceptionInstance(exception)) {
+      const httpExc = new GatewayTimeoutException(exception.toResponse());
+      return response.status(httpExc.getStatus()).json(httpExc.getResponse());
+    }
+
     if (isHttpException(exception)) {
       return response.status(exception.getStatus()).json(exception.getResponse());
     }
     if (isHttpExceptionPlain(exception)) {
       const httpException = shapePlainToBaseHttpException(exception);
       return response.status(httpException.getStatus()).json(httpException.getResponse());
-    }
-
-    if (isBaseExceptionInstance(exception)) {
-      const httpExc = new GatewayTimeoutException(exception.toResponse());
-      return response.status(httpExc.getStatus()).json(httpExc.getResponse());
     }
 
     this.#defaultResponse(exception, response);

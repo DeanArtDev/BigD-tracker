@@ -23,6 +23,8 @@ async function bootstrap() {
 
   await app.listen();
   app.enableShutdownHooks();
+
+  console.log(`🚀 Goal service is running, port: ${config.API_PORT}`);
 }
 
 bootstrap().catch(console.error);

@@ -1,18 +1,13 @@
 import { appConfigFactory } from '@/infrastructure/configs';
 import { ApplicationExceptionsInterceptor } from '@/modules/auth/application/interceptors';
 import { accountServiceRmqConfig } from '@big-d/api-contracts';
-import {
-  ErrorsToRpcExceptionInterceptor,
-  RmqLoggerDeserializer,
-  RmqLoggerSerializer,
-} from '@big-d/api-utils';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ErrorsToRpcExceptionInterceptor, RmqInboundLoggingInterceptor } from '@big-d/api-utils';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const logger = new Logger('Account Main');
   const config = await appConfigFactory();
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -23,12 +18,8 @@ async function bootstrap() {
       user: config.RMQ_USER,
       password: config.RMQ_PASSWORD,
       isProd: config.IS_PROD,
-      deserializer: new RmqLoggerDeserializer(),
-      serializer: new RmqLoggerSerializer(),
     }),
   );
-
-  app.useLogger(logger);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -40,9 +31,10 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ApplicationExceptionsInterceptor());
   app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
+  app.useGlobalInterceptors(app.get(RmqInboundLoggingInterceptor));
 
   await app.listen();
-  logger.log(`🚀 Account service is running, port: ${config.API_PORT}`);
+  console.log(`🚀 Account service is running, port: ${config.API_PORT}`);
 }
 
-bootstrap();
+bootstrap().catch(console.error);

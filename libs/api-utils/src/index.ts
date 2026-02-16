@@ -5,6 +5,5 @@ export * from './mapper';
 export * from './interceptors';
 export * from './uow';
 export * from './repository';
-export * from './loggers';
 export * from './specification';
 export * from './observability';
