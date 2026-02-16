@@ -1,5 +1,5 @@
 import { APP_ENV } from '@/infrastructure/configs';
-import { LoggerModule, RmqLogger } from '@/shared/observability';
+import { RmqLogger } from '@big-d/api-utils';
 import { GOAL_SERVICE_RMQ_KEY, goalServiceRmqConfig } from '@big-d/api-contracts';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -12,7 +12,6 @@ const GOAL_RMQ_SERVICE = Symbol.for('GOAL_RMQ_SERVICE');
 
 @Module({
   imports: [
-    LoggerModule,
     ClientsModule.registerAsync({
       clients: [
         {

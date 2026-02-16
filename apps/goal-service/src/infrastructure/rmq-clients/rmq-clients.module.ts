@@ -1,5 +1,5 @@
 import { rmqConfig } from '@/infrastructure/configs';
-import { ACCOUNT_SERVICE_RMQ_KEY, goalServiceRmqConfig } from '@big-d/api-contracts';
+import { GOAL_SERVICE_RMQ_KEY, goalServiceRmqConfig } from '@big-d/api-contracts';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule } from '@nestjs/microservices';
@@ -9,7 +9,7 @@ import { ClientsModule } from '@nestjs/microservices';
   imports: [
     ClientsModule.registerAsync([
       {
-        name: ACCOUNT_SERVICE_RMQ_KEY,
+        name: GOAL_SERVICE_RMQ_KEY,
         imports: [ConfigModule.forFeature(rmqConfig)],
         inject: [ConfigService],
         useFactory: (config: ConfigService) => {

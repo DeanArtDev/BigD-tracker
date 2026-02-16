@@ -1,5 +1,7 @@
-import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
+import { isBaseRpcException } from '@big-d/api-contracts';
+import { isBaseException } from '@big-d/exceptions';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Logger, pino } from 'pino';
 
 interface ILoggerService {
@@ -15,39 +17,65 @@ interface ILoggerService {
 export class RmqLogger implements ILoggerService {
   logger: Logger;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
+    const isDev = this.configService.get('NODE_ENV', 'development');
+
     this.logger = pino({
       redact: {
-        paths: ['data.sessionToke', 'data.session', 'data.token', 'token'],
+        paths: [
+          'data.sessionToke',
+          'data.session',
+          'data.token',
+          'token',
+          'err.stack',
+          'error.stack',
+          'error.type',
+          'err.type',
+        ],
         remove: true,
       },
-      level: 'trace',
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          singleLine: false,
-          translateTime: 'SYS:standard',
-          ignore: 'pid,hostname',
-        },
-      },
-      timestamp: () => `,"ts":"${new Date().toISOString()}"`,
+
       serializers: {
-        err(error: unknown) {
-          const err = unwrapDefaultRpcException(error);
+        err: (err) => {
           if (isBaseRpcException(err)) {
             return {
               key: err.key,
               code: err.code,
+              kind: err.kind,
+              details: err.details,
             };
           }
 
-          return { massage: 'Unknown error', details: error };
+          if (isBaseException(err)) {
+            return {
+              key: err.key,
+              code: err.code,
+              details: err.details,
+            };
+          }
+
+          return {
+            message: 'Unknown error!!!!!',
+          };
         },
       },
-    }).child({
-      kind: 'rpc',
-      transport: 'rmq',
+
+      ...(isDev
+        ? {
+            level: 'trace',
+            transport: {
+              target: 'pino-pretty',
+              options: {
+                colorize: true,
+                singleLine: false,
+                translateTime: 'SYS:standard',
+                ignore: 'pid,hostname',
+              },
+            },
+          }
+        : {}),
+
+      timestamp: () => `,"ts":"${new Date().toISOString()}"`,
     });
   }
 

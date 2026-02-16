@@ -1,6 +1,8 @@
 import { ExceptionRpcRequestTimeout } from '@/infrastructure/rmq-clients/exceptions';
+import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
+import { CORRELATION_HEADER_KEY, AppContext, RmqLogger, RequestContext } from '@big-d/api-utils';
+import { isBaseException } from '@big-d/exceptions';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
-import { CORRELATION_HEADER_KEY, getCorrelationId, RmqLogger } from '@shared/observability';
 import { catchError, firstValueFrom, throwError, timeout, TimeoutError } from 'rxjs';
 
 class AppRmqClient {
@@ -13,13 +15,20 @@ class AppRmqClient {
   ) {}
 
   public async send<TRes, TReq>(pattern: string, payload: TReq): Promise<TRes> {
-    const cid = getCorrelationId() ?? 'There is no correlation id';
-    this.logger.setBindings({
-      pattern,
+    const started = Date.now();
+    const cid = AppContext.getStore()?.correlationId ?? 'There is no correlation id!';
+    const requestContext = new RequestContext({
       correlationId: cid,
+      initiator: 'user',
+      source: 'rmq',
     });
 
-    const started = Date.now();
+    this.logger.setBindings({
+      pattern,
+      direction: 'out',
+      durationMs: Date.now() - started,
+      ...requestContext.state,
+    });
 
     const builtPayload = new RmqRecordBuilder<TReq>(payload)
       .setOptions({
@@ -29,7 +38,7 @@ class AppRmqClient {
       })
       .build();
 
-    this.logger.log('REQUEST');
+    this.logger.log('rmq.request');
 
     try {
       const response = await firstValueFrom(
@@ -38,7 +47,7 @@ class AppRmqClient {
           catchError((err) =>
             throwError(() => {
               if (err instanceof TimeoutError) {
-                new ExceptionRpcRequestTimeout({
+                throw new ExceptionRpcRequestTimeout({
                   message: `RPC timeout (${this.options.timeout}ms)`,
                 });
               }
@@ -48,22 +57,44 @@ class AppRmqClient {
         ),
       );
 
-      this.logger.log(
-        {
-          durationMs: Date.now() - started,
-        },
-        'REPLY',
-      );
+      this.logger.log('rmq.reply');
 
       return response;
     } catch (error: unknown) {
-      this.logger.log(
-        {
-          durationMs: Date.now() - started,
-          err: error,
-        },
-        'ERROR',
-      );
+      const err = unwrapDefaultRpcException(error) ?? error;
+
+      if (isBaseRpcException(err)) {
+        this.logger.error(
+          {
+            err: {
+              key: err.key,
+              code: err.code,
+              kind: err.kind,
+              details: err.details,
+            },
+          },
+          'rmq.error',
+        );
+        throw error;
+      }
+
+      if (isBaseException(err)) {
+        this.logger.error(
+          {
+            err: {
+              key: err.key,
+              code: err.code,
+              details: err.details,
+            },
+          },
+          'rmq.error',
+        );
+        throw error;
+      }
+
+      this.logger.error({
+        message: 'Unknown error!!',
+      });
       throw error;
     }
   }

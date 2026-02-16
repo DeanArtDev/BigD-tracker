@@ -1,5 +1,6 @@
 import { AppModule } from '@/app.module';
 import { APP_ENV } from '@/infrastructure/configs';
+import { HttpCorrelationMiddleware } from '@big-d/api-utils';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -7,7 +8,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ExceptionRequestDataValidation, HttpExceptionFactory } from '@shared/exceptions';
 import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
-import { HttpCorrelationMiddleware } from '@shared/observability';
 import * as cookieParser from 'cookie-parser';
 
 const initApp = async (): Promise<INestApplication> => {
