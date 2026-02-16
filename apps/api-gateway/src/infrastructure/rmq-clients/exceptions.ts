@@ -6,13 +6,6 @@ const RmqClientExceptionStateList = {
     code: exceptionCode.requestTimeout.code,
     details: exceptionCode.requestTimeout.details,
   }),
-
-  RpcServiceUnavailable: defineExceptionState({
-    key: 'RPC_SERVICE_UNAVAILABLE',
-    code: exceptionCode.serviceUnavailable.code,
-    details: exceptionCode.serviceUnavailable.details,
-  }),
 };
 
-export const { ExceptionRpcRequestTimeout, ExceptionRpcServiceUnavailable } =
-  generateExceptionClasses(RmqClientExceptionStateList);
+export const { ExceptionRpcRequestTimeout } = generateExceptionClasses(RmqClientExceptionStateList);

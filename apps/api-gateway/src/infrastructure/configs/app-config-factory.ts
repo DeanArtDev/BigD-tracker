@@ -1,4 +1,3 @@
-import { ConfigFactory } from '@nestjs/config';
 import * as process from 'node:process';
 
 interface APP_ENV {
@@ -14,9 +13,11 @@ interface APP_ENV {
 
   readonly SWAGGER_USER?: string;
   readonly SWAGGER_PASSWORD?: string;
+  readonly LOG_PRETTY?: string;
+  readonly NODE_ENV?: string;
 }
 
-const appConfigFactory: ConfigFactory<APP_ENV> = () => ({
+const appConfigFactory = (): APP_ENV => ({
   API_PORT: parseInt(process.env.API_PORT ?? '', 10) || 4022,
   IS_DEV: process.env.NODE_ENV === 'development',
   IS_PROD: process.env.NODE_ENV === 'production',
@@ -30,6 +31,9 @@ const appConfigFactory: ConfigFactory<APP_ENV> = () => ({
 
   SWAGGER_USER: process.env.SWAGGER_USER,
   SWAGGER_PASSWORD: process.env.SWAGGER_PASSWORD,
+
+  LOG_PRETTY: process.env.LOG_PRETTY,
+  NODE_ENV: process.env.NODE_ENV,
 });
 
 export { appConfigFactory, APP_ENV };

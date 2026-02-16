@@ -1,9 +1,8 @@
+import { CORRELATION_HEADER_KEY } from '@big-d/api-utils';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
 import { isEmpty } from 'lodash';
 import { ExceptionRequestContextPayload } from './exceptions';
-
-const CORRELATION_HEADER_KEY = 'x-correlation-id';
 
 @Injectable()
 class RequestContextPayloadGuard implements CanActivate {

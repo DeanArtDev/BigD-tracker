@@ -1,17 +1,15 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
 import { BaseRpcException, RpcExceptionFactory } from '@big-d/api-contracts';
+import { AppContext } from '@big-d/api-utils';
 import { BaseException, exceptionCode, isBaseException } from '@big-d/exceptions';
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { RmqContext } from '@nestjs/microservices';
-import { getCorrelationId } from '@shared/request-context/helpers';
+import { Catch, ExceptionFilter } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 
 @Catch()
 export class GoalExceptionToRpc implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost): Observable<BaseRpcException> {
-    const message = host.switchToRpc().getContext<RmqContext>().getMessage();
-    const correlationId = getCorrelationId(message);
+  catch(exception: unknown): Observable<BaseRpcException> {
+    const correlationId = AppContext.getStore()?.correlationId ?? 'There is no correlation id!';
 
     if (exception instanceof ExceptionTaskDomainInvalidInvariant) {
       return throwError(() => RpcExceptionFactory.createDomainInvariantViolation(exception));
