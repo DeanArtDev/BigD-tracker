@@ -1,6 +1,6 @@
 import { Deserializer, RmqOptions, Serializer, Transport } from '@nestjs/microservices';
 
-const GOAL_SERVICE_RMQ_KEY = Symbol('GOAL_SERVICE_RMQ_KEY');
+const GOAL_SERVICE_RMQ_KEY = Symbol.for('GOAL_SERVICE_RMQ_KEY');
 
 const goalServiceRmqConfig = (params: {
   user?: string;

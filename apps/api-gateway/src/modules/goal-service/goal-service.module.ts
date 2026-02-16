@@ -1,3 +1,4 @@
+import { GoalServiceClientModule } from '@/infrastructure/rmq-clients/clients';
 import { GroupsController } from './groups';
 import { HttpStatus, Module } from '@nestjs/common';
 import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
@@ -6,6 +7,7 @@ import { TasksController, TasksInboxController } from './tasks';
 
 @Module({
   imports: [
+    GoalServiceClientModule,
     RpcResponseValidationModule.forFeature({
       useValue: ({ issues }) =>
         BaseHttpException.createFromBase(

@@ -6,7 +6,7 @@ function isDefaultRpcException(error: unknown): error is { error: unknown; messa
 }
 
 function unwrapDefaultRpcException(error: unknown): unknown {
-  if (isDefaultRpcException(error)) {
+  if (isDefaultRpcException(error) && error.error != null && typeof error.error === 'object') {
     return error.error;
   }
   return undefined;

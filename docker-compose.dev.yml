@@ -1,0 +1,56 @@
+services:
+  tracker_db:
+    image: postgres:17.5
+    env_file:
+      - .env.development
+    container_name: tracker_db
+    restart: unless-stopped
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}']
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./servers/dev-stage/init:/docker-entrypoint-initdb.d
+    networks:
+      - tracker_net
+
+  tracker_rabbitmq:
+    image: rabbitmq:4.1.1-management
+    container_name: tracker_rmq
+    restart: unless-stopped
+    env_file:
+      - .env.development
+    networks:
+      - tracker_net
+    ports:
+      - ${RMQ_PORT}:${RMQ_PORT}
+      - ${RMQ_MANAGER_PORT}:${RMQ_MANAGER_PORT}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - tracker_rmq_data:/var/lib/rabbitmq
+
+volumes:
+  pgdata:
+    name: tracker_db_data
+  tracker_rmq_data:
+    name: tracker_rmq_data
+
+networks:
+  tracker_net:
+    name: tracker_net

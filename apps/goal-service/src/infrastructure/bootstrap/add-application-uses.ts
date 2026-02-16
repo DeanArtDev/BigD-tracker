@@ -1,3 +1,4 @@
+import { RmqInboundLoggingInterceptor } from '@big-d/api-utils';
 import { INestMicroservice, ValidationPipe } from '@nestjs/common';
 import { GoalExceptionToRpc } from '@shared/exception-filters';
 
@@ -11,6 +12,7 @@ function addApplicationUses(microservice: INestMicroservice) {
   );
 
   microservice.useGlobalFilters(new GoalExceptionToRpc());
+  microservice.useGlobalInterceptors(microservice.get(RmqInboundLoggingInterceptor));
 }
 
 export { addApplicationUses };

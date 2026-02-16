@@ -1,4 +1,4 @@
-import { AccountServiceClientProxy, GoalServiceClientProxy } from '@/infrastructure/rmq-clients';
+import { ACCOUNT_RMQ_SERVICE, AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { RegisterRpcRes } from '@/modules/auth/dto/register.dto';
 import {
@@ -8,7 +8,7 @@ import {
   GoalCreateInboxGroup,
   RpcStatus,
 } from '@big-d/api-contracts';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
 import { plainToInstance } from 'class-transformer';
@@ -17,8 +17,8 @@ import { validate } from 'class-validator';
 @Injectable()
 export class RegisterSage {
   constructor(
-    private readonly accountClient: AccountServiceClientProxy,
-    private readonly goalClient: GoalServiceClientProxy,
+    @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient,
     private readonly jwtService: JwtService,
   ) {}
 
