@@ -3,6 +3,7 @@ import {
   GroupInboxWriteRepository,
   GroupsReadRepository,
   GroupsWriteRepository,
+  GoalsReadRepository,
   TasksReadRepository,
   TasksWriteRepository,
 } from '@/modules/tasks/application/ports';
@@ -39,6 +40,7 @@ const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> = {
   getGroupWithTasksById: jest.fn(),
   ensureTaskInGroup: jest.fn(),
   getGroupListWithTasks: jest.fn(),
+  getInfoGroups: jest.fn(),
 };
 
 const inboxReadRepoMock: Record<keyof GroupInboxReadRepository, jest.Mock> = {
@@ -50,11 +52,16 @@ const inboxWriteRepoMock: Record<keyof GroupInboxWriteRepository, jest.Mock> = {
   createInbox: jest.fn(),
 };
 
+const goalsReadRepoMock: Record<keyof GoalsReadRepository, jest.Mock> = {
+  getGoalInfoByChildGroups: jest.fn(),
+};
+
 export {
   groupReadRepoMock,
   groupWriteRepoMock,
   inboxReadRepoMock,
   inboxWriteRepoMock,
+  goalsReadRepoMock,
   tasksReadRepoMock,
   tasksWriteRepoMock,
 };

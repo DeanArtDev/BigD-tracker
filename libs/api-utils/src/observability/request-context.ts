@@ -29,7 +29,7 @@ class RequestContext<TDetails extends RequestContextState = RequestContextState>
   }
 
   public fork(state: TDetails): RequestContext<TDetails> {
-    return new RequestContext<TDetails>(merge(this.#state, state));
+    return new RequestContext<TDetails>(merge({}, this.#state, state));
   }
 }
 

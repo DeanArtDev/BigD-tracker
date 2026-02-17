@@ -9,6 +9,8 @@ import {
   GetAssignableTasksHandler,
   GetUserGroupsQuery,
   GetUserGroupsHandler,
+  GetAssignableGroupsQuery,
+  GetAssignableGroupsHandler,
 } from './queries';
 import {
   GroupCheckerService,
@@ -18,9 +20,10 @@ import {
   TaskGroupCheckerService,
   TaskQueryService,
   TaskService,
-} from '@/modules/tasks/application/services';
+  GoalPublicService,
+} from './services';
 import { Module } from '@nestjs/common';
-import { TasksInfrastructureModule } from '@/modules/tasks/infrastructure/tasks-infrastructure.module';
+import { TasksInfrastructureModule } from '../infrastructure/tasks-infrastructure.module';
 import {
   CreateTaskCommand,
   CreateTaskUseCase,
@@ -72,6 +75,7 @@ const queries = [
   GetDiaryTasksQuery,
   GetAssignableTasksQuery,
   GetUserGroupsQuery,
+  GetAssignableGroupsQuery,
 ];
 const commands = [
   CreateTaskCommand,
@@ -109,6 +113,7 @@ const handlers = [
   GetAssignableTasksHandler,
   FinishTaskHandler,
   GetUserGroupsHandler,
+  GetAssignableGroupsHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
@@ -137,6 +142,7 @@ const useCases = [
     TaskGroupCheckerService,
     InboxGroupCheckerService,
     TaskQueryService,
+    GoalPublicService,
     ...commands,
     ...queries,
     ...handlers,

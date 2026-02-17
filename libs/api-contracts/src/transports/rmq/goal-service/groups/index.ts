@@ -4,6 +4,7 @@ export * from './create-group';
 export * from './replace-group';
 export * from './delete-group';
 export * from './get-user-groups';
-export * from './get-detailed-groups';
+export * from './get-detailed-group';
+export * from './get-assignable-groups';
 
 export * from './types';
