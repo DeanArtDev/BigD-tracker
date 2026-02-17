@@ -14,7 +14,7 @@ import { useEffect, useEffectEvent, useState } from 'react';
 import { useWysiwygContext } from '../../context';
 import { getSelectedNode } from '../../utils';
 
-function TextAlignmentActions() {
+function TextAlignmentActions({ disabled }: { disabled: boolean }) {
   const [editor] = useLexicalComposerContext();
   const {
     state: { isEditable },
@@ -60,7 +60,7 @@ function TextAlignmentActions() {
       size="sm"
       type="single"
       value={elementFormat}
-      disabled={!isEditable}
+      disabled={!isEditable || disabled}
       variant="outline"
       className="flex shrink-0"
       spacing={1}

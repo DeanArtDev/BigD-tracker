@@ -49,6 +49,7 @@ function Component({
   placeholder = 'Введите текст',
   controller,
   beforeSlot,
+  disabled = false,
   afterSlot,
   onDirtyChange = noop,
 }: Omit<WysiwygEditorProps, 'config'>) {
@@ -65,14 +66,14 @@ function Component({
     <div className="wysiwyg-editor relative flex flex-col w-full min-w-0 grow">
       <WysiwygProvider>
         <HistoryPlugin key={historyKey} />
-        <ToolbarPlugin />
+        <ToolbarPlugin disabled={disabled} />
 
         <InitialStatePlugin
           state={state}
           onStateSet={() => void setHistoryKey((prev) => prev + 1)}
         />
         <DirtyTrackingPlugin initialStateString={state} onDirtyChange={onDirtyChange} />
-        <ComponentPickerPlugin />
+        <ComponentPickerPlugin disabled={disabled} />
 
         <ScrollAreaNativeVertical className="wysiwyg-editor-scroller relative">
           {beforeSlot}
@@ -82,6 +83,7 @@ function Component({
               <div className="content-editable-resizer flex min-h-0 max-w-full grow relative resize-y">
                 <div className="content-editable-resizer-wrapper flex-auto max-w-full relative resize-y">
                   <ContentEditable
+                    disabled={disabled}
                     className="group/content-editable grow min-h-[200px] flex-1 p-5 pb-10 sm:pb-7 text-base"
                     aria-placeholder={placeholder}
                     placeholder={

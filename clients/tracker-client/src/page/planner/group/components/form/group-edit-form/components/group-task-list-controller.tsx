@@ -7,13 +7,12 @@ import {
 import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
-import { useFormContext } from 'react-hook-form';
-import { GroupTaskAutocomplete } from './group-task-autocomplete';
 import { ButtonAdd } from '@/shared/components/button-add';
 import { ButtonClose } from '@/shared/components/button-close';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
-import { Button } from '@/shared/ui-kit/ui/button';
 import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { GroupTaskAutocomplete } from './group-task-autocomplete';
 import { GroupTaskList } from './group-task-list';
 
 interface GroupTaskListControllerProps {
@@ -35,6 +34,20 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
     await invalidateGroups();
     await invalidateGroupById({ groupId });
   };
+
+  const TaskAutocomplete = (
+    <div className="flex gap-2 mb-2">
+      <GroupTaskAutocomplete
+        disabled={formState.disabled}
+        loading={isAssignTaskToGroupPending}
+        onTaskSelect={(taskId) => {
+          assignTaskToGroup({ params: { path: { taskId, groupId } } }, { onSuccess: invalidate });
+        }}
+      />
+
+      <TaskCreation groupId={groupId} trigger={<ButtonAdd />} onSuccess={invalidate} />
+    </div>
+  );
 
   return (
     <>
@@ -67,34 +80,8 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
             />
           );
         }}
-        beforeTaskListSlot={
-          <div className="flex gap-2 mb-2">
-            <GroupTaskAutocomplete
-              disabled={formState.disabled}
-              loading={isAssignTaskToGroupPending}
-              onTaskSelect={(taskId) => {
-                assignTaskToGroup(
-                  { params: { path: { taskId, groupId } } },
-                  { onSuccess: invalidate },
-                );
-              }}
-            />
-
-            <TaskCreation groupId={groupId} trigger={<ButtonAdd />} onSuccess={invalidate} />
-          </div>
-        }
-        emptyPlaceholderBeforeEndSlot={
-          <div>
-            <TaskCreation
-              groupId={groupId}
-              trigger={
-                <Button className="mt-2" size="sm" type="button" variant="outline">
-                  Создать
-                </Button>
-              }
-            />
-          </div>
-        }
+        beforeTaskListSlot={TaskAutocomplete}
+        emptyPlaceholderBeforeEndSlot={TaskAutocomplete}
         onTaskClick={(formTask) =>
           void setTaskForUpdate({
             id: formTask.id,

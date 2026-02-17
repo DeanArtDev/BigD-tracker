@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { useWysiwygContext } from '../../context/context';
 import { ToolbarAction } from '../../ui/toolbar-action';
 
-function HistoryActions() {
+function HistoryActions({ disabled }: { disabled: boolean }) {
   const [editor] = useLexicalComposerContext();
   const { state } = useWysiwygContext();
   const [canUndo, setCanUndo] = useState(false);
@@ -48,7 +48,7 @@ function HistoryActions() {
       <ToolbarAction
         ariaLabel="Undo"
         icon={<Undo />}
-        disabled={!isEditable || !canUndo}
+        disabled={!isEditable || !canUndo || disabled}
         onClick={() => {
           editor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
@@ -57,7 +57,7 @@ function HistoryActions() {
       <ToolbarAction
         ariaLabel="Redo"
         icon={<Redo />}
-        disabled={!isEditable || !canRedo}
+        disabled={!isEditable || !canRedo || disabled}
         onClick={() => {
           editor.dispatchCommand(REDO_COMMAND, undefined);
         }}

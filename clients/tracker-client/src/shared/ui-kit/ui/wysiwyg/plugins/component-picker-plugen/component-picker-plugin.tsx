@@ -10,7 +10,7 @@ import { getBaseOptions } from './config';
 import type { ComponentPickerOption } from './option-model';
 import { ComponentsDropdownItem } from './ui/components-dropdown';
 
-function ComponentPickerPlugin() {
+function ComponentPickerPlugin({ disabled }: { disabled: boolean }) {
   const [editor] = useLexicalComposerContext();
 
   const [queryString, setQueryString] = useState<string | null>(null);
@@ -50,6 +50,7 @@ function ComponentPickerPlugin() {
 
   const { matchSlash, matchDot } = useComponentTriggerMatch();
 
+  if (disabled) return null;
   return (
     <LexicalTypeaheadMenuPlugin<ComponentPickerOption>
       anchorClassName="z-50 relative"

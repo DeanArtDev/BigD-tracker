@@ -1,9 +1,4 @@
-import {
-  type GroupEntity,
-  useInvalidateGroups,
-  useGroupUpdate,
-  useInvalidateGroupById,
-} from '@/entity/planner/groups';
+import { type GroupEntity, useGroupUpdate, useInvalidateAllGroups } from '@/entity/planner/groups';
 import { GroupConfirmedDelete } from '@/entity/planner/groups/ui';
 import { ButtonTrash } from '@/shared/components/button-trash';
 import { routes } from '@/shared/lib/routes';
@@ -16,8 +11,7 @@ interface GroupEditControllerProps {
 
 function GroupEditController({ group }: GroupEditControllerProps) {
   const { updateGroup, isPending } = useGroupUpdate();
-  const groupInvalidate = useInvalidateGroups();
-  const invalidateGroupById = useInvalidateGroupById();
+  const invalidateAllGroups = useInvalidateAllGroups();
   const navigate = useNavigate();
 
   return (
@@ -27,7 +21,10 @@ function GroupEditController({ group }: GroupEditControllerProps) {
       footerSlot={
         <GroupConfirmedDelete
           groupId={group.id}
-          onSuccess={() => void navigate(routes.plannerGroupList.path)}
+          onSuccess={async () => {
+            await navigate(routes.plannerGroupList.path);
+            await invalidateAllGroups();
+          }}
         >
           {({ isLoading }) => <ButtonTrash variant="ghost" isLoading={isLoading} />}
         </GroupConfirmedDelete>
@@ -53,8 +50,7 @@ function GroupEditController({ group }: GroupEditControllerProps) {
           },
           {
             onSuccess: async () => {
-              await invalidateGroupById({ groupId: group.id });
-              await groupInvalidate();
+              await invalidateAllGroups();
               reset();
             },
           },

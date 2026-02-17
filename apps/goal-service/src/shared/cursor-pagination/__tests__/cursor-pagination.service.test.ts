@@ -13,7 +13,7 @@ describe('CursorPaginationService', () => {
       sort: ['name'],
       filter: ['active'],
       limit: 10,
-      currentPartLength: 3,
+      currentPartLength: 11,
     });
 
     expect(result.nextCursor).toEqual(expect.any(String));
@@ -24,6 +24,19 @@ describe('CursorPaginationService', () => {
       sort: ['name'],
       filter: ['active'],
     });
+  });
+
+  test('should NOT build next cursor when gave last part', () => {
+    const result = service.getNextCursor(undefined, {
+      lastId: 12,
+      search: 'Group',
+      sort: ['name'],
+      filter: ['active'],
+      limit: 10,
+      currentPartLength: 9,
+    });
+
+    expect(result.nextCursor).toEqual(undefined);
   });
 
   test('should return undefined next cursor when last part', () => {
