@@ -30,7 +30,7 @@ function GroupListPage() {
       title="Группы"
       className="flex flex-col w-full relative grow sm:max-w-[80%] mx-auto pb-10 lg:pb-10 px-0 lg:px-0"
     >
-      <GroupListHeader onSearch={setGroupSearch} onFilterChange={console.log} />
+      <GroupListHeader onSearch={setGroupSearch} />
 
       <DataLoader
         parallelMount

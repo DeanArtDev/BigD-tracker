@@ -88,8 +88,6 @@ function Component(props: TaskFormProps) {
       }
     : undefined;
 
-  console.log(defaultValues);
-
   const form = useForm<TaskFormData, any, TaskSubmitFormData>({
     resolver: zodResolver(validationSchema),
     mode: isMobile ? 'onChange' : 'onSubmit',
