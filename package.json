@@ -8,7 +8,7 @@
     "format:all:fix": "turbo format:fix",
     "lint:all": "turbo lint",
     "lint:all:fix": "turbo lint:fix",
-    "test:all": "turbo test -F=!@big-d/goal-service --concurrency=2",
+    "test:all": "turbo test",
     "deploy:to:prod": "bash ./tools/deploy-scripts/bootstrap.sh",
     "migrate:db:prod": "bash ./tools/deploy-scripts/migrate-prod-db.sh",
     "===============================  BINDED  ==========================": "",

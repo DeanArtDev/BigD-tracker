@@ -1,5 +1,6 @@
 import {
   GroupDetailedView,
+  GroupInfoView,
   GroupView,
   GroupWithTasksView,
   TaskView,
@@ -29,6 +30,24 @@ export class GroupsReadRepositoryKysely
 {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
+  }
+
+  async getInfoGroups(
+    specifications: TasksSpecification,
+    trx?: TaskTransaction,
+  ): Promise<GroupInfoView[]> {
+    return await this.errorCatcher('groups.get-info', async () => {
+      const groups = await groupWithStatusQuery(this.db, trx)
+        .where((eb) => specifications.toExpr(eb))
+        .execute();
+
+      return groups.map((group) => {
+        return GroupReadKyselyMapper.fromRawToInfoView({
+          id: group.id,
+          name: group.name,
+        });
+      });
+    });
   }
 
   async getByName(

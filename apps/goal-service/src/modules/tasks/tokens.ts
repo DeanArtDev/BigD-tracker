@@ -11,4 +11,9 @@ const GroupsToken = {
   INBOX_READ_REPOSITORY: Symbol.for('INBOX_READ_REPOSITORY'),
 };
 
-export { TasksToken, GroupsToken };
+const GoalsToken = {
+  WRITE_REPOSITORY: Symbol.for('GOALS_WRITE_REPOSITORY'),
+  READ_REPOSITORY: Symbol.for('GOALS_READ_REPOSITORY'),
+};
+
+export { TasksToken, GroupsToken, GoalsToken };

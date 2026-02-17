@@ -1,6 +1,7 @@
-import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
+import { GoalsToken, GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { Module } from '@nestjs/common';
 import {
+  GoalsReadRepositoryKysely,
   GroupInboxReadRepositoryKysely,
   GroupsReadRepositoryKysely,
   TasksReadRepositoryKysely,
@@ -21,8 +22,12 @@ import {
 
     GroupsToken.INBOX_WRITE_REPOSITORY,
     GroupsToken.INBOX_READ_REPOSITORY,
+
+    GoalsToken.READ_REPOSITORY,
   ],
   providers: [
+    { provide: GoalsToken.READ_REPOSITORY, useClass: GoalsReadRepositoryKysely },
+
     { provide: GroupsToken.INBOX_READ_REPOSITORY, useClass: GroupInboxReadRepositoryKysely },
     { provide: GroupsToken.INBOX_WRITE_REPOSITORY, useClass: GroupInboxWriteRepositoryKysely },
 

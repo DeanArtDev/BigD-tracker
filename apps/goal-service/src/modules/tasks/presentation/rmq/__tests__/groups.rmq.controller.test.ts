@@ -6,7 +6,7 @@ import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
-  GoalGetDetailedGroups,
+  GoalGetDetailedGroup,
   GoalGetUserGroups,
   GoalReplaceGroup,
   GroupStatus,
@@ -83,7 +83,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRawTwo, tasks: [] }),
       ]);
       const payload: GoalGetUserGroups.Request = buildPayload({
-        data: { userId: 7, limit: 10 },
+        data: { userId: 7, limit: 1 },
       });
 
       const res = await sendMessage<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
@@ -95,7 +95,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
-        { limit: 10 },
+        { limit: 1 },
         expectTransaction(),
       );
       expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
@@ -937,7 +937,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
     });
   });
 
-  describe(`${GoalGetDetailedGroups.pattern}`, () => {
+  describe(`${GoalGetDetailedGroup.pattern}`, () => {
     test('should return group details', async () => {
       const userId = 90;
       const groupId = 321;
@@ -950,12 +950,12 @@ describe('GroupsRmqController (rmq e2e)', () => {
       });
       groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(detailedGroup);
 
-      const payload: GoalGetDetailedGroups.Request = buildPayload({
+      const payload: GoalGetDetailedGroup.Request = buildPayload({
         data: { groupId, userId },
       });
 
-      const res = await sendMessage<GoalGetDetailedGroups.Response, GoalGetDetailedGroups.Request>(
-        GoalGetDetailedGroups.pattern,
+      const res = await sendMessage<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
+        GoalGetDetailedGroup.pattern,
         payload,
       );
 
@@ -984,14 +984,14 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const groupId = 322;
       groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(null);
 
-      const payload: GoalGetDetailedGroups.Request = buildPayload({
+      const payload: GoalGetDetailedGroup.Request = buildPayload({
         data: { groupId, userId },
       });
 
       let error: unknown;
       try {
-        await sendMessage<GoalGetDetailedGroups.Response, GoalGetDetailedGroups.Request>(
-          GoalGetDetailedGroups.pattern,
+        await sendMessage<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
+          GoalGetDetailedGroup.pattern,
           payload,
         );
       } catch (err) {

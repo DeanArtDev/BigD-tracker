@@ -4,6 +4,7 @@ import {
   GroupWithTasksView,
   GroupDetailedView,
   TaskView,
+  GroupInfoView,
 } from '@/modules/tasks/application/dto';
 import { GroupStatus } from '@big-d/api-contracts';
 
@@ -14,6 +15,11 @@ interface RawGroup {
   readonly user_id: number;
   readonly progress: number;
   readonly status: GroupStatus;
+}
+
+interface RawGroupInfo {
+  readonly id: number;
+  readonly name: string;
 }
 
 interface RawGroupWithTasks extends RawGroup {
@@ -36,6 +42,13 @@ class GroupReadKyselyMapper {
       userId: raw.user_id,
       progress: raw.progress,
       status: raw.status,
+    });
+  }
+
+  static fromRawToInfoView(raw: RawGroupInfo): GroupInfoView {
+    return GroupInfoView.restore({
+      id: raw.id,
+      name: raw.name,
     });
   }
 

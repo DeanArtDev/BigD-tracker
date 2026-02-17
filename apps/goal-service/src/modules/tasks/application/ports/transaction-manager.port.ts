@@ -7,8 +7,15 @@ type TasksDB = Pick<
   'tasks' | 'groups' | 'group_statuses' | 'task_statuses' | 'tag_to_tasks' | 'task_to_group'
 >;
 
+type GoalsDB = Pick<
+  DB,
+  'goals' | 'goal_statuses' | 'goal_to_goals' | 'groups' | 'group_statuses' | 'group_to_goals'
+>;
+
 type TaskDatabase = IKyselyPostgresDB<TasksDB>;
+type GoalDatabase = IKyselyPostgresDB<GoalsDB>;
 
 type TaskTransaction = Transaction<TasksDB>;
+type GoalTransaction = Transaction<GoalsDB>;
 
-export { TaskDatabase, TasksDB, TaskTransaction };
+export { TaskDatabase, TasksDB, TaskTransaction, GoalDatabase, GoalTransaction };
