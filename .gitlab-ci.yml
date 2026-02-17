@@ -49,6 +49,11 @@ tracker-client:build:
       command: ['--tls=false']
   tags: [registry, dind]
 
+  before_script:
+    - apk add --no-cache git git-lfs
+    - git lfs install
+    - git lfs pull
+
   variables:
     DOCKER_HOST: 'tcp://docker:2375'
     DOCKER_TLS_CERTDIR: ''

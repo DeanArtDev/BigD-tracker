@@ -1,13 +1,11 @@
 * text=auto
-
 # Ensure IDE configuration files use LF line endings
 /.idea/* text eol=lf
-
 # Treat common binary assets as binary to avoid EOL conversions
-*.png -text
-*.jpg -text
-*.jpeg -text
-*.gif -text
-*.ico -text
-*.webp -text
-*.pdf -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.ico filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
