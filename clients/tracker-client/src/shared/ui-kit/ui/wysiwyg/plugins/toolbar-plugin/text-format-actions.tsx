@@ -12,7 +12,7 @@ import { useWysiwygContext } from '../../context';
 import { ToolbarAction } from '../../ui/toolbar-action';
 import { dispatchFormatTextCommand } from './helpers';
 
-function TextFormatActions() {
+function TextFormatActions({ disabled }: { disabled: boolean }) {
   const [editor] = useLexicalComposerContext();
   const {
     state: { isEditable },
@@ -56,7 +56,7 @@ function TextFormatActions() {
         ariaLabel="Bold"
         active={isBold}
         icon={<Bold />}
-        disabled={!isEditable}
+        disabled={!isEditable || disabled}
         onClick={() => {
           dispatchFormatTextCommand(editor, 'bold');
         }}
@@ -66,7 +66,7 @@ function TextFormatActions() {
         ariaLabel="Italic"
         active={isItalic}
         icon={<Italic />}
-        disabled={!isEditable}
+        disabled={!isEditable || disabled}
         onClick={() => {
           dispatchFormatTextCommand(editor, 'italic');
         }}
@@ -76,7 +76,7 @@ function TextFormatActions() {
         ariaLabel="Underline"
         active={isUnderline}
         icon={<Underline />}
-        disabled={!isEditable}
+        disabled={!isEditable || disabled}
         onClick={() => {
           dispatchFormatTextCommand(editor, 'underline');
         }}
@@ -86,7 +86,7 @@ function TextFormatActions() {
         ariaLabel="Strikethrough"
         active={isStrikethrough}
         icon={<Strikethrough />}
-        disabled={!isEditable}
+        disabled={!isEditable || disabled}
         onClick={() => {
           dispatchFormatTextCommand(editor, 'strikethrough');
         }}

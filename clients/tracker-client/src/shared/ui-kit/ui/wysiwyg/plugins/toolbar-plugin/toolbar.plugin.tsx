@@ -1,15 +1,12 @@
 import { ScrollAreaNativeHorizontal } from '@/shared/ui-kit/ui/scroll-area-native-horizontal';
+import { Separator } from '@/shared/ui-kit/ui/separator';
 import { cn } from '@/shared/ui-kit/utils';
 import { useWysiwygContext } from '../../context';
 import { HistoryActions } from './history-actions';
 import { TextAlignmentActions } from './text-alignment-actions';
 import { TextFormatActions } from './text-format-actions';
 
-function Divider() {
-  return <div className="mx-2 h-6 w-px bg-border shrink-0" />;
-}
-
-function ToolbarPlugin() {
+function ToolbarPlugin({ disabled }: { disabled: boolean }) {
   const {
     state: { isEditable },
   } = useWysiwygContext();
@@ -20,15 +17,15 @@ function ToolbarPlugin() {
         hidden: !isEditable,
       })}
     >
-      <HistoryActions />
+      <HistoryActions disabled={disabled} />
 
-      <Divider />
+      <Separator className="mx-2" orientation="vertical" />
 
-      <TextFormatActions />
+      <TextFormatActions disabled={disabled} />
 
-      <Divider />
+      <Separator className="mx-2" orientation="vertical" />
 
-      <TextAlignmentActions />
+      <TextAlignmentActions disabled={disabled} />
     </ScrollAreaNativeHorizontal>
   );
 }

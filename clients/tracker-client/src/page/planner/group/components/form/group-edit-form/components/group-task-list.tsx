@@ -118,6 +118,7 @@ function GroupTaskList({
                   }
                   beforeNameSlot={
                     <Button
+                      disabled={tasks.length === 1}
                       type="button"
                       variant="ghost"
                       {...handleProps}

@@ -1,4 +1,4 @@
-import { useInvalidateGroups } from '@/entity/planner/groups';
+import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useCreateTask, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
 import { TaskFormDialog } from '@/entity/planner/tasks/ui';
 import { type ReactNode, useState } from 'react';
@@ -15,7 +15,7 @@ function TaskCreation({ trigger, groupId, onSuccess, onCansel }: TaskCreationPro
 
   const { createTask, isPending } = useCreateTask();
   const invalidateTasks = useInvalidateDiaryTasks();
-  const invalidateGroups = useInvalidateGroups();
+  const invalidateAllGroups = useInvalidateAllGroups();
 
   return (
     <TaskFormDialog
@@ -37,7 +37,7 @@ function TaskCreation({ trigger, groupId, onSuccess, onCansel }: TaskCreationPro
 
           {
             onSuccess: async () => {
-              await invalidateGroups();
+              await invalidateAllGroups();
               await invalidateTasks();
               setOpen(false);
               onSuccess?.();

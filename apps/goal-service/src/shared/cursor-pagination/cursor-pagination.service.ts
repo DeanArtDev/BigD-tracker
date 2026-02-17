@@ -21,14 +21,13 @@ export class CursorPaginationService {
     payload: CursorPayload,
   ): { nextCursor?: string } {
     const { lastId, sort, search, filter, limit, currentPartLength } = payload;
+    if (lastId == null) return { nextCursor: undefined };
+    if ((limit ?? 0) > currentPartLength) return { nextCursor: undefined };
 
     const nextCursor = CursorPagination.encode({ lastId, sort, search, filter });
     if (cursor == null) return { nextCursor };
 
-    const lastPart = (limit ?? 0) > currentPartLength;
-    const nc = lastId != null && !lastPart ? nextCursor : undefined;
-
-    return { nextCursor: nc };
+    return { nextCursor: nextCursor };
   }
 
   public decodeCursorString(cursor?: string): z.infer<typeof cursorSchema> | undefined {
