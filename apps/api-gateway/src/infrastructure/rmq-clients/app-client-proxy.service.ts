@@ -14,7 +14,10 @@ class AppRmqClient {
     },
   ) {}
 
-  public async send<TRes, TReq>(pattern: string, payload: TReq): Promise<TRes> {
+  public async send<TRes, TReq>(
+    pattern: `${string}.${string}.${string}`,
+    payload: TReq,
+  ): Promise<TRes> {
     const started = Date.now();
     const cid = AppContext.getStore()?.correlationId ?? 'There is no correlation id!';
     const requestContext = new RequestContext({

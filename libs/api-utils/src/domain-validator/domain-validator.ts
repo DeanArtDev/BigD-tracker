@@ -72,7 +72,7 @@ class DomainValidator {
       throw new DomainValidationError({
         field,
         domain: this.domain,
-        message: message ?? `${field}: ${str} must be before ${date}`,
+        message: message ?? `${field}: ${str} must be after ${date}`,
       });
     }
   }

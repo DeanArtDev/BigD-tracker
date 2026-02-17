@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 
 interface GroupListHeaderProps {
   readonly onSearch: (search: string | undefined) => void;
-  readonly onFilterChange: (filters: { status: GroupStatus }) => void;
+  readonly onFilterChange?: (filters: { status: GroupStatus }) => void;
 }
 
 function GroupListHeader({ onSearch, onFilterChange }: GroupListHeaderProps) {
@@ -50,7 +50,7 @@ function GroupListHeader({ onSearch, onFilterChange }: GroupListHeaderProps) {
         <Button
           size="icon"
           variant="outline"
-          onClick={() => void onFilterChange({ status: 'IN_PROGRESS' })}
+          onClick={() => void onFilterChange?.({ status: 'IN_PROGRESS' })}
         >
           <SlidersHorizontal />
         </Button>

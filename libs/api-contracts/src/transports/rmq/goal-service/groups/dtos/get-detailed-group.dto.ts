@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsInt, ValidateNested } from 'class-validator';
 import { GroupDetailedDto } from './group-detailed.dto';
 
-class GetDetailedGroupsReqData {
+class GetDetailedGroupReqData {
   @IsInt()
   groupId: number;
 
@@ -10,16 +10,16 @@ class GetDetailedGroupsReqData {
   userId: number;
 }
 
-class GetDetailedGroupsReq {
+class GetDetailedGroupReq {
   @ValidateNested()
-  @Type(() => GetDetailedGroupsReqData)
-  data: GetDetailedGroupsReqData;
+  @Type(() => GetDetailedGroupReqData)
+  data: GetDetailedGroupReqData;
 }
 
-class GetDetailedGroupsRes {
+class GetDetailedGroupRes {
   @ValidateNested()
   @Type(() => GroupDetailedDto)
   data: GroupDetailedDto;
 }
 
-export { GetDetailedGroupsReq, GetDetailedGroupsRes };
+export { GetDetailedGroupReq, GetDetailedGroupRes };

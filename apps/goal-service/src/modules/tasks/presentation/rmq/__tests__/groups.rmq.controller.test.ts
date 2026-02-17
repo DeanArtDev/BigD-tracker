@@ -2,12 +2,14 @@ import { initTestEnvironment } from '@/../jest.setup';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupReadKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.write-mapper';
-import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
+import { GoalsToken, GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import {
   GoalCreateGroup,
   GoalDeleteGroup,
-  GoalGetDetailedGroups,
+  GoalGetAssignableGroups,
+  GoalGetDetailedGroup,
   GoalGetUserGroups,
+  GoalStatus,
   GoalReplaceGroup,
   GroupStatus,
   TaskStatus,
@@ -30,12 +32,14 @@ import {
 } from '@shared/__tests__';
 import {
   getGroupDetailedView,
+  getGroupInfoView,
   getGroupRaw,
   getGroupWithTasks,
   getTask,
   getTaskView,
 } from '@shared/__tests__/entities';
 import {
+  goalsReadRepoMock,
   groupReadRepoMock,
   groupWriteRepoMock,
   tasksWriteRepoMock,
@@ -55,6 +59,8 @@ describe('GroupsRmqController (rmq e2e)', () => {
       .useValue(groupWriteRepoMock)
       .overrideProvider(GroupsToken.READ_REPOSITORY)
       .useValue(groupReadRepoMock)
+      .overrideProvider(GoalsToken.READ_REPOSITORY)
+      .useValue(goalsReadRepoMock)
       .overrideProvider(TasksToken.WRITE_REPOSITORY)
       .useValue(tasksWriteRepoMock)
       .compile();
@@ -83,7 +89,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRawTwo, tasks: [] }),
       ]);
       const payload: GoalGetUserGroups.Request = buildPayload({
-        data: { userId: 7, limit: 10 },
+        data: { userId: 7, limit: 1 },
       });
 
       const res = await sendMessage<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
@@ -95,7 +101,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
-        { limit: 10 },
+        { limit: 1 },
         expectTransaction(),
       );
       expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
@@ -297,6 +303,43 @@ describe('GroupsRmqController (rmq e2e)', () => {
             cursor:
               'eyJsYXN0SWQiOjMyLCJzb3J0IjpbIm5hbWUiXSwic2VhcmNoIjoiR3JvdXAiLCJmaWx0ZXIiOlsiYWN0aXZlIl19',
           },
+        },
+      });
+    });
+
+    test('should return empty list when no groups found', async () => {
+      groupReadRepoMock.getGroupListWithTasks.mockResolvedValueOnce([]);
+      const payload: GoalGetUserGroups.Request = buildPayload({
+        data: { userId: 77, limit: 10 },
+      });
+
+      const res = await sendMessage<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
+        GoalGetUserGroups.pattern,
+        payload,
+      );
+
+      expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            )
+          )"
+      `);
+      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks)))
+        .toMatchInlineSnapshot(`
+          "AND(
+            tasks.byUserId,
+            tasks.byStatus
+          )"
+      `);
+      expect(nthArgs(3, groupReadRepoMock.getGroupListWithTasks)).toEqual(expectTransaction());
+      expect(res).toEqual({
+        data: {
+          items: [],
+          meta: { cursor: undefined },
         },
       });
     });
@@ -937,7 +980,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
     });
   });
 
-  describe(`${GoalGetDetailedGroups.pattern}`, () => {
+  describe(`${GoalGetDetailedGroup.pattern}`, () => {
     test('should return group details', async () => {
       const userId = 90;
       const groupId = 321;
@@ -950,12 +993,12 @@ describe('GroupsRmqController (rmq e2e)', () => {
       });
       groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(detailedGroup);
 
-      const payload: GoalGetDetailedGroups.Request = buildPayload({
+      const payload: GoalGetDetailedGroup.Request = buildPayload({
         data: { groupId, userId },
       });
 
-      const res = await sendMessage<GoalGetDetailedGroups.Response, GoalGetDetailedGroups.Request>(
-        GoalGetDetailedGroups.pattern,
+      const res = await sendMessage<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
+        GoalGetDetailedGroup.pattern,
         payload,
       );
 
@@ -984,14 +1027,14 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const groupId = 322;
       groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(null);
 
-      const payload: GoalGetDetailedGroups.Request = buildPayload({
+      const payload: GoalGetDetailedGroup.Request = buildPayload({
         data: { groupId, userId },
       });
 
       let error: unknown;
       try {
-        await sendMessage<GoalGetDetailedGroups.Response, GoalGetDetailedGroups.Request>(
-          GoalGetDetailedGroups.pattern,
+        await sendMessage<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
+          GoalGetDetailedGroup.pattern,
           payload,
         );
       } catch (err) {
@@ -1005,6 +1048,46 @@ describe('GroupsRmqController (rmq e2e)', () => {
         kind: RmqErrorKind.NOT_FOUND,
         details: { groupId },
       });
+    });
+  });
+
+  describe(`${GoalGetAssignableGroups.pattern}`, () => {
+    test('should return only groups not tied to started goals', async () => {
+      const groupA = getGroupInfoView({ id: 501, name: 'Group A' });
+      const groupB = getGroupInfoView({ id: 502, name: 'Group B' });
+      const groupC = getGroupInfoView({ id: 503, name: 'Group C' });
+
+      groupReadRepoMock.getInfoGroups.mockResolvedValueOnce([groupA, groupB, groupC]);
+      goalsReadRepoMock.getGoalInfoByChildGroups.mockResolvedValueOnce([
+        { groupId: groupB.id, goalId: 9001, goalStatus: GoalStatus.NOT_STARTED },
+        { groupId: groupC.id, goalId: 9002, goalStatus: GoalStatus.IN_PROGRESS },
+      ]);
+
+      const payload: GoalGetAssignableGroups.Request = buildPayload({
+        data: { userId: 300 },
+      });
+
+      const res = await sendMessage<
+        GoalGetAssignableGroups.Response,
+        GoalGetAssignableGroups.Request
+      >(GoalGetAssignableGroups.pattern, payload);
+
+      expect(groupReadRepoMock.getInfoGroups).toHaveBeenCalledTimes(1);
+      expect(goalsReadRepoMock.getGoalInfoByChildGroups).toHaveBeenCalledTimes(1);
+      expect(specToDebugString(firstArg(groupReadRepoMock.getInfoGroups))).toMatchInlineSnapshot(`
+          "AND(
+            groups.byUserId,
+            NOT(
+              groups.inbox
+            ),
+            NOT(
+              groups.byStatus
+            )
+          )"
+      `);
+      expect(nthArgs(1, groupReadRepoMock.getInfoGroups)).toEqual(expectTransaction());
+      expect(nthArgs(1, goalsReadRepoMock.getGoalInfoByChildGroups)).toEqual(expectTransaction());
+      expect(res).toEqual({ data: [groupA, groupB] });
     });
   });
 });

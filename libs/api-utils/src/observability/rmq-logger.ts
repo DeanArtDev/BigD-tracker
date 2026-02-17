@@ -23,7 +23,7 @@ export class RmqLogger implements ILoggerService {
     this.logger = pino({
       redact: {
         paths: [
-          'data.sessionToke',
+          'data.sessionToken',
           'data.session',
           'data.token',
           'token',
