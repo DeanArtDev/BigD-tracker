@@ -15,11 +15,6 @@ interface TasksReadRepository {
 
   getById(input: { id: number; userId: number }, trx?: TaskTransaction): Promise<TaskView | null>;
 
-  getTaskToGroupLink(
-    input: { taskId: number },
-    trx?: TaskTransaction,
-  ): Promise<{ taskId: number; groupId: number; position: number } | null>;
-
   isTaskIntoGroup(
     input: { taskId: number; groupId: number },
     trx?: TaskTransaction,

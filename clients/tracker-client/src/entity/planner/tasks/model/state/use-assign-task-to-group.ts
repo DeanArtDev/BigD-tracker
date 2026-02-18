@@ -7,7 +7,7 @@ function useAssignTaskToGroup() {
   const { mutate: assignTaskToGroup, ...states } = $privetQueryClient.useMutation(
     'post',
     '/tasks/{taskId}/groups/{groupId}',
-    options,
+    { onError: options.onError },
   );
 
   return {

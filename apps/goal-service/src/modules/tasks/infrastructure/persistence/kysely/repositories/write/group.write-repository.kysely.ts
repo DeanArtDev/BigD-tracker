@@ -28,29 +28,31 @@ export class GroupWriteRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<GroupWithTasks | null> {
     return await this.errorCatcher('groups.get-by-id.write', async () => {
-      const result = await getAvailableGroupQuery(this.db, trx)
+      const group = await getAvailableGroupQuery(this.db, trx)
         .where('g.id', '=', input.groupId)
         .where('g.user_id', '=', input.userId)
         .executeTakeFirst();
-      if (result == null) return null;
+      if (group == null) return null;
 
       const tasks = await getTasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-        .where('ttg.group_id', '=', input.groupId)
-        .orderBy('ttg.position', 'asc')
+        .innerJoin('task_to_group', 'task_to_group.task_id', 't.id')
+        .select(['task_to_group.group_id as group_id'])
+        .where('task_to_group.group_id', '=', input.groupId)
+        .orderBy('task_to_group.position', 'asc')
         .execute();
 
       return GroupWriteKyselyMapper.fromRawToAgrWithTasks({
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        user_id: result.user_id,
-        progress: result.progress,
-        status: result.status as GroupStatus,
+        id: group.id,
+        name: group.name,
+        description: group.description,
+        user_id: group.user_id,
+        progress: group.progress,
+        status: group.status as GroupStatus,
         tasks: tasks.map((task) =>
           TasksReadKyselyMapper.fromRawToView({
             id: task.id,
             user_id: task.user_id,
+            group_id: group.id,
             name: task.name,
             description: task.description,
             priority: task.priority,

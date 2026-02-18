@@ -6,7 +6,7 @@ function useCreateInboxTask() {
   const { mutate: createInboxTask, ...states } = $privetQueryClient.useMutation(
     'post',
     '/tasks/in-box',
-    options,
+    { onError: options.onError },
   );
 
   return {

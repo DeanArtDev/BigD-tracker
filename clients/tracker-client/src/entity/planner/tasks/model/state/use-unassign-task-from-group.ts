@@ -7,7 +7,7 @@ function useUnassignTaskFromGroup() {
   const { mutate: unassignTaskFromGroup, ...states } = $privetQueryClient.useMutation(
     'post',
     '/tasks/{taskId}/groups/{groupId}/unassign',
-    options,
+    { onError: options.onError },
   );
 
   return {

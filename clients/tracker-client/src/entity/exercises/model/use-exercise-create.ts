@@ -6,7 +6,7 @@ function useExerciseCreate() {
   const { mutate: create, ...others } = $privetQueryClient.useMutation(
     'post',
     '/exercises/repetitions',
-    options,
+    { onError: options.onError },
   );
 
   return {

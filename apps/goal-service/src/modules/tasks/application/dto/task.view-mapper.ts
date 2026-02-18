@@ -6,6 +6,7 @@ class TasksViewMapper {
     return TaskView.restore({
       id: agr.id,
       userId: agr.userId,
+      groupId: agr.groupId,
       name: agr.name,
       description: agr.description,
       priority: agr.priority,

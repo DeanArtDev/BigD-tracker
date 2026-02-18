@@ -223,6 +223,9 @@ class Task extends AggregateRoot {
   get userId() {
     return this.#state.userId;
   }
+  get groupId() {
+    return this.#state.groupId;
+  }
   get name() {
     return this.#state.name.value;
   }

@@ -21,7 +21,12 @@ import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { firstOrThrowError, getAvailableGroupQuery } from '../helpers';
-import { groupWithStatusQuery, taskFullSelect, tasksWithStatusQuery } from '../utils';
+import {
+  groupWithStatusQuery,
+  innerJoinGroupLinks,
+  taskFullSelect,
+  tasksWithStatusQuery,
+} from '../utils';
 
 @Injectable()
 export class GroupsReadRepositoryKysely
@@ -126,6 +131,7 @@ export class GroupsReadRepositoryKysely
             description: task.description,
             priority: task.priority,
             weight: task.weight,
+            group_id: group.id,
             cancel_reason: task.cancel_reason,
             start_date: task.start_date,
             end_date: task.end_date,
@@ -177,6 +183,7 @@ export class GroupsReadRepositoryKysely
           TasksReadKyselyMapper.fromRawToView({
             id: task.id,
             user_id: task.user_id,
+            group_id: group.id,
             name: task.name,
             description: task.description,
             priority: task.priority,
@@ -235,17 +242,15 @@ export class GroupsReadRepositoryKysely
 
       const response: GroupWithTasksView[] = [];
 
-      const taskQuery = flow(tasksWithStatusQuery, taskFullSelect);
+      const taskQuery = flow(tasksWithStatusQuery, taskFullSelect, innerJoinGroupLinks);
 
       const tasks = await taskQuery(this.db, trx)
-        .innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id')
         .where((eb) => taskSpecifications.toExpr(eb))
         .where(
           'task_to_group.group_id',
           'in',
           groups.map((group) => group.id),
         )
-        .select(['task_to_group.group_id as group_id'])
         .orderBy('task_to_group.position', 'asc')
         .execute();
 
@@ -255,6 +260,7 @@ export class GroupsReadRepositoryKysely
         const taskView = TasksReadKyselyMapper.fromRawToView({
           id: task.id,
           user_id: task.user_id,
+          group_id: task.group_id,
           name: task.name,
           description: task.description,
           priority: task.priority,

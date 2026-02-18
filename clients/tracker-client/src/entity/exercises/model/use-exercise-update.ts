@@ -6,7 +6,7 @@ function useExerciseUpdate() {
   const { mutate: update, ...others } = $privetQueryClient.useMutation(
     'put',
     '/exercises/{exerciseId}/repetitions',
-    options,
+    { onError: options.onError },
   );
 
   return {

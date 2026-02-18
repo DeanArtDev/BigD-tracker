@@ -3,6 +3,7 @@ import { TaskStatus } from '@big-d/api-contracts';
 interface TaskViewState {
   readonly id: number;
   readonly userId: number;
+  readonly groupId?: number;
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
@@ -23,6 +24,7 @@ class TaskView {
     public readonly priority: number,
     public readonly weight: number,
     public readonly status: TaskStatus,
+    public readonly groupId?: number,
     public readonly description?: string,
     public readonly cancelReason?: string,
     public readonly startDate?: string,
@@ -39,6 +41,7 @@ class TaskView {
       input.priority,
       input.weight,
       input.status,
+      input.groupId,
       input.description,
       input.cancelReason,
       input.startDate,

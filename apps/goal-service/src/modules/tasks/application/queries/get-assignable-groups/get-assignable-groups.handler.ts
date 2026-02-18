@@ -8,7 +8,7 @@ import { groupBy } from 'lodash';
 import { GroupInfoView } from '../../dto';
 import { GoalTransaction, GroupsReadRepository, TaskTransaction } from '../../ports';
 import { GoalPublicService } from '../../services';
-import { GroupByStatus, GroupByUserId, GroupInbox, groupsCombinators } from '../../specifications';
+import { GroupByStatus, GroupByUserId, groupsCombinators } from '../../specifications';
 import { GetAssignableGroupsQuery } from './get-assignable-groups.query';
 
 const { and, not } = groupsCombinators;
@@ -29,7 +29,7 @@ export class GetAssignableGroupsHandler implements IQueryHandler<GetAssignableGr
   async execute({ input }: GetAssignableGroupsQuery): Promise<GroupInfoView[]> {
     return this.db.runTransaction(async (trx) => {
       const infoGroups = await this.groupsReadRepo.getInfoGroups(
-        and(GroupByUserId(input.userId), not(GroupInbox()), not(GroupByStatus([GroupStatus.DONE]))),
+        and(GroupByUserId(input.userId), not(GroupByStatus([GroupStatus.DONE]))),
         trx as unknown as TaskTransaction,
       );
 

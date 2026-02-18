@@ -94,6 +94,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const taskView = getTaskView({ id: createdTask.id, userId, name: createdTask.name });
 
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(createdTask);
       tasksReadRepoMock.getById.mockResolvedValueOnce(taskView);
 
       const payload: GoalCreateTask.Request = buildPayload({
@@ -124,6 +125,10 @@ describe('TasksRmqController (rmq e2e)', () => {
         { id: createdTask.id, userId },
         expectTransaction(),
       );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
+        { taskId: createdTask.id, userId },
+        expectTransaction(),
+      );
       expect(res).toEqual({ data: toTaskResponse(taskView) });
     });
 
@@ -134,6 +139,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const taskView = getTaskView({ id: createdTask.id, userId, name: createdTask.name });
 
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(createdTask);
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
         getGroupWithTasks({ id: groupId, user_id: userId }),
       );
@@ -163,6 +169,10 @@ describe('TasksRmqController (rmq e2e)', () => {
       );
       expect(tasksReadRepoMock.getById).toHaveBeenCalledWith(
         { id: createdTask.id, userId },
+        expectTransaction(),
+      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
+        { taskId: createdTask.id, userId },
         expectTransaction(),
       );
       expect(res).toEqual({ data: toTaskResponse(taskView) });
@@ -267,6 +277,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const groupId = 300;
       const createdTask = getTask({ id: 60, userId, name: 'Task C' });
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(createdTask);
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(null);
 
       const payload: GoalCreateTask.Request = buildPayload({
@@ -292,6 +303,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.addTaskToGroup).not.toHaveBeenCalled();
       expect(tasksReadRepoMock.getById).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
@@ -306,6 +318,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const userId = 13;
       const createdTask = getTask({ id: 70, userId, name: 'Task D' });
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(createdTask);
       tasksReadRepoMock.getById.mockResolvedValueOnce(null);
 
       const payload: GoalCreateTask.Request = buildPayload({
@@ -330,10 +343,47 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotFound.code,
         key: 'TASK_NOT_FOUNT',
         kind: RmqErrorKind.NOT_FOUND,
+        details: { taskId: createdTask.id },
+      });
+    });
+
+    test('should throw when task creation read-after-write failed', async () => {
+      const userId = 17;
+      const createdTask = getTask({ id: 71, userId, name: 'Task E' });
+      tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
+
+      const payload: GoalCreateTask.Request = buildPayload({
+        data: {
+          userId,
+          name: 'Task E',
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalCreateTask.Response, GoalCreateTask.Request>(
+          GoalCreateTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledTimes(0);
+      expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskCreationFailed.code,
+        key: 'TASK_CREATION_FAILED',
+        kind: RmqErrorKind.INTERNAL,
         details: { taskId: createdTask.id },
       });
     });
@@ -349,6 +399,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
       tasksReadRepoMock.getById.mockResolvedValueOnce(taskView);
 
       const payload: GoalCloneTask.Request = buildPayload({
@@ -390,6 +441,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
         getGroupWithTasks({ id: groupId, user_id: userId }),
       );
@@ -464,6 +516,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(null);
 
       const payload: GoalCloneTask.Request = buildPayload({
@@ -507,6 +560,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
       tasksReadRepoMock.getById.mockResolvedValueOnce(null);
 
       const payload: GoalCloneTask.Request = buildPayload({
@@ -531,11 +585,51 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(2);
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotFound.code,
         key: 'TASK_NOT_FOUNT',
         kind: RmqErrorKind.NOT_FOUND,
         details: { taskId: clonedTask.id },
+      });
+    });
+
+    test('should throw when cloned task missing after write', async () => {
+      const userId = 26;
+      const taskId = 3008;
+      const originalTask = getTask({ id: taskId, userId, name: 'Original' });
+      const createdTask = getTask({ id: 3009, userId, name: 'Original' });
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
+      tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
+
+      const payload: GoalCloneTask.Request = buildPayload({
+        data: {
+          userId,
+          taskId,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
+          GoalCloneTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(2);
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
+      expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledTimes(0);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskCreationFailed.code,
+        key: 'TASK_CREATION_FAILED',
+        kind: RmqErrorKind.INTERNAL,
+        details: { taskId: createdTask.id },
       });
     });
   });
@@ -767,6 +861,9 @@ describe('TasksRmqController (rmq e2e)', () => {
         inboxId: 777,
       });
       tasksWriteRepoMock.replaceTask.mockImplementation((task: Task) => task);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, name: 'Inbox Updated', weight: 4, priority: 1 }),
+      );
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
@@ -788,7 +885,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         { taskId, userId },
         expectTransaction(),
       );
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(2);
       expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledWith(
         { taskId, userId },
         expectTransaction(),
@@ -807,15 +904,9 @@ describe('TasksRmqController (rmq e2e)', () => {
           id: taskId,
           userId,
           name: 'Inbox Updated',
-          description: 'Updated inbox',
           priority: 1,
           weight: 4,
-          cancelReason: undefined,
-          startDate: undefined,
-          endDate: undefined,
-          deadline: '2099-05-01T00:00:00.000Z',
           status: existingTask.status,
-          recurrence: undefined,
         },
       });
     });
@@ -996,6 +1087,50 @@ describe('TasksRmqController (rmq e2e)', () => {
           groupId: 123,
           message: 'Task is not in IN BOX',
         },
+      });
+    });
+
+    test('should throw when updated inbox task missing after write', async () => {
+      const userId = 45;
+      const taskId = 5006;
+
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
+        getTask({ id: taskId, userId, name: 'Old', weight: 3 }),
+      );
+      inboxReadRepoMock.ensureTaskInInbox.mockResolvedValueOnce({
+        success: true,
+        inboxId: 777,
+      });
+      tasksWriteRepoMock.replaceTask.mockImplementation((task: Task) => task);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
+
+      const payload: GoalUpdateInboxTask.Request = buildPayload({
+        data: {
+          id: taskId,
+          userId,
+          name: 'Inbox Updated',
+          priority: 2,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
+          GoalUpdateInboxTask.pattern,
+          payload,
+        );
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(2);
+      expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledTimes(1);
+      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(1);
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskCreationFailed.code,
+        key: 'TASK_CREATION_FAILED',
+        kind: RmqErrorKind.INTERNAL,
+        details: { taskId },
       });
     });
   });

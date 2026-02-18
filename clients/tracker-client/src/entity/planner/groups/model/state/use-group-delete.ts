@@ -6,7 +6,7 @@ function useGroupDelete() {
   const { mutate: deleteGroup, ...others } = $privetQueryClient.useMutation(
     'delete',
     '/groups/{groupId}',
-    options,
+    { onError: options.onError },
   );
 
   return {

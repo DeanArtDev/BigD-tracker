@@ -32,6 +32,7 @@ export class GroupInboxReadRepositoryKysely
 
       const tasks = await getTasksWithStatusQuery(this.db, trx)
         .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
+        .select(['ttg.group_id as group_id'])
         .where('ttg.group_id', '=', inbox.id)
         .where('ts.name', 'in', tasksAreInInboxSpec.default)
         .orderBy('t.id', 'asc')
@@ -46,6 +47,7 @@ export class GroupInboxReadRepositoryKysely
             id: task.id,
             user_id: task.user_id,
             name: task.name,
+            group_id: inbox.id,
             description: task.description,
             priority: task.priority,
             weight: task.weight,

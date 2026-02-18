@@ -6,9 +6,7 @@ function useTrainingTemplateUpdate() {
   const { mutate: updateTrainingTemplates, ...others } = $privetQueryClient.useMutation(
     'put',
     '/trainings-templates/{templateId}',
-    {
-      ...options,
-    },
+    { onError: options.onError },
   );
 
   return {

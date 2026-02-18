@@ -25,6 +25,7 @@ import {
 interface TaskInboxFormProps extends FormStateEmitterProps {
   readonly inboxTask?: Omit<TaskInboxEntity, 'id'>;
   readonly afterNameSlot?: ReactNode;
+  readonly footerSidebarSlot?: ReactNode | ((props: { disabled: boolean }) => ReactNode);
   readonly onSubmit?: (data: {
     name: string;
     priority: number;
@@ -40,6 +41,7 @@ function TaskInboxForm(props: TaskInboxFormProps) {
     emitIsDirty,
     emitIsLoading,
     afterNameSlot,
+    footerSidebarSlot,
     onSubmit,
   } = props;
 
@@ -114,7 +116,7 @@ function TaskInboxForm(props: TaskInboxFormProps) {
                 }}
               />
 
-              <TaskFormInboxSidebar />
+              <TaskFormInboxSidebar footerSlot={footerSidebarSlot} />
             </div>
 
             <div className="border-t p-4 flex items-center justify-end">

@@ -6,7 +6,7 @@ function useExerciseDelete() {
   const { mutate: deleteTrigger, ...others } = $privetQueryClient.useMutation(
     'delete',
     '/exercises/{exerciseId}',
-    options,
+    { onError: options.onError },
   );
 
   return {

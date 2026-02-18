@@ -6,7 +6,7 @@ function useGroupUpdate() {
   const { mutate: updateGroup, ...others } = $privetQueryClient.useMutation(
     'put',
     '/groups/{groupId}',
-    options,
+    { onError: options.onError },
   );
 
   return {
