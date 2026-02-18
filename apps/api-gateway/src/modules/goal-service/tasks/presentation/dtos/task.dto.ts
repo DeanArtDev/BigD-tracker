@@ -34,6 +34,12 @@ class TaskDto {
   @IsInt()
   userId: number;
 
+  @ApiPropertyOptional({ example: 1 })
+  @Expose()
+  @IsOptional()
+  @IsInt()
+  groupId?: number;
+
   @ApiProperty({ example: 2, description: 'От 1 до 4' })
   @Expose()
   @Min(1)

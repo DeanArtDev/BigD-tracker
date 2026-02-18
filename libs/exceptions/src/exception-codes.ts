@@ -44,7 +44,7 @@ const tasks = {
 
   // Infrastructure
   taskDBFailed: { code: 'GT-I-0000', details: Details.Any },
-  taskCreationFailed: { code: 'GT-I-0001' },
+  taskCreationFailed: { code: 'GT-I-0001', details: Details.Define<{ taskId?: number }>() },
 } as const satisfies ExceptionConfig;
 
 const groups = {

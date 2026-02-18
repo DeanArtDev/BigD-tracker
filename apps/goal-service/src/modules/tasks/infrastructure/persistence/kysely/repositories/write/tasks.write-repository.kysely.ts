@@ -28,6 +28,8 @@ export class TasksWriteRepositoryKysely
   ): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
       const task = await getTasksWithStatusQuery(this.db, trx)
+        .leftJoin('task_to_group', 'task_to_group.task_id', 't.id')
+        .select(['task_to_group.group_id as group_id'])
         .where('t.id', '=', input.taskId)
         .where('t.user_id', '=', input.userId)
         .executeTakeFirst();

@@ -1,4 +1,5 @@
 import { TasksViewMapper, TaskView } from '@/modules/tasks/application/dto';
+import { ExceptionTaskCreationFailed } from '@/modules/tasks/application/exceptions';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
@@ -25,8 +26,18 @@ class UpdateInboxTaskUseCase {
 
       const updatedTaskDraft = TaskFactory.updateInbox(task, input);
       const updatedTask = await this.tasksWriteRepo.replaceTask(updatedTaskDraft, trx);
+      const newTask = await this.tasksWriteRepo.getTaskById(
+        { taskId: updatedTask.id, userId: updatedTask.userId },
+        trx,
+      );
 
-      return TasksViewMapper.fromAggregateToView(updatedTask);
+      if (newTask == null) {
+        throw new ExceptionTaskCreationFailed({
+          taskId: updatedTask.id,
+        });
+      }
+
+      return TasksViewMapper.fromAggregateToView(newTask);
     });
   }
 }

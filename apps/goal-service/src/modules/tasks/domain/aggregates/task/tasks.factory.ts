@@ -6,6 +6,7 @@ import { TaskCreateInput } from './tasks.types';
 
 interface TaskFactoryCreateInput {
   readonly userId: number;
+  readonly groupId?: number;
   readonly name: string;
   readonly description?: string;
   readonly priority?: number;
@@ -36,6 +37,7 @@ class TaskFactory {
   static create(input: TaskFactoryCreateInput): Task {
     const state: TaskCreateInput = {
       userId: input.userId,
+      groupId: input.groupId,
       name: Name.create(input.name),
       description: input.description,
       priority: input.priority != null ? Priority.create(input.priority) : Priority.defaultValue(),
