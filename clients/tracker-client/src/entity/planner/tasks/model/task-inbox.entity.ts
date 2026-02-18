@@ -5,6 +5,7 @@ type TaskDto = ApiDto['TaskDto'];
 interface TaskInboxEntity {
   readonly id: TaskDto['id'];
   readonly name: TaskDto['name'];
+  readonly groupId: TaskDto['groupId'];
   readonly description: TaskDto['description'];
   readonly priority: TaskDto['priority'];
   readonly deadline: TaskDto['deadline'];

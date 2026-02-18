@@ -7,7 +7,7 @@ function useTaskClone() {
   const { mutate: cloneTask, ...states } = $privetQueryClient.useMutation(
     'post',
     '/tasks/{taskId}/clone',
-    options,
+    { onError: options.onError },
   );
 
   return {

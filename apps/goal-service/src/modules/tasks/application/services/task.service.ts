@@ -1,7 +1,8 @@
-import { TasksWriteRepository, TaskTransaction } from '../ports';
+import { ExceptionTaskCreationFailed } from '@/modules/tasks/application/exceptions';
 import { Task, TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
+import { TasksWriteRepository, TaskTransaction } from '../ports';
 import { GroupCheckerService } from './group-checker.service';
 import { TaskCheckerService } from './task-checker.service';
 
@@ -50,7 +51,19 @@ class TaskService {
 
   async createTask(input: CreateTaskInput, trx?: TaskTransaction): Promise<Task> {
     const draftTask = TaskFactory.create(input);
-    return await this.tasksWriteRepo.createTask(draftTask, trx);
+    const createdTask = await this.tasksWriteRepo.createTask(draftTask, trx);
+    const newTask = await this.tasksWriteRepo.getTaskById(
+      { taskId: createdTask.id, userId: createdTask.userId },
+      trx,
+    );
+
+    if (newTask == null) {
+      throw new ExceptionTaskCreationFailed({
+        taskId: createdTask.id,
+      });
+    }
+
+    return newTask;
   }
 
   async cloneTask(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<Task> {
@@ -59,7 +72,19 @@ class TaskService {
     const task = await this.taskCheckerService.ensureTaskExists({ taskId, userId }, { trx });
     const clonedTask = TaskFactory.clone(task);
 
-    return await this.tasksWriteRepo.createTask(clonedTask, trx);
+    const createdTask = await this.tasksWriteRepo.createTask(clonedTask, trx);
+    const newTask = await this.tasksWriteRepo.getTaskById(
+      { taskId: createdTask.id, userId: createdTask.userId },
+      trx,
+    );
+
+    if (newTask == null) {
+      throw new ExceptionTaskCreationFailed({
+        taskId: createdTask.id,
+      });
+    }
+
+    return newTask;
   }
 
   async softDeleteTask(input: DeleteTaskInput, trx?: TaskTransaction): Promise<{ id: number }> {

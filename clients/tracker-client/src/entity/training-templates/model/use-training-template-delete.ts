@@ -6,9 +6,7 @@ function useTrainingTemplateDelete() {
   const { mutate: deleteTrainingTemplate, ...others } = $privetQueryClient.useMutation(
     'delete',
     '/trainings-templates/{templateId}',
-    {
-      ...options,
-    },
+    { onError: options.onError },
   );
 
   return {

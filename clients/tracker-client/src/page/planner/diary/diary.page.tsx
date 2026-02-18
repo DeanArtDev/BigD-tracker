@@ -18,12 +18,12 @@ function DiaryPage() {
   const [selectedTask, setSelectedTask] = useState<TaskEntity>();
 
   const events = useMemo(() => {
-    return tasks.map((thing) => {
+    return tasks.map((task) => {
       return {
-        name: thing.name,
-        from: thing.startDate != null ? new Date(thing.startDate) : 0,
-        to: thing.deadline != null ? new Date(thing.deadline) : 0,
-        extra: thing,
+        name: task.name,
+        from: task.startDate != null ? new Date(task.startDate) : 0,
+        to: task.deadline != null ? new Date(task.deadline) : 0,
+        extra: task,
       };
     });
   }, [tasks]);

@@ -11,6 +11,7 @@ function useGetUserInbox() {
         return (data?.data ?? []).map<TaskInboxEntity>((task) => ({
           id: task.id,
           name: task.name,
+          groupId: task.groupId,
           description: task.description,
           priority: task.priority,
           deadline: task.deadline,

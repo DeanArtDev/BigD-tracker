@@ -2,9 +2,9 @@ import { GroupInboxView } from '@/modules/tasks/application/dto';
 import {
   TaskDatabase,
   GroupInboxWriteRepository,
-  INBOX_GROUP_KEY,
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
+import { INBOX_GROUP_NAME } from '@/modules/tasks/domain/constants';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -33,7 +33,7 @@ export class GroupInboxWriteRepositoryKysely
         .qb(trx)
         .insertInto('groups')
         .values({
-          name: INBOX_GROUP_KEY,
+          name: INBOX_GROUP_NAME,
           user_id: input.userId,
           status_id: groupStatus.id,
         })

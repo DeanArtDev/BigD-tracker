@@ -5,3 +5,4 @@ export * from './use-groups-query';
 export * from './use-group-delete';
 export * from './use-group-update';
 export * from './use-group-by-id-query';
+export * from './use-groups-assignable.query';

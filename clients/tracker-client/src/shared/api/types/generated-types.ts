@@ -418,6 +418,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/assignable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Группы доступные к назначению дел */
+        get: operations["GroupsController_getAssignableGroups"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{groupId}": {
         parameters: {
             query?: never;
@@ -643,9 +660,9 @@ export interface components {
             data: components["schemas"]["UserDto"];
         };
         RegisterReqData: {
-            /** @example example@example.com */
+            /** @example email2@mail.com */
             login: string;
-            /** @example 12345678 */
+            /** @example 123456 */
             password: string;
         };
         RegisterRequest: {
@@ -675,7 +692,7 @@ export interface components {
         RequestDto: {
             /** @example email2@mail.com */
             login: string;
-            /** @example 1234567890 */
+            /** @example 123456 */
             password: string;
         };
         LoginRequest: {
@@ -1207,6 +1224,8 @@ export interface components {
             description?: string;
             /** @example 1 */
             userId: number;
+            /** @example 1 */
+            groupId?: number;
             /**
              * @description От 1 до 4
              * @example 2
@@ -1307,6 +1326,16 @@ export interface components {
         GetDetailedGroupsRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["GroupDetailedDto"];
+        };
+        GroupInfoDto: {
+            /** @example 1 */
+            id: number;
+            /** @example Группа дел */
+            name: string;
+        };
+        GetAssignableGroupsRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GroupInfoDto"][];
         };
         CreateGroupReqData: {
             /** @example Название группы */
@@ -2231,6 +2260,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetDetailedGroupsRes"];
+                };
+            };
+        };
+    };
+    GroupsController_getAssignableGroups: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetAssignableGroupsRes"];
                 };
             };
         };

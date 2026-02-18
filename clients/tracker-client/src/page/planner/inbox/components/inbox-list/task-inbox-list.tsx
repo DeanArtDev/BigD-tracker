@@ -9,7 +9,7 @@ import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog, useIsMobile } from '@/shared/ui-kit/helpers';
 import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import { useState } from 'react';
-import { TaskInboxCreateController } from '../task-inbox-update-controller';
+import { TaskInboxUpdateController } from '../task-inbox-update-controller';
 import { InboxCardActions } from './inbox-card-actions';
 
 const TaskInboxCardMobileLazy = withLazy(
@@ -97,7 +97,7 @@ function TaskInboxList() {
         )}
       </ul>
 
-      <TaskInboxCreateController
+      <TaskInboxUpdateController
         inboxTask={task}
         onCancel={() => void setTask(undefined)}
         onSuccess={() => void setTask(undefined)}

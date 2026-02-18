@@ -1,0 +1,3 @@
+const INBOX_GROUP_NAME = 'IN_BOX';
+
+export { INBOX_GROUP_NAME };

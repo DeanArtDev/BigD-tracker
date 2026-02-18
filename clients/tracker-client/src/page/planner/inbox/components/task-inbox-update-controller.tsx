@@ -1,5 +1,10 @@
-import { useInvalidateInbox } from '@/entity/planner/groups';
-import { type TaskInboxEntity, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
+import { useInvalidateAllGroups, useInvalidateInbox } from '@/entity/planner/groups';
+import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
+import {
+  type TaskInboxEntity,
+  useAssignTaskToGroup,
+  useInvalidateDiaryTasks,
+} from '@/entity/planner/tasks';
 import { useUpdateInboxTask } from '@/entity/planner/tasks/model';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
@@ -10,24 +15,26 @@ const TaskInboxFormLazy = withLazy(() =>
   import('@/entity/planner/tasks/ui/form').then((m) => ({ default: m.TaskInboxForm })),
 );
 
-interface TaskInboxCreateControllerProps {
+interface TaskInboxUpdateControllerProps {
   readonly inboxTask?: TaskInboxEntity;
   readonly onCancel?: () => void;
   readonly onSuccess?: () => void;
 }
 
-function TaskInboxCreateController({
+function TaskInboxUpdateController({
   inboxTask,
   onCancel,
   onSuccess,
-}: TaskInboxCreateControllerProps) {
+}: TaskInboxUpdateControllerProps) {
   const { formEmitterState, formStateEmitterProps } = useFormStateEmitter();
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const open = inboxTask != null;
 
-  const { updateInboxTask, isPending } = useUpdateInboxTask();
+  const { updateInboxTask, isPending: isInboxTaskUpdatePending } = useUpdateInboxTask();
   const invalidateInbox = useInvalidateInbox();
   const invalidateDiaryTasks = useInvalidateDiaryTasks();
+  const invalidateAllGroups = useInvalidateAllGroups();
+  const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
 
   return (
     <>
@@ -47,9 +54,32 @@ function TaskInboxCreateController({
       >
         <TaskInboxFormLazy
           inboxTask={inboxTask}
-          isLoading={isPending}
+          isLoading={isInboxTaskUpdatePending}
           {...formStateEmitterProps}
           afterNameSlot={<AppDialogTrigger />}
+          footerSidebarSlot={
+            <div className="ml-auto">
+              <AssignInboxTaskToGroupDialog
+                taskGroupId={inboxTask?.groupId}
+                loading={isAssignTaskToGroupPending}
+                onSelect={(groupInfo, close) => {
+                  if (inboxTask == null) return;
+
+                  assignTaskToGroup(
+                    { params: { path: { taskId: inboxTask.id, groupId: groupInfo.id } } },
+                    {
+                      onSuccess: async () => {
+                        await invalidateInbox();
+                        await invalidateAllGroups();
+                        close();
+                        onCancel?.();
+                      },
+                    },
+                  );
+                }}
+              />
+            </div>
+          }
           onSubmit={(formResult) => {
             if (inboxTask == null) return;
 
@@ -75,4 +105,4 @@ function TaskInboxCreateController({
   );
 }
 
-export { TaskInboxCreateController };
+export { TaskInboxUpdateController };

@@ -7,7 +7,7 @@ function useDeleteTask() {
   const { mutate: deleteTask, ...states } = $privetQueryClient.useMutation(
     'delete',
     '/tasks/{taskId}',
-    options,
+    { onError: options.onError },
   );
 
   return {

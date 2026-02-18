@@ -1,9 +1,9 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
+import { TaskView } from '@/modules/tasks/application/dto';
 import {
   TaskDatabase,
-  TaskTransaction,
   TasksReadRepository,
   TasksShapeTypes,
+  TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskStatus } from '@big-d/api-contracts';
@@ -12,7 +12,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
-import { taskFullSelect, tasksWithStatusQuery } from '../utils';
+import { leftJoinGroupLinks, taskFullSelect, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -28,6 +28,8 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
       const { id, userId } = input;
 
       const result = await getTasksWithStatusQuery(this.db, trx)
+        .leftJoin('task_to_group', 'task_to_group.task_id', 't.id')
+        .select(['task_to_group.group_id as group_id'])
         .where('t.id', '=', id)
         .where('t.user_id', '=', userId)
         .executeTakeFirst();
@@ -53,30 +55,9 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async getTaskToGroupLink(
-    input: { taskId: number },
-    trx?: TaskTransaction,
-  ): Promise<{ taskId: number; groupId: number; position: number } | null> {
-    return await this.errorCatcher('tasks.get-task-to-group-link.read', async () => {
-      const result = await this.db
-        .qb(trx)
-        .selectFrom('task_to_group')
-        .where('task_id', '=', input.taskId)
-        .selectAll()
-        .executeTakeFirst();
-
-      if (result == null) return null;
-      return {
-        taskId: result.task_id,
-        groupId: result.group_id,
-        position: result.position,
-      };
-    });
-  }
-
   async getByRange(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
-      const tasks = await tasksWithStatusQuery(this.db, trx)
+      const tasks = await leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
         .where((eb) => specifications.toExpr(eb))
         .orderBy('tasks.start_date', 'asc')
         .execute();
@@ -95,9 +76,13 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
       const shapeMap = {
         with_group_links_left_join: (qb: typeof query) =>
-          qb.leftJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
+          qb
+            .leftJoin('task_to_group', 'task_to_group.task_id', 'tasks.id')
+            .select(['task_to_group.group_id as group_id']),
         with_group_links_inner_join: (qb: typeof query) =>
-          qb.innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id'),
+          qb
+            .innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id')
+            .select(['task_to_group.group_id as group_id']),
       };
 
       for (const shape of shapes) {
@@ -118,6 +103,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     status: string;
     id: number;
     user_id: number;
+    group_id?: number | null;
     name: string;
     description: string | null;
     priority: number;
@@ -131,6 +117,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return TasksReadKyselyMapper.fromRawToView({
       id: raw.id,
       user_id: raw.user_id,
+      group_id: raw.group_id,
       name: raw.name,
       description: raw.description,
       priority: raw.priority,

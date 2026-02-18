@@ -4,6 +4,7 @@ import { TaskStatus } from '@big-d/api-contracts';
 interface RawTask {
   readonly id: number;
   readonly user_id: number;
+  readonly group_id?: number | null;
   readonly name: string;
   readonly description: string | null;
   readonly priority: number;
@@ -21,6 +22,7 @@ class TasksReadKyselyMapper {
     return TaskView.restore({
       id: raw.id,
       userId: raw.user_id,
+      groupId: raw.group_id ?? undefined,
       name: raw.name,
       description: raw.description ?? undefined,
       priority: raw.priority,

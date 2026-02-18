@@ -7,6 +7,4 @@ export * from './group-checker.service';
 
 export * from './inbox-group-checker.service';
 
-export * from './task-group-checker.service';
-
 export * from './goal-public.service';

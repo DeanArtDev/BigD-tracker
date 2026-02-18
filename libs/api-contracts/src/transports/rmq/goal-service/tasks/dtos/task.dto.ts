@@ -8,6 +8,10 @@ class TaskDto {
   @IsInt()
   userId: number;
 
+  @IsOptional()
+  @IsInt()
+  groupId?: number;
+
   @IsString()
   name: string;
 
