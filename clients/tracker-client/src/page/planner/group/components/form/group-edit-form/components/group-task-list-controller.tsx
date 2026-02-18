@@ -34,7 +34,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   };
 
   const TaskAutocomplete = (
-    <div className="flex gap-2 mb-2">
+    <div className="grid grid-cols-[1fr_min-content] gap-2 mb-2">
       <GroupTaskAutocomplete
         disabled={formState.disabled}
         loading={isAssignTaskToGroupPending}
@@ -99,6 +99,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
       />
 
       <TaskEdit
+        taskGroupId={groupId}
         task={taskForUpdate}
         onCansel={() => void setTaskForUpdate(null)}
         onSuccess={() => void setTaskForUpdate(null)}

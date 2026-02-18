@@ -10,18 +10,23 @@ import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { ButtonLoading } from '@/shared/components/button-loading';
 
 interface SidebarActionsProps {
+  readonly groupId?: number;
   readonly taskInfo: {
     readonly id: number;
     readonly status: TaskStatus;
-    readonly groupId?: number;
   };
 
   readonly onCloneSuccess?: () => Promise<void> | void;
   readonly onFinishSuccess?: () => Promise<void> | void;
 }
 
-function SidebarActions({ taskInfo, onCloneSuccess, onFinishSuccess }: SidebarActionsProps) {
-  const { status, groupId, id: taskId } = taskInfo;
+function SidebarActions({
+  taskInfo,
+  groupId,
+  onCloneSuccess,
+  onFinishSuccess,
+}: SidebarActionsProps) {
+  const { status, id: taskId } = taskInfo;
 
   const { finishTask, isPending: isTaskFinishPending } = useTaskFinish();
   const { cloneTask, isPending: isTaskCloningPending } = useTaskClone();
@@ -69,8 +74,6 @@ function SidebarActions({ taskInfo, onCloneSuccess, onFinishSuccess }: SidebarAc
           !isAllowTaskAction('ASSIGN', status)
         }
         onSelect={(groupInfo, close) => {
-          if (groupId == null) return;
-
           assignTaskToGroup(
             { params: { path: { taskId, groupId: groupInfo.id } } },
             {

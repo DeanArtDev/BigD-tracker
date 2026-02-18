@@ -46,12 +46,7 @@ function GroupTaskAutocomplete({ onTaskSelect, disabled, loading }: GroupTaskAut
         }
       }}
     >
-      <ComboboxInput
-        value={taskSearch}
-        className="w-full max-w-[200px]"
-        showTrigger={false}
-        placeholder="Поиск по делам"
-      >
+      <ComboboxInput value={taskSearch} showTrigger={false} placeholder="Поиск по делам">
         {(loading || isLoading) && <AppLoader size={14} />}
       </ComboboxInput>
 
