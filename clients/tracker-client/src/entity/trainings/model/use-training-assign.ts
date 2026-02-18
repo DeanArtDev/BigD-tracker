@@ -11,7 +11,6 @@ function useTrainingAssign(
     'post',
     '/trainings/assign',
     {
-      ...notifications,
       onSuccess: async () => {
         notifications.onSuccess();
         await options.onSuccess?.();

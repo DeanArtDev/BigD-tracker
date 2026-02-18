@@ -1,4 +1,4 @@
-import { useInvalidateGroupById, useInvalidateGroups } from '@/entity/planner/groups';
+import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import {
   type TaskEntity,
   useAssignTaskToGroup,
@@ -28,11 +28,9 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   const { unassignTaskFromGroup, isPending } = useUnassignTaskFromGroup();
   const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
 
-  const invalidateGroups = useInvalidateGroups();
-  const invalidateGroupById = useInvalidateGroupById();
+  const invalidateAllGroups = useInvalidateAllGroups();
   const invalidate = async () => {
-    await invalidateGroups();
-    await invalidateGroupById({ groupId });
+    await invalidateAllGroups();
   };
 
   const TaskAutocomplete = (
@@ -40,8 +38,11 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
       <GroupTaskAutocomplete
         disabled={formState.disabled}
         loading={isAssignTaskToGroupPending}
-        onTaskSelect={(taskId) => {
-          assignTaskToGroup({ params: { path: { taskId, groupId } } }, { onSuccess: invalidate });
+        onTaskSelect={({ id }) => {
+          assignTaskToGroup(
+            { params: { path: { taskId: id, groupId } } },
+            { onSuccess: invalidate },
+          );
         }}
       />
 
@@ -99,7 +100,6 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
 
       <TaskEdit
         task={taskForUpdate}
-        groupId={groupId}
         onCansel={() => void setTaskForUpdate(null)}
         onSuccess={() => void setTaskForUpdate(null)}
       />

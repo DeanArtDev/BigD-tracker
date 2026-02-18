@@ -132,7 +132,7 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
             defaultSize={isMobile ? 0 : '25%'}
             className="mt-3 md:mt-0 flex min-h-0 min-w-0 grow"
           >
-            <GroupTaskListController groupId={group.id} />
+            <GroupTaskListController />
           </ResizablePanel>
         </ResizablePanelGroup>
 

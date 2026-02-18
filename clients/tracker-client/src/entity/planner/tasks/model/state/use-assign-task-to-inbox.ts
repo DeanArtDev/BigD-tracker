@@ -1,18 +1,19 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notifications';
 
-function useExerciseCreate() {
+function useAssignTaskToInbox() {
   const options = getDefaultQueryNotifications();
-  const { mutate: create, ...others } = $privetQueryClient.useMutation(
+
+  const { mutate: assignTaskToInbox, ...states } = $privetQueryClient.useMutation(
     'post',
-    '/exercises/repetitions',
+    '/tasks/{taskId}/in-box/assign',
     { onError: options.onError },
   );
 
   return {
-    create,
-    ...others,
+    assignTaskToInbox,
+    ...states,
   };
 }
 
-export { useExerciseCreate };
+export { useAssignTaskToInbox };

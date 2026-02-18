@@ -15,7 +15,7 @@ import { useDebounceValue } from 'usehooks-ts';
 interface GroupTaskAutocompleteProps {
   readonly loading?: boolean;
   readonly disabled?: boolean;
-  readonly onTaskSelect: (taskId: number) => void;
+  readonly onTaskSelect: (task: TaskEntity) => void;
 }
 
 function GroupTaskAutocomplete({ onTaskSelect, disabled, loading }: GroupTaskAutocompleteProps) {
@@ -37,7 +37,7 @@ function GroupTaskAutocomplete({ onTaskSelect, disabled, loading }: GroupTaskAut
       onValueChange={(task) => {
         if (task != null) {
           setTaskSearch('');
-          onTaskSelect(task.id);
+          onTaskSelect(task);
         }
       }}
       onInputValueChange={(inputValue, eventDetails) => {
@@ -46,7 +46,12 @@ function GroupTaskAutocomplete({ onTaskSelect, disabled, loading }: GroupTaskAut
         }
       }}
     >
-      <ComboboxInput value={taskSearch} className="w-full" placeholder="Поиск по делам">
+      <ComboboxInput
+        value={taskSearch}
+        className="w-full max-w-[200px]"
+        showTrigger={false}
+        placeholder="Поиск по делам"
+      >
         {(loading || isLoading) && <AppLoader size={14} />}
       </ComboboxInput>
 

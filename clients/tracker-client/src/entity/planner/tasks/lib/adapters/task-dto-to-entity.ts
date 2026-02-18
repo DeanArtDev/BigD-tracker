@@ -5,6 +5,7 @@ function taskDtoToEntity(dto: ApiDto['TaskDto']): TaskEntity {
   return {
     id: dto.id,
     name: dto.name,
+    groupId: dto.groupId,
     status: dto.status as TaskStatus,
     deadline: dto.deadline,
     priority: dto.priority,

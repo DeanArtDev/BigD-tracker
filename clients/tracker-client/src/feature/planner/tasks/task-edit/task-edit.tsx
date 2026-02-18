@@ -11,12 +11,11 @@ import { ButtonTrash } from '@/shared/components/button-trash';
 
 interface TaskEditProps {
   readonly task: TaskFormDialogProps['task'] | null;
-  readonly groupId?: number;
   readonly onSuccess?: () => void;
   readonly onCansel?: () => void;
 }
 
-function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
+function TaskEdit({ task, onSuccess, onCansel }: TaskEditProps) {
   const open = task != null;
 
   const { updateTask, isPending } = useUpdateTask();
@@ -59,7 +58,7 @@ function TaskEdit({ task, groupId, onSuccess, onCansel }: TaskEditProps) {
         task != null && (
           <SidebarActions
             taskInfo={{
-              groupId,
+              groupId: task.groupId,
               id: task?.id,
               status: task?.status,
             }}

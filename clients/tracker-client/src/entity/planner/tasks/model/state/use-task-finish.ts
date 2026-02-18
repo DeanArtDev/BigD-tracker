@@ -7,7 +7,7 @@ function useTaskFinish() {
   const { mutate: finishTask, ...states } = $privetQueryClient.useMutation(
     'post',
     '/tasks/{taskId}/finish',
-    options,
+    { onError: options.onError },
   );
 
   return {

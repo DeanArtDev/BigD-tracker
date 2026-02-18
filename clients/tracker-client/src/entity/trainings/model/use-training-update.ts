@@ -11,7 +11,7 @@ function useTrainingUpdate(
     'put',
     '/trainings/{trainingId}',
     {
-      ...notifications,
+      onError: notifications.onError,
       onSuccess: options.onSuccess,
     },
   );
