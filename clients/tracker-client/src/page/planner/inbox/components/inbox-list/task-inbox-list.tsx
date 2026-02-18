@@ -7,6 +7,7 @@ import {
 } from '@/entity/planner/tasks';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog, useIsMobile } from '@/shared/ui-kit/helpers';
+import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import { useState } from 'react';
 import { TaskInboxUpdateController } from '../task-inbox-update-controller';
@@ -65,8 +66,8 @@ function TaskInboxList() {
   const [swipedTaskId, setSwipedTaskId] = useState<number>();
 
   return (
-    <>
-      <ul className="flex flex-col gap-1 sm:gap-2 justify-center w-full">
+    <ScrollAreaNativeVertical className="px-2 py-2 lg:py-4">
+      <ul className="flex flex-col gap-1.5 sm:gap-2 justify-center h-full min-h-0 w-full">
         {inbox?.map((i) =>
           isMobile ? (
             <TaskInboxCardMobileLazy
@@ -103,7 +104,7 @@ function TaskInboxList() {
         onSuccess={() => void setTask(undefined)}
       />
       {confirmHolder}
-    </>
+    </ScrollAreaNativeVertical>
   );
 }
 
