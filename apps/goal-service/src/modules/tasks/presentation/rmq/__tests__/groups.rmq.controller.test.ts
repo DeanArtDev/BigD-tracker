@@ -1078,9 +1078,6 @@ describe('GroupsRmqController (rmq e2e)', () => {
           "AND(
             groups.byUserId,
             NOT(
-              groups.inbox
-            ),
-            NOT(
               groups.byStatus
             )
           )"
