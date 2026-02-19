@@ -7,3 +7,5 @@ export * from './errors';
 export * from './rpc';
 
 export * from './transports';
+
+export * from './shared';
