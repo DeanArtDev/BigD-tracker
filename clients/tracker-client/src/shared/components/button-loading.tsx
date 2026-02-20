@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 
 interface ButtonLoadingProps extends ComponentProps<typeof Button> {
   readonly hideContent?: boolean;
-  readonly isLoading: boolean;
+  readonly isLoading?: boolean;
 }
 
 function ButtonLoading({

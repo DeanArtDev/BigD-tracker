@@ -1,4 +1,5 @@
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
+import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { debounce } from 'lodash-es';
 import { type PropsWithChildren, useEffect, useEffectEvent, useRef } from 'react';
 
@@ -30,7 +31,7 @@ function InfinityScroll({
     onNextPageLoad();
   });
 
-  useEffect(onBottomIntersectEvent);
+  useEffect(onBottomIntersectEvent, [hasNextPage, isLoadingNextPage]);
 
   useEffect(() => {
     if (!loaderRef.current) return;
@@ -57,12 +58,14 @@ function InfinityScroll({
   }, [bottomGap]);
 
   return (
-    <div className="h-fit w-full">
-      {children}
+    <ScrollAreaNativeVertical>
+      <div className="flex flex-col grow p-[1px]">
+        {children}
 
-      {isLoadingNextPage && <AppLoader className="mt-3" size={40} />}
-      <div className="h-px" ref={loaderRef} />
-    </div>
+        {isLoadingNextPage && <AppLoader className="mt-3" size={40} />}
+        <div className="h-px w-full " ref={loaderRef} />
+      </div>
+    </ScrollAreaNativeVertical>
   );
 }
 

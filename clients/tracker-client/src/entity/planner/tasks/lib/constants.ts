@@ -5,4 +5,11 @@ enum TaskPriority {
   DELETE = 4, // Неважно и Несрочно → Удали
 }
 
-export { TaskPriority };
+const taskPriorityColorMap = {
+  [TaskPriority.DO]: '--priority-1',
+  [TaskPriority.PLAN]: '--priority-2',
+  [TaskPriority.DELEGATE]: '--priority-3',
+  [TaskPriority.DELETE]: '--priority-4',
+};
+
+export { TaskPriority, taskPriorityColorMap };

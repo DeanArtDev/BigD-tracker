@@ -1,6 +1,6 @@
 import type { PageApplicationRote } from '@/page/lib/types';
 import { routes } from '@/shared/lib/routes';
-import { Inbox, ListOrdered, BookMarked, type LucideProps } from 'lucide-react';
+import { Inbox, ListOrdered, BookMarked, ListTodo, type LucideProps } from 'lucide-react';
 
 const plannerRoutesMap: Record<string, PageApplicationRote> = {
   [routes.plannerInBox.path]: {
@@ -21,6 +21,13 @@ const plannerRoutesMap: Record<string, PageApplicationRote> = {
     to: routes.plannerGroup.path,
     title: 'Группа',
     internal: true,
+  },
+
+  [routes.plannerTasks.path]: {
+    to: routes.plannerTasks.path,
+    title: 'Список дела',
+    internal: false,
+    icon: (props: LucideProps) => <ListTodo {...props} />,
   },
 
   [routes.plannerDiary.path]: {

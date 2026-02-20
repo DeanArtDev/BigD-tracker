@@ -26,10 +26,7 @@ function GroupListPage() {
 
   const navigate = useNavigate();
   return (
-    <PageWrapper
-      title="Группы"
-      className="flex flex-col w-full relative grow sm:max-w-[80%] mx-auto pb-10 lg:pb-10 px-0 lg:px-0"
-    >
+    <PageWrapper fixContainer title="Группы" className="relative">
       <GroupListHeader onSearch={setGroupSearch} />
 
       <DataLoader
@@ -50,7 +47,7 @@ function GroupListPage() {
           isLoadingNextPage={isFetchingNextPage}
           onNextPageLoad={fetchNextPage}
         >
-          <ul className="flex flex-col w-full gap-3 px-1">
+          <ul className="flex flex-col w-full gap-3 px-1 pb-20 md:pb-30">
             {groupList?.map((group) => (
               <GroupCard
                 key={group.id}

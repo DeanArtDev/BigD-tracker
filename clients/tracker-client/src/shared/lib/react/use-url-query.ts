@@ -1,6 +1,13 @@
-import { isEmpty } from 'lodash-es';
+import { isEmpty, isFunction } from 'lodash-es';
 import qs from 'qs';
-import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { type SetURLSearchParams, useLocation, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -10,7 +17,7 @@ type TValue<TSchema extends UrlAllowedQueryTypes> = z.infer<TSchema>;
 
 type UseUrlQueryResponse<TSchema extends UrlAllowedQueryTypes> = readonly [
   TValue<TSchema> | undefined,
-  (value: TValue<TSchema>) => void,
+  Dispatch<SetStateAction<TValue<TSchema>>>,
 ];
 
 function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes>(
@@ -24,7 +31,11 @@ function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes
   const setSearchQuery = useCallback<UseUrlQueryResponse<TSchema>[1]>(
     (value) => {
       const parsedCurrentQuery = qs.parse(currentQuery, { ignoreQueryPrefix: true });
-      setSearchParams(qs.stringify({ ...parsedCurrentQuery, ...value }, { addQueryPrefix: true }));
+      setSearchParams((prev) => {
+        const prevValue = qs.parse(Object.fromEntries(prev.entries())) as TValue<TSchema>;
+        const v = isFunction(value) ? value(prevValue) : value;
+        return qs.stringify({ ...parsedCurrentQuery, ...v }, { addQueryPrefix: true });
+      });
     },
     [currentQuery, setSearchParams],
   );

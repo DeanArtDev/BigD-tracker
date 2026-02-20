@@ -1,5 +1,5 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
-import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
+import { getTasksStatusCount, isAllowAccentIndicationTask } from '@/entity/planner/tasks/lib';
 import { TaskFrame, TaskStatusToIconMap } from '@/entity/planner/tasks/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { Typography } from '@/shared/components/typography';
@@ -94,6 +94,7 @@ function GroupTaskList({
                 task.deadline != null ? dayjs(task.deadline).isToday() : false;
               const isDeadlineTomorrow =
                 task.deadline != null ? dayjs(task.deadline).isTomorrow() : false;
+              const isAllowIndication = isAllowAccentIndicationTask(task.status);
 
               const StatusIcon = TaskStatusToIconMap[task.status];
 
@@ -103,8 +104,8 @@ function GroupTaskList({
                   style={style}
                   className={cn('relative pl-6 sm:pl-6 select-none', {
                     'select-none': isDragging,
-                    'border-red-400': isDeadlineToday,
-                    'border-yellow-500': isDeadlineTomorrow,
+                    'border-red-400': isDeadlineToday && isAllowIndication,
+                    'border-yellow-500': isDeadlineTomorrow && isAllowIndication,
                   })}
                   ref={setNodeRef}
                   name={task.name}

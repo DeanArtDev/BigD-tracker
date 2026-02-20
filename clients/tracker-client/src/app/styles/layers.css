@@ -2,6 +2,6 @@
   :root,
   html {
     --mobile-top-space: calc(env(safe-area-inset-top) * 1.1);
-    --mobile-bottom-space: calc(env(safe-area-inset-bottom) * 1.1);
+    --mobile-bottom-space: calc(env(safe-area-inset-bottom) * 0.9);
   }
 }

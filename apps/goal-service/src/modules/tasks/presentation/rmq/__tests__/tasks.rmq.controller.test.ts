@@ -6,7 +6,7 @@ import {
   GoalCreateTask,
   GoalDeleteTask,
   GoalFinishTask,
-  GoalGetDiaryTasks,
+  GoalGetTasks,
   GoalGetAssignableTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
@@ -1612,13 +1612,13 @@ describe('TasksRmqController (rmq e2e)', () => {
     });
   });
 
-  describe(`${GoalGetDiaryTasks.pattern}`, () => {
+  describe(`${GoalGetTasks.pattern}`, () => {
     test('should return diary tasks', async () => {
       const userId = 81;
       const taskView = getTaskView({ id: 9005, userId, name: 'Diary task' });
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([taskView]);
 
-      const payload: GoalGetDiaryTasks.Request = buildPayload({
+      const payload: GoalGetTasks.Request = buildPayload({
         data: {
           userId,
 
@@ -1627,8 +1627,8 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(
-        GoalGetDiaryTasks.pattern,
+      const res = await sendMessage<GoalGetTasks.Response, GoalGetTasks.Request>(
+        GoalGetTasks.pattern,
         payload,
       );
 

@@ -1,14 +1,16 @@
-import { Button } from '@/shared/ui-kit/ui/button';
-import { Plus } from 'lucide-react';
-import type { ComponentProps } from 'react';
+import { cn } from '@/shared/ui-kit/utils';
+import { ButtonLoading, type ButtonLoadingProps } from './button-loading';
+import { type LucideProps, Plus } from 'lucide-react';
 
-type ButtonAddProps = Omit<ComponentProps<typeof Button>, 'children'>;
+type ButtonAddProps = ButtonLoadingProps & {
+  readonly iconProps?: Omit<LucideProps, 'ref'>;
+};
 
-function ButtonAdd(props: ButtonAddProps) {
+function ButtonAdd({ iconProps, ...props }: ButtonAddProps) {
   return (
-    <Button size="icon" variant="outline" type="button" {...props}>
-      <Plus className="size-5" />
-    </Button>
+    <ButtonLoading size="icon" variant="outline" type="button" {...props}>
+      <Plus {...iconProps} className={cn('size-5', iconProps?.className)} />
+    </ButtonLoading>
   );
 }
 

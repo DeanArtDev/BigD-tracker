@@ -7,7 +7,7 @@ export * from './clone-task';
 export * from './assign-task-to-group';
 export * from './assign-task-to-inbox';
 export * from './unassign-task-from-group';
-export * from './get-diary-tasks';
+export * from './get-tasks';
 export * from './get-assignable-tasks';
 export * from './finish-task';
 

@@ -1,4 +1,4 @@
-import { TaskStatus } from '@/entity/planner/tasks';
+import { TaskStatus } from '../model';
 import { cn } from '@/shared/ui-kit/utils';
 import { Check, CircleX, type LucideProps } from 'lucide-react';
 import type { JSX } from 'react';

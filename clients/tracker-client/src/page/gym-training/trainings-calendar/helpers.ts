@@ -1,7 +1,7 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 
-function getTraining(extra: object): ApiDto['TrainingWithExercisesDto'] {
-  return extra as ApiDto['TrainingWithExercisesDto'];
+function getTraining(extra: object): ApiSchemas['TrainingWithExercisesDto'] {
+  return extra as ApiSchemas['TrainingWithExercisesDto'];
 }
 
 export { getTraining };

@@ -4,7 +4,7 @@ import {
   useTrainingFinish,
   useTrainingStart,
 } from '@/entity/trainings';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { routes } from '@/shared/lib/routes';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -32,7 +32,7 @@ const RepetitionStepLazy = withLazy(() =>
 );
 
 interface ActiveTrainingProps {
-  readonly training: ApiDto['TrainingWithExercisesDto'];
+  readonly training: ApiSchemas['TrainingWithExercisesDto'];
 }
 
 function ActiveTraining({ training }: ActiveTrainingProps) {

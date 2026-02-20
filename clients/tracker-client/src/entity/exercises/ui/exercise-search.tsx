@@ -1,5 +1,5 @@
 import { useExerciseQuery } from '@/entity/exercises';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import {
@@ -17,8 +17,8 @@ import { useToggle } from 'usehooks-ts';
 
 interface ExerciseSearchProps {
   readonly modal?: boolean;
-  readonly onSelect: (exercises: ApiDto['ExerciseWithRepetitionsDto']) => void;
-  readonly onDelete?: (exercises: ApiDto['ExerciseWithRepetitionsDto']) => void;
+  readonly onSelect: (exercises: ApiSchemas['ExerciseWithRepetitionsDto']) => void;
+  readonly onDelete?: (exercises: ApiSchemas['ExerciseWithRepetitionsDto']) => void;
 }
 
 function ExerciseSearch({ modal, onSelect }: ExerciseSearchProps) {

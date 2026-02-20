@@ -35,4 +35,14 @@ const actionToStatuesMap = {
   [TaskActionType.FINISH]: [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS],
 };
 
-export { actionToStatuesMap, TaskActionType };
+const allowIndicationStatusMap = {
+  [TaskStatus.NOT_STARTED]: true,
+  [TaskStatus.IN_PROGRESS]: true,
+  [TaskStatus.COMPLETED]: false,
+  [TaskStatus.OVERDUE]: false,
+  [TaskStatus.CANCELLED]: false,
+  [TaskStatus.ARCHIVED]: false,
+  [TaskStatus.DELETED]: false,
+};
+
+export { actionToStatuesMap, allowIndicationStatusMap, TaskActionType };

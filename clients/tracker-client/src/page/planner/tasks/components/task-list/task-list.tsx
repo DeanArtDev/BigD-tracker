@@ -1,0 +1,86 @@
+import type { TaskEntity } from '@/entity/planner/tasks';
+import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
+import { useIsMobile } from '@/shared/ui-kit/helpers';
+import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
+import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
+import { useState } from 'react';
+import { TaskCard, TaskCardSkeleton } from './task-card';
+import { TaskCardActions } from './task-card-actions';
+import { TaskCardMobile } from './task-card-mobile';
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 px-1">
+      {new Array(12).fill(0).map((_, index) => (
+        <TaskCardSkeleton key={index} />
+      ))}
+    </div>
+  );
+}
+
+interface TaskListProps {
+  readonly tasks: TaskEntity[];
+  readonly loading?: boolean;
+  readonly initialLoading?: boolean;
+  readonly onClick: (task: TaskEntity) => void;
+  readonly onFinish: (task: TaskEntity) => void;
+  readonly onDelete: (task: TaskEntity) => void;
+}
+
+function TaskList({
+  tasks,
+  initialLoading = false,
+  loading = false,
+  onClick,
+  onDelete,
+  onFinish,
+}: TaskListProps) {
+  const isMobile = useIsMobile();
+  const [swipedTaskId, setSwipedTaskId] = useState<number>();
+
+  return (
+    <ScrollAreaNativeVertical className="px-2 py-2 lg:py-4">
+      <ul className="flex flex-col gap-1.5 sm:gap-2 justify-center h-full min-h-0 w-full pb-18">
+        <DataLoader
+          parallelMount
+          isLoading={initialLoading}
+          loadingElement={<LoadingSkeleton />}
+          isEmpty={tasks.length <= 0}
+          emptyElement={<AppEmptyPlaceholder message="Дела не найдены." />}
+        >
+          {tasks.map((task) =>
+            isMobile ? (
+              <TaskCardMobile
+                key={task.id}
+                task={task}
+                loading={loading}
+                openId={swipedTaskId}
+                setOpenId={setSwipedTaskId}
+                onClick={() => onClick(task)}
+                onFinish={() => onFinish(task)}
+                onDelete={() => onDelete(task)}
+              />
+            ) : (
+              <TaskCard
+                key={task.id}
+                task={task}
+                actionsSlot={
+                  <TaskCardActions
+                    taskStatus={task.status}
+                    className="opacity-0 group-hover/task-frame:opacity-100"
+                    loading={loading}
+                    onFinish={() => onFinish(task)}
+                    onDelete={() => onDelete(task)}
+                  />
+                }
+                onClick={() => onClick(task)}
+              />
+            ),
+          )}
+        </DataLoader>
+      </ul>
+    </ScrollAreaNativeVertical>
+  );
+}
+
+export { TaskList, type TaskListProps };

@@ -3,7 +3,7 @@ import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
 import {
   type TaskInboxEntity,
   useAssignTaskToGroup,
-  useInvalidateDiaryTasks,
+  useInvalidateTasks,
 } from '@/entity/planner/tasks';
 import { useUpdateInboxTask } from '@/entity/planner/tasks/model';
 import { useFormStateEmitter } from '@/shared/components/form';
@@ -32,7 +32,7 @@ function TaskInboxUpdateController({
 
   const { updateInboxTask, isPending: isInboxTaskUpdatePending } = useUpdateInboxTask();
   const invalidateInbox = useInvalidateInbox();
-  const invalidateDiaryTasks = useInvalidateDiaryTasks();
+  const invalidateDiaryTasks = useInvalidateTasks();
   const invalidateAllGroups = useInvalidateAllGroups();
   const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
 

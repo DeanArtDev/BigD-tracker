@@ -1,11 +1,13 @@
 import { Button } from '@/shared/ui-kit/ui/button';
 import { cn } from '@/shared/ui-kit/utils';
-import { XIcon } from 'lucide-react';
+import { type LucideProps, XIcon } from 'lucide-react';
 import { type ComponentProps } from 'react';
 
-type ButtonCloseProps = ComponentProps<typeof Button>;
+type ButtonCloseProps = ComponentProps<typeof Button> & {
+  readonly iconProps?: Omit<LucideProps, 'ref'>;
+};
 
-function ButtonClose({ className, ...buttonProps }: ButtonCloseProps) {
+function ButtonClose({ className, iconProps, ...buttonProps }: ButtonCloseProps) {
   return (
     <Button
       size="sm"
@@ -15,7 +17,7 @@ function ButtonClose({ className, ...buttonProps }: ButtonCloseProps) {
       {...buttonProps}
       className={cn('size-7', 'opacity-70 bg-transparent! hover:opacity-100', className)}
     >
-      <XIcon className="size-4" />
+      <XIcon {...iconProps} className={cn('size-4', iconProps?.className)} />
     </Button>
   );
 }

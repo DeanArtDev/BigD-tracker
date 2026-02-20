@@ -1,12 +1,14 @@
-const tasksDiaryQueryKeys = {
-  mainKey: ['get', '/tasks/diary'] as const,
+import type { TaskQueryParams } from '../types';
+
+const tasksQueryKeys = {
+  mainKey: ['get', '/tasks'] as const,
   assignableTasksKey: ['get', '/tasks/assignable'] as const,
-  getDiaryTasks: (filters: { from: string; to: string }) => {
-    return [...tasksDiaryQueryKeys.mainKey, { params: { query: filters } }] as const;
+  getTasks: (query?: TaskQueryParams) => {
+    return [...tasksQueryKeys.mainKey, { params: { query } }] as const;
   },
   assignableTasks: (params: { search: string }) => {
-    return [...tasksDiaryQueryKeys.assignableTasksKey, { params: { query: params } }] as const;
+    return [...tasksQueryKeys.assignableTasksKey, { params: { query: params } }] as const;
   },
 };
 
-export { tasksDiaryQueryKeys };
+export { tasksQueryKeys };

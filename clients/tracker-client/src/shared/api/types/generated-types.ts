@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/users/me": {
+    "/api/users/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -21,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/register": {
+    "/api/auth/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -41,7 +41,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/refresh": {
+    "/api/auth/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -61,7 +61,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/logout": {
+    "/api/auth/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -78,7 +78,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/login": {
+    "/api/auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -95,7 +95,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/active": {
+    "/api/trainings/active": {
         parameters: {
             query?: never;
             header?: never;
@@ -112,7 +112,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings": {
+    "/api/trainings": {
         parameters: {
             query?: never;
             header?: never;
@@ -130,7 +130,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/{trainingId}": {
+    "/api/trainings/{trainingId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -152,7 +152,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/templates": {
+    "/api/trainings/templates": {
         parameters: {
             query?: never;
             header?: never;
@@ -169,7 +169,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/assign": {
+    "/api/trainings/assign": {
         parameters: {
             query?: never;
             header?: never;
@@ -186,7 +186,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/{trainingId}/start": {
+    "/api/trainings/{trainingId}/start": {
         parameters: {
             query?: never;
             header?: never;
@@ -203,7 +203,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/{trainingId}/finish": {
+    "/api/trainings/{trainingId}/finish": {
         parameters: {
             query?: never;
             header?: never;
@@ -220,7 +220,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/{trainingId}/repetition/{repetitionId}/fact": {
+    "/api/trainings/{trainingId}/repetition/{repetitionId}/fact": {
         parameters: {
             query?: never;
             header?: never;
@@ -237,7 +237,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings/{trainingId}/repetition/{repetitionId}/break": {
+    "/api/trainings/{trainingId}/repetition/{repetitionId}/break": {
         parameters: {
             query?: never;
             header?: never;
@@ -254,7 +254,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings-templates": {
+    "/api/trainings-templates": {
         parameters: {
             query?: never;
             header?: never;
@@ -272,7 +272,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/trainings-templates/{templateId}": {
+    "/api/trainings-templates/{templateId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -294,7 +294,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/exercises/templates": {
+    "/api/exercises/templates": {
         parameters: {
             query?: never;
             header?: never;
@@ -311,7 +311,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/exercises/{exerciseId}/repetitions": {
+    "/api/exercises/{exerciseId}/repetitions": {
         parameters: {
             query?: never;
             header?: never;
@@ -332,7 +332,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/exercises/repetitions": {
+    "/api/exercises/repetitions": {
         parameters: {
             query?: never;
             header?: never;
@@ -349,7 +349,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/exercises/{exerciseId}": {
+    "/api/exercises/{exerciseId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -366,7 +366,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/groups/inbox": {
+    "/api/groups/inbox": {
         parameters: {
             query?: never;
             header?: never;
@@ -383,7 +383,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/groups": {
+    "/api/groups": {
         parameters: {
             query?: never;
             header?: never;
@@ -401,7 +401,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/groups/{groupId}/detailed": {
+    "/api/groups/{groupId}/detailed": {
         parameters: {
             query?: never;
             header?: never;
@@ -418,7 +418,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/groups/assignable": {
+    "/api/groups/assignable": {
         parameters: {
             query?: never;
             header?: never;
@@ -435,7 +435,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/groups/{groupId}": {
+    "/api/groups/{groupId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -453,24 +453,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/diary": {
+    "/api/tasks": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Получение дел для ежедневника */
-        get: operations["TasksController_getDiaryTasks"];
+        /** Получение дел */
+        get: operations["TasksController_getTasks"];
         put?: never;
-        post?: never;
+        /** Создание дела */
+        post: operations["TasksController_createTask"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/tasks/assignable": {
+    "/api/tasks/assignable": {
         parameters: {
             query?: never;
             header?: never;
@@ -487,24 +488,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Создание дела */
-        post: operations["TasksController_createTask"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/tasks/{taskId}/clone": {
+    "/api/tasks/{taskId}/clone": {
         parameters: {
             query?: never;
             header?: never;
@@ -521,7 +505,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/{taskId}/finish": {
+    "/api/tasks/{taskId}/finish": {
         parameters: {
             query?: never;
             header?: never;
@@ -538,7 +522,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/{taskId}/groups/{groupId}": {
+    "/api/tasks/{taskId}/groups/{groupId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -555,7 +539,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/{taskId}/groups/{groupId}/unassign": {
+    "/api/tasks/{taskId}/groups/{groupId}/unassign": {
         parameters: {
             query?: never;
             header?: never;
@@ -572,7 +556,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/{taskId}": {
+    "/api/tasks/{taskId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -590,7 +574,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/in-box": {
+    "/api/tasks/in-box": {
         parameters: {
             query?: never;
             header?: never;
@@ -607,7 +591,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/{taskId}/in-box/assign": {
+    "/api/tasks/{taskId}/in-box/assign": {
         parameters: {
             query?: never;
             header?: never;
@@ -624,7 +608,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tasks/{taskId}/inbox": {
+    "/api/tasks/{taskId}/inbox": {
         parameters: {
             query?: never;
             header?: never;
@@ -1419,7 +1403,61 @@ export interface components {
             /** @description Ответ сервера */
             data: boolean;
         };
-        GetDiaryTasksRes: {
+        GetTasksSortDto: {
+            /**
+             * @description Сортировка по приоритету
+             * @example ASC
+             * @enum {string}
+             */
+            priority?: "ASC" | "DESC";
+            /**
+             * @description Сортировка по дедлайну
+             * @example ASC
+             * @enum {string}
+             */
+            deadline?: "ASC" | "DESC";
+            /**
+             * @description Сортировка по дате старта
+             * @example ASC
+             * @enum {string}
+             */
+            startDate?: "ASC" | "DESC";
+        };
+        GetTasksFilterDto: {
+            /**
+             * @description Приоритет фильтрации
+             * @example 2
+             */
+            priority?: number;
+            /**
+             * @description IDs групп
+             * @example [
+             *       1,
+             *       2,
+             *       3
+             *     ]
+             */
+            group?: number[];
+            /**
+             * @description Статусы
+             * @example [
+             *       "DELETED",
+             *       "NOT_STARTED"
+             *     ]
+             */
+            status?: ("NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED")[];
+            /**
+             * @description Начало диапазона (ISO 8601). Должно приходить вместе с filter.to
+             * @example 2026-01-01T00:00:00.000Z
+             */
+            from?: string;
+            /**
+             * @description Конец диапазона (ISO 8601). Должно приходить вместе с filter.from
+             * @example 2026-02-01T00:00:00.000Z
+             */
+            to?: string;
+        };
+        GetTasksRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"][];
         };
@@ -2329,13 +2367,15 @@ export interface operations {
             };
         };
     };
-    TasksController_getDiaryTasks: {
+    TasksController_getTasks: {
         parameters: {
-            query: {
-                /** @description ISO String */
-                from: string;
-                /** @description ISO String */
-                to: string;
+            query?: {
+                /** @description Поиск по имени */
+                search?: string;
+                /** @description Параметры сортировки */
+                sort?: components["schemas"]["GetTasksSortDto"];
+                /** @description Параметры фильтрации */
+                filter?: components["schemas"]["GetTasksFilterDto"];
             };
             header?: never;
             path?: never;
@@ -2348,29 +2388,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetDiaryTasksRes"];
-                };
-            };
-        };
-    };
-    TasksController_getAssignableTasks: {
-        parameters: {
-            query: {
-                /** @description Очень важное дело */
-                search: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GetAssignableTasksRes"];
+                    "application/json": components["schemas"]["GetTasksRes"];
                 };
             };
         };
@@ -2394,6 +2412,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateTaskRes"];
+                };
+            };
+        };
+    };
+    TasksController_getAssignableTasks: {
+        parameters: {
+            query: {
+                /** @description Очень важное дело */
+                search: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetAssignableTasksRes"];
                 };
             };
         };

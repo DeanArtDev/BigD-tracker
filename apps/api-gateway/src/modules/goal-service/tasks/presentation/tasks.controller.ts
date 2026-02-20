@@ -10,7 +10,7 @@ import {
   GoalDeleteTask,
   GoalFinishTask,
   GoalGetAssignableTasks,
-  GoalGetDiaryTasks,
+  GoalGetTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
@@ -39,8 +39,8 @@ import {
   FinishTaskRes,
   GetAssignableTasksQuery,
   GetAssignableTasksRes,
-  GetDiaryTasksQuery,
-  GetDiaryTasksRes,
+  GetTasksQuery,
+  GetTasksRes,
   ReplaceTaskReq,
   ReplaceTaskRes,
   UnassignTaskFromGroupRes,
@@ -51,25 +51,26 @@ import {
 export class TasksController {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
-  @Get('/diary')
-  @ApiOperation({ summary: 'Получение дел для ежедневника' })
+  @Get()
+  @ApiOperation({ summary: 'Получение дел' })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: GetDiaryTasksRes,
+    type: GetTasksRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  @ValidateRpcResponse(GetDiaryTasksRes)
-  async getDiaryTasks(
+  @ValidateRpcResponse(GetTasksRes)
+  async getTasks(
+    @Query() query: GetTasksQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Query() { from, to }: GetDiaryTasksQuery,
-  ): Promise<GetDiaryTasksRes> {
-    return await this.goalClient.send<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(
-      GoalGetDiaryTasks.pattern,
+  ): Promise<GetTasksRes> {
+    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(
+      GoalGetTasks.pattern,
       {
         data: {
           userId: uid,
-          from,
-          to,
+          search: query.search,
+          sort: query.sort,
+          filter: query.filter,
         },
       },
     );
