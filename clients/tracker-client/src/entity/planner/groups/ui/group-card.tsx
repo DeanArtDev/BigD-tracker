@@ -1,5 +1,5 @@
 import type { GroupStatus } from '@/entity/planner/groups';
-import { isAllowAccentIndicationGroup } from '@/entity/planner/groups/lib/helpers';
+import { isAllowAccentIndicationGroup } from '@/entity/planner/groups/lib';
 import { GroupStatusIndication } from '@/entity/planner/groups/ui';
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { getTasksStatusCount } from '@/entity/planner/tasks/lib';

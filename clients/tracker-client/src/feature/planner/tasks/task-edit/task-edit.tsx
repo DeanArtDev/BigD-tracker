@@ -21,12 +21,10 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
 
   const { updateTask, isPending } = useUpdateTask();
   const invalidateTasks = useInvalidateTasks();
-  const invalidateDiaryTasks = useInvalidateTasks();
   const invalidateAllGroups = useInvalidateAllGroups();
 
   const invalidate = async () => {
     await invalidateTasks();
-    await invalidateDiaryTasks();
     await invalidateAllGroups();
     onSuccess?.();
   };
