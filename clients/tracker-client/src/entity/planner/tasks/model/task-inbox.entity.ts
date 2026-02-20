@@ -1,6 +1,6 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 
-type TaskDto = ApiDto['TaskDto'];
+type TaskDto = ApiSchemas['TaskDto'];
 
 interface TaskInboxEntity {
   readonly id: TaskDto['id'];

@@ -74,7 +74,7 @@ const SwipeableItem = ({
         ref={setNodeRef}
         {...listeners}
         {...attributes}
-        className="touch-none select-none"
+        className="touch-pan-y select-none"
         style={{
           transform: `translateX(${offsetX}px)`,
           transition: 'transform 0.3s ease',

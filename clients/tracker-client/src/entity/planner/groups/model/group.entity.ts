@@ -1,8 +1,13 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 
-type GroupDto = ApiDto['GroupDto'];
-type GroupStatus = GroupDto['status'];
+type GroupDto = ApiSchemas['GroupDto'];
+
+enum GroupStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
+}
 
 interface GroupEntity {
   readonly id: GroupDto['id'];
@@ -13,4 +18,5 @@ interface GroupEntity {
   readonly tasks: TaskEntity[];
 }
 
-export type { GroupEntity, GroupStatus };
+export type { GroupEntity };
+export { GroupStatus };

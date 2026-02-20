@@ -4,7 +4,7 @@ import {
   useTrainingsQuery,
   useTrainingStartDateUpdate,
 } from '@/entity/trainings';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import type { Override } from '@/shared/lib/type-helpers';
 import type { EventInput } from '@fullcalendar/core';
 import { useEffect, useMemo, useState } from 'react';
@@ -31,7 +31,7 @@ class CalendarEvent<T extends Record<string, any>> implements Override<
   }
 }
 
-const trainingTypeColorMap: Record<ApiDto['TrainingDto']['type'], string> = {
+const trainingTypeColorMap: Record<ApiSchemas['TrainingDto']['type'], string> = {
   HARD: 'bg-red-300',
   MEDIUM: 'bg-yellow-300',
   LIGHT: 'bg-green-300',
@@ -57,7 +57,7 @@ function useTrainingsCalendar() {
 
     return (
       data?.map((i) => {
-        return new CalendarEvent<ApiDto['TrainingDto']>(
+        return new CalendarEvent<ApiSchemas['TrainingDto']>(
           {
             start: i.startDate ?? '',
             backgroundColor: trainingTypeColorMap[i.type],

@@ -20,7 +20,7 @@ function GroupPage() {
   }
 
   return (
-    <PageWrapper title="Группа" className="flex w-full min-h-0 min-w-0 grow p-0 lg:pt-0">
+    <PageWrapper title="Группа">
       <DataLoader
         isLoading={isPending}
         isEmpty={groupById == null}

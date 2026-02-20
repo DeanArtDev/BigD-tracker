@@ -1,11 +1,11 @@
 import { useInvalidateInbox } from '@/entity/planner/groups';
-import { useCreateTask, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
+import { useCreateTask, useInvalidateTasks } from '@/entity/planner/tasks';
 import { AddTaskInboxDialog } from '@/entity/planner/tasks/ui';
 
 function AddDailyThing() {
   const { createTask, isPending } = useCreateTask();
   const invalidateInbox = useInvalidateInbox();
-  const invalidateThings = useInvalidateDiaryTasks();
+  const invalidateThings = useInvalidateTasks();
 
   return (
     <AddTaskInboxDialog

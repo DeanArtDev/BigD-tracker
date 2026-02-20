@@ -26,11 +26,18 @@ const TaskByUserId = (userId: number) =>
     toExpr: (eb) => eb('tasks.user_id', '=', userId),
   });
 
-const TaskByGroupId = (groupId: number) =>
+const TaskByGroupId = (groupIds: number[]) =>
   leaf({
     key: 'tasks.byGroupId',
     purpose: 'filter',
-    toExpr: (eb) => eb('task_to_group.group_id', '=', groupId),
+    toExpr: (eb) => eb('task_to_group.group_id', 'in', groupIds),
+  });
+
+const TaskByPriority = (priority: number[]) =>
+  leaf({
+    key: 'tasks.byPriority',
+    purpose: 'filter',
+    toExpr: (eb) => eb('tasks.priority', 'in', priority),
   });
 
 const TaskInGroup = () =>
@@ -64,6 +71,7 @@ const TaskBySearch = (search: string) =>
 export {
   TaskByUserId,
   TaskByGroupId,
+  TaskByPriority,
   TaskBySearch,
   TaskByStatus,
   TaskInGroup,

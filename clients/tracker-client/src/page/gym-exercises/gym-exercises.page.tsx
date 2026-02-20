@@ -7,7 +7,7 @@ import {
 import { ManageExerciseTemplate } from '@/feature/exercise/manage-exercise-template';
 import { ExerciseCard } from './ui/exercise-card';
 import { ExercisePreview } from './ui/exercise-preview';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { Toggle } from '@/shared/ui-kit/ui/toggle';
 import { cn } from '@/shared/ui-kit/utils';
@@ -21,7 +21,7 @@ function GymExercisesPage() {
   const { data, isLoading, isFetching, isEmpty } = useExerciseQuery({ my: isMy });
 
   const [exerciseTemplate, setExerciseTemplate] = useState<
-    ApiDto['ExerciseWithRepetitionsDto'] | undefined
+    ApiSchemas['ExerciseWithRepetitionsDto'] | undefined
   >();
   const [openPreview, setOpenPreview] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);

@@ -7,12 +7,18 @@ import dayjs from '@/shared/lib/time';
 type ThingStartDateProps = ComponentProps<typeof Calendar> & {
   readonly startDate?: Date;
   readonly showDate?: boolean;
+  readonly warningIndication?: boolean;
 };
 
-function TaskStartDate({ startDate, showDate = false, ...svgProps }: ThingStartDateProps) {
+function TaskStartDate({
+  startDate,
+  showDate = false,
+  warningIndication = true,
+  ...svgProps
+}: ThingStartDateProps) {
   if (startDate == null) return null;
 
-  const isWarning = isDateInTodayAndTomorrow(startDate);
+  const isWarning = isDateInTodayAndTomorrow(startDate) && warningIndication;
 
   return (
     <span

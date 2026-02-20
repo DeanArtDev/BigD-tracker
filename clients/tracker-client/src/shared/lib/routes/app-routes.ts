@@ -66,6 +66,11 @@ const routes = {
     link: () => buildLink(path),
   }))('/planner/diary'),
 
+  plannerTasks: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
+  }))('/planner/tasks'),
+
   /* SYSTEM */
   signUp: (<Path extends string = string>(path: Path) => ({
     path,

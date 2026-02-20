@@ -1,10 +1,10 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import { Button } from '@/shared/ui-kit/ui/button';
 
 type CreateExerciseTemplateProps = Parameters<typeof Button>[0] & {
-  readonly exerciseTemplate?: ApiDto['ExerciseWithRepetitionsDto'];
+  readonly exerciseTemplate?: ApiSchemas['ExerciseWithRepetitionsDto'];
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
   readonly onSuccess?: () => void;

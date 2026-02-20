@@ -1,10 +1,10 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Button } from '@/shared/ui-kit/ui/button';
 
 interface FirstStepProps {
   readonly trainingName: string;
-  readonly trainingType: ApiDto['TrainingWithExercisesDto']['type'];
+  readonly trainingType: ApiSchemas['TrainingWithExercisesDto']['type'];
   readonly onStart?: () => void;
 }
 

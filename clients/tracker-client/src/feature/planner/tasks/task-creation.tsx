@@ -1,5 +1,5 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
-import { useCreateTask, useInvalidateDiaryTasks } from '@/entity/planner/tasks';
+import { useCreateTask, useInvalidateTasks } from '@/entity/planner/tasks';
 import { TaskFormDialog } from '@/entity/planner/tasks/ui';
 import { type ReactNode, useState } from 'react';
 
@@ -14,7 +14,7 @@ function TaskCreation({ trigger, groupId, onSuccess, onCansel }: TaskCreationPro
   const [open, setOpen] = useState(false);
 
   const { createTask, isPending } = useCreateTask();
-  const invalidateTasks = useInvalidateDiaryTasks();
+  const invalidateTasks = useInvalidateTasks();
   const invalidateAllGroups = useInvalidateAllGroups();
 
   return (

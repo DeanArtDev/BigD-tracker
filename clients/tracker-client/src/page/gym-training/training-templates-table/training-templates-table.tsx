@@ -7,7 +7,7 @@ import {
 } from '@/entity/training-templates';
 import { useInvalidateTrainings, useTrainingCreateByTemplate } from '@/entity/trainings';
 import { TrainingTemplateManageDialog } from '@/feature/training/training-manage-form';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -117,7 +117,7 @@ function TrainingTemplatesTable() {
           loadingElement={<AppLoader />}
           emptyElement={<EmptyTrainings />}
         >
-          <DataTable<ApiDto['TrainingTemplateDto']>
+          <DataTable<ApiSchemas['TrainingTemplateDto']>
             data={data}
             columns={columns}
             onRowClick={() => {

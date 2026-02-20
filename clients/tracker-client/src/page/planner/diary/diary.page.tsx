@@ -1,4 +1,4 @@
-import { type TaskEntity, useDiaryTasksQuery } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskStatus, useTasksQuery } from '@/entity/planner/tasks';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
 import { PageWrapper } from '@/page/ui/page-wrapper';
@@ -12,7 +12,11 @@ import { useMemo, useState } from 'react';
 
 function DiaryPage() {
   const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
-  const { tasks, isLoading } = useDiaryTasksQuery({ filters: dateSet });
+  const { tasks, isLoading } = useTasksQuery({
+    sort: { startDate: 'ASC' },
+    filter: { ...dateSet, status: [TaskStatus.IN_PROGRESS] },
+  });
+
   const [isTaskCreating, setIsTaskCreating] = useState(false);
 
   const [selectedTask, setSelectedTask] = useState<TaskEntity>();
@@ -29,7 +33,7 @@ function DiaryPage() {
   }, [tasks]);
 
   return (
-    <PageWrapper className="relative grow min-h-0" title="Ежедневник">
+    <PageWrapper className="relative" title="Ежедневник">
       <DataLoader loadingElement={<AppLoader />} blur isLoading={isLoading}>
         <TimeView<TaskEntity>
           events={events}

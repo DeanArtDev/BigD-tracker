@@ -1,7 +1,7 @@
 import { type TaskEntity, TaskStatus } from '../../model';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 
-function taskDtoToEntity(dto: ApiDto['TaskDto']): TaskEntity {
+function taskDtoToEntity(dto: ApiSchemas['TaskDto']): TaskEntity {
   return {
     id: dto.id,
     name: dto.name,

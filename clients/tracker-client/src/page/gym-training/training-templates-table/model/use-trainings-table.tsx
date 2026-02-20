@@ -1,6 +1,6 @@
 import { useMeSuspense } from '@/entity/auth';
 import { mapTrainingType } from '@/entity/trainings/lib';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Checkbox } from '@/shared/ui-kit/ui/checkbox';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -8,7 +8,7 @@ import { Angry, Annoyed, Blend, Smile } from 'lucide-react';
 import { type JSX } from 'react';
 import { TrainingsTableActions } from '../components/trainings-table-actions';
 
-const mapTrainingTypeIcons: Record<ApiDto['TrainingTemplateDto']['type'], JSX.Element> = {
+const mapTrainingTypeIcons: Record<ApiSchemas['TrainingTemplateDto']['type'], JSX.Element> = {
   HARD: <Smile className="fill-red-400" />,
   MEDIUM: <Annoyed className="fill-yellow-400" />,
   LIGHT: <Angry className="fill-green-400" />,
@@ -17,14 +17,14 @@ const mapTrainingTypeIcons: Record<ApiDto['TrainingTemplateDto']['type'], JSX.El
 
 interface UseTrainingsTableParams {
   readonly loading: boolean;
-  readonly onEdit: (training: ApiDto['TrainingTemplateDto']) => void;
+  readonly onEdit: (training: ApiSchemas['TrainingTemplateDto']) => void;
   readonly onAssign: (trainingId: number) => void;
   readonly onDelete: (trainingId: number) => void;
 }
 
 function useTrainingsTable(
   params: UseTrainingsTableParams,
-): ColumnDef<ApiDto['TrainingTemplateDto']>[] {
+): ColumnDef<ApiSchemas['TrainingTemplateDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
   const { me } = useMeSuspense();
 

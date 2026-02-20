@@ -1,4 +1,4 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { InputNumberForm } from '@/shared/components/form';
 import { Button } from '@/shared/ui-kit/ui/button';
 import {
@@ -19,13 +19,13 @@ import { z } from 'zod';
 interface RepetitionFactFormProps {
   readonly repetition: { targetCount: number; targetWeight: number; targetBreak: number };
   readonly onSuccess: (data: {
-    finishType: ApiDto['RepetitionDto']['finishType'] & string;
+    finishType: ApiSchemas['RepetitionDto']['finishType'] & string;
     factCount: number;
     factWeight: number;
   }) => void;
 }
 
-const finishType: (ApiDto['RepetitionDto']['finishType'] & string)[] = [
+const finishType: (ApiSchemas['RepetitionDto']['finishType'] & string)[] = [
   'DONE',
   'SKIP',
   'TRIED',

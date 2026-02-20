@@ -2,7 +2,7 @@ export * from './use-create-inbox-task';
 export * from './use-create-task';
 export * from './use-update-task';
 export * from './use-delete-task';
-export * from './use-diary-tasks.query';
+export * from './use-tasks.query';
 export * from './invalidators';
 export * from './use-update-inbox-task';
 export * from './use-task-clone';

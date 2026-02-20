@@ -3,12 +3,14 @@ import {
   TaskDatabase,
   TasksReadRepository,
   TasksShapeTypes,
+  TasksSorting,
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { toLower } from 'lodash';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
@@ -55,11 +57,19 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async getByRange(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]> {
+  async getByRange(
+    specifications: TasksSpecification,
+    sort?: TasksSorting,
+    trx?: TaskTransaction,
+  ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
       const tasks = await leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
         .where((eb) => specifications.toExpr(eb))
-        .orderBy('tasks.start_date', 'asc')
+        .$if(Boolean(sort?.deadline), (qb) => qb.orderBy('tasks.deadline', toLower(sort!.deadline)))
+        .$if(Boolean(sort?.priority), (qb) => qb.orderBy('tasks.priority', toLower(sort!.priority)))
+        .$if(Boolean(sort?.startDate), (qb) =>
+          qb.orderBy('tasks.start_date', toLower(sort!.startDate)),
+        )
         .execute();
 
       return tasks.map(this.#map);

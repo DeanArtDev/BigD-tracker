@@ -1,6 +1,6 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 
-type GroupDto = ApiDto['GroupDto'];
+type GroupDto = ApiSchemas['GroupDto'];
 
 interface GroupInfoEntity {
   readonly id: GroupDto['id'];

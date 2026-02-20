@@ -1,5 +1,5 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
-import { useInvalidateDiaryTasks, useUpdateTask } from '@/entity/planner/tasks';
+import { useInvalidateTasks, useUpdateTask } from '@/entity/planner/tasks';
 import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import {
   TaskDeleteWithConfirmHoc,
@@ -20,13 +20,11 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
   const open = task != null;
 
   const { updateTask, isPending } = useUpdateTask();
-  const invalidateTasks = useInvalidateDiaryTasks();
-  const invalidateDiaryTasks = useInvalidateDiaryTasks();
+  const invalidateTasks = useInvalidateTasks();
   const invalidateAllGroups = useInvalidateAllGroups();
 
   const invalidate = async () => {
     await invalidateTasks();
-    await invalidateDiaryTasks();
     await invalidateAllGroups();
     onSuccess?.();
   };

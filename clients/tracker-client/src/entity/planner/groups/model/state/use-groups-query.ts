@@ -1,6 +1,6 @@
 import { taskDtoToEntity } from '@/entity/planner/tasks';
 import { $privetQueryClient } from '@/shared/api/api-client';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { keyBy } from 'lodash-es';
 import type { GroupEntity } from '../group.entity';
 import { groupsQueryKeys } from './query';
@@ -10,8 +10,8 @@ function useGroupsQuery(params?: { search?: string; limit?: number }) {
     ...groupsQueryKeys.getGroups(params),
     {
       initialPageParam: null,
-      getNextPageParam: (lastPage: ApiDto['GetUserGroupsRes']) => lastPage.data.meta.cursor,
-      select: ({ pages = [] }: { pages: ApiDto['GetUserGroupsRes'][] }) => {
+      getNextPageParam: (lastPage: ApiSchemas['GetUserGroupsRes']) => lastPage.data.meta.cursor,
+      select: ({ pages = [] }: { pages: ApiSchemas['GetUserGroupsRes'][] }) => {
         const byPage = pages.map((page) => {
           const items = page.data.items.map((group) => ({
             id: group.id,

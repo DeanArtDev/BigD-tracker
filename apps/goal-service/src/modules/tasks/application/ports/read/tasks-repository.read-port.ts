@@ -1,8 +1,14 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
+import { SortDirection } from '@big-d/api-contracts';
 import { TaskTransaction } from '../transaction-manager.port';
 
 type TasksShapeTypes = 'with_group_links_left_join' | 'with_group_links_inner_join';
+interface TasksSorting {
+  readonly priority?: SortDirection;
+  readonly deadline?: SortDirection;
+  readonly startDate?: SortDirection;
+}
 
 interface TasksReadRepository {
   getMany(
@@ -11,7 +17,11 @@ interface TasksReadRepository {
     trx?: TaskTransaction,
   ): Promise<TaskView[]>;
 
-  getByRange(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
+  getByRange(
+    specifications: TasksSpecification,
+    sort?: TasksSorting,
+    trx?: TaskTransaction,
+  ): Promise<TaskView[]>;
 
   getById(input: { id: number; userId: number }, trx?: TaskTransaction): Promise<TaskView | null>;
 
@@ -21,4 +31,4 @@ interface TasksReadRepository {
   ): Promise<boolean>;
 }
 
-export { TasksReadRepository, TasksShapeTypes };
+export { TasksReadRepository, TasksShapeTypes, TasksSorting };

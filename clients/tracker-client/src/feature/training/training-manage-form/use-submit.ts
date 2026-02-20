@@ -3,7 +3,7 @@ import {
   useTrainingTemplateCreate,
   useTrainingTemplateUpdate,
 } from '@/entity/training-templates';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import type { SubmitFormData } from './training-template-manage-form';
 
 interface UseSubmitParams {
@@ -23,7 +23,7 @@ function useSubmit({ templateId, onSuccess }: UseSubmitParams) {
     isLoading: isCreating || isUpdating || isTrainingTemplateLoading,
     handleSubmitForm: (formData: SubmitFormData) => {
       if (trainingTemplate != null) {
-        const updateRequestData: ApiDto['UpdateTrainingTemplateWithExerciseRequest']['data'] = {
+        const updateRequestData: ApiSchemas['UpdateTrainingTemplateWithExerciseRequest']['data'] = {
           type: formData.type,
           description: formData.description,
           name: formData.name,
@@ -54,7 +54,7 @@ function useSubmit({ templateId, onSuccess }: UseSubmitParams) {
         return;
       }
 
-      const createRequestData: ApiDto['CreateTrainingTemplateWithExercisesRequestData'] = {
+      const createRequestData: ApiSchemas['CreateTrainingTemplateWithExercisesRequestData'] = {
         type: formData.type,
         description: formData.description,
         name: formData.name,

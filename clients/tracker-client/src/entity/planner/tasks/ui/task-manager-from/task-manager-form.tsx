@@ -1,4 +1,4 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import {
   FormStateEmitter,
   InputForm,
@@ -21,7 +21,7 @@ type ThingManagerFormData = z.input<typeof validationSchema>;
 type SubmitFormData = z.output<typeof validationSchema>;
 type ThingManagerFormReturn = UseFormReturn<ThingManagerFormData, any, SubmitFormData>;
 
-type ThingManagerSubmitData = Omit<ApiDto['CreateTaskReq']['data'], 'groupId'>;
+type ThingManagerSubmitData = Omit<ApiSchemas['CreateTaskReq']['data'], 'groupId'>;
 
 interface ThingManagerFormProps {
   readonly isLoading?: boolean;
