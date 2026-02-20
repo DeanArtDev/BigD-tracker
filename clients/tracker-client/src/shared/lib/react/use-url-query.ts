@@ -30,14 +30,13 @@ function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes
 
   const setSearchQuery = useCallback<UseUrlQueryResponse<TSchema>[1]>(
     (value) => {
-      const parsedCurrentQuery = qs.parse(currentQuery, { ignoreQueryPrefix: true });
       setSearchParams((prev) => {
-        const prevValue = qs.parse(Object.fromEntries(prev.entries())) as TValue<TSchema>;
+        const prevValue = schema.safeParse(qs.parse(Object.fromEntries(prev.entries()))).data!;
         const v = isFunction(value) ? value(prevValue) : value;
-        return qs.stringify({ ...parsedCurrentQuery, ...v }, { addQueryPrefix: true });
+        return qs.stringify({ ...prevValue, ...v }, { addQueryPrefix: true });
       });
     },
-    [currentQuery, setSearchParams],
+    [schema, setSearchParams],
   );
 
   const searchQuery = useMemo(() => {

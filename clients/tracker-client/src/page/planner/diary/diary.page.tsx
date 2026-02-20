@@ -1,48 +1,43 @@
-import { type TaskEntity, TaskStatus, useTasksQuery } from '@/entity/planner/tasks';
-import { TaskCreation } from '@/feature/planner/tasks/task-creation';
+import { type TaskEntity } from '@/entity/planner/tasks';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
 import { PageWrapper } from '@/page/ui/page-wrapper';
-import { TimeView } from '@/shared/lib/time-view';
-import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
-import { Button } from '@/shared/ui-kit/ui/button';
-import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
+import { useIsLgUp } from '@/shared/ui-kit/helpers';
+import { Separator } from '@/shared/ui-kit/ui/separator';
 import { cn } from '@/shared/ui-kit/utils';
-import { Plus } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { SelectedGroupList } from './components/selected-group-list';
+import { TaskDiaryManipulator } from './components/task-diary-manipulator';
+import { TaskDiaryTimeline } from './components/task-diary-timeline';
+import { useDiaryPageUrlQuery } from './lib/use-diary-page-url-query';
 
 function DiaryPage() {
-  const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
-  const { tasks, isLoading } = useTasksQuery({
-    sort: { startDate: 'ASC' },
-    filter: { ...dateSet, status: [TaskStatus.IN_PROGRESS] },
-  });
-
-  const [isTaskCreating, setIsTaskCreating] = useState(false);
-
   const [selectedTask, setSelectedTask] = useState<TaskEntity>();
-
-  const events = useMemo(() => {
-    return tasks.map((task) => {
-      return {
-        name: task.name,
-        from: task.startDate != null ? new Date(task.startDate) : 0,
-        to: task.deadline != null ? new Date(task.deadline) : 0,
-        extra: task,
-      };
-    });
-  }, [tasks]);
+  const { pageQuery } = useDiaryPageUrlQuery();
+  const isLgUp = useIsLgUp();
 
   return (
-    <PageWrapper className="relative" title="Ежедневник">
-      <DataLoader loadingElement={<AppLoader />} blur isLoading={isLoading}>
-        <TimeView<TaskEntity>
-          events={events}
-          onEventClick={(event) => void setSelectedTask(event.extra)}
-          onDateChange={(dateSet) =>
-            void setDateSet({ from: dateSet.from.toISOString(), to: dateSet.to.toISOString() })
-          }
+    <PageWrapper className="px-1" title="Ежедневник">
+      <div
+        className={cn(
+          'task-diary-wrapper',
+          'lg:border-l lg:border-r min-h-0',
+          'grid max-w-full lg:p-4 pt-2 md:pt-4',
+          'lg:w-full lg:max-w-[1400px] lg:mx-auto lg:grid-cols-[2fr_min-content_1fr]',
+        )}
+      >
+        <TaskDiaryTimeline
+          filterByGroup={pageQuery?.filter?.group}
+          onEventClick={setSelectedTask}
         />
-      </DataLoader>
+
+        {isLgUp && (
+          <>
+            <Separator orientation="vertical" className="mx-4" />
+
+            <SelectedGroupList />
+          </>
+        )}
+      </div>
 
       <TaskEdit
         task={selectedTask}
@@ -50,22 +45,7 @@ function DiaryPage() {
         onSuccess={() => void setSelectedTask(undefined)}
       />
 
-      <TaskCreation
-        trigger={
-          <Button
-            size="icon"
-            className={cn(
-              'absolute bottom-5 sm:bottom-7 right-5 sm:right-5 rounded-full p-6 z-49',
-              { 'sm:-right-15': isTaskCreating },
-            )}
-            onClick={() => void setIsTaskCreating(true)}
-          >
-            <Plus className="size-6" />
-          </Button>
-        }
-        onCansel={() => void setIsTaskCreating(false)}
-        onSuccess={() => void setIsTaskCreating(false)}
-      />
+      <TaskDiaryManipulator />
     </PageWrapper>
   );
 }

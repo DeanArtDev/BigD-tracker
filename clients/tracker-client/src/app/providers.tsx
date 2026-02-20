@@ -7,6 +7,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { setDefaultOptions } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { DismissableLayerBranch } from '@radix-ui/react-dismissable-layer';
 
 setDefaultOptions({ locale: ru });
 
@@ -19,7 +21,13 @@ export function Providers({ children }: { children: ReactNode }) {
       <SidebarProvider className="bg-sidebar" open={sidebarState} defaultOpen={sidebarState}>
         {children}
       </SidebarProvider>
-      <Toaster richColors />
+
+      {createPortal(
+        <DismissableLayerBranch>
+          <Toaster richColors className="z-51 pointer-events-auto" />
+        </DismissableLayerBranch>,
+        document.body,
+      )}
     </QueryClientProvider>
   );
 }

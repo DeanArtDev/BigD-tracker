@@ -25,7 +25,7 @@ const plannerRoutesMap: Record<string, PageApplicationRote> = {
 
   [routes.plannerTasks.path]: {
     to: routes.plannerTasks.path,
-    title: 'Список дела',
+    title: 'Список дел',
     internal: false,
     icon: (props: LucideProps) => <ListTodo {...props} />,
   },
