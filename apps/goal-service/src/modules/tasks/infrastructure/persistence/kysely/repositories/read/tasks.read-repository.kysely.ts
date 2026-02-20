@@ -68,7 +68,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .$if(Boolean(sort?.deadline), (qb) => qb.orderBy('tasks.deadline', toLower(sort!.deadline)))
         .$if(Boolean(sort?.priority), (qb) => qb.orderBy('tasks.priority', toLower(sort!.priority)))
         .$if(Boolean(sort?.startDate), (qb) =>
-          qb.orderBy('tasks.priority', toLower(sort!.startDate)),
+          qb.orderBy('tasks.start_date', toLower(sort!.startDate)),
         )
         .execute();
 
