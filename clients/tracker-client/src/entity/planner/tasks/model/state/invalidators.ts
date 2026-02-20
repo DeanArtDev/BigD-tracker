@@ -1,15 +1,15 @@
 import { queryClient } from '@/shared/api/query-client';
 import { isEqual } from 'lodash-es';
-import { tasksDiaryQueryKeys } from './query';
+import { tasksQueryKeys } from './query';
 
-function useInvalidateDiaryTasks() {
+function useInvalidateTasks() {
   return () =>
     queryClient.invalidateQueries({
       predicate: (query) => {
         const mainKey = query.queryKey.slice(0, 2);
-        return isEqual(mainKey, tasksDiaryQueryKeys.mainKey);
+        return isEqual(mainKey, tasksQueryKeys.mainKey);
       },
     });
 }
 
-export { useInvalidateDiaryTasks };
+export { useInvalidateTasks };

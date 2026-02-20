@@ -14,12 +14,6 @@
   }
 }
 
-*:focus,
-*:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

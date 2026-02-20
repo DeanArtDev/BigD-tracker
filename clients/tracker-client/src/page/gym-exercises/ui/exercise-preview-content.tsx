@@ -1,12 +1,12 @@
 import { RepetitionItemPreview } from '@/entity/trainings';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { YoutubeViewFrame } from '@/shared/components/youtube-view-frame';
 import { useYoutubeUrlParse } from '@/shared/lib/react/use-youtube-url-parse';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { Fragment } from 'react';
 
 interface ExercisePreviewContentProps {
-  readonly exercise?: ApiDto['ExerciseWithRepetitionsDto'] | null;
+  readonly exercise?: ApiSchemas['ExerciseWithRepetitionsDto'] | null;
 }
 
 function ExercisePreviewContent({ exercise }: ExercisePreviewContentProps) {

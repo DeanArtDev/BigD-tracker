@@ -1,6 +1,6 @@
 import { useExerciseCreate, useExerciseUpdate } from '@/entity/exercises';
 import { ExerciseTypeSelectForm } from '@/entity/exercises/ui';
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import { ErrorMessageForm, InputForm, TextareaForm } from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -15,7 +15,7 @@ type ManageExerciseTemplateFormData = z.input<typeof validationSchema>;
 type SubmitFormData = z.output<typeof validationSchema>;
 
 interface ManageExerciseTemplateFormProps {
-  readonly exerciseTemplate?: ApiDto['ExerciseWithRepetitionsDto'];
+  readonly exerciseTemplate?: ApiSchemas['ExerciseWithRepetitionsDto'];
   readonly onSuccess?: (action: 'create' | 'update') => void;
 }
 

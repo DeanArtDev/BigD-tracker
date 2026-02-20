@@ -1,4 +1,4 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 
 type Step = 'warm-up' | 'repetition' | 'break' | 'finish' | 'start';
 
@@ -6,7 +6,7 @@ interface IActiveTrainingController {
   currentStep: Step;
   exercises: ActiveExercise[];
   activeExercise: ActiveExercise | undefined;
-  activeTraining: ApiDto['TrainingWithExercisesDto'];
+  activeTraining: ApiSchemas['TrainingWithExercisesDto'];
   repetitions: ActiveRepetition[];
 
   doWormUp(): void;
@@ -14,7 +14,7 @@ interface IActiveTrainingController {
   setRepetitionDuration(id: number, seconds: number): void;
   setRepetitionFact(data: {
     id: number;
-    finishType: ApiDto['RepetitionDto']['finishType'] & string;
+    finishType: ApiSchemas['RepetitionDto']['finishType'] & string;
     factCount: number;
     factWeight: number;
   }): void;
@@ -30,7 +30,7 @@ type ActiveRepetition = { stage: EntityStatus['stage'] | 'break' } & {
   readonly targetCount: number;
   readonly targetWeight: number;
   readonly targetBreak: number;
-  readonly finishType?: ApiDto['RepetitionDto']['finishType'];
+  readonly finishType?: ApiSchemas['RepetitionDto']['finishType'];
   readonly factCount?: number;
   readonly factWeight?: number;
 };
@@ -38,7 +38,7 @@ type ActiveRepetition = { stage: EntityStatus['stage'] | 'break' } & {
 interface ActiveExercise extends EntityStatus {
   readonly id: number;
   readonly name: string;
-  readonly type: ApiDto['ExerciseWithRepetitionsDto']['type'];
+  readonly type: ApiSchemas['ExerciseWithRepetitionsDto']['type'];
   readonly exampleUrl?: string;
   readonly description?: string;
 }
@@ -49,9 +49,9 @@ class ActiveTrainingController implements IActiveTrainingController {
   #minSpendExerciseSeconds = 10;
   #repetitions: ActiveRepetition[] = [];
   #exercises: ActiveExercise[] = [];
-  #training: ApiDto['TrainingWithExercisesDto'];
+  #training: ApiSchemas['TrainingWithExercisesDto'];
 
-  constructor(training: ApiDto['TrainingWithExercisesDto']) {
+  constructor(training: ApiSchemas['TrainingWithExercisesDto']) {
     this.#training = Object.assign({}, training);
     this.#recalculate();
   }
@@ -83,7 +83,7 @@ class ActiveTrainingController implements IActiveTrainingController {
 
   public setRepetitionFact(data: {
     id: number;
-    finishType: ApiDto['RepetitionDto']['finishType'] & string;
+    finishType: ApiSchemas['RepetitionDto']['finishType'] & string;
     factCount: number;
     factWeight: number;
   }): void {
@@ -120,7 +120,7 @@ class ActiveTrainingController implements IActiveTrainingController {
     return this.#exercises.find((exercise) => exercise.stage === 'active');
   }
 
-  get activeTraining(): ApiDto['TrainingWithExercisesDto'] {
+  get activeTraining(): ApiSchemas['TrainingWithExercisesDto'] {
     return Object.assign({}, this.#training);
   }
 
@@ -192,7 +192,7 @@ class ActiveTrainingController implements IActiveTrainingController {
     }
   }
 
-  #calculateRepetitions(repetitions: ApiDto['RepetitionDto'][]): ActiveRepetition[] {
+  #calculateRepetitions(repetitions: ApiSchemas['RepetitionDto'][]): ActiveRepetition[] {
     const repetitionsBuffer: ActiveRepetition[] = [];
 
     for (let j = 0; j < repetitions.length; j++) {
@@ -226,7 +226,7 @@ class ActiveTrainingController implements IActiveTrainingController {
     return repetitionsBuffer;
   }
 
-  #findPureRepetition(id: number): ApiDto['RepetitionDto'] | undefined {
+  #findPureRepetition(id: number): ApiSchemas['RepetitionDto'] | undefined {
     for (const exercise of this.#training.exercises) {
       for (const repetition of exercise.repetitions) {
         if (repetition.id === id) {
@@ -241,7 +241,7 @@ class ActiveTrainingController implements IActiveTrainingController {
     return ['active', 'break'];
   }
 
-  #computeRepStage(rep: ApiDto['RepetitionDto']) {
+  #computeRepStage(rep: ApiSchemas['RepetitionDto']) {
     const isDone = [rep.finishType, rep.factCount, rep.factWeight, rep.factBreak].every(
       (i) => i != null,
     );

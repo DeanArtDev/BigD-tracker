@@ -1,4 +1,4 @@
-import type { ApiDto } from '@/shared/api/types';
+import type { ApiSchemas } from '@/shared/api/types';
 import type { Override } from '@/shared/lib/type-helpers';
 
 enum TaskStatus {
@@ -11,6 +11,6 @@ enum TaskStatus {
   DELETED = 'DELETED',
 }
 
-type TaskEntity = Override<Omit<ApiDto['TaskDto'], 'userId'>, 'status', TaskStatus>;
+type TaskEntity = Override<Omit<ApiSchemas['TaskDto'], 'userId'>, 'status', TaskStatus>;
 
 export { type TaskEntity, TaskStatus };

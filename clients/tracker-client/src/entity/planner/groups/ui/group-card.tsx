@@ -1,4 +1,5 @@
 import type { GroupStatus } from '@/entity/planner/groups';
+import { isAllowAccentIndicationGroup } from '@/entity/planner/groups/lib/helpers';
 import { GroupStatusIndication } from '@/entity/planner/groups/ui';
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
@@ -25,6 +26,7 @@ function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardPr
   const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
   const isDeadlineToday =
     closestTaskDeadline != null ? dayjs(closestTaskDeadline).isToday() : false;
+  const isAllowIndicationGroup = isAllowAccentIndicationGroup(status);
 
   return (
     <Card
@@ -41,7 +43,9 @@ function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardPr
           {name}
 
           <div className="flex gap-2 ml-auto">
-            {isDeadlineToday && <Flame className="size-5 stroke-red-600" />}
+            {isDeadlineToday && isAllowIndicationGroup && (
+              <Flame className="size-5 stroke-red-600" />
+            )}
 
             <Tooltip>
               <TooltipTrigger>

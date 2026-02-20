@@ -7,12 +7,18 @@ import dayjs from '@/shared/lib/time';
 type TaskDeadlineDateProps = ComponentProps<typeof CalendarClock> & {
   readonly deadline?: Date;
   readonly showDate?: boolean;
+  readonly warningIndication?: boolean;
 };
 
-function TaskDeadlineDate({ deadline, showDate = false, ...svgProps }: TaskDeadlineDateProps) {
+function TaskDeadlineDate({
+  deadline,
+  warningIndication = true,
+  showDate = false,
+  ...svgProps
+}: TaskDeadlineDateProps) {
   if (deadline == null) return null;
 
-  const isWarning = isDateInTodayAndTomorrow(deadline);
+  const isWarning = isDateInTodayAndTomorrow(deadline) && warningIndication;
   return (
     <span
       className={cn('flex flex-wrap gap-1.5 items-center', {

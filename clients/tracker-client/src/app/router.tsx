@@ -83,6 +83,10 @@ export const router = createBrowserRouter([
             path: routes.plannerDiary.path,
             lazy: () => import('@/page/planner/diary/diary.page'),
           },
+          {
+            path: routes.plannerTasks.path,
+            lazy: () => import('@/page/planner/tasks/tasks.page'),
+          },
         ],
       },
 
