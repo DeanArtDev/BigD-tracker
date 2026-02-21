@@ -1,4 +1,5 @@
 import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
+import { UsersModule } from '@/modules/users';
 import {
   AUTH_REPOSITORY,
   AuthController,
@@ -13,21 +14,36 @@ import {
   LogoutUseCase,
   RefreshUseCase,
   RegisterUseCase,
-} from '@/modules/auth/application';
+  ReferralTokenCommand,
+  ReferralTokenHandler,
+  ReferralTokenUseCase,
+} from './application';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { SessionCreatedEvent } from './domain';
 import { KyselyAuthRepository } from './infra/kysely-auth.repository';
 
-const commands = [CreateSessionCommand, DeleteSessionCommand];
-const handlers = [CreateSessionHandler, GetSessionHandler, DeleteSessionHandler];
+const commands = [CreateSessionCommand, DeleteSessionCommand, ReferralTokenCommand];
+const handlers = [
+  CreateSessionHandler,
+  GetSessionHandler,
+  DeleteSessionHandler,
+  ReferralTokenHandler,
+];
 const events = [SessionCreatedEvent];
 const queries = [GetSessionQuery];
-const useCases = [RegisterUseCase, RefreshUseCase, LogoutUseCase, LoginUseCase];
+const useCases = [
+  RegisterUseCase,
+  RefreshUseCase,
+  LogoutUseCase,
+  LoginUseCase,
+  ReferralTokenUseCase,
+];
 
 @Module({
   imports: [
+    UsersModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ACCOUNT_APP_ENV>) => {

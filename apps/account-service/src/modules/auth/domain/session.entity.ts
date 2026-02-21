@@ -51,7 +51,8 @@ class SessionEntity {
   }
 
   get isExpired() {
-    return new Date() > new Date(this.#data.expiresAt.value);
+    const now = DateVo.create(new Date());
+    return this.#data.expiresAt.equals(now) || this.#data.expiresAt.isBefore(now.value);
   }
 
   get uuid() {

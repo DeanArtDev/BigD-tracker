@@ -66,8 +66,7 @@ class ObservabilityModule {
                   req(req) {
                     return {
                       method: req.method,
-                      baseUrl: req.baseUrl,
-                      url: req.url,
+                      baseUrl: req.params.path.join('/'),
                       query: req.query,
                       headers: {
                         'content-type': req.headers['content-type'],
