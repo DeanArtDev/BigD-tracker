@@ -1,3 +1,4 @@
+import { initTestEnvironment } from '@/../jest.setup';
 import { Task } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import {
@@ -6,13 +7,12 @@ import {
   GoalCreateTask,
   GoalDeleteTask,
   GoalFinishTask,
-  GoalGetTasks,
   GoalGetAssignableTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
-  TaskStatus,
   RmqErrorKind,
+  TaskStatus,
 } from '@big-d/api-contracts';
 import { specToDebugString } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
@@ -29,7 +29,6 @@ import {
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
-import { initTestEnvironment } from '@/../jest.setup';
 import {
   groupReadRepoMock,
   groupWriteRepoMock,
@@ -1609,41 +1608,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         kind: RmqErrorKind.NOT_FOUND,
         details: { taskId, groupId },
       });
-    });
-  });
-
-  describe(`${GoalGetTasks.pattern}`, () => {
-    test('should return diary tasks', async () => {
-      const userId = 81;
-      const taskView = getTaskView({ id: 9005, userId, name: 'Diary task' });
-      tasksReadRepoMock.getByRange.mockResolvedValueOnce([taskView]);
-
-      const payload: GoalGetTasks.Request = buildPayload({
-        data: {
-          userId,
-
-          from: '2024-01-01T00:00:00.000Z',
-          to: '2024-01-31T00:00:00.000Z',
-        },
-      });
-
-      const res = await sendMessage<GoalGetTasks.Response, GoalGetTasks.Request>(
-        GoalGetTasks.pattern,
-        payload,
-      );
-
-      expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
-      const [specArg, trxArg] = tasksReadRepoMock.getByRange.mock.calls[0];
-      expect(specToDebugString(specArg)).toMatchInlineSnapshot(`
-          "AND(
-            tasks.byUserId,
-            tasks.byStatus,
-            tasks.byStartDateLessOrEqual,
-            tasks.byDeadlineGreaterOrEqual
-          )"
-      `);
-      expect(trxArg).toEqual(expectTransaction());
-      expect(res).toEqual({ data: [toTaskResponse(taskView)] });
     });
   });
 

@@ -87,6 +87,12 @@ export const router = createBrowserRouter([
             path: routes.plannerTasks.path,
             lazy: () => import('@/page/planner/tasks/tasks.page'),
           },
+
+          /* SYSTEM */
+          {
+            path: routes.settings.path,
+            lazy: () => import('@/page/settings/settings.page'),
+          },
         ],
       },
 
@@ -101,6 +107,10 @@ export const router = createBrowserRouter([
           {
             path: routes.signUp.path,
             lazy: () => import('@/page/sign-up.page'),
+          },
+          {
+            path: routes.signUp.path + '/temps',
+            lazy: () => import('@/page/sign-up.temp.page'),
           },
           {
             path: routes.login.path,

@@ -32,7 +32,13 @@ function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes
     (value) => {
       setSearchParams((prev) => {
         const prevValue =
-          schema.safeParse(qs.parse(Object.fromEntries(prev.entries()))).data! ?? {};
+          schema.safeParse(
+            qs.parse(Object.fromEntries(prev.entries()), {
+              ignoreQueryPrefix: true,
+              interpretNumericEntities: true,
+            }),
+          ).data! ?? {};
+
         const v = isFunction(value) ? value(prevValue) : value;
         return qs.stringify({ ...prevValue, ...v }, { addQueryPrefix: true });
       });

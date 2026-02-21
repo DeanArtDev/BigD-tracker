@@ -95,6 +95,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/referral-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Генерация реферального токена */
+        post: operations["AuthController_generateReferralToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/referral-token/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Валидация реферального токена */
+        get: operations["AuthController_validateReferralToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/trainings/active": {
         parameters: {
             query?: never;
@@ -690,6 +724,14 @@ export interface components {
         LoginResponse: {
             /** @description Ответ сервера */
             data: components["schemas"]["ResponseDto"];
+        };
+        ReferralTokenResData: {
+            /** @example Реферальный токен юзера */
+            token: string;
+        };
+        ReferralTokenRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["ReferralTokenResData"];
         };
         RepetitionDto: {
             /** @example 1 */
@@ -1722,6 +1764,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LoginResponse"];
+                };
+            };
+        };
+    };
+    AuthController_generateReferralToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferralTokenRes"];
+                };
+            };
+        };
+    };
+    AuthController_validateReferralToken: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferralTokenRes"];
                 };
             };
         };

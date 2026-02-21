@@ -2,14 +2,22 @@ import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
 import {
   AccountLogin,
   AccountLogout,
+  AccountReferralToken,
   AccountRefresh,
   AccountRegister,
   RpcStatus,
 } from '@big-d/api-contracts';
 import { Controller } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { LoginUseCase, LogoutUseCase, RefreshUseCase, RegisterUseCase } from './use-cases';
+import {
+  LoginUseCase,
+  LogoutUseCase,
+  ReferralTokenCommand,
+  RefreshUseCase,
+  RegisterUseCase,
+} from './use-cases';
 
 @Controller()
 export class AuthController {
@@ -18,6 +26,7 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly logoutUseCase: LogoutUseCase,
     private readonly loginUseCase: LoginUseCase,
+    private readonly commandBus: CommandBus,
     private readonly config: ConfigService<ACCOUNT_APP_ENV>,
   ) {}
 
@@ -84,5 +93,16 @@ export class AuthController {
     });
 
     return { data: { stats: RpcStatus.SUCCESS } };
+  }
+
+  @MessagePattern(AccountReferralToken.pattern)
+  async generateReferralToken(
+    @Payload() { data }: AccountReferralToken.Request,
+  ): Promise<AccountReferralToken.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new ReferralTokenCommand({ userId: data.uid, sessionId: data.sid }),
+      ),
+    };
   }
 }

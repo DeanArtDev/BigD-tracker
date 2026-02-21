@@ -1,14 +1,14 @@
 import { cn } from '@/shared/ui-kit/utils';
 import type { DetailedHTMLProps, HTMLAttributes, PropsWithChildren } from 'react';
 
-function H2({
+function Code({
   className,
   ...props
-}: PropsWithChildren<DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>>) {
+}: PropsWithChildren<DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>>) {
   return (
-    <h2
+    <code
       className={cn(
-        'pb-2 text-xl md:text-3xl font-semibold tracking-tight wrap-break-word',
+        'bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
         className,
       )}
       {...props}
@@ -16,4 +16,4 @@ function H2({
   );
 }
 
-export { H2 };
+export { Code };
