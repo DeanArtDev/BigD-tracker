@@ -20,6 +20,21 @@ const account = {
     code: 'AC-A-0002',
     details: Details.Define<{ message: string }>(),
   },
+
+  userNotFound: {
+    code: 'AC-U-0001',
+    details: Details.Define<{ userId: number }>(),
+  },
+
+  sessionNotFound: {
+    code: 'AC-S-0001',
+    details: Details.Define<{ userId: number; message?: string }>(),
+  },
+
+  sessionExpired: {
+    code: 'AC-S-0002',
+    details: Details.Define<{ userId: number; message?: string }>(),
+  },
 } as const satisfies ExceptionConfig;
 
 // Goal service

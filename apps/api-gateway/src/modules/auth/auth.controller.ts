@@ -1,17 +1,29 @@
 import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { RegisterSage } from '@/modules/auth/application';
-import { AccountLogin, AccountLogout, AccountRefresh } from '@big-d/api-contracts';
+import { ValidateReferralTokenQuery } from '@/modules/auth/dto/referral-token-validation.dto';
+import { ReferralTokenRes } from '@/modules/auth/dto/referral-token.dto';
+import {
+  AccountLogin,
+  AccountLogout,
+  AccountReferralToken,
+  AccountRefresh,
+} from '@big-d/api-contracts';
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Inject,
   Post,
+  Query,
   Req,
   Res,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
@@ -34,6 +46,8 @@ export class AuthController {
     @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
     private readonly cookieService: CookieService,
     private readonly registerSage: RegisterSage,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('register')
@@ -154,5 +168,50 @@ export class AuthController {
 
     this.cookieService.setRefreshToken(res, { token: refreshToken, maxAge });
     return { data: { token: accessToken } };
+  }
+
+  @Post('/referral-token')
+  @ApiOperation({
+    summary: 'Генерация реферального токена',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: ReferralTokenRes,
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(ReferralTokenRes)
+  async generateReferralToken(
+    @TokenPayload() token: AccessTokenPayload,
+  ): Promise<ReferralTokenRes> {
+    const { data } = await this.accountClient.send<
+      AccountReferralToken.Response,
+      AccountReferralToken.Request
+    >(AccountReferralToken.pattern, {
+      data: token,
+    });
+
+    return { data: { token: data.referralToken } };
+  }
+
+  @Get('/referral-token/validate')
+  @ApiOperation({
+    summary: 'Валидация реферального токена',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: ReferralTokenRes,
+  })
+  @Public()
+  async validateReferralToken(@Query() { token }: ValidateReferralTokenQuery): Promise<void> {
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get('AUTH_SECRET_KEY'),
+      });
+    } catch {
+      throw new UnprocessableEntityException({ message: 'Токен просрочен или не валидный' });
+    }
+
+    return undefined;
   }
 }

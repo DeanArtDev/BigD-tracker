@@ -28,5 +28,6 @@ const events = [UserCreatedEvent, UserDeletedEvent];
     ...queries,
     ...events,
   ],
+  exports: [USER_REPOSITORY],
 })
 export class UsersModule {}

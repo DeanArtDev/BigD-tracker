@@ -1,5 +1,5 @@
 import { useLogout } from '@/feature/logout';
-import { useDevNotifications } from '@/shared/ui-kit/helpers';
+import { routes } from '@/shared/lib/routes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 import {
   DropdownMenuContent,
@@ -9,12 +9,13 @@ import {
   DropdownMenuSeparator,
 } from '@/shared/ui-kit/ui/dropdown-menu';
 import { useSidebar } from '@/shared/ui-kit/ui/sidebar';
-import { BadgeCheck, Bell, LogOut, Sparkles } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function UserDropdownMenu(props: { name?: string; email: string; avatar?: string }) {
   const { name, email, avatar } = props;
   const { isMobile } = useSidebar();
-  const { inDev } = useDevNotifications();
+  const navigate = useNavigate();
 
   const { logout, isPending } = useLogout();
 
@@ -40,24 +41,12 @@ function UserDropdownMenu(props: { name?: string; email: string; avatar?: string
 
       <DropdownMenuSeparator />
 
-      <DropdownMenuGroup>
-        <DropdownMenuItem onClick={inDev}>
-          <Sparkles />
-          Upgrade to Pro
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-
       <DropdownMenuSeparator />
 
       <DropdownMenuGroup>
-        <DropdownMenuItem onClick={inDev}>
-          <BadgeCheck />
-          Account
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={inDev}>
-          <Bell />
-          Notifications
+        <DropdownMenuItem onClick={() => navigate(routes.settings.path)}>
+          <Settings />
+          Настройки
         </DropdownMenuItem>
       </DropdownMenuGroup>
 

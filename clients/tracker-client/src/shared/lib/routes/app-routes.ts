@@ -82,6 +82,11 @@ const routes = {
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
   }))('/login'),
 
+  settings: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: () => buildLink(path),
+  }))('/settings'),
+
   error: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),

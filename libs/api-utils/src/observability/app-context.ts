@@ -7,5 +7,6 @@ interface AppContextState {
 }
 
 const AppContext = new AsyncLocalStorage<AppContextState>();
+const createAppContext = () => new AsyncLocalStorage<AppContextState>();
 
-export { AppContext, AppContextState };
+export { AppContext, AppContextState, createAppContext };
