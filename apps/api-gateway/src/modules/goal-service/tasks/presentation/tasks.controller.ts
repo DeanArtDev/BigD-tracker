@@ -13,6 +13,7 @@ import {
   GoalGetTasks,
   GoalReplaceTask,
   GoalUnassignTaskFromGroup,
+  TaskStatus,
 } from '@big-d/api-contracts';
 import {
   Body,
@@ -63,6 +64,18 @@ export class TasksController {
     @Query() query: GetTasksQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<GetTasksRes> {
+    const availableStatuses = [
+      TaskStatus.NOT_STARTED,
+      TaskStatus.IN_PROGRESS,
+      TaskStatus.COMPLETED,
+      TaskStatus.OVERDUE,
+      TaskStatus.CANCELLED,
+    ];
+
+    const status =
+      query.filter?.status?.filter((i) => availableStatuses.includes(i)) ?? availableStatuses;
+    const filter = { ...(query?.filter ?? {}), status };
+
     return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(
       GoalGetTasks.pattern,
       {
@@ -70,7 +83,7 @@ export class TasksController {
           userId: uid,
           search: query.search,
           sort: query.sort,
-          filter: query.filter,
+          filter,
         },
       },
     );

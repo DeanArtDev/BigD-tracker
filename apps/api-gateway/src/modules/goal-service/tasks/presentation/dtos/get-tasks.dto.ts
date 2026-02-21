@@ -4,6 +4,7 @@ import { Expose, Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
+  IsIn,
   IsInt,
   IsISO8601,
   IsNotEmpty,
@@ -17,6 +18,14 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { TaskDto } from './task.dto';
+
+const AllowedTaskStatuses = [
+  TaskStatus.NOT_STARTED,
+  TaskStatus.IN_PROGRESS,
+  TaskStatus.COMPLETED,
+  TaskStatus.OVERDUE,
+  TaskStatus.CANCELLED,
+] as const;
 
 @ValidatorConstraint({ name: 'BothOrNothing', async: false })
 class BothOrNothing implements ValidatorConstraintInterface {
@@ -98,17 +107,16 @@ class GetTasksFilterDto {
 
   @ApiPropertyOptional({
     description: 'Статусы',
-    type: [String],
-    example: [TaskStatus.DELETED, TaskStatus.NOT_STARTED],
-    enum: TaskStatus,
+    example: [TaskStatus.NOT_STARTED],
+    enum: AllowedTaskStatuses,
     isArray: true,
   })
   @Expose()
   @IsOptional()
   @Type(() => String)
   @IsArray()
-  @IsEnum(TaskStatus, { each: true })
-  status?: TaskStatus[];
+  @IsIn(AllowedTaskStatuses, { each: true })
+  status?: (typeof AllowedTaskStatuses)[number][];
 
   @ApiPropertyOptional({
     description: 'Начало диапазона (ISO 8601). Должно приходить вместе с filter.to',

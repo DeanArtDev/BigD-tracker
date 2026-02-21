@@ -26,14 +26,14 @@ const maxLevelValidation = z
 
     startDate: z
       .date()
-      .min(new Date(), { error: 'Начало не должно быть в прошлом' })
+      .min(new Date().getTime(), { error: 'Начало не должно быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
       .transform(formTransform.dateToISOSFormat),
 
     deadline: z
       .date()
-      .min(new Date(), { error: 'Дедлайн не должен быть в прошлом' })
+      .min(new Date().getTime(), { error: 'Дедлайн не должен быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
       .transform(formTransform.dateToISOSFormat),

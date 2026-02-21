@@ -1,4 +1,4 @@
-import type { GroupEntity } from '@/entity/planner/groups';
+import { type GroupEntity, GroupStatus } from '@/entity/planner/groups';
 import { taskDtoToEntity } from '@/entity/planner/tasks';
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { groupsQueryKeys } from './query';
@@ -13,7 +13,7 @@ function useGroupByIdQuery(params: { groupId?: number }) {
           id: group.id,
           name: group.name,
           description: group.description,
-          status: group.status,
+          status: group.status as GroupStatus,
           progress: group.progress,
           tasks: group.tasks.map(taskDtoToEntity),
         };

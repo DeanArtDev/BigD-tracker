@@ -19,14 +19,13 @@ function EventList<TExtra extends { id: number }>({
       {eventList.map((event) => {
         return (
           <li
-            key={event.extra?.id}
+            key={event.key}
             className="absolute cursor-pointer px-2 py-0.5 md:py-0 min-h-[20px] bg-gray-200 rounded-sm border border-gray-400 shadow-sm overflow-hidden"
             style={{
               top: event.position.top,
               left: event.position.left,
               right: event.position.right,
               bottom: event.position.bottom,
-              zIndex: event.style?.zIndex,
             }}
             onClick={() => void onEventClick?.(event)}
           >

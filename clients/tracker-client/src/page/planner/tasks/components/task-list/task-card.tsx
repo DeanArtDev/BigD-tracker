@@ -1,7 +1,6 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { isAllowAccentIndicationTask } from '@/entity/planner/tasks/lib';
 import { TaskDeadlineDate, TaskFrame, TaskStartDate } from '@/entity/planner/tasks/ui';
-import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import type { ReactNode } from 'react';
 
 interface ThingCardProps {
@@ -44,6 +43,5 @@ function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
     />
   );
 }
-const TaskCardSkeleton = () => <Skeleton className="h-[50px] w-full rounded-md shadow-md" />;
 
-export { TaskCard, TaskCardSkeleton, type ThingCardProps };
+export { TaskCard, type ThingCardProps };

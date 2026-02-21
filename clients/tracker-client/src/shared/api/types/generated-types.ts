@@ -1441,11 +1441,10 @@ export interface components {
             /**
              * @description Статусы
              * @example [
-             *       "DELETED",
              *       "NOT_STARTED"
              *     ]
              */
-            status?: ("NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED")[];
+            status?: ("NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED")[];
             /**
              * @description Начало диапазона (ISO 8601). Должно приходить вместе с filter.to
              * @example 2026-01-01T00:00:00.000Z
