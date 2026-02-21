@@ -87,6 +87,12 @@ export const router = createBrowserRouter([
             path: routes.plannerTasks.path,
             lazy: () => import('@/page/planner/tasks/tasks.page'),
           },
+
+          /* SYSTEM */
+          {
+            path: routes.settings.path,
+            lazy: () => import('@/page/settings/settings.page'),
+          },
         ],
       },
 

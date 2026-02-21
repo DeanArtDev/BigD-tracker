@@ -202,7 +202,7 @@ export class AuthController {
     status: HttpStatus.OK,
     type: ReferralTokenRes,
   })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @Public()
   async validateReferralToken(@Query() { token }: ValidateReferralTokenQuery): Promise<void> {
     try {
       await this.jwtService.verifyAsync(token, {
