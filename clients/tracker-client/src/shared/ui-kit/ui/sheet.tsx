@@ -60,6 +60,19 @@ function SheetContent({
           className,
         )}
         {...props}
+        onPointerDownOutside={(e) => {
+          const target = e.target as HTMLElement;
+
+          if (target.closest('[data-sonner-toast], [data-sonner-toaster]')) {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          const target = e.target as HTMLElement;
+          if (target.closest('[data-sonner-toast], [data-sonner-toaster]')) {
+            e.preventDefault();
+          }
+        }}
       >
         {children}
         {showCloseButton && (

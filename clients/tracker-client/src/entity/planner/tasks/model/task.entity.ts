@@ -11,6 +11,14 @@ enum TaskStatus {
   DELETED = 'DELETED',
 }
 
+enum TasksQueryStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  OVERDUE = 'OVERDUE',
+  CANCELLED = 'CANCELLED',
+}
+
 type TaskEntity = Override<Omit<ApiSchemas['TaskDto'], 'userId'>, 'status', TaskStatus>;
 
-export { type TaskEntity, TaskStatus };
+export { type TaskEntity, TaskStatus, TasksQueryStatus };

@@ -17,6 +17,7 @@ import { TaskPriority } from '../../../lib/constants';
 import { type TaskEntity } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
+import { SidebarErrorCatcher } from './components/sidebar-error-catcher';
 import { TaskFormSidebar } from './components/task-form-sidebar';
 import { TaskFieldsRulesProvider, useTaskFieldsRulesContext } from './context';
 import { validationStrategyByStatus } from './validation-strategy';
@@ -168,6 +169,8 @@ function Component(props: TaskFormProps) {
               </ButtonLoading>
             </div>
           </div>
+
+          <SidebarErrorCatcher />
 
           <FormStateEmitter
             isLoading={isLoading}

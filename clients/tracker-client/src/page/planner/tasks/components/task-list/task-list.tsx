@@ -1,12 +1,24 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
+import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
+import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
 import { useState } from 'react';
-import { TaskCard, TaskCardSkeleton } from './task-card';
 import { TaskCardActions } from './task-card-actions';
-import { TaskCardMobile } from './task-card-mobile';
+
+const TaskCardSkeleton = () => <Skeleton className="h-[50px] w-full rounded-md shadow-md" />;
+
+const TaskCardMobileLazy = withLazy(
+  () => import('./task-card-mobile').then((m) => ({ default: m.TaskCardMobile })),
+  <TaskCardSkeleton />,
+);
+
+const TaskCardLazy = withLazy(
+  () => import('./task-card').then((m) => ({ default: m.TaskCard })),
+  <TaskCardSkeleton />,
+);
 
 function LoadingSkeleton() {
   return (
@@ -50,7 +62,7 @@ function TaskList({
         >
           {tasks.map((task) =>
             isMobile ? (
-              <TaskCardMobile
+              <TaskCardMobileLazy
                 key={task.id}
                 task={task}
                 loading={loading}
@@ -61,7 +73,7 @@ function TaskList({
                 onDelete={() => onDelete(task)}
               />
             ) : (
-              <TaskCard
+              <TaskCardLazy
                 key={task.id}
                 task={task}
                 actionsSlot={

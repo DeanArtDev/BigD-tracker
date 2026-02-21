@@ -34,7 +34,6 @@ function FilterPriorityList({ priority, onFilterChange }: FilterPriorityListProp
             type="single"
             orientation="vertical"
             onValueChange={(value) => {
-              console.log({ value });
               const numericString = parseInt(value, 10);
               onFilterChange(
                 isNumber(numericString) && !Number.isNaN(numericString) ? numericString : undefined,

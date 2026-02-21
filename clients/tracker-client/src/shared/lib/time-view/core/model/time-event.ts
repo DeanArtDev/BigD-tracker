@@ -1,5 +1,6 @@
 import { type ConfigType } from '@/shared/lib/time';
 import { merge } from 'lodash-es';
+import { nanoid } from 'nanoid';
 import { DateAndTime } from '../helpers/date-and-time';
 import type { TimeViewPosition } from './types';
 
@@ -13,11 +14,18 @@ interface TimeEventData {
 
 class TimeEvent<TExtra = any> {
   #data: TimeEventData;
+  #key: string;
   #extra?: TExtra;
 
   constructor(data: TimeEventData, extra?: TExtra) {
     this.#data = data;
     this.#extra = extra;
+    this.#key =
+      nanoid(4) +
+      this.#data.position.top +
+      this.#data.position.bottom +
+      this.#data.position.left +
+      this.#data.position.right;
   }
 
   public setPosition(position: Partial<TimeViewPosition>) {
@@ -45,6 +53,9 @@ class TimeEvent<TExtra = any> {
   }
   get extra() {
     return this.#extra;
+  }
+  get key() {
+    return this.#key;
   }
 
   public isAllDay(currentDate: ConfigType): boolean {

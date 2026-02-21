@@ -1,4 +1,4 @@
-import type { GroupStatus } from '@/entity/planner/groups';
+import { GroupStatus } from '@/entity/planner/groups';
 import { GroupCreation } from '@/feature/planner/groups/group-creation';
 import { ButtonAdd } from '@/shared/components/button-add';
 import { InputForm } from '@/shared/components/form';
@@ -50,7 +50,7 @@ function GroupListHeader({ onSearch, onFilterChange }: GroupListHeaderProps) {
         <Button
           size="icon"
           variant="outline"
-          onClick={() => void onFilterChange?.({ status: 'IN_PROGRESS' })}
+          onClick={() => void onFilterChange?.({ status: GroupStatus.IN_PROGRESS })}
         >
           <SlidersHorizontal />
         </Button>

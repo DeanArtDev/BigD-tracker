@@ -34,7 +34,7 @@ function Component<TExtra extends { id: number }>(props: TimeViewProps<TExtra>) 
   }, [dateSet]);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 gap-2">
+    <div className="time-view flex flex-col flex-1 min-h-0 gap-2">
       <NavBar<TExtra> events={events} onEventClick={onEventClick} />
 
       <div className="flex flex-col flex-1 min-h-0">

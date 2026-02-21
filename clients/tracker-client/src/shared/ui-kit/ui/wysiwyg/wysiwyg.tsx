@@ -84,7 +84,7 @@ function Component({
                 <div className="content-editable-resizer-wrapper flex-auto max-w-full relative resize-y">
                   <ContentEditable
                     disabled={disabled}
-                    className="group/content-editable grow min-h-[200px] flex-1 p-5 pb-10 sm:pb-7 text-base"
+                    className="group/content-editable outline-none grow min-h-[200px] flex-1 p-5 pb-10 sm:pb-7 text-base"
                     aria-placeholder={placeholder}
                     placeholder={
                       <div

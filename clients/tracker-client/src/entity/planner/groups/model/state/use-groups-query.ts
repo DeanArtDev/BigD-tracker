@@ -2,7 +2,7 @@ import { taskDtoToEntity } from '@/entity/planner/tasks';
 import { $privetQueryClient } from '@/shared/api/api-client';
 import type { ApiSchemas } from '@/shared/api/types';
 import { keyBy } from 'lodash-es';
-import type { GroupEntity } from '../group.entity';
+import { type GroupEntity, GroupStatus } from '../group.entity';
 import { groupsQueryKeys } from './query';
 
 function useGroupsQuery(params?: { search?: string; limit?: number }) {
@@ -17,7 +17,7 @@ function useGroupsQuery(params?: { search?: string; limit?: number }) {
             id: group.id,
             name: group.name,
             description: group.description,
-            status: group.status,
+            status: group.status as GroupStatus,
             progress: group.progress,
             tasks: group.tasks.map(taskDtoToEntity),
           }));

@@ -6,9 +6,8 @@ import { Button } from '@/shared/ui-kit/ui/button';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { cn } from '@/shared/ui-kit/utils';
 import { Plus } from 'lucide-react';
-import { Fragment, useEffect } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
+import { Fragment } from 'react';
+import { useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { useTaskFieldsRulesContext } from '../../context';
 import { validationStrategyByStatus } from '../../validation-strategy';
@@ -23,23 +22,6 @@ function TaskFormDates(props: { disabled?: boolean }) {
   const deadline = useWatch<{ deadline: TaskFormData['deadline'] }>({ name: 'deadline' });
 
   const dateLimits = getMinMaxValues({ startDate, deadline });
-
-  const { subscribe } = useFormContext<TaskFormData>();
-  useEffect(() => {
-    return subscribe({
-      name: ['startDate', 'deadline'],
-      formState: { errors: true },
-      callback: (data) => {
-        const deadlineError = data.errors?.['deadline'];
-        const startDateError = data.errors?.['startDate'];
-        if (deadlineError || startDateError) {
-          toast.error(deadlineError?.message ?? startDateError?.message, {
-            position: 'top-center',
-          });
-        }
-      },
-    });
-  }, [subscribe]);
 
   return (
     <Fragment>

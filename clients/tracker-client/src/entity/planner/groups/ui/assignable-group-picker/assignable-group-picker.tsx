@@ -6,13 +6,13 @@ import {
 } from '@/shared/lib/react/use-end-to-end-search';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui-kit/ui/input-group';
-import { Item, ItemContent, ItemMedia, ItemTitle } from '@/shared/ui-kit/ui/item';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { cn } from '@/shared/ui-kit/utils';
 import { partition } from 'lodash-es';
 import { Check, Inbox, Search } from 'lucide-react';
-import { type ReactNode, useMemo } from 'react';
+import { useMemo } from 'react';
+import { AssignableGroupItem } from './assignable-group-item';
 
 interface AssignableGroupPickerProps {
   readonly items: GroupInfoEntity[];
@@ -37,7 +37,7 @@ function AssignableGroupPicker({
       inbox: inbox?.at(-1),
       items: [...pinned, ...others],
     };
-  }, [items]);
+  }, [items, taskGroupId]);
 
   const { foundData, handleSearchChange } = useEndToEndSearch<GroupInfoEntity>({
     data: groupInfoData.items,
@@ -63,8 +63,7 @@ function AssignableGroupPicker({
                 <Inbox className={cn('size-4 stroke-3', { 'stroke-gray-500': disabled })} />
               </>
             }
-            disabled={disabled}
-            isSelected={inbox.id === taskGroupId}
+            disabled={disabled || inbox.id === taskGroupId}
             onClick={() => void onInboxSelect(inbox)}
           />
 
@@ -85,13 +84,12 @@ function AssignableGroupPicker({
                 <AssignableGroupItem
                   key={groupIndo.id}
                   item={groupIndo}
-                  disabled={disabled}
+                  disabled={disabled || isSelected}
                   actionSlot={
                     isSelected && (
                       <Check className={cn('size-4 stroke-3 ', { 'stroke-gray-500': disabled })} />
                     )
                   }
-                  isSelected={isSelected}
                   onClick={() => void onSelect(groupIndo)}
                 />
               );
@@ -119,47 +117,6 @@ function AssignableGroupPicker({
         </InputGroup>
       </div>
     </div>
-  );
-}
-
-interface AssignableGroupItemProps {
-  readonly item: GroupInfoEntity;
-  readonly actionSlot?: ReactNode;
-  readonly className?: string;
-  readonly disabled?: boolean;
-  readonly isSelected: boolean;
-  readonly onClick: () => void;
-}
-
-function AssignableGroupItem({
-  item,
-  disabled,
-  className,
-  isSelected,
-  actionSlot,
-  onClick,
-}: AssignableGroupItemProps) {
-  return (
-    <Item
-      className={cn('min-w-0 w-auto', className, {
-        'hover:cursor-pointer hover:bg-gray-100': !isSelected && !disabled,
-      })}
-      variant={disabled ? 'muted' : 'outline'}
-      size="xs"
-      onClick={() => {
-        if (!disabled && !isSelected) onClick();
-      }}
-    >
-      <ItemContent className="w-full min-w-0">
-        <ItemTitle
-          className={cn('flex line-clamp-1 break-all min-w-0 ', { 'text-gray-500': disabled })}
-        >
-          {item.name}
-        </ItemTitle>
-      </ItemContent>
-
-      {actionSlot != null && <ItemMedia>{actionSlot}</ItemMedia>}
-    </Item>
   );
 }
 
