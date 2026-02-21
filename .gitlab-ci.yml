@@ -20,7 +20,6 @@ stages:
 
 .client-deploy-template:
   image: alpine:3.20
-  tags: [registry, dind]
 
   before_script:
     - *ssh-prepare
@@ -299,6 +298,14 @@ training-service:build:
 #      "
 
 tracker-client:deploy:dev:
+  stage: deploy-dev-stage
+  when: manual
+  dependencies:
+    - tracker-client:build
+  needs:
+    - job: tracker-client:build
+      optional: false
+  tags: [ registry, dind ]
   extends: .client-deploy-template
   before_script:
     - !reference [.client-deploy-template, before_script]
