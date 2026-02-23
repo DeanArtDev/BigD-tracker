@@ -59,8 +59,8 @@ class DateAndTime {
     const newDate = DateAndTime.createDate(date, locale);
 
     return {
-      from: newDate.startOf('day'),
-      to: newDate.endOf('day'),
+      from: newDate.startOf('day').set('milliseconds', 0),
+      to: newDate.endOf('day').set('milliseconds', 0),
     };
   };
 }
