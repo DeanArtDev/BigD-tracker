@@ -20,6 +20,8 @@ function GroupEditController({ group }: GroupEditControllerProps) {
   const invalidateAllGroups = useInvalidateAllGroups();
   const navigate = useNavigate();
 
+  const isNotAllowGroupDelete = !isAllowGroupDelete(group);
+
   return (
     <GroupEditForm
       group={group}
@@ -29,15 +31,18 @@ function GroupEditController({ group }: GroupEditControllerProps) {
           groupId={group.id}
           onSuccess={async () => {
             await navigate(routes.plannerGroupList.path);
-            await invalidateAllGroups();
           }}
         >
-          {({ isLoading }) => (
-            <AppTooltip content="Нельзя удалить пока содержит дела">
+          {({ isLoading, onDelete }) => (
+            <AppTooltip
+              content="Нельзя удалить пока содержит дела"
+              disable={!isNotAllowGroupDelete}
+            >
               <ButtonTrash
-                disabled={!isAllowGroupDelete(group)}
+                disabled={isNotAllowGroupDelete}
                 variant="ghost"
                 isLoading={isLoading}
+                onClick={onDelete}
               />
             </AppTooltip>
           )}

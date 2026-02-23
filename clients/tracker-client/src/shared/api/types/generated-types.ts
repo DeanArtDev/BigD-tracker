@@ -1498,9 +1498,15 @@ export interface components {
              */
             to?: string;
         };
+        GetTasksResData: {
+            /** @description Ответ сервера */
+            items: components["schemas"]["TaskDto"][];
+            /** @description Метаинформация */
+            meta: components["schemas"]["CursorPaginationResDto"];
+        };
         GetTasksRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["TaskDto"][];
+            data: components["schemas"]["GetTasksResData"];
         };
         GetAssignableTasksRes: {
             /** @description Ответ сервера */

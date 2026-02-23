@@ -10,7 +10,7 @@ const EMPTY_DIARY_PLACEHOLDER: TaskEntity[] = [];
 function useTasksQuery(params?: TaskQueryParams) {
   const { data, ...others } = $privetQueryClient.useQuery(...tasksQueryKeys.getTasks(params), {
     select: (data): QuerySelectResponse<TaskEntity> => {
-      const items = data.data.map(taskDtoToEntity);
+      const items = data.data?.items.map(taskDtoToEntity);
 
       return {
         items,
