@@ -1,6 +1,6 @@
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 import type { ReactNode } from 'react';
-import { useGroupDelete, useInvalidateAllGroups } from '../model';
+import { useGroupDelete } from '../model';
 
 interface GroupConfirmedDeleteProps {
   readonly groupId: number;
@@ -11,21 +11,11 @@ interface GroupConfirmedDeleteProps {
 function GroupConfirmedDelete({ groupId, onSuccess, children }: GroupConfirmedDeleteProps) {
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const { deleteGroup, isPending } = useGroupDelete();
-  const invalidateAllGroups = useInvalidateAllGroups();
 
   const handleDelete = () => {
     viaConfirmation({
       isNeedConfirm: () => true,
-      callback: () =>
-        void deleteGroup(
-          { params: { path: { groupId } } },
-          {
-            onSuccess: async () => {
-              await invalidateAllGroups();
-              await onSuccess?.();
-            },
-          },
-        ),
+      callback: () => void deleteGroup({ params: { path: { groupId } } }, { onSuccess }),
       dialog: {
         title: 'Удалить?',
         content: 'В будущем, дело можно будет восстановить',

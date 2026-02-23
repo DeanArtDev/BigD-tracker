@@ -25,6 +25,17 @@ function useInvalidateGroupById() {
 
 function useInvalidateAllGroups() {
   return () => {
+    queryClient.removeQueries({
+      predicate: (query) => {
+        if (Array.isArray(query.queryKey)) {
+          const endpoint = query.queryKey[1];
+          const mainEndpointStart = groupsQueryKeys.mainKey[1];
+          return endpoint?.startsWith(mainEndpointStart);
+        }
+        return undefined;
+      },
+    });
+
     return queryClient.invalidateQueries({
       predicate: (query) => {
         if (Array.isArray(query.queryKey)) {

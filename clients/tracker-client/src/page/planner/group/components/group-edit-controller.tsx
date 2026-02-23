@@ -31,6 +31,7 @@ function GroupEditController({ group }: GroupEditControllerProps) {
           groupId={group.id}
           onSuccess={async () => {
             await navigate(routes.plannerGroupList.path);
+            await invalidateAllGroups();
           }}
         >
           {({ isLoading, onDelete }) => (
