@@ -16,7 +16,11 @@ function SettingsPage() {
   const { data, generateReferralToken, isPending, isSuccess } = useReferralToken();
 
   return (
-    <PageWrapper fixContainer className="pt-2 lg:pt-4" title="Настройки">
+    <PageWrapper
+      fixContainer
+      className="pt-2 lg:pt-4 px-2 md:px-4 lg:px-4 border-l border-r"
+      title="Настройки"
+    >
       <Typography.H2 className="text-center lg:mb-4">Настройки</Typography.H2>
       <Separator className="mb-2" />
 

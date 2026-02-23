@@ -1,4 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { getRefreshTokenCookie } from '@shared/services/cookies';
 import { Request } from 'express';
 
@@ -11,7 +12,7 @@ export class RefreshTokenGuard implements CanActivate {
     const refreshToken = getRefreshTokenCookie(request);
 
     if (refreshToken == null || refreshToken === '') {
-      throw new UnauthorizedException('Refresh token not found');
+      throw new ExceptionUnauthorized({ message: 'Refresh token not found or invalid' });
     }
 
     return true;

@@ -1,0 +1,44 @@
+import { type TaskEntity, TaskPriority } from '@/entity/planner/tasks';
+
+interface UseTaskFormValuesProps {
+  readonly task?: TaskEntity;
+  readonly defaultValue?: {
+    readonly startDate?: Date;
+    readonly deadline?: Date;
+  };
+}
+
+function useTaskFormValues({ task, defaultValue }: UseTaskFormValuesProps) {
+  const isEdit = task != null;
+
+  const defaultValues = isEdit
+    ? undefined
+    : {
+        name: undefined,
+        description: undefined,
+        weight: 100,
+        priority: TaskPriority.DELETE.toString(),
+        isDescriptionDirty: false,
+        startDate: defaultValue?.startDate,
+        deadline: defaultValue?.deadline,
+      };
+
+  const values = isEdit
+    ? {
+        name: task.name,
+        startDate: task.startDate != null ? new Date(task.startDate) : undefined,
+        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
+        description: task.description,
+        priority: task.priority?.toString(),
+        isDescriptionDirty: false,
+        weight: task.weight,
+      }
+    : undefined;
+
+  return {
+    values,
+    defaultValues,
+  };
+}
+
+export { useTaskFormValues, type UseTaskFormValuesProps };

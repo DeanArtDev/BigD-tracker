@@ -1,6 +1,9 @@
 import { formPlaceholderValues, formTransform, transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 import { taskPrioritySchema } from '../../../../lib/validation-schemas';
+import dayjs from '@/shared/lib/time';
+
+const getNowTime = () => dayjs(new Date()).set('seconds', 59).set('milliseconds', 59).valueOf();
 
 const maxLevelValidation = z
   .object({
@@ -26,14 +29,14 @@ const maxLevelValidation = z
 
     startDate: z
       .date()
-      .min(new Date().getTime(), { error: 'Начало не должно быть в прошлом' })
+      .min(getNowTime(), { error: 'Начало не должно быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
       .transform(formTransform.dateToISOSFormat),
 
     deadline: z
       .date()
-      .min(new Date().getTime(), { error: 'Дедлайн не должен быть в прошлом' })
+      .min(getNowTime(), { error: 'Дедлайн не должен быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
       .transform(formTransform.dateToISOSFormat),

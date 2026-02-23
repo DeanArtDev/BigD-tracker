@@ -1,8 +1,8 @@
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { AppManipulatorContainer } from '@/shared/components/app-manipulator-container';
 import { ButtonAdd } from '@/shared/components/button-add';
+import { ManipulatorSearch } from '@/shared/components/manipulator-search';
 import { cn } from '@/shared/ui-kit/utils';
-import { TaskSearch } from './components/task-search';
 import { useState } from 'react';
 import { useTaskPageUrlQuery } from '../../lib/use-task-page-url-query';
 import { FilterPriorityList } from './components/filter-priority-list';
@@ -16,6 +16,8 @@ function TasksPageManipulator() {
   return (
     <AppManipulatorContainer
       items={[
+        searchOpen ? { key: '1', element: <div className="w-[56px]" /> } : null,
+        searchOpen ? { key: '2', element: <div className="w-[56px]" /> } : null,
         {
           key: 'sort',
           className: cn({ 'opacity-0': searchOpen }),
@@ -35,7 +37,10 @@ function TasksPageManipulator() {
             <FilterStatusList
               selectedStatuses={pageQuery?.filter?.status ?? []}
               onFilterChange={(statuses) => {
-                setPageQuery((prev) => ({ ...prev, filter: { ...prev.filter, status: statuses } }));
+                setPageQuery((prev) => ({
+                  ...prev,
+                  filter: { ...prev.filter, status: statuses },
+                }));
               }}
             />
           ),
@@ -66,8 +71,10 @@ function TasksPageManipulator() {
         {
           key: 'search',
           element: (
-            <TaskSearch
+            <ManipulatorSearch
               open={searchOpen}
+              placeholder="Поиск по делам"
+              className="inset-1.5 w-[calc(100%-56px)]"
               search={pageQuery?.search}
               onOpenChange={setSearchOpen}
               onSearchChange={(search) => {
@@ -76,7 +83,7 @@ function TasksPageManipulator() {
             />
           ),
         },
-      ]}
+      ].filter(Boolean)}
     />
   );
 }

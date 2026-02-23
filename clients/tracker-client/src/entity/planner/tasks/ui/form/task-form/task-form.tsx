@@ -1,3 +1,4 @@
+import { useTaskFormValues } from '@/entity/planner/tasks/ui/form/task-form/lib/use-task-form-values';
 import { ButtonLoading } from '@/shared/components/button-loading';
 import {
   FormStateEmitter,
@@ -64,30 +65,7 @@ function Component(props: TaskFormProps) {
 
   const formId = useId();
   const isEdit = task != null;
-
-  const defaultValues = isEdit
-    ? undefined
-    : {
-        name: undefined,
-        description: undefined,
-        weight: 100,
-        priority: TaskPriority.DELETE.toString(),
-        isDescriptionDirty: false,
-        startDate: props.defaultValue?.startDate,
-        deadline: props.defaultValue?.deadline,
-      };
-
-  const values = isEdit
-    ? {
-        name: task.name,
-        startDate: task.startDate != null ? new Date(task.startDate) : undefined,
-        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
-        description: task.description,
-        priority: task.priority?.toString(),
-        isDescriptionDirty: false,
-        weight: task.weight,
-      }
-    : undefined;
+  const { values, defaultValues } = useTaskFormValues({ task, defaultValue: props?.defaultValue });
 
   const form = useForm<TaskFormData, any, TaskSubmitFormData>({
     resolver: zodResolver(validationSchema),

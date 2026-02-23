@@ -20,6 +20,7 @@ stages:
   - chmod 644 ~/.ssh/known_hosts
   - ssh-add ~/.ssh/id_rsa
 
+# ======================== TEMPLATES ===============================
 .client-deploy-template:
   image: alpine:3.20
   tags: [registry, dind]
@@ -37,6 +38,7 @@ stages:
         echo '${CI_REGISTRY_PASSWORD}' | docker login '${CI_REGISTRY}' -u '${CI_REGISTRY_USER}' --password-stdin
         docker compose -f docker-compose.yml pull
         docker compose -f docker-compose.yml up -d
+        docker system prune -a -f
       "
 
 .client-build-template:
@@ -75,7 +77,6 @@ stages:
 
     - docker push "$IMAGE_REF"
 
-# ======================== TEMPLATES ===============================
 .app-build-template:
   image: docker:27.4.1-cli
   needs:

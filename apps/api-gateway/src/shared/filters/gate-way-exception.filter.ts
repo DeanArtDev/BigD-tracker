@@ -1,10 +1,11 @@
 import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
-import { isBaseExceptionInstance } from '@big-d/exceptions';
+import { isBaseException, exceptionCode } from '@big-d/exceptions';
 import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
   GatewayTimeoutException,
+  HttpStatus,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { BaseHttpException } from '@shared/exceptions';
@@ -18,14 +19,19 @@ export class GateWayExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const error = unwrapDefaultRpcException(exception) ?? exception;
 
-    // RPC errors
+    // RPC exceptions
     if (isBaseRpcException(error)) {
       const httpException = BaseHttpException.createFromRpc(error);
       return response.status(httpException.getStatus()).json(httpException.getResponse());
     }
 
-    // HTTP errors
-    if (isBaseExceptionInstance(exception)) {
+    // Domain exceptions
+    if (isBaseException(exception)) {
+      if (exceptionCode.accountUnauthorized.code === exception.code) {
+        const exn = new BaseHttpException(exception, HttpStatus.UNAUTHORIZED);
+        return response.status(exn.getStatus()).json(exn.getResponse());
+      }
+
       const httpExc = new GatewayTimeoutException(exception.toResponse());
       return response.status(httpExc.getStatus()).json(httpExc.getResponse());
     }

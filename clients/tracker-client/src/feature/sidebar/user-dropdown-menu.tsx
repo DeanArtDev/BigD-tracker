@@ -41,8 +41,6 @@ function UserDropdownMenu(props: { name?: string; email: string; avatar?: string
 
       <DropdownMenuSeparator />
 
-      <DropdownMenuSeparator />
-
       <DropdownMenuGroup>
         <DropdownMenuItem onClick={() => navigate(routes.settings.path)}>
           <Settings />

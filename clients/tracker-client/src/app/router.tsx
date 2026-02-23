@@ -109,14 +109,9 @@ export const router = createBrowserRouter([
             lazy: () => import('@/page/sign-up.page'),
           },
           {
-            path: routes.signUp.path + '/temps',
-            lazy: () => import('@/page/sign-up.temp.page'),
-          },
-          {
             path: routes.login.path,
             lazy: () => import('@/page/login.page'),
           },
-
           {
             path: '*',
             loader: () => redirect(routes.home.path),

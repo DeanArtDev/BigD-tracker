@@ -2,6 +2,7 @@ import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients'
 import { RegisterSage } from '@/modules/auth/application';
 import { ValidateReferralTokenQuery } from '@/modules/auth/dto/referral-token-validation.dto';
 import { ReferralTokenRes } from '@/modules/auth/dto/referral-token.dto';
+import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import {
   AccountLogin,
   AccountLogout,
@@ -107,9 +108,9 @@ export class AuthController {
       >(AccountRefresh.pattern, { data: { ip, userAgent, refreshToken } });
       this.cookieService.setRefreshToken(res, { token: data.refreshToken, maxAge: data.maxAge });
       return { data: { token: data.accessToken } };
-    } catch (e) {
+    } catch {
       this.cookieService.setRefreshToken(res, { token: undefined });
-      throw e;
+      throw new ExceptionUnauthorized({ message: 'Refresh token not found or invalid' });
     }
   }
 

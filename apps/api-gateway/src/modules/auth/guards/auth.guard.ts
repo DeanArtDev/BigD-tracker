@@ -1,4 +1,4 @@
-import { HttpExceptionUnauthorized } from '@/modules/auth/errors';
+import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new HttpExceptionUnauthorized({
+      throw new ExceptionUnauthorized({
         message: 'Missing authorization token',
       });
     }
@@ -43,7 +43,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch {
-      throw new HttpExceptionUnauthorized({ message: 'Invalid or expired access token' });
+      throw new ExceptionUnauthorized({ message: 'Invalid or expired access token' });
     }
   }
 }

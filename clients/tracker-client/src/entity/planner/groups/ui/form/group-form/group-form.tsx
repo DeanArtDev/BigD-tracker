@@ -83,7 +83,12 @@ function GroupForm({
         />
 
         <div className="flex gap-2 justify-end">
-          <ButtonLoading size="sm" isLoading={isLoading} disabled={!form.formState.isDirty}>
+          <ButtonLoading
+            size="sm"
+            type="submit"
+            isLoading={isLoading}
+            disabled={!form.formState.isDirty}
+          >
             Создать
           </ButtonLoading>
         </div>
