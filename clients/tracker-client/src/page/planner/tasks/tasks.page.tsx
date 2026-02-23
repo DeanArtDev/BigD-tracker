@@ -34,6 +34,7 @@ function TasksPage() {
       {confirmHolder}
 
       <TaskEdit
+        taskGroupId={task?.groupId}
         task={task}
         onCansel={() => void setTask(undefined)}
         onSuccess={() => void setTask(undefined)}
