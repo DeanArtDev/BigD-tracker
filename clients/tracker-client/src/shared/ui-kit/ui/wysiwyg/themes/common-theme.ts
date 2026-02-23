@@ -64,25 +64,24 @@ export const commonTheme: EditorThemeClasses = {
 
     listitem:
       'listitem relative min-h-7 ' +
+      '[&[role=checkbox]]:flex flex-col justify-center ' +
       'group-[&[contenteditable=true]]/content-editable:before:cursor-pointer',
 
     listitemUnchecked:
       'checklist:flex checklist:pl-8 ' +
-      "before:content-[''] before:absolute before:left-0 before:top-[0.15rem] " +
+      "before:content-[''] before:absolute before:left-0 before:top-[2px] " +
       'before:size-6 before:shrink-0 before:rounded-[6px] before:border before:border-input ' +
       'before:bg-background dark:before:bg-input/30 before:shadow-xs',
 
-    // ✅ чеклист: checked
     listitemChecked:
       'checklist:flex checklist:pl-8 line-through ' +
-      "before:content-[''] before:absolute before:left-0 before:top-[0.15rem] " +
+      "before:content-[''] before:absolute before:left-0 before:top-[2px] " +
       'before:size-6 before:shrink-0 before:rounded-[6px] before:border before:border-primary ' +
       'before:bg-primary before:shadow-xs ' +
       "after:content-[''] after:absolute after:left-2 after:top-1.5 " +
       'after:h-[0.9rem] after:w-[0.45rem] after:rotate-45 ' +
       'after:border-r-[3px] after:border-b-[3px] after:border-primary-foreground',
 
-    // ✅ обычный UL: применяется ТОЛЬКО если ul НЕ checklist
     ul:
       'my-2 pl-6 list-disc ' +
       '[&.checklist]:pl-0 ' +
@@ -92,7 +91,6 @@ export const commonTheme: EditorThemeClasses = {
       '[&:not(.checklist)>.listitem]:flex-none ' +
       '[&:not(.checklist)>.listitem]:leading-7',
 
-    // ✅ обычный OL: применяется ТОЛЬКО если ol НЕ checklist (на всякий)
     ol:
       'my-2 pl-6 list-decimal ' +
       '[&:not(.checklist)>.listitem]:list-item ' +

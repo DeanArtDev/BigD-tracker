@@ -7,15 +7,25 @@ import { isEmpty } from 'lodash-es';
 import { SearchIcon, X } from 'lucide-react';
 import { useRef } from 'react';
 
-interface TaskSearchProps {
+interface ManipulatorSearchProps {
   readonly search: string | undefined;
   readonly open: boolean;
+  readonly className?: string;
+  readonly placeholder?: string;
   readonly loading?: boolean;
   readonly onOpenChange: (value: boolean) => void;
   readonly onSearchChange: (value: string | undefined) => void;
 }
 
-function TaskSearch({ search, open, loading, onOpenChange, onSearchChange }: TaskSearchProps) {
+function ManipulatorSearch({
+  search,
+  open,
+  loading,
+  placeholder,
+  className,
+  onOpenChange,
+  onSearchChange,
+}: ManipulatorSearchProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const hasValue = !isEmpty(search);
 
@@ -23,18 +33,19 @@ function TaskSearch({ search, open, loading, onOpenChange, onSearchChange }: Tas
     <>
       <Field
         className={cn(
-          'absolute inset-1.5 w-[calc(100%-56px)]',
-          'bg-background h-auto',
+          'absolute',
+          'bg-background rounded-md h-auto',
           'origin-left scale-x-0 opacity-0 pointer-events-none',
           'transition-[transform,scale,opacity] duration-400 ease-out',
           open && 'scale-x-100 opacity-100 pointer-events-auto',
+          className,
         )}
       >
         <InputGroup className="grow">
           <InputGroupInput
             ref={searchRef}
             value={search ?? ''}
-            placeholder="Поиск по делам"
+            placeholder={placeholder}
             onChange={(evt) => {
               const value = evt.target.value.trim() === '' ? undefined : evt.target.value;
               onSearchChange(value);
@@ -70,4 +81,4 @@ function TaskSearch({ search, open, loading, onOpenChange, onSearchChange }: Tas
   );
 }
 
-export { TaskSearch, type TaskSearchProps };
+export { ManipulatorSearch, type ManipulatorSearchProps };

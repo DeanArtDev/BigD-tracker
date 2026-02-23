@@ -2,6 +2,7 @@ import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients'
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
+import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { MeRes } from '@/modules/users/me.dto';
 import { AccountGetMe } from '@big-d/api-contracts';
 import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
@@ -24,11 +25,15 @@ export class UsersController {
   })
   @ValidateRpcResponse(MeRes)
   async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AccountGetMe.Response> {
-    return await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(
-      AccountGetMe.pattern,
-      {
-        data: { id: uid },
-      },
-    );
+    try {
+      return await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(
+        AccountGetMe.pattern,
+        {
+          data: { id: uid },
+        },
+      );
+    } catch {
+      throw new ExceptionUnauthorized({ message: 'Пользователь не авторизован' });
+    }
   }
 }

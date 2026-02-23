@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
           lang: 'ru',
           description: 'Трекинг всего и вся',
           name: 'Tracker',
-          short_name: 'Planner',
+          short_name: 'Tracker',
           start_url: '/?source=pwa',
           display: 'standalone',
           orientation: 'portrait',

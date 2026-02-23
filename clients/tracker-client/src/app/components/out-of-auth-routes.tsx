@@ -6,7 +6,7 @@ function OutOfAuthRoutes() {
   const isAuth = useAuthStore((state) => state.isAuth);
   const accessToken = useAccessTokenStore((state) => state.accessToken);
   const drop = useDropEverything();
-  if (isAuth || accessToken != null) return <Navigate to={routes.home.path} />;
+  if (isAuth && accessToken != null) return <Navigate to={routes.home.path} />;
   drop();
   return <Outlet />;
 }
