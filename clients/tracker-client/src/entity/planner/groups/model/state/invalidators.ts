@@ -1,5 +1,5 @@
-import { groupsQueryKeys } from './query';
 import { queryClient } from '@/shared/api/query-client';
+import { groupsQueryKeys } from './query';
 
 function useInvalidateInbox() {
   return () =>
