@@ -1,3 +1,4 @@
+import { usePwaUpdateToast } from '@/app/components/use-pwa-update-toast';
 import { FetchInterceptors } from './components/fetch-interceptors';
 import { Outlet } from 'react-router-dom';
 
@@ -12,6 +13,8 @@ import './styles/index.css';
  *  [] добавить общение для токена между вкладками BroadcastEvents
  * */
 export function App() {
+  usePwaUpdateToast();
+
   return (
     <FetchInterceptors>
       <Outlet />

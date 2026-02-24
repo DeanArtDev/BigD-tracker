@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
       }),
       tailwindcss(),
       VitePWA({
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
         includeAssets: ['/icons/favicon.svg', '/icons/favicon.ico', '/icons/favicon-96x96.png'],
         manifest: {
           lang: 'ru',
