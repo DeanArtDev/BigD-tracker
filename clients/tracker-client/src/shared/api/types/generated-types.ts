@@ -1498,11 +1498,18 @@ export interface components {
              */
             to?: string;
         };
+        PaginationResDto: {
+            /**
+             * @description Наличие следующей страницы
+             * @example true
+             */
+            nextPage?: boolean;
+        };
         GetTasksResData: {
             /** @description Ответ сервера */
             items: components["schemas"]["TaskDto"][];
             /** @description Метаинформация */
-            meta: components["schemas"]["CursorPaginationResDto"];
+            meta: components["schemas"]["PaginationResDto"];
         };
         GetTasksRes: {
             /** @description Ответ сервера */
@@ -2317,11 +2324,11 @@ export interface operations {
     };
     GroupsController_getUserGroups: {
         parameters: {
-            query?: {
+            query: {
                 /** @description Курсор пагинации */
                 cursor?: string;
                 /** @description Шаг пагинации */
-                limit?: number;
+                limit: number;
                 /** @description Очень важная группа */
                 search?: string;
                 /** @description Сортировка по дефолту id */
@@ -2456,7 +2463,11 @@ export interface operations {
     };
     TasksController_getTasks: {
         parameters: {
-            query?: {
+            query: {
+                /** @description Какая страниц */
+                page: number;
+                /** @description Элементов в странице */
+                perPage: number;
                 /** @description Поиск по имени */
                 search?: string;
                 /** @description Параметры сортировки */

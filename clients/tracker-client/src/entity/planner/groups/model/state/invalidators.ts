@@ -8,13 +8,6 @@ function useInvalidateInbox() {
     });
 }
 
-function useInvalidateGroups() {
-  return () =>
-    queryClient.invalidateQueries({
-      queryKey: groupsQueryKeys.getGroups(),
-    });
-}
-
 function useInvalidateGroupById() {
   return (param: { groupId: number }) => {
     return queryClient.invalidateQueries({
@@ -38,4 +31,4 @@ function useInvalidateAllGroups() {
   };
 }
 
-export { useInvalidateInbox, useInvalidateGroups, useInvalidateGroupById, useInvalidateAllGroups };
+export { useInvalidateInbox, useInvalidateGroupById, useInvalidateAllGroups };
