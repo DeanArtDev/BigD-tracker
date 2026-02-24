@@ -1,17 +1,10 @@
-import { groupsQueryKeys } from './query';
 import { queryClient } from '@/shared/api/query-client';
+import { groupsQueryKeys } from './query';
 
 function useInvalidateInbox() {
   return () =>
     queryClient.invalidateQueries({
       queryKey: groupsQueryKeys.getInbox(),
-    });
-}
-
-function useInvalidateGroups() {
-  return () =>
-    queryClient.invalidateQueries({
-      queryKey: groupsQueryKeys.getGroups(),
     });
 }
 
@@ -38,4 +31,4 @@ function useInvalidateAllGroups() {
   };
 }
 
-export { useInvalidateInbox, useInvalidateGroups, useInvalidateGroupById, useInvalidateAllGroups };
+export { useInvalidateInbox, useInvalidateGroupById, useInvalidateAllGroups };

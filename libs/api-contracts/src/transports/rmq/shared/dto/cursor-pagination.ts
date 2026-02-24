@@ -5,9 +5,8 @@ class CursorPaginationQueryDto {
   @IsString()
   cursor?: string;
 
-  @IsOptional()
   @IsInt()
-  limit?: number;
+  limit: number;
 }
 
 export { CursorPaginationQueryDto };
