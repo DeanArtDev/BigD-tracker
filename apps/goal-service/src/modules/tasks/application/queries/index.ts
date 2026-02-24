@@ -4,8 +4,8 @@ export * from './get-inbox-by-user-id/get-inbox-by-user-id.handler';
 export * from './get-user-groups/get-detailed-groups.query';
 export * from './get-user-groups/get-detailed-groups.handler';
 
-export * from '@/modules/tasks/application/queries/get-tasks/get-tasks.query';
-export * from '@/modules/tasks/application/queries/get-tasks/get-tasks.handler';
+export * from './get-tasks/get-tasks.query';
+export * from './get-tasks/get-tasks.handler';
 
 export * from './get-assignable-tasks/get-assignable-tasks.query';
 export * from './get-assignable-tasks/get-assignable-tasks.handler';

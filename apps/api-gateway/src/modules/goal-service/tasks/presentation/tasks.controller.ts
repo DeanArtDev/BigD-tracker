@@ -76,7 +76,7 @@ export class TasksController {
       query.filter?.status?.filter((i) => availableStatuses.includes(i)) ?? availableStatuses;
     const filter = { ...(query?.filter ?? {}), status };
 
-    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(
+    const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(
       GoalGetTasks.pattern,
       {
         data: {
@@ -84,9 +84,15 @@ export class TasksController {
           search: query.search,
           sort: query.sort,
           filter,
+          page: query.page,
+          perPage: query.perPage,
         },
       },
     );
+
+    return {
+      data,
+    };
   }
 
   @Get('/assignable')

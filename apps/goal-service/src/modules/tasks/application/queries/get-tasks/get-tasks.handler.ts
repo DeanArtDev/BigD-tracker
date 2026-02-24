@@ -26,7 +26,8 @@ export class GetTasksHandler implements IQueryHandler<GetTasksQuery> {
 
   async execute({ input }: GetTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
-      const { userId, search, filter, sort } = input;
+      const { userId, meta } = input;
+      const { search, filter, sort, page, perPage } = meta;
 
       const hasRange = filter?.from != null && filter?.to != null;
       const filterSpecs = compact([
@@ -39,8 +40,12 @@ export class GetTasksHandler implements IQueryHandler<GetTasksQuery> {
       ]);
 
       const specifications = tasksCombinators.and(TaskByUserId(userId), ...filterSpecs);
-
-      return await this.tasksReadRepository.getByRange(specifications, sort, trx);
+      return await this.tasksReadRepository.getByRange(
+        specifications,
+        { page, perPage },
+        sort,
+        trx,
+      );
     });
   }
 }

@@ -1,4 +1,8 @@
-import { GetAssignableTasksQuery, GetTasksQuery } from '@/modules/tasks/application/queries';
+import {
+  GetAssignableTasksQuery,
+  GetTasksHandler,
+  GetTasksQuery,
+} from '@/modules/tasks/application/queries';
 import {
   AssignTaskToGroupCommand,
   CloneTaskCommand,
@@ -21,9 +25,11 @@ import {
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
 } from '@big-d/api-contracts';
+import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CursorPaginationService } from '@shared/cursor-pagination';
 import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
@@ -32,6 +38,7 @@ export class TasksRmqController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly cursorPaginationService: CursorPaginationService,
   ) {}
 
   @MessagePattern(GoalCreateTask.pattern)
@@ -154,15 +161,23 @@ export class TasksRmqController {
   async getDiaryTasks(
     @Payload() { data: payload }: GoalGetTasks.Request,
   ): Promise<GoalGetTasks.Response> {
+    const { userId, search, filter, sort, page, perPage } = payload;
+
+    const tasks = await this.queryBus.execute<
+      GetTasksQuery,
+      ReturnHandlerType<typeof GetTasksHandler>
+    >(
+      new GetTasksQuery({
+        userId,
+        meta: { search, filter, sort, page, perPage },
+      }),
+    );
+
     return {
-      data: await this.queryBus.execute(
-        new GetTasksQuery({
-          userId: payload.userId,
-          search: payload.search,
-          filter: payload.filter,
-          sort: payload.sort,
-        }),
-      ),
+      data: {
+        items: tasks,
+        meta: { nextPage: perPage <= tasks.length },
+      },
     };
   }
 

@@ -41,7 +41,7 @@ export class GetUserGroupsHandler implements IQueryHandler<GetUserGroupsQuery> {
           TaskByUserId(input.userId),
           TaskByStatus(tasksQuerySpec.readableStatuses),
         ),
-        { limit: meta?.limit },
+        { limit: meta.limit },
         trx,
       );
     });

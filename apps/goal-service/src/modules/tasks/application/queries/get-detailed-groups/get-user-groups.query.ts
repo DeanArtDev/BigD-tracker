@@ -3,9 +3,9 @@ export class GetUserGroupsQuery {
     readonly input: {
       readonly userId: number;
     },
-    readonly meta?: {
+    readonly meta: {
       readonly lasiId?: number;
-      readonly limit?: number;
+      readonly limit: number;
       readonly search?: string;
       readonly sort?: string[];
       readonly filter?: string[];

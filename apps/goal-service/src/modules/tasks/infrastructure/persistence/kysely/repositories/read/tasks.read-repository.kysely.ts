@@ -7,7 +7,7 @@ import {
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { TaskStatus } from '@big-d/api-contracts';
+import { SortDirection, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { toLower } from 'lodash';
@@ -59,17 +59,46 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
   async getByRange(
     specifications: TasksSpecification,
+    params: { page: number; perPage: number },
     sort?: TasksSorting,
     trx?: TaskTransaction,
   ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
+      const { page, perPage } = params;
+
       const tasks = await leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
+        .distinct()
         .where((eb) => specifications.toExpr(eb))
-        .$if(Boolean(sort?.deadline), (qb) => qb.orderBy('tasks.deadline', toLower(sort!.deadline)))
-        .$if(Boolean(sort?.priority), (qb) => qb.orderBy('tasks.priority', toLower(sort!.priority)))
-        .$if(Boolean(sort?.startDate), (qb) =>
-          qb.orderBy('tasks.start_date', toLower(sort!.startDate)),
+        .$if(sort == null, (qb) => qb.orderBy('tasks.id', 'asc'))
+        .$if(sort?.priority != null, (qb) => qb.orderBy('tasks.priority', toLower(sort!.priority)))
+        .$if(sort?.startDate != null, (qb) =>
+          qb.orderBy('tasks.deadline', (ob) => {
+            if (sort!.deadline === SortDirection.ASC) {
+              return ob.asc().nullsLast();
+            }
+
+            if (sort!.deadline === SortDirection.DESC) {
+              return ob.desc().nullsFirst();
+            }
+
+            return ob;
+          }),
         )
+        .$if(sort?.startDate != null, (qb) =>
+          qb.orderBy('tasks.start_date', (ob) => {
+            if (sort!.startDate === SortDirection.ASC) {
+              return ob.asc().nullsLast();
+            }
+
+            if (sort!.startDate === SortDirection.DESC) {
+              return ob.desc().nullsFirst();
+            }
+
+            return ob;
+          }),
+        )
+        .limit(params.perPage)
+        .$if(page > 1, (qb) => qb.offset((page - 1) * perPage))
         .execute();
 
       return tasks.map(this.#map);
