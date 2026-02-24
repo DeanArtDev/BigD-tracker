@@ -1,7 +1,9 @@
 import { SortDirection } from '@/shared';
+import { PaginationQueryDto } from '@transports/rmq/shared';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsISO8601,
@@ -58,7 +60,7 @@ class GetTasksFilterDto {
   to?: string;
 }
 
-class GetTasksReqData {
+class GetTasksReqData extends PaginationQueryDto {
   @IsInt()
   userId: number;
 
@@ -84,11 +86,26 @@ class GetTasksReq {
   data: GetTasksReqData;
 }
 
-class GetTasksRes {
+class GetTasksResMeta {
+  @IsBoolean()
+  nextPage: boolean;
+}
+
+class GetTasksResData {
   @Type(() => TaskDto)
   @ValidateNested({ each: true })
   @IsArray()
-  data: TaskDto[];
+  items: TaskDto[];
+
+  @ValidateNested()
+  @Type(() => GetTasksResMeta)
+  meta: GetTasksResMeta;
+}
+
+class GetTasksRes {
+  @ValidateNested({ each: true })
+  @Type(() => GetTasksResData)
+  data: GetTasksResData;
 }
 
 export { GetTasksReq, GetTasksRes };
