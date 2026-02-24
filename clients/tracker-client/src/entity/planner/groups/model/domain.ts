@@ -1,4 +1,4 @@
-import { GroupStatus } from './group.entity';
+import { type GroupEntity, GroupStatus } from './group.entity';
 
 const allowIndicationStatusMap = {
   [GroupStatus.NOT_STARTED]: true,
@@ -6,4 +6,8 @@ const allowIndicationStatusMap = {
   [GroupStatus.DONE]: false,
 };
 
-export { allowIndicationStatusMap };
+function isAllowGroupDelete(group: GroupEntity): boolean {
+  return group.tasks.length <= 0;
+}
+
+export { allowIndicationStatusMap, isAllowGroupDelete };

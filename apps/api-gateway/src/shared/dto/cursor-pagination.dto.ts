@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString } from 'class-validator';
 
@@ -12,15 +12,14 @@ class CursorPaginationQueryDto {
   @IsString()
   cursor?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '10',
     description: 'Шаг пагинации',
   })
   @Expose()
-  @IsOptional()
   @Type(() => Number)
   @IsInt()
-  limit?: number;
+  limit: number;
 }
 
 class CursorPaginationResDto {

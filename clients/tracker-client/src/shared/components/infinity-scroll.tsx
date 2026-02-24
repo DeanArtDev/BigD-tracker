@@ -4,6 +4,7 @@ import { debounce } from 'lodash-es';
 import { type PropsWithChildren, useEffect, useEffectEvent, useRef } from 'react';
 
 interface InfinityScroll {
+  readonly className?: string;
   readonly hasNextPage: boolean;
   readonly isLoadingNextPage: boolean;
   readonly options?: {
@@ -16,6 +17,7 @@ function InfinityScroll({
   isLoadingNextPage,
   children,
   hasNextPage,
+  className,
   options,
   onNextPageLoad,
 }: PropsWithChildren<InfinityScroll>) {
@@ -58,7 +60,7 @@ function InfinityScroll({
   }, [bottomGap]);
 
   return (
-    <ScrollAreaNativeVertical>
+    <ScrollAreaNativeVertical className={className}>
       <div className="flex flex-col grow p-[1px]">
         {children}
 

@@ -94,6 +94,7 @@ class TaskService {
     );
     const draftTask = TaskFactory.deleteSoft(task);
     await this.tasksWriteRepo.changeTaskStatus(draftTask, trx);
+    await this.tasksWriteRepo.removeTaskFromGroup({ taskId: draftTask.id }, trx);
     return { id: draftTask.id };
   }
 

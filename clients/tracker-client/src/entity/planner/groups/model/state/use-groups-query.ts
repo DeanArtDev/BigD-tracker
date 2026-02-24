@@ -5,7 +5,7 @@ import { keyBy } from 'lodash-es';
 import { type GroupEntity, GroupStatus } from '../group.entity';
 import { groupsQueryKeys } from './query';
 
-function useGroupsQuery(params?: { search?: string; limit?: number }) {
+function useGroupsQuery(params: { search?: string; limit: number }) {
   const { data, ...others } = $privetQueryClient.useInfiniteQuery(
     ...groupsQueryKeys.getGroups(params),
     {

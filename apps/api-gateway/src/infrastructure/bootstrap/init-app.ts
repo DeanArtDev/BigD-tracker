@@ -9,12 +9,15 @@ import { ExceptionRequestDataValidation, HttpExceptionFactory } from '@shared/ex
 import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
 import * as cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 
 const initApp = async (): Promise<INestApplication> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api');
 
   app.set('query parser', 'extended');
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   app.use(HttpCorrelationMiddleware);
 

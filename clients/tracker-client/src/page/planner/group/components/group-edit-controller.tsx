@@ -1,5 +1,11 @@
-import { type GroupEntity, useGroupUpdate, useInvalidateAllGroups } from '@/entity/planner/groups';
+import {
+  type GroupEntity,
+  isAllowGroupDelete,
+  useGroupUpdate,
+  useInvalidateAllGroups,
+} from '@/entity/planner/groups';
 import { GroupConfirmedDelete } from '@/entity/planner/groups/ui';
+import { AppTooltip } from '@/shared/components/app-tooltip';
 import { ButtonTrash } from '@/shared/components/button-trash';
 import { routes } from '@/shared/lib/routes';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +20,8 @@ function GroupEditController({ group }: GroupEditControllerProps) {
   const invalidateAllGroups = useInvalidateAllGroups();
   const navigate = useNavigate();
 
+  const isNotAllowGroupDelete = !isAllowGroupDelete(group);
+
   return (
     <GroupEditForm
       group={group}
@@ -26,7 +34,19 @@ function GroupEditController({ group }: GroupEditControllerProps) {
             await invalidateAllGroups();
           }}
         >
-          {({ isLoading }) => <ButtonTrash variant="ghost" isLoading={isLoading} />}
+          {({ isLoading, onDelete }) => (
+            <AppTooltip
+              content="Нельзя удалить пока содержит дела"
+              disable={!isNotAllowGroupDelete}
+            >
+              <ButtonTrash
+                disabled={isNotAllowGroupDelete}
+                variant="ghost"
+                isLoading={isLoading}
+                onClick={onDelete}
+              />
+            </AppTooltip>
+          )}
         </GroupConfirmedDelete>
       }
       onSubmit={(formData, { reset }) => {

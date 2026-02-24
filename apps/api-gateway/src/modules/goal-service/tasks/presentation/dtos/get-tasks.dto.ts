@@ -1,5 +1,6 @@
 import { SortDirection, TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PaginationQueryDto, PaginationResDto } from '@shared/dto';
 import { Expose, Type } from 'class-transformer';
 import {
   IsArray,
@@ -137,7 +138,7 @@ class GetTasksFilterDto {
   to?: string;
 }
 
-class GetTasksQuery {
+class GetTasksQuery extends PaginationQueryDto {
   @ApiPropertyOptional({
     description: 'Поиск по имени',
   })
@@ -166,13 +167,30 @@ class GetTasksQuery {
   filter: GetTasksFilterDto;
 }
 
-class GetTasksRes {
+class GetTasksResData {
   @ApiProperty({ description: 'Ответ сервера', type: TaskDto, isArray: true })
   @Expose()
   @ValidateNested({ each: true })
   @Type(() => TaskDto)
   @IsArray()
-  data: TaskDto[];
+  items: TaskDto[];
+
+  @ApiProperty({
+    description: 'Метаинформация',
+    type: PaginationResDto,
+  })
+  @Expose()
+  @ValidateNested()
+  @Type(() => PaginationResDto)
+  meta: PaginationResDto;
+}
+
+class GetTasksRes {
+  @ApiProperty({ description: 'Ответ сервера', type: GetTasksResData })
+  @Expose()
+  @ValidateNested({ each: true })
+  @Type(() => GetTasksResData)
+  data: GetTasksResData;
 }
 
 export { GetTasksQuery, GetTasksRes, GetTasksSortDto };

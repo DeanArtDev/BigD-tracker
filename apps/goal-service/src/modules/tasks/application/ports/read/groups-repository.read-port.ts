@@ -57,7 +57,7 @@ interface GroupsReadRepository {
   getGroupListWithTasks(
     groupSpecifications: TasksSpecification,
     taskSpecifications: TasksSpecification,
-    params: { limit?: number },
+    params: { limit: number },
     trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]>;
 }

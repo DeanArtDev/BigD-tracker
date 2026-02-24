@@ -11,7 +11,8 @@ interface TaskDiaryTimelineProps {
 
 function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelineProps) {
   const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
-  const { tasks } = useTasksQuery({
+  const { taskList } = useTasksQuery({
+    perPage: 10000,
     sort: { startDate: 'ASC' },
     filter: {
       ...dateSet,
@@ -21,7 +22,7 @@ function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelinePro
   });
 
   const events = useMemo(() => {
-    return tasks.map((task) => {
+    return taskList.map((task) => {
       return {
         name: task.name,
         from: task.startDate != null ? new Date(task.startDate) : 0,
@@ -29,7 +30,7 @@ function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelinePro
         extra: task,
       };
     });
-  }, [tasks, dateSet]);
+  }, [taskList, dateSet]);
 
   return (
     <DataLoader loadingElement={<AppLoader />}>

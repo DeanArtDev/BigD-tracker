@@ -40,6 +40,7 @@ function DiaryPage() {
       </div>
 
       <TaskEdit
+        taskGroupId={selectedTask?.groupId}
         task={selectedTask}
         onCansel={() => void setSelectedTask(undefined)}
         onSuccess={() => void setSelectedTask(undefined)}

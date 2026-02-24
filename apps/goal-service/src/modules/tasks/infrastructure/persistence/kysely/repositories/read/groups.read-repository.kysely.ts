@@ -226,7 +226,7 @@ export class GroupsReadRepositoryKysely
   async getGroupListWithTasks(
     groupSpecifications: TasksSpecification,
     taskSpecifications: TasksSpecification,
-    params?: { limit?: number },
+    params: { limit: number },
     trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]> {
     return await this.errorCatcher('groups.get-group-list-with-tasks', async () => {
@@ -234,10 +234,7 @@ export class GroupsReadRepositoryKysely
         groupSpecifications.toExpr(eb),
       );
 
-      const groups = await groupsQuery
-        .limit(params?.limit ?? null)
-        .orderBy('groups.id', 'asc')
-        .execute();
+      const groups = await groupsQuery.limit(params.limit).orderBy('groups.id', 'asc').execute();
       if (groups.length === 0) return [];
 
       const response: GroupWithTasksView[] = [];

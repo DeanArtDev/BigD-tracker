@@ -84,6 +84,8 @@ export class TasksController {
           search: query.search,
           sort: query.sort,
           filter,
+          page: query.page,
+          perPage: query.perPage,
         },
       },
     );

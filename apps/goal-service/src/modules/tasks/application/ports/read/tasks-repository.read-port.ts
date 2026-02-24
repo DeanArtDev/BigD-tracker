@@ -19,6 +19,7 @@ interface TasksReadRepository {
 
   getByRange(
     specifications: TasksSpecification,
+    params: { page: number; perPage: number },
     sort?: TasksSorting,
     trx?: TaskTransaction,
   ): Promise<TaskView[]>;

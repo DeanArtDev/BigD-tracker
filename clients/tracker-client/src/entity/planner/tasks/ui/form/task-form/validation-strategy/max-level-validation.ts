@@ -29,17 +29,33 @@ const maxLevelValidation = z
 
     startDate: z
       .date()
-      .min(getNowTime(), { error: 'Начало не должно быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
-      .transform(formTransform.dateToISOSFormat),
+      .transform(formTransform.dateToISOSFormat)
+      .refine(
+        (startDate) => {
+          if (startDate != null) {
+            return dayjs(startDate).valueOf() >= getNowTime();
+          }
+          return true;
+        },
+        { error: 'Начало не должно быть в прошлом' },
+      ),
 
     deadline: z
       .date()
-      .min(getNowTime(), { error: 'Дедлайн не должен быть в прошлом' })
       .optional()
       .or(z.literal(formPlaceholderValues.date))
-      .transform(formTransform.dateToISOSFormat),
+      .transform(formTransform.dateToISOSFormat)
+      .refine(
+        (deadline) => {
+          if (deadline != null) {
+            return dayjs(deadline).valueOf() >= getNowTime();
+          }
+          return true;
+        },
+        { error: 'Дедлайн не должен быть в прошлом' },
+      ),
   })
   .check((ctx) => {
     const { startDate, deadline } = ctx.value;
