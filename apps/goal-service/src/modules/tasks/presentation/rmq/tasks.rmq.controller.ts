@@ -11,6 +11,7 @@ import {
   FinishTaskCommand,
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
+  TaskRecoveryCommand,
   UnassignTaskFromGroupCommand,
   UpdateInboxTaskCommand,
 } from '@/modules/tasks/application/use-cases';
@@ -24,6 +25,7 @@ import {
   GoalGetAssignableTasks,
   GoalGetTasks,
   GoalReplaceTask,
+  GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
   GoalUpdateInboxTask,
 } from '@big-d/api-contracts';
@@ -134,6 +136,21 @@ export class TasksRmqController {
     return {
       data: await this.commandBus.execute(
         new CompleteDeleteTaskCommand({ taskId: payload.taskId, userId: payload.userId }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalTaskRecovery.pattern)
+  async taskRecovery(
+    @Payload() { data: payload }: GoalTaskRecovery.Request,
+  ): Promise<GoalTaskRecovery.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new TaskRecoveryCommand({
+          userId: payload.userId,
+          taskId: payload.taskId,
+          groupId: payload.groupId,
+        }),
       ),
     };
   }

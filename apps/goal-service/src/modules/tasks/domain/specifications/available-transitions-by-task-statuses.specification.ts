@@ -27,7 +27,7 @@ const allowTaskStatusTransitions: Record<TaskStatus, TaskStatus[]> = {
 
   [TaskStatus.ARCHIVED]: [TaskStatus.DELETED],
 
-  [TaskStatus.DELETED]: [],
+  [TaskStatus.DELETED]: [TaskStatus.NOT_STARTED],
 };
 
 type TaskStatusActions = keyof typeof allowedTaskStatusByAction;
@@ -48,6 +48,8 @@ const allowedTaskStatusByAction = {
   FINISH: getStatusesToRich([TaskStatus.COMPLETED, TaskStatus.OVERDUE]),
   DELETE: getStatusesToRich([TaskStatus.DELETED]),
   CLONE: Object.values(TaskStatus),
+  DELETE_COMPLETE: [TaskStatus.DELETED],
+  RECOVERY: [TaskStatus.DELETED],
 };
 
 /**

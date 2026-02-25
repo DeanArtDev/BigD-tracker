@@ -11,5 +11,6 @@ export * from './get-tasks.dto';
 export * from './get-assignable-tasks.dto';
 export * from './finish-task.dto';
 export * from './complete-delete-task.dto';
+export * from './task-recovery.dto';
 
 export * from './task.dto';
