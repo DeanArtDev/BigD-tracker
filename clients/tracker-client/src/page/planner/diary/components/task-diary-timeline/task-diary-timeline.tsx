@@ -1,4 +1,6 @@
 import { type TaskEntity, TaskStatus, useTasksQuery } from '@/entity/planner/tasks';
+import { EventView } from '@/page/planner/diary/components/task-diary-timeline/event-view';
+import { AllDayEventView } from './all-day-event-view';
 import { TimeView } from '@/shared/lib/time-view';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -36,7 +38,12 @@ function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelinePro
     <DataLoader loadingElement={<AppLoader />}>
       <TimeView<TaskEntity>
         events={events}
-        onEventClick={(event) => void onEventClick(event.extra)}
+        renderEvent={({ event }) => (
+          <EventView event={event} onClick={(event) => void onEventClick(event.extra)} />
+        )}
+        renderALlDayEvent={({ event }) => (
+          <AllDayEventView event={event} onClick={(event) => void onEventClick(event.extra)} />
+        )}
         onDateChange={(dateSet) =>
           void setDateSet({ from: dateSet.from.toISOString(), to: dateSet.to.toISOString() })
         }

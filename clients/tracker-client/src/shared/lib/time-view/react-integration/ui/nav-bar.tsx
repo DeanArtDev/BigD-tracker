@@ -1,17 +1,22 @@
 import type { TimeEvent, TimeViewEvent } from '@/shared/lib/time-view/core';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
 import { cn } from '@/shared/ui-kit/utils';
-import { upperFirst } from 'lodash-es';
-import { useMemo } from 'react';
+import { isFunction, upperFirst } from 'lodash-es';
+import { type JSX, useMemo } from 'react';
 import { useEventsState, useSelectedDateState } from '../model/selectors';
 import { NavActions } from './nav-actions';
 
 interface NavBarProps<TExtra extends { id: number }> {
   readonly events: TimeViewEvent<TExtra>[];
+  readonly renderEvent?: (props: { event: TimeEvent<TExtra> }) => JSX.Element;
   readonly onEventClick?: (event: TimeEvent<TExtra>) => void;
 }
 
-function NavBar<TExtra extends { id: number }>({ events, onEventClick }: NavBarProps<TExtra>) {
+function NavBar<TExtra extends { id: number }>({
+  events,
+  renderEvent,
+  onEventClick,
+}: NavBarProps<TExtra>) {
   const { selectedDate } = useSelectedDateState();
   const { allDayEvents } = useEventsState<TExtra>({ events });
 
@@ -41,9 +46,14 @@ function NavBar<TExtra extends { id: number }>({ events, onEventClick }: NavBarP
         <ScrollAreaNativeVertical className="min-h-0 max-h-[100px] sm:max-h-[190px]">
           <ul className="flex flex-col min-h-0 grow gap-1">
             {allDayEvents.map((event) => {
+              if (isFunction(renderEvent)) {
+                const Component = renderEvent;
+                return <Component key={event.key} event={event} />;
+              }
+
               return (
                 <article
-                  key={event.extra?.id}
+                  key={event.key}
                   className={cn(
                     'grid px-2 overflow-hidden',
                     'cursor-pointer',

@@ -1,3 +1,4 @@
+import { TaskPriority } from '@/entity/planner/tasks';
 import type { ApiSchemas } from '@/shared/api/types';
 import type { Override } from '@/shared/lib/type-helpers';
 
@@ -19,6 +20,7 @@ enum TasksQueryStatus {
   CANCELLED = 'CANCELLED',
 }
 
-type TaskEntity = Override<Omit<ApiSchemas['TaskDto'], 'userId'>, 'status', TaskStatus>;
+type OverrideStatus = Override<Omit<ApiSchemas['TaskDto'], 'userId'>, 'status', TaskStatus>;
+type TaskEntity = Override<OverrideStatus, 'priority', TaskPriority>;
 
 export { type TaskEntity, TaskStatus, TasksQueryStatus };

@@ -3,7 +3,7 @@ import {
   type TaskInboxEntity,
   useDeleteTask,
   useTaskFinish,
-  useInvalidateTasks,
+  useInvalidateAllTasks,
 } from '@/entity/planner/tasks';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog, useIsMobile } from '@/shared/ui-kit/helpers';
@@ -38,7 +38,7 @@ function TaskInboxList() {
   const isMobile = useIsMobile();
 
   const invalidateInbox = useInvalidateInbox();
-  const invalidateDiaryTasks = useInvalidateTasks();
+  const invalidateDiaryTasks = useInvalidateAllTasks();
   const invalidate = async () => {
     await invalidateDiaryTasks();
     await invalidateInbox();

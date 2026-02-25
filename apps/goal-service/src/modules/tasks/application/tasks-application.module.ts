@@ -66,6 +66,9 @@ import {
   FinishTaskCommand,
   FinishTaskHandler,
   FinishTaskUseCase,
+  CompleteDeleteTaskCommand,
+  CompleteDeleteTaskHandler,
+  CompleteDeleteTaskUseCase,
 } from './use-cases';
 
 const queries = [
@@ -91,6 +94,7 @@ const commands = [
   CreateGroupCommand,
   DeleteGroupCommand,
   FinishTaskCommand,
+  CompleteDeleteTaskCommand,
 ];
 const handlers = [
   CreateTaskHandler,
@@ -111,6 +115,7 @@ const handlers = [
   GetTasksHandler,
   GetAssignableTasksHandler,
   FinishTaskHandler,
+  CompleteDeleteTaskHandler,
   GetUserGroupsHandler,
   GetAssignableGroupsHandler,
 ];
@@ -129,6 +134,7 @@ const useCases = [
   CreateGroupUseCase,
   DeleteGroupUseCase,
   FinishTaskUseCase,
+  CompleteDeleteTaskUseCase,
 ];
 
 @Module({

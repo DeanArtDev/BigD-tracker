@@ -18,6 +18,7 @@ import { type PropsWithChildren, type ReactNode } from 'react';
 interface AppDialogProps {
   readonly open: boolean;
   readonly modal?: boolean;
+  readonly mobileSpace?: boolean;
   readonly title?: ReactNode;
   readonly description?: ReactNode;
   readonly className?: string;
@@ -27,8 +28,18 @@ interface AppDialogProps {
 }
 
 function AppDialog(props: PropsWithChildren<AppDialogProps>) {
-  const { open, title, description, trigger, className, footer, modal, children, onOpenChange } =
-    props;
+  const {
+    open,
+    title,
+    description,
+    trigger,
+    className,
+    mobileSpace = true,
+    footer,
+    modal,
+    children,
+    onOpenChange,
+  } = props;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal={modal}>
@@ -50,7 +61,7 @@ function AppDialog(props: PropsWithChildren<AppDialogProps>) {
           className,
         )}
       >
-        <div className="top-mobile-space w-full min-h-(--mobile-top-space)" />
+        {mobileSpace && <div className="top-mobile-space w-full min-h-(--mobile-top-space)" />}
 
         <AppDialogHeader
           title={title}
@@ -64,7 +75,9 @@ function AppDialog(props: PropsWithChildren<AppDialogProps>) {
           <DialogFooter className="w-full">{isFunction(footer) ? footer() : footer}</DialogFooter>
         )}
 
-        <div className="bottom-mobile-space w-full min-h-(--mobile-bottom-space)" />
+        {mobileSpace && (
+          <div className="bottom-mobile-space w-full min-h-(--mobile-bottom-space)" />
+        )}
       </DialogContent>
     </Dialog>
   );

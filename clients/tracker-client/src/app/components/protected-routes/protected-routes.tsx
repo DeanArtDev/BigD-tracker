@@ -1,4 +1,3 @@
-import { MinDelayOnce } from '@/shared/ui-kit/helpers';
 import { Suspense } from 'react';
 import { PacmanLoader } from 'react-spinners';
 import { InitDataAwaiter } from './init-data-awaiter';
@@ -12,7 +11,6 @@ function ProtectedRoutes({ children }: { children: React.ReactNode }) {
         </div>
       }
     >
-      {import.meta.env.PROD && <MinDelayOnce ms={1000} />}
       <InitDataAwaiter>{children}</InitDataAwaiter>
     </Suspense>
   );

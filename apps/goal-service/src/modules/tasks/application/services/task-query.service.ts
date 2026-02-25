@@ -1,10 +1,6 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { ExceptionTaskNotFound } from '@/modules/tasks/application/exceptions';
-import {
-  TasksReadRepository,
-  TasksWriteRepository,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { TasksReadRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -12,7 +8,6 @@ import { Inject, Injectable } from '@nestjs/common';
 class TaskQueryService {
   constructor(
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepo: TasksReadRepository,
-    @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
   async getById(

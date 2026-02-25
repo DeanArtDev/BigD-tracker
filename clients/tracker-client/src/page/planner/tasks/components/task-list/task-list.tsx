@@ -1,28 +1,19 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
+import { TaskActions } from '@/entity/planner/tasks/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
-import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { Skeleton } from '@/shared/ui-kit/ui/skeleton';
-import { useState } from 'react';
-import { TaskCardActions } from './task-card-actions';
+import { TaskCard } from './task-card';
 
 const TaskCardSkeleton = () => <Skeleton className="h-[50px] w-full rounded-md shadow-md" />;
 
-const TaskCardMobileLazy = withLazy(
-  () => import('./task-card-mobile').then((m) => ({ default: m.TaskCardMobile })),
-  <TaskCardSkeleton />,
-);
-
-const TaskCardLazy = withLazy(
-  () => import('./task-card').then((m) => ({ default: m.TaskCard })),
-  <TaskCardSkeleton />,
-);
-
 function LoadingSkeleton() {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="flex flex-col gap-3 px-1">
-      {new Array(12).fill(0).map((_, index) => (
+    <div className="flex flex-col gap-2 px-1">
+      {new Array(isMobile ? 12 : 20).fill(0).map((_, index) => (
         <TaskCardSkeleton key={index} />
       ))}
     </div>
@@ -34,8 +25,9 @@ interface TaskListProps {
   readonly loading?: boolean;
   readonly initialLoading?: boolean;
   readonly onClick: (task: TaskEntity) => void;
-  readonly onFinish: (task: TaskEntity) => void;
-  readonly onDelete: (task: TaskEntity) => void;
+  readonly onFinish?: (task: TaskEntity) => void;
+  readonly onDelete?: (task: TaskEntity) => void;
+  readonly onRecover?: (task: TaskEntity) => void;
 }
 
 function TaskList({
@@ -45,10 +37,8 @@ function TaskList({
   onClick,
   onDelete,
   onFinish,
+  onRecover,
 }: TaskListProps) {
-  const isMobile = useIsMobile();
-  const [swipedTaskId, setSwipedTaskId] = useState<number>();
-
   return (
     <ul className="flex flex-col gap-1.5 sm:gap-2 justify-center h-full min-h-0 w-full pb-18">
       <DataLoader
@@ -58,35 +48,25 @@ function TaskList({
         isEmpty={tasks.length <= 0}
         emptyElement={<AppEmptyPlaceholder message="Дела не найдены." />}
       >
-        {tasks.map((task) =>
-          isMobile ? (
-            <TaskCardMobileLazy
-              key={task.id}
-              task={task}
-              loading={loading}
-              openId={swipedTaskId}
-              setOpenId={setSwipedTaskId}
-              onClick={() => onClick(task)}
-              onFinish={() => onFinish(task)}
-              onDelete={() => onDelete(task)}
-            />
-          ) : (
-            <TaskCardLazy
+        {tasks.map((task) => {
+          return (
+            <TaskCard
               key={task.id}
               task={task}
               actionsSlot={
-                <TaskCardActions
+                <TaskActions
+                  className="my-auto"
                   taskStatus={task.status}
-                  className="opacity-0 group-hover/task-frame:opacity-100"
                   loading={loading}
-                  onFinish={() => onFinish(task)}
-                  onDelete={() => onDelete(task)}
+                  onFinish={() => onFinish?.(task)}
+                  onDelete={() => onDelete?.(task)}
+                  onRecover={() => onRecover?.(task)}
                 />
               }
               onClick={() => onClick(task)}
             />
-          ),
-        )}
+          );
+        })}
       </DataLoader>
     </ul>
   );

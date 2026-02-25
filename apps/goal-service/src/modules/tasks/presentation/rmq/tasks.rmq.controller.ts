@@ -6,6 +6,7 @@ import {
 import {
   AssignTaskToGroupCommand,
   CloneTaskCommand,
+  CompleteDeleteTaskCommand,
   CreateTaskCommand,
   FinishTaskCommand,
   ReplaceTaskCommand,
@@ -16,6 +17,7 @@ import {
 import {
   GoalAssignTaskToGroup,
   GoalCloneTask,
+  GoalCompleteDeleteTask,
   GoalCreateTask,
   GoalDeleteTask,
   GoalFinishTask,
@@ -29,7 +31,6 @@ import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CursorPaginationService } from '@shared/cursor-pagination';
 import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
@@ -38,7 +39,6 @@ export class TasksRmqController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly cursorPaginationService: CursorPaginationService,
   ) {}
 
   @MessagePattern(GoalCreateTask.pattern)
@@ -123,6 +123,17 @@ export class TasksRmqController {
     return {
       data: await this.commandBus.execute(
         new SoftDeleteTaskCommand({ taskId: payload.id, userId: payload.userId }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalCompleteDeleteTask.pattern)
+  async completeDeleteTask(
+    @Payload() { data: payload }: GoalCompleteDeleteTask.Request,
+  ): Promise<GoalCompleteDeleteTask.Response> {
+    return {
+      data: await this.commandBus.execute(
+        new CompleteDeleteTaskCommand({ taskId: payload.taskId, userId: payload.userId }),
       ),
     };
   }

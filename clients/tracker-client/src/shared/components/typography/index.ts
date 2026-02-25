@@ -6,12 +6,14 @@ import { H2 } from './h2';
 import { H3 } from './h3';
 import { H4 } from './h4';
 import { Code } from './code';
+import { H6 } from './h6';
 
 const Typography = {
   H1,
   H2,
   H3,
   H4,
+  H6,
   P,
   Small,
   Muted,
