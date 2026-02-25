@@ -21,7 +21,7 @@ class TaskRecoveryUseCase {
 
       const task = await this.taskCheckerService.ensureTaskExists(input, { trx });
       const recoveredTask = TaskFactory.recovery(task);
-      const replacedTask = await this.tasksWriteRepo.replaceTask(recoveredTask);
+      const replacedTask = await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
 
       if (groupId != null) {
         await this.groupCheckerService.ensureGroupExists(
