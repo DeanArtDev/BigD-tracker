@@ -573,6 +573,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/tasks/{taskId}/recovery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Восстановление дела */
+        post: operations["TasksController_taskRecovery"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tasks/{taskId}/complete": {
         parameters: {
             query?: never;
@@ -1613,6 +1630,22 @@ export interface components {
         FinishTaskRes: {
             /** @description Ответ сервера */
             data: boolean;
+        };
+        TaskRecoveryReqData: {
+            /** @example 1 */
+            groupId?: number;
+        };
+        TaskRecoveryReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["TaskRecoveryReqData"];
+        };
+        TaskRecoveryResData: {
+            /** @example 123 */
+            id: number;
+        };
+        TaskRecoveryRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["TaskRecoveryResData"];
         };
         CompleteDeleteTaskResData: {
             /** @example 123 */
@@ -2658,6 +2691,31 @@ export interface operations {
             };
         };
     };
+    TasksController_taskRecovery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskRecoveryReq"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskRecoveryRes"];
+                };
+            };
+        };
+    };
     TasksController_completeDeleteTask: {
         parameters: {
             query?: never;
@@ -2669,7 +2727,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
