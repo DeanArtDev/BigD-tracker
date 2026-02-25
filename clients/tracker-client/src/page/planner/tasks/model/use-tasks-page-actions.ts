@@ -1,5 +1,5 @@
-import { useInvalidateInbox } from '@/entity/planner/groups';
-import { useDeleteTask, useInvalidateTasks, useTaskFinish } from '@/entity/planner/tasks';
+import { useInvalidateAllGroups } from '@/entity/planner/groups';
+import { useDeleteTask, useInvalidateAllTasks, useTaskFinish } from '@/entity/planner/tasks';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 
 function useTasksPageActions() {
@@ -9,11 +9,11 @@ function useTasksPageActions() {
   const { finishTask, isPending: isFinishPending } = useTaskFinish();
   const isLoading = isDeletePending || isFinishPending;
 
-  const invalidateInbox = useInvalidateInbox();
-  const invalidateDiaryTasks = useInvalidateTasks();
+  const invalidateAllGroups = useInvalidateAllGroups();
+  const invalidateDiaryTasks = useInvalidateAllTasks();
   const invalidate = async () => {
     await invalidateDiaryTasks();
-    await invalidateInbox();
+    await invalidateAllGroups();
   };
 
   const handleFinish = (taskId: number) => {

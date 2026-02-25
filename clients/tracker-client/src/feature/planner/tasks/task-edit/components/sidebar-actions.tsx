@@ -8,6 +8,7 @@ import {
 } from '@/entity/planner/tasks';
 import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { ButtonLoading } from '@/shared/components/button-loading';
+import { Button } from '@/shared/ui-kit/ui/button';
 
 interface SidebarActionsProps {
   readonly groupId?: number;
@@ -32,6 +33,11 @@ function SidebarActions({
   const { cloneTask, isPending: isTaskCloningPending } = useTaskClone();
   const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
   const { assignTaskToInbox, isPending: isAssignTaskToInboxPending } = useAssignTaskToInbox();
+
+  const loading =
+    isAssignTaskToGroupPending ||
+    isAssignTaskToInboxPending ||
+    !isAllowTaskAction('ASSIGN', status);
 
   return (
     <div className="sidebar-actions grid grid-cols-2 gap-2">
@@ -68,11 +74,12 @@ function SidebarActions({
 
       <AssignInboxTaskToGroupDialog
         taskGroupId={groupId}
-        loading={
-          isAssignTaskToGroupPending ||
-          isAssignTaskToInboxPending ||
-          !isAllowTaskAction('ASSIGN', status)
+        trigger={
+          <Button size="xs" variant="outline" type="button" disabled={loading}>
+            Переместить
+          </Button>
         }
+        loading={loading}
         onSelect={(groupInfo, close) => {
           assignTaskToGroup(
             { params: { path: { taskId, groupId: groupInfo.id } } },

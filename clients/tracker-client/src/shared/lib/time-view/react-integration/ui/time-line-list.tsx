@@ -20,7 +20,7 @@ function TimeLineList({ eventsSlot }: TimeLineListProps) {
   }, [dayTimeLine]);
 
   return (
-    <div className="overflow-auto grow min-h-0">
+    <div className="overflow-auto grow min-h-0 no-scrollbar">
       <div className="relative grid grid-cols-[60px_1fr] items-stretch">
         <div className="flex flex-col">
           {timeLinePeriods.map((item, index) => {

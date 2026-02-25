@@ -1,15 +1,18 @@
 import { queryClient } from '@/shared/api/query-client';
-import { isEqual } from 'lodash-es';
 import { tasksQueryKeys } from './query';
 
-function useInvalidateTasks() {
+function useInvalidateAllTasks() {
   return () =>
     queryClient.invalidateQueries({
       predicate: (query) => {
-        const mainKey = query.queryKey.slice(0, 2);
-        return isEqual(mainKey, tasksQueryKeys.mainKey);
+        if (Array.isArray(query.queryKey)) {
+          const endpoint = query.queryKey[1];
+          const mainEndpointStart = tasksQueryKeys.mainKey[1];
+          return endpoint?.startsWith(mainEndpointStart);
+        }
+        return undefined;
       },
     });
 }
 
-export { useInvalidateTasks };
+export { useInvalidateAllTasks };

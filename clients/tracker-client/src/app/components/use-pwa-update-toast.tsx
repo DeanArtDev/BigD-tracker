@@ -1,7 +1,10 @@
+import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { toast } from 'sonner';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 function usePwaUpdateToast() {
+  const isMobile = useIsMobile();
+
   const {
     updateServiceWorker,
 
@@ -11,7 +14,7 @@ function usePwaUpdateToast() {
     onNeedRefresh() {
       toast.info('Доступно обновление!', {
         description: 'Новая версия приложения уже скачалась.',
-        position: 'top-center',
+        position: isMobile ? 'bottom-center' : 'top-center',
         duration: Infinity,
         closeButton: true,
         onDismiss: () => {

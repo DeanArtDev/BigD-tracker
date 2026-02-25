@@ -1,6 +1,7 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { getTasksStatusCount, isAllowAccentIndicationTask } from '@/entity/planner/tasks/lib';
-import { TaskFrame, TaskStatusToIconMap } from '@/entity/planner/tasks/ui';
+import { taskStatusToIconMap } from '@/entity/planner/tasks/lib/maps';
+import { TaskFrame } from '@/entity/planner/tasks/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { Typography } from '@/shared/components/typography';
 import { VerticalDnD } from '@/shared/components/vertical-dnd';
@@ -96,7 +97,7 @@ function GroupTaskList({
                 task.deadline != null ? dayjs(task.deadline).isTomorrow() : false;
               const isAllowIndication = isAllowAccentIndicationTask(task.status);
 
-              const StatusIcon = TaskStatusToIconMap[task.status];
+              const StatusIcon = taskStatusToIconMap[task.status];
 
               return (
                 <TaskFrame

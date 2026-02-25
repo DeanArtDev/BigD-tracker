@@ -19,7 +19,7 @@ function AppTooltip({
   return (
     <Tooltip {...props}>
       <TooltipTrigger asChild={asChild}>
-        <span className="inline-block w-fit">{children}</span>
+        <span className="inline-block w-fit h-fit">{children}</span>
       </TooltipTrigger>
 
       <TooltipContent>{content}</TooltipContent>

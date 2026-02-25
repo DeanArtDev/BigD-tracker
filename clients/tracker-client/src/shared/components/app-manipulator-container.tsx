@@ -24,7 +24,7 @@ function AppManipulatorContainer({ items }: AppManipulatorContainerProps) {
     <div
       style={width == null ? undefined : { width }}
       className={cn(
-        'tasks-page-manipulator relative z-10',
+        'tasks-page-manipulator z-10',
         'box-content max-w-full',
         'inline-block overflow-hidden transition-[width] duration-300 ease-out',
         'fixed bottom-4 md:bottom-8 inset-x-0 mx-auto',

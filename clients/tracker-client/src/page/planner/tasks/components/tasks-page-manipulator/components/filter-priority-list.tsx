@@ -1,4 +1,5 @@
-import { TaskPriority, taskPriorityColorMap } from '@/entity/planner/tasks';
+import { TaskPriority } from '@/entity/planner/tasks';
+import { taskPriorityColorMap } from '@/entity/planner/tasks/lib/maps';
 import { Button } from '@/shared/ui-kit/ui/button';
 import {
   DropdownMenu,

@@ -11,3 +11,5 @@ export * from './unassign-task-from-group.dto';
 export * from './get-tasks.dto';
 export * from './get-assignable-tasks.dto';
 export * from './finish-task.dto';
+export * from './get-deleted-tasks.dto';
+export * from './complete-delete-task.dto';

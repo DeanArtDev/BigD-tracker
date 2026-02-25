@@ -6,6 +6,7 @@ enum TaskActionType {
   ASSIGN = 'ASSIGN',
   UNASSIGN = 'UNASSIGN',
   FINISH = 'FINISH',
+  RECOVER = 'RECOVER',
 }
 
 const actionToStatuesMap = {
@@ -16,6 +17,7 @@ const actionToStatuesMap = {
     TaskStatus.OVERDUE,
     TaskStatus.CANCELLED,
     TaskStatus.ARCHIVED,
+    TaskStatus.DELETED,
   ],
 
   [TaskActionType.CLONE]: [
@@ -33,6 +35,8 @@ const actionToStatuesMap = {
   [TaskActionType.UNASSIGN]: [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS],
 
   [TaskActionType.FINISH]: [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS],
+
+  [TaskActionType.RECOVER]: [TaskStatus.DELETED],
 };
 
 const allowIndicationStatusMap = {

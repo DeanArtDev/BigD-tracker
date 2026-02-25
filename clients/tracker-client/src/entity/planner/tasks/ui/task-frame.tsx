@@ -7,7 +7,6 @@ interface TaskFrameProps extends Partial<VerticalDndItemRenderProps> {
   readonly name: string;
   readonly className?: string;
   readonly priority: number | string;
-  readonly showPriority?: boolean;
   readonly beforeNameSlot?: ReactNode;
   readonly actionsSlot?: ReactNode;
   readonly footerSlot?: ReactNode;
@@ -21,7 +20,6 @@ function TaskFrame({
   style,
   footerSlot,
   className,
-  showPriority = true,
   beforeNameSlot,
   actionsSlot,
   onClick,
@@ -47,7 +45,7 @@ function TaskFrame({
         <div className="flex grow w-full items-center mb-auto">
           {beforeNameSlot}
 
-          <Typography.H4 className="text-sm font-normal truncate pr-2 mb-auto">
+          <Typography.H4 className="text-sm font-normal line-clamp-1 pr-2 mb-auto">
             {name}
           </Typography.H4>
         </div>
@@ -56,7 +54,7 @@ function TaskFrame({
 
       {actionsSlot}
 
-      {isPriorityValid && showPriority && (
+      {isPriorityValid && (
         <div
           className={cn(
             'absolute top-0 left-0 bottom-0 w-[3px] h-full rounded-tl-md rounded-bl-md',

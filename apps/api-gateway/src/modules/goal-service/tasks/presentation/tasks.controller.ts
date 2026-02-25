@@ -6,6 +6,7 @@ import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   GoalAssignTaskToGroup,
   GoalCloneTask,
+  GoalCompleteDeleteTask,
   GoalCreateTask,
   GoalDeleteTask,
   GoalFinishTask,
@@ -35,11 +36,14 @@ import {
   AssignTaskToGroupRes,
   CloneTaskReq,
   CloneTaskRes,
+  CompleteDeleteTaskRes,
   CreateTaskReq,
   CreateTaskRes,
   FinishTaskRes,
   GetAssignableTasksQuery,
   GetAssignableTasksRes,
+  GetDeletedTasksQuery,
+  GetDeletedTasksRes,
   GetTasksQuery,
   GetTasksRes,
   ReplaceTaskReq,
@@ -84,6 +88,31 @@ export class TasksController {
           search: query.search,
           sort: query.sort,
           filter,
+          page: query.page,
+          perPage: query.perPage,
+        },
+      },
+    );
+  }
+
+  @Get('/deleted')
+  @ApiOperation({ summary: 'Получение удаленных дел' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetDeletedTasksRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GetDeletedTasksRes)
+  async getDeletedTasks(
+    @Query() query: GetDeletedTasksQuery,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GetDeletedTasksRes> {
+    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(
+      GoalGetTasks.pattern,
+      {
+        data: {
+          userId: uid,
+          filter: { status: [TaskStatus.DELETED] },
           page: query.page,
           perPage: query.perPage,
         },
@@ -191,6 +220,29 @@ export class TasksController {
         },
       },
     );
+  }
+
+  @Delete('/:taskId/complete')
+  @ApiOperation({ summary: 'Полное удаление дела' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: CompleteDeleteTaskRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(CompleteDeleteTaskRes)
+  async completeDeleteTask(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+  ): Promise<CompleteDeleteTaskRes> {
+    return await this.goalClient.send<
+      GoalCompleteDeleteTask.Response,
+      GoalCompleteDeleteTask.Request
+    >(GoalCompleteDeleteTask.pattern, {
+      data: {
+        userId: uid,
+        taskId,
+      },
+    });
   }
 
   @Post('/:taskId/groups/:groupId')

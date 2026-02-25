@@ -65,7 +65,7 @@ function InfinityScroll({
         {children}
 
         {isLoadingNextPage && <AppLoader className="mt-3" size={40} />}
-        <div className="h-px w-full " ref={loaderRef} />
+        <div className="h-px w-full" ref={loaderRef} />
       </div>
     </ScrollAreaNativeVertical>
   );

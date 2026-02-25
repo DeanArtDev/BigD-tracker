@@ -505,6 +505,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/tasks/deleted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение удаленных дел */
+        get: operations["TasksController_getDeletedTasks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tasks/assignable": {
         parameters: {
             query?: never;
@@ -551,6 +568,23 @@ export interface paths {
         /** Завершение дела */
         post: operations["TasksController_finishTask"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tasks/{taskId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Полное удаление дела */
+        delete: operations["TasksController_completeDeleteTask"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1515,6 +1549,16 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["GetTasksResData"];
         };
+        GetDeletedTasksResData: {
+            /** @description Ответ сервера */
+            items: components["schemas"]["TaskDto"][];
+            /** @description Метаинформация */
+            meta: components["schemas"]["PaginationResDto"];
+        };
+        GetDeletedTasksRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GetDeletedTasksResData"];
+        };
         GetAssignableTasksRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"][];
@@ -1569,6 +1613,14 @@ export interface components {
         FinishTaskRes: {
             /** @description Ответ сервера */
             data: boolean;
+        };
+        CompleteDeleteTaskResData: {
+            /** @example 123 */
+            id: number;
+        };
+        CompleteDeleteTaskRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["CompleteDeleteTaskResData"];
         };
         AssignTaskToGroupResData: {
             /** @example true */
@@ -2514,6 +2566,30 @@ export interface operations {
             };
         };
     };
+    TasksController_getDeletedTasks: {
+        parameters: {
+            query: {
+                /** @description Какая страниц */
+                page: number;
+                /** @description Элементов в странице */
+                perPage: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetDeletedTasksRes"];
+                };
+            };
+        };
+    };
     TasksController_getAssignableTasks: {
         parameters: {
             query: {
@@ -2578,6 +2654,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FinishTaskRes"];
+                };
+            };
+        };
+    };
+    TasksController_completeDeleteTask: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                taskId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompleteDeleteTaskRes"];
                 };
             };
         };

@@ -41,7 +41,7 @@ function AlertConfirmDialog({
         <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       )}
 
-      <AlertDialogContent>
+      <AlertDialogContent className="gap-2 p-5">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
         </AlertDialogHeader>

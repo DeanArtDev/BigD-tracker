@@ -4,7 +4,7 @@ import type {
   TimeViewDateSet,
 } from '@/shared/lib/time-view/core';
 import type { DeepPartial } from '@/shared/lib/type-helpers';
-import { useEffect, useEffectEvent } from 'react';
+import { type JSX, useEffect, useEffectEvent } from 'react';
 import { TimeViewControllerProvider } from './model';
 import { useSelectedDateState } from './model/selectors';
 import { EventList, NavBar, TimeLineList } from './ui';
@@ -19,12 +19,16 @@ interface TimeViewEvent<TExtra = any> {
 interface TimeViewProps<TExtra extends { id: number }> {
   readonly events: TimeViewEvent<TExtra>[];
   readonly options?: DeepPartial<TimeViewControllerOptions>;
+
   readonly onDateChange?: (date: TimeViewDateSet) => void;
   readonly onEventClick?: (event: TimeEvent<TExtra>) => void;
+
+  readonly renderEvent?: (props: { event: TimeEvent<TExtra> }) => JSX.Element;
+  readonly renderALlDayEvent?: (props: { event: TimeEvent<TExtra> }) => JSX.Element;
 }
 
 function Component<TExtra extends { id: number }>(props: TimeViewProps<TExtra>) {
-  const { events, onEventClick, onDateChange } = props;
+  const { events, onEventClick, onDateChange, renderEvent, renderALlDayEvent } = props;
 
   const { dateSet } = useSelectedDateState();
 
@@ -35,11 +39,17 @@ function Component<TExtra extends { id: number }>(props: TimeViewProps<TExtra>) 
 
   return (
     <div className="time-view flex flex-col flex-1 min-h-0 gap-2">
-      <NavBar<TExtra> events={events} onEventClick={onEventClick} />
+      <NavBar<TExtra> events={events} renderEvent={renderALlDayEvent} onEventClick={onEventClick} />
 
       <div className="flex flex-col flex-1 min-h-0">
         <TimeLineList
-          eventsSlot={<EventList<TExtra> events={events} onEventClick={onEventClick} />}
+          eventsSlot={
+            <EventList<TExtra>
+              events={events}
+              renderEvent={renderEvent}
+              onEventClick={onEventClick}
+            />
+          }
         />
       </div>
     </div>

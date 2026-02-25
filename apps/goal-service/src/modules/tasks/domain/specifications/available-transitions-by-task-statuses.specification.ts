@@ -41,6 +41,7 @@ const allowedTaskStatusByAction = {
     TaskStatus.OVERDUE,
     TaskStatus.CANCELLED,
     TaskStatus.ARCHIVED,
+    TaskStatus.DELETED,
   ],
   ASSIGN: [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED],
   UNASSIGN: [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED],
