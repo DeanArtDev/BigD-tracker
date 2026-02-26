@@ -5,7 +5,7 @@ function useMeSuspense() {
   const { data, ...others } = $privetQueryClient.useSuspenseQuery(
     ...authQueryKeys.me(),
     undefined,
-    { retry: 1 },
+    { retry: 1, throwOnError: false },
   );
   return { me: data.data, ...others };
 }

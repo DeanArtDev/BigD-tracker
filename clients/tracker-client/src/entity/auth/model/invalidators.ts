@@ -1,6 +1,8 @@
-import { queryClient } from '@/shared/api/query-client';
+import { useQueryClient } from '@tanstack/react-query';
 
 function useDropEverything() {
+  const queryClient = useQueryClient();
+
   return () => {
     return queryClient.clear();
   };

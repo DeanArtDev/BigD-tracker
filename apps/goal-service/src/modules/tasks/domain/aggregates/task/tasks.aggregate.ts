@@ -29,8 +29,13 @@ class Task extends AggregateRoot {
     deadline?: DateVo;
     endDate?: DateVo;
   }): TaskStatus {
-    if (endDate) {
-      return deadline?.isBefore(new Date()) ? TaskStatus.OVERDUE : TaskStatus.COMPLETED;
+    if (endDate != null) {
+      if (deadline == null) return TaskStatus.COMPLETED;
+
+      const endOfDate = DateVo.create(new Date(new Date().setHours(23, 59, 59, 999)));
+      return endOfDate.isBefore(deadline.value) || endOfDate.equals(deadline)
+        ? TaskStatus.COMPLETED
+        : TaskStatus.OVERDUE;
     }
 
     if (startDate) return TaskStatus.IN_PROGRESS;

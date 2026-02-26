@@ -16,7 +16,7 @@ function GroupPage() {
   const { groupById, isPending } = useGroupByIdQuery({ groupId: params?.groupId });
 
   if (params?.groupId == null) {
-    return <Navigate to={routes.planner.path} />;
+    return <Navigate to={routes.planner.path} replace />;
   }
 
   return (

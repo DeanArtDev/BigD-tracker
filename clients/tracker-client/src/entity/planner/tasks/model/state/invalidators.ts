@@ -1,7 +1,9 @@
-import { queryClient } from '@/shared/api/query-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { tasksQueryKeys } from './query';
 
 function useInvalidateAllTasks() {
+  const queryClient = useQueryClient();
+
   return () =>
     queryClient.invalidateQueries({
       predicate: (query) => {

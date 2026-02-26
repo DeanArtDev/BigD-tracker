@@ -1,7 +1,9 @@
-import { queryClient } from '@/shared/api/query-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { groupsQueryKeys } from './query';
 
 function useInvalidateInbox() {
+  const queryClient = useQueryClient();
+
   return () =>
     queryClient.invalidateQueries({
       queryKey: groupsQueryKeys.getInbox(),
@@ -9,6 +11,8 @@ function useInvalidateInbox() {
 }
 
 function useInvalidateGroupById() {
+  const queryClient = useQueryClient();
+
   return (param: { groupId: number }) => {
     return queryClient.invalidateQueries({
       queryKey: groupsQueryKeys.getGroupById(param),
@@ -17,6 +21,8 @@ function useInvalidateGroupById() {
 }
 
 function useInvalidateAllGroups() {
+  const queryClient = useQueryClient();
+
   return () => {
     return queryClient.invalidateQueries({
       predicate: (query) => {

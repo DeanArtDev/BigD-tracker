@@ -1,19 +1,14 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
-import { Button } from '@/shared/ui-kit/ui/button';
-import { Link } from 'react-router-dom';
-import { routes } from '@/shared/lib/routes';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui-kit/ui/form';
-import { useForm } from 'react-hook-form';
-import { Input } from '@/shared/ui-kit/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useLogin } from '@/entity/auth';
+import { InputForm } from '@/shared/components/form';
+import { routes } from '@/shared/lib/routes';
+import { Button } from '@/shared/ui-kit/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
+import { Form } from '@/shared/ui-kit/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { loginValidationSchema } from './login-validation';
 
 interface LoginFormData {
@@ -29,6 +24,13 @@ function LoginForm() {
     reValidateMode: 'onSubmit',
     disabled: isPending,
   });
+
+  useEffect(() => {
+    if (isWrongPassOrLogin) {
+      toast.dismiss();
+      toast.error('Не верный логин или пароль', { closeButton: true });
+    }
+  }, [isWrongPassOrLogin]);
 
   return (
     <Card className="w-[350px]">
@@ -49,41 +51,13 @@ function LoginForm() {
           <CardHeader>
             <CardTitle>Вход</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Почта</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Почта сюда" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            <FormField
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Пароль</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Пароль тута" type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <CardContent className="space-y-4">
+            <InputForm name="email" label="Почта" placeholder="Почта сюда" />
+            <InputForm name="password" label="Пароль" type="password" placeholder="Пароль тута" />
           </CardContent>
 
           <CardFooter className="flex flex-col">
-            {isWrongPassOrLogin && (
-              <small className="text-destructive mb-6 text-sm font-medium leading-none">
-                Не верный логин или пароль
-              </small>
-            )}
-
             <Button type="submit" disabled={isPending}>
               Войти
             </Button>

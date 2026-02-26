@@ -23,9 +23,9 @@ function EventView({ event, onClick }: EventViewProps) {
         'cursor-pointer',
         'bg-gray-100 rounded shadow-lg overflow-hidden border border-(--priority-4)/80',
         isPriorityIndicate && {
-          [`border-(--priority-1)/60`]: event.extra?.priority === 1,
-          [`border-(--priority-2)/60`]: event.extra?.priority === 2,
-          [`border-(--priority-3)/60`]: event.extra?.priority === 3,
+          [`border-(--priority-1)`]: event.extra?.priority === 1,
+          [`border-(--priority-2)`]: event.extra?.priority === 2,
+          [`border-(--priority-3)`]: event.extra?.priority === 3,
         },
       )}
       onClick={() => void onClick(event)}
