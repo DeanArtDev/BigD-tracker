@@ -1,7 +1,9 @@
+import { TaskActionType } from '@/entity/planner/tasks';
+import { taskActionToHumanize, taskActionToIconMap } from '@/entity/planner/tasks/lib/maps';
+import { AppTooltip } from '@/shared/components/app-tooltip';
 import { ButtonLoading } from '@/shared/components/button-loading';
-import { ButtonTrash } from '@/shared/components/button-trash';
 import { cn } from '@/shared/ui-kit/utils';
-import { CheckCheck } from 'lucide-react';
+import { capitalize } from 'lodash-es';
 
 interface InboxCardActionsProps {
   readonly className?: string;
@@ -11,32 +13,44 @@ interface InboxCardActionsProps {
 }
 
 function InboxCardActions({ loading, className, onFinish, onDelete }: InboxCardActionsProps) {
-  return (
-    <div className={cn('inbox-card-actions flex flex-row gap-2', className)}>
-      <ButtonTrash
-        className="my-auto size-7"
-        isLoading={loading}
-        type="button"
-        onClick={(evt) => {
-          evt.stopPropagation();
-          onDelete();
-        }}
-      />
+  const IconDelete = taskActionToIconMap[TaskActionType.DELETE];
+  const IconFinish = taskActionToIconMap[TaskActionType.FINISH];
 
-      <ButtonLoading
-        isLoading={loading}
-        size="icon"
-        type="button"
-        hideContent
-        className="my-auto size-7"
-        variant="ghost"
-        onClick={(evt) => {
-          evt.stopPropagation();
-          onFinish();
-        }}
-      >
-        <CheckCheck />
-      </ButtonLoading>
+  return (
+    <div className={cn('inbox-card-actions flex flex-row gap-2 items-center', className)}>
+      <AppTooltip content={capitalize(taskActionToHumanize[TaskActionType.DELETE])}>
+        <ButtonLoading
+          isLoading={loading}
+          size="icon"
+          type="button"
+          hideContent
+          className="my-auto size-7"
+          variant="ghost"
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onDelete();
+          }}
+        >
+          <IconDelete />
+        </ButtonLoading>
+      </AppTooltip>
+
+      <AppTooltip content={capitalize(taskActionToHumanize[TaskActionType.FINISH])}>
+        <ButtonLoading
+          isLoading={loading}
+          size="icon"
+          type="button"
+          hideContent
+          className="my-auto size-7"
+          variant="ghost"
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onFinish();
+          }}
+        >
+          <IconFinish />
+        </ButtonLoading>
+      </AppTooltip>
     </div>
   );
 }

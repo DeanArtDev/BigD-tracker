@@ -1,3 +1,4 @@
+import { ArchivedTasks } from './components/archived-tasks';
 import { DeletedTasks } from './components/deleted-tasks';
 import { CommonTasks } from './components/common-tasks';
 import { PageWrapper } from '@/page/ui/page-wrapper';
@@ -10,6 +11,7 @@ function TasksPage() {
         <TabsList className="mx-auto">
           <TabsTrigger value="common">Общие</TabsTrigger>
           <TabsTrigger value="deleted">Удаленные</TabsTrigger>
+          <TabsTrigger value="archived">Архивные</TabsTrigger>
         </TabsList>
 
         <TabsContent className="flex flex-col grow min-h-0" value="common">
@@ -18,6 +20,10 @@ function TasksPage() {
 
         <TabsContent className="flex flex-col grow" value="deleted">
           <DeletedTasks />
+        </TabsContent>
+
+        <TabsContent className="flex flex-col grow" value="archived">
+          <ArchivedTasks />
         </TabsContent>
       </Tabs>
     </PageWrapper>

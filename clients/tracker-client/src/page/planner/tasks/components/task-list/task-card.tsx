@@ -1,8 +1,12 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { isAllowAccentIndicationTask } from '@/entity/planner/tasks/lib';
-import { TaskDeadlineDate, TaskFrame, TaskStartDate } from '@/entity/planner/tasks/ui';
+import {
+  TaskDeadlineDate,
+  TaskFrame,
+  TaskStartDate,
+  TaskStatusIndication,
+} from '@/entity/planner/tasks/ui';
 import type { ReactNode } from 'react';
-import { TaskStatusIndication } from './task-status-indication';
 
 interface ThingCardProps {
   readonly task: TaskEntity;

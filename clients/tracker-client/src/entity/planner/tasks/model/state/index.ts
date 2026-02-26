@@ -14,3 +14,4 @@ export * from './use-assign-task-to-inbox';
 export * from './use-tasks-deleted.query';
 export * from './use-delete-complete-task';
 export * from './use-task-recovery-task';
+export * from './use-tasks-archived.query';
