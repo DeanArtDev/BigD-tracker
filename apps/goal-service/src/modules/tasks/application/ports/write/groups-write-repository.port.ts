@@ -8,7 +8,7 @@ interface GroupsWriteRepository {
   replaceGroupWithTasks(group: GroupWithTasks, trx?: TaskTransaction): Promise<void>;
 
   getGroupById(
-    input: { groupId: number; userId: number },
+    input: { groupId: number; userId: number; includeInbox?: boolean },
     trx?: TaskTransaction,
   ): Promise<GroupWithTasks | null>;
 

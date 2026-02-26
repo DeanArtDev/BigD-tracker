@@ -13,3 +13,4 @@ export * from './use-task-finish';
 export * from './use-assign-task-to-inbox';
 export * from './use-tasks-deleted.query';
 export * from './use-delete-complete-task';
+export * from './use-task-recovery-task';

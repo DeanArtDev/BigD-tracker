@@ -656,7 +656,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         code: exceptionCode.taskInvariantFailed.code,
         key: 'INVARIANT_FAILED',
         kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'status', taskId },
+        details: { field: 'weight', taskId },
       });
     });
 
