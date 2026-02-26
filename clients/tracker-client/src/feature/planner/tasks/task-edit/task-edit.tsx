@@ -37,6 +37,7 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
             onAssignSuccess={onSuccess}
             onDeleteSuccess={onSuccess}
             onRecoverSuccess={onSuccess}
+            onDeleteCompleteSuccess={onSuccess}
           />
         )
       }

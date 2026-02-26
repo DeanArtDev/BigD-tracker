@@ -16,6 +16,7 @@ interface SidebarActionsProps {
   readonly onRecoverSuccess?: () => Promise<void> | void;
   readonly onDeleteSuccess?: () => Promise<void> | void;
   readonly onCloneSuccess?: () => Promise<void> | void;
+  readonly onDeleteCompleteSuccess?: () => Promise<void> | void;
 }
 
 function SidebarActions({
@@ -26,6 +27,7 @@ function SidebarActions({
   onRecoverSuccess,
   onDeleteSuccess,
   onCloneSuccess,
+  onDeleteCompleteSuccess,
 }: SidebarActionsProps) {
   const { status, id: taskId } = taskInfo;
 
@@ -51,6 +53,7 @@ function SidebarActions({
           onRecoverSuccess={onRecoverSuccess}
           onDeleteSuccess={onDeleteSuccess}
           onCloneSuccess={onCloneSuccess}
+          onDeleteCompleteSuccess={onDeleteCompleteSuccess}
         />
       </SidebarGroup>
 
