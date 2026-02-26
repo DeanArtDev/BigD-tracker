@@ -1,13 +1,7 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useInvalidateAllTasks, useUpdateTask } from '@/entity/planner/tasks';
-import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
-import {
-  TaskDeleteWithConfirmHoc,
-  TaskFormDialog,
-  type TaskFormDialogProps,
-} from '@/entity/planner/tasks/ui';
+import { TaskFormDialog, type TaskFormDialogProps } from '@/entity/planner/tasks/ui';
 import { SidebarActions } from './components/sidebar-actions';
-import { ButtonTrash } from '@/shared/components/button-trash';
 
 interface TaskEditProps {
   readonly task: TaskFormDialogProps['task'] | null;
@@ -29,40 +23,20 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
     onSuccess?.();
   };
 
-  const DeleteTaskSlot = (props: { disabled: boolean }) => {
-    if (task == null) return null;
-    const deleteButtonDisabled = props.disabled || !isAllowTaskAction('DELETE', task.status);
-    return (
-      <TaskDeleteWithConfirmHoc
-        taskId={task.id}
-        onSuccess={async () => {
-          await invalidate();
-          onCansel?.();
-        }}
-      >
-        {({ isLoading }) => (
-          <ButtonTrash disabled={deleteButtonDisabled} className="mr-auto" isLoading={isLoading} />
-        )}
-      </TaskDeleteWithConfirmHoc>
-    );
-  };
-
   return (
     <TaskFormDialog
       task={task ?? undefined}
       open={open}
       loading={isPending}
-      footerSlot={DeleteTaskSlot}
       footerSidebarSlot={() =>
         task != null && (
           <SidebarActions
             groupId={taskGroupId}
-            taskInfo={{
-              id: task?.id,
-              status: task?.status,
-            }}
-            onFinishSuccess={invalidate}
-            onCloneSuccess={invalidate}
+            taskInfo={{ id: task?.id, status: task?.status }}
+            onFinishSuccess={onSuccess}
+            onAssignSuccess={onSuccess}
+            onDeleteSuccess={onSuccess}
+            onRecoverSuccess={onSuccess}
           />
         )
       }

@@ -3,6 +3,7 @@ import { TaskStatus } from './task.entity';
 enum TaskActionType {
   CLONE = 'CLONE',
   DELETE = 'DELETE',
+  DELETE_COMPLETE = 'DELETE_COMPLETE',
   ASSIGN = 'ASSIGN',
   UNASSIGN = 'UNASSIGN',
   FINISH = 'FINISH',
@@ -17,7 +18,6 @@ const actionToStatuesMap = {
     TaskStatus.OVERDUE,
     TaskStatus.CANCELLED,
     TaskStatus.ARCHIVED,
-    TaskStatus.DELETED,
   ],
 
   [TaskActionType.CLONE]: [
@@ -37,6 +37,8 @@ const actionToStatuesMap = {
   [TaskActionType.FINISH]: [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS],
 
   [TaskActionType.RECOVER]: [TaskStatus.DELETED],
+
+  [TaskActionType.DELETE_COMPLETE]: [TaskStatus.DELETED],
 };
 
 const allowIndicationStatusMap = {

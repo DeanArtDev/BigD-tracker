@@ -1,14 +1,8 @@
-import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
-import {
-  TaskStatus,
-  useAssignTaskToGroup,
-  useAssignTaskToInbox,
-  useTaskClone,
-  useTaskFinish,
-} from '@/entity/planner/tasks';
-import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
-import { ButtonLoading } from '@/shared/components/button-loading';
-import { Button } from '@/shared/ui-kit/ui/button';
+import { TaskStatus } from '@/entity/planner/tasks';
+import { TaskStatusIndication } from '@/entity/planner/tasks/ui';
+import { TaskActions } from '@/feature/planner/tasks/task-actions';
+import { Label } from '@/shared/ui-kit/ui/label';
+import { SidebarGroup, SidebarSeparator } from '@/shared/ui-kit/ui/sidebar';
 
 interface SidebarActionsProps {
   readonly groupId?: number;
@@ -17,93 +11,51 @@ interface SidebarActionsProps {
     readonly status: TaskStatus;
   };
 
-  readonly onCloneSuccess?: () => Promise<void> | void;
   readonly onFinishSuccess?: () => Promise<void> | void;
+  readonly onAssignSuccess?: () => Promise<void> | void;
+  readonly onRecoverSuccess?: () => Promise<void> | void;
+  readonly onDeleteSuccess?: () => Promise<void> | void;
+  readonly onCloneSuccess?: () => Promise<void> | void;
 }
 
 function SidebarActions({
   taskInfo,
   groupId,
-  onCloneSuccess,
   onFinishSuccess,
+  onAssignSuccess,
+  onRecoverSuccess,
+  onDeleteSuccess,
+  onCloneSuccess,
 }: SidebarActionsProps) {
   const { status, id: taskId } = taskInfo;
 
-  const { finishTask, isPending: isTaskFinishPending } = useTaskFinish();
-  const { cloneTask, isPending: isTaskCloningPending } = useTaskClone();
-  const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
-  const { assignTaskToInbox, isPending: isAssignTaskToInboxPending } = useAssignTaskToInbox();
-
-  const loading =
-    isAssignTaskToGroupPending ||
-    isAssignTaskToInboxPending ||
-    !isAllowTaskAction('ASSIGN', status);
-
   return (
-    <div className="sidebar-actions grid grid-cols-2 gap-2">
-      <ButtonLoading
-        className="flex-1"
-        disabled={!isAllowTaskAction('FINISH', status)}
-        isLoading={isTaskFinishPending}
-        size="xs"
-        variant="outline"
-        type="button"
-        onClick={() => {
-          finishTask({ params: { path: { taskId } } }, { onSuccess: onFinishSuccess });
-        }}
-      >
-        Завершить
-      </ButtonLoading>
+    <>
+      <SidebarGroup className="grid pl-4 pr-6 grid-cols-2 gap-2">
+        <Label>Статус:</Label>
+        <TaskStatusIndication className="ml-auto" size="md" status={status} />
+      </SidebarGroup>
 
-      <ButtonLoading
-        className="flex-1"
-        size="xs"
-        variant="outline"
-        type="button"
-        disabled={!isAllowTaskAction('CLONE', status)}
-        isLoading={isTaskCloningPending}
-        onClick={() => {
-          cloneTask(
-            { params: { path: { taskId } }, body: { data: { groupId } } },
-            { onSuccess: onCloneSuccess },
-          );
-        }}
-      >
-        Клонировать
-      </ButtonLoading>
+      <SidebarSeparator className="mx-0" />
 
-      <AssignInboxTaskToGroupDialog
-        taskGroupId={groupId}
-        trigger={
-          <Button size="xs" variant="outline" type="button" disabled={loading}>
-            Переместить
-          </Button>
-        }
-        loading={loading}
-        onSelect={(groupInfo, close) => {
-          assignTaskToGroup(
-            { params: { path: { taskId, groupId: groupInfo.id } } },
-            {
-              onSuccess: async () => {
-                await onFinishSuccess?.();
-                close();
-              },
-            },
-          );
-        }}
-        onInboxSelect={(_, close) => {
-          assignTaskToInbox(
-            { params: { path: { taskId } } },
-            {
-              onSuccess: async () => {
-                await onFinishSuccess?.();
-                close();
-              },
-            },
-          );
-        }}
-      />
-    </div>
+      <SidebarGroup className="grid px-4 grid-cols-2 gap-2">
+        <Label>Действия:</Label>
+
+        <TaskActions
+          status={status}
+          taskId={taskId}
+          groupId={groupId}
+          trigger={{ className: 'ml-auto' }}
+          onFinishSuccess={onFinishSuccess}
+          onAssignSuccess={onAssignSuccess}
+          onRecoverSuccess={onRecoverSuccess}
+          onDeleteSuccess={onDeleteSuccess}
+          onCloneSuccess={onCloneSuccess}
+        />
+      </SidebarGroup>
+
+      <SidebarSeparator className="mx-0" />
+    </>
   );
 }
 

@@ -1,33 +1,35 @@
-import { TaskActionType, TaskStatus } from '@/entity/planner/tasks';
-import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
+import { taskActionToHumanize } from '@/entity/planner/tasks/lib/maps';
+import { AppDropdown } from '@/shared/components/app-dropdown';
 import { Button } from '@/shared/ui-kit/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/shared/ui-kit/ui/dropdown-menu';
 import { cn } from '@/shared/ui-kit/utils';
+import { capitalize } from 'lodash-es';
 import { EllipsisVertical } from 'lucide-react';
+import { isAllowTaskAction } from '../../lib';
+import { TaskActionType, TaskStatus } from '../../model';
 import { TaskAction } from './task-action';
 
-interface TaskActionsProps {
+interface TaskActionsDropdownProps {
   readonly loading: boolean;
-  readonly className?: string;
+  readonly triggerClassName?: string;
   readonly taskStatus: TaskStatus;
-  readonly onFinish: () => void;
-  readonly onRecover: () => void;
-  readonly onDelete: () => void;
+  readonly onAssign?: () => void;
+  readonly onFinish?: () => void;
+  readonly onRecover?: () => void;
+  readonly onDelete?: () => void;
+  readonly onClone?: () => void;
 }
 
-function TaskActions({
+function TaskActionsDropdown({
   taskStatus,
-  className,
+  triggerClassName,
   loading,
 
   onFinish,
   onDelete,
   onRecover,
-}: TaskActionsProps) {
+  onClone,
+  onAssign,
+}: TaskActionsDropdownProps) {
   const actions = [
     {
       element: (
@@ -37,11 +39,12 @@ function TaskActions({
           key="recover"
           onClick={onRecover}
         >
-          Восстановить
+          {capitalize(taskActionToHumanize[TaskActionType.RECOVER])}
         </TaskAction>
       ),
       allow: isAllowTaskAction('RECOVER', taskStatus),
     },
+
     {
       element: (
         <TaskAction
@@ -50,11 +53,50 @@ function TaskActions({
           key="finish"
           onClick={onFinish}
         >
-          Завершить
+          {capitalize(taskActionToHumanize[TaskActionType.FINISH])}
         </TaskAction>
       ),
       allow: isAllowTaskAction('FINISH', taskStatus),
     },
+
+    {
+      element: (
+        <TaskAction action={TaskActionType.CLONE} loading={loading} key="clone" onClick={onClone}>
+          {capitalize(taskActionToHumanize[TaskActionType.CLONE])}
+        </TaskAction>
+      ),
+      allow: isAllowTaskAction('CLONE', taskStatus),
+    },
+
+    {
+      element: (
+        <TaskAction
+          action={TaskActionType.ASSIGN}
+          loading={loading}
+          key="assign"
+          onClick={onAssign}
+        >
+          {capitalize(taskActionToHumanize[TaskActionType.ASSIGN])}
+        </TaskAction>
+      ),
+      allow: isAllowTaskAction('ASSIGN', taskStatus),
+    },
+
+    {
+      element: (
+        <TaskAction
+          variant="destructive"
+          action={TaskActionType.DELETE}
+          loading={loading}
+          key="delete-complete"
+          onClick={onDelete}
+        >
+          {capitalize(taskActionToHumanize[TaskActionType.DELETE_COMPLETE])}
+        </TaskAction>
+      ),
+      allow: isAllowTaskAction('DELETE_COMPLETE', taskStatus),
+    },
+
     {
       element: (
         <TaskAction
@@ -64,7 +106,7 @@ function TaskActions({
           key="delete"
           onClick={onDelete}
         >
-          Удалить
+          {capitalize(taskActionToHumanize[TaskActionType.DELETE])}
         </TaskAction>
       ),
       allow: isAllowTaskAction('DELETE', taskStatus),
@@ -75,24 +117,22 @@ function TaskActions({
 
   if (isEmpty) return null;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <AppDropdown
+      trigger={
         <Button
           variant="ghost"
           className={cn(
             'border-none focus-visible:outline-none focus-visible:border-none focus-visible:ring-0 size-7',
-            className,
+            triggerClassName,
           )}
         >
           <EllipsisVertical />
         </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent className="w-fit">
-        {actions.map((action) => action.element)}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      }
+    >
+      {actions.map((action) => action.element)}
+    </AppDropdown>
   );
 }
 
-export { TaskActions };
+export { TaskActionsDropdown };
