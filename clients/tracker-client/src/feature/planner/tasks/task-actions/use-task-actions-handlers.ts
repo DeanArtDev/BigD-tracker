@@ -2,6 +2,7 @@ import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import {
   useAssignTaskToGroup,
   useAssignTaskToInbox,
+  useDeleteCompleteTask,
   useDeleteTask,
   useInvalidateAllTasks,
   useTaskClone,
@@ -16,12 +17,19 @@ interface UseTaskActionsHandlersProps {
   readonly onAssignSuccess?: () => Promise<void> | void;
   readonly onRecoverSuccess?: () => Promise<void> | void;
   readonly onDeleteSuccess?: () => Promise<void> | void;
+  readonly onDeleteCompleteSuccess?: () => Promise<void> | void;
   readonly onCloneSuccess?: () => Promise<void> | void;
 }
 
 function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
-  const { onFinishSuccess, onAssignSuccess, onRecoverSuccess, onDeleteSuccess, onCloneSuccess } =
-    props;
+  const {
+    onFinishSuccess,
+    onAssignSuccess,
+    onRecoverSuccess,
+    onDeleteSuccess,
+    onCloneSuccess,
+    onDeleteCompleteSuccess,
+  } = props;
 
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
 
@@ -29,6 +37,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
   const { cloneTask, isPending: isTaskClonePending } = useTaskClone();
   const { assignTaskToInbox, isPending: isAssignTaskToInboxPending } = useAssignTaskToInbox();
   const { deleteTask, isPending: isDeletePending } = useDeleteTask();
+  const { deleteCompleteTask, isPending: isDeleteCompletePending } = useDeleteCompleteTask();
   const { recoveryTask, isPending: isTaskRecoveryPending } = useTaskRecoveryTask();
   const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
 
@@ -44,6 +53,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     isAssignTaskToInboxPending ||
     isDeletePending ||
     isTaskFinishPending ||
+    isDeleteCompletePending ||
     isTaskClonePending ||
     isTaskRecoveryPending;
 
@@ -63,6 +73,26 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
       dialog: {
         title: 'Удалить?',
         content: 'В будущем, дело можно будет восстановить',
+      },
+    });
+  };
+
+  const handleDeleteComplete = (taskId: number) => {
+    viaConfirmation({
+      isNeedConfirm: () => true,
+      callback: () =>
+        void deleteCompleteTask(
+          { params: { path: { taskId } } },
+          {
+            onSuccess: async () => {
+              await onDeleteCompleteSuccess?.();
+              await invalidate();
+            },
+          },
+        ),
+      dialog: {
+        title: 'Удалить полностью?',
+        content: 'Это окончательное удаление, больше дело восстановить будет нельзя',
       },
     });
   };
@@ -146,6 +176,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     handleAssign,
     handleAssignToInbox,
     handleRecovery,
+    handleDeleteComplete,
   };
 }
 

@@ -16,6 +16,7 @@ interface TaskActionsDropdownProps {
   readonly onFinish?: () => void;
   readonly onRecover?: () => void;
   readonly onDelete?: () => void;
+  readonly onDeleteComplete?: () => void;
   readonly onClone?: () => void;
 }
 
@@ -29,6 +30,7 @@ function TaskActionsDropdown({
   onRecover,
   onClone,
   onAssign,
+  onDeleteComplete,
 }: TaskActionsDropdownProps) {
   const actions = [
     {
@@ -86,10 +88,10 @@ function TaskActionsDropdown({
       element: (
         <TaskAction
           variant="destructive"
-          action={TaskActionType.DELETE}
+          action={TaskActionType.DELETE_COMPLETE}
           loading={loading}
           key="delete-complete"
-          onClick={onDelete}
+          onClick={onDeleteComplete}
         >
           {capitalize(taskActionToHumanize[TaskActionType.DELETE_COMPLETE])}
         </TaskAction>

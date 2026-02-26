@@ -17,6 +17,7 @@ interface TaskActionsProps {
   readonly onAssignSuccess?: () => Promise<void> | void;
   readonly onRecoverSuccess?: () => Promise<void> | void;
   readonly onDeleteSuccess?: () => Promise<void> | void;
+  readonly onDeleteCompleteSuccess?: () => Promise<void> | void;
   readonly onCloneSuccess?: () => Promise<void> | void;
 }
 
@@ -30,6 +31,7 @@ function TaskActions({
   onRecoverSuccess,
   onDeleteSuccess,
   onCloneSuccess,
+  onDeleteCompleteSuccess,
 }: TaskActionsProps) {
   const {
     isLoading,
@@ -42,12 +44,14 @@ function TaskActions({
     handleAssign,
     handleAssignToInbox,
     handleRecovery,
+    handleDeleteComplete,
   } = useTaskActionsHandlers({
     onFinishSuccess,
     onAssignSuccess,
     onRecoverSuccess,
     onDeleteSuccess,
     onCloneSuccess,
+    onDeleteCompleteSuccess,
   });
 
   const [recoveryOpen, setRecoveryOpen] = useState(false);
@@ -67,6 +71,7 @@ function TaskActions({
         onDelete={() => void handleDelete(taskId)}
         onRecover={() => void setRecoveryOpen(true)}
         onClone={() => void handleClone(taskId, groupId)}
+        onDeleteComplete={() => void handleDeleteComplete(taskId)}
       />
 
       {confirmHolder}
