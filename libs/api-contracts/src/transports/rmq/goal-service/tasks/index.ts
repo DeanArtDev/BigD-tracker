@@ -11,5 +11,6 @@ export * from './get-tasks';
 export * from './get-assignable-tasks';
 export * from './finish-task';
 export * from './complete-delete-task';
+export * from './task-recovery';
 
 export * from './types';

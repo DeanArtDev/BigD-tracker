@@ -83,20 +83,20 @@ class GroupCheckerService {
 
   async ensureGroupExists(
     input: { groupId: number; userId: number },
-    params?: { trx?: TaskTransaction; skipException?: false | undefined },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined; includeInbox?: boolean },
   ): Promise<GroupWithTasks>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
-    params: { trx?: TaskTransaction; skipException: true },
+    params: { trx?: TaskTransaction; skipException: true; includeInbox?: boolean },
   ): Promise<GroupWithTasks | null>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
-    params?: { trx?: TaskTransaction; skipException?: boolean },
+    params?: { trx?: TaskTransaction; skipException?: boolean; includeInbox?: boolean },
   ): Promise<GroupWithTasks | null> {
     const { skipException, trx } = params ?? {};
 
     const group = await this.groupWriteRepo.getGroupById(
-      { groupId: input.groupId, userId: input.userId },
+      { groupId: input.groupId, userId: input.userId, includeInbox: params?.includeInbox },
       trx,
     );
 

@@ -769,7 +769,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         code: exceptionCode.taskInvariantFailed.code,
         key: 'INVARIANT_FAILED',
         kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'status', taskId },
+        details: { field: 'weight', taskId },
       });
     });
 
@@ -951,7 +951,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         code: exceptionCode.taskInvariantFailed.code,
         key: 'INVARIANT_FAILED',
         kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'status', taskId },
+        details: { field: 'priority', taskId },
       });
     });
 
@@ -1672,8 +1672,8 @@ describe('TasksRmqController (rmq e2e)', () => {
           tasks.byGroupId,
           tasks.byPriority,
           tasks.byStatus,
-          tasks.byStartDate,
-          tasks.byDeadline
+          tasks.byStartDateLessOrEqual,
+          tasks.byDeadlineGreaterOrEqual
         )"
       `);
       expect(nthArgs(3, tasksReadRepoMock.getByRange)).toEqual(expectTransaction());

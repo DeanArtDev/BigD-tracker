@@ -97,6 +97,14 @@ class TaskFactory {
     return task.deleteSoft();
   }
 
+  static deleteComplete(task: Task): Task {
+    return task.deleteComplete();
+  }
+
+  static recovery(task: Task): Task {
+    return task.recovery();
+  }
+
   static assignToGroup(task: Task, type: 'COMMON' | 'IN_BOX' = 'COMMON'): Task {
     return task.assignToGroup({ reset: type === 'IN_BOX' });
   }

@@ -1,6 +1,6 @@
 import {
-  TaskDatabase,
   GroupsWriteRepository,
+  TaskDatabase,
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
@@ -12,7 +12,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getAvailableGroupQuery, getTasksWithStatusQuery } from '../helpers';
+import { getTasksWithStatusQuery } from '../helpers';
+import { groupWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupWriteRepositoryKysely
@@ -24,13 +25,21 @@ export class GroupWriteRepositoryKysely
   }
 
   async getGroupById(
-    input: { groupId: number; userId: number },
+    input: { groupId: number; userId: number; includeInbox?: boolean },
     trx?: TaskTransaction,
   ): Promise<GroupWithTasks | null> {
     return await this.errorCatcher('groups.get-by-id.write', async () => {
-      const group = await getAvailableGroupQuery(this.db, trx)
-        .where('g.id', '=', input.groupId)
-        .where('g.user_id', '=', input.userId)
+      const { includeInbox = false } = input;
+
+      let query = groupWithStatusQuery(this.db, trx);
+
+      if (!includeInbox) {
+        query = query.where('groups.name', 'not in', groupsQuerySpec.unavailableNames);
+      }
+
+      const group = await query
+        .where('groups.id', '=', input.groupId)
+        .where('groups.user_id', '=', input.userId)
         .executeTakeFirst();
       if (group == null) return null;
 

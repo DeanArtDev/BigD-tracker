@@ -4,6 +4,7 @@ import {
   type TaskEntity,
   useDeleteCompleteTask,
   useInvalidateAllTasks,
+  useTaskRecoveryTask,
   useTasksDeletedQuery,
 } from '@/entity/planner/tasks';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
@@ -27,6 +28,7 @@ function DeletedTasks() {
   const [taskInfo, setTaskInfo] = useState<{ id: number; groupId?: number } | null>(null);
 
   const { deleteCompleteTask, isPending: isTaskDeleteCompletePending } = useDeleteCompleteTask();
+  const { recoveryTask, isPending: isTaskRecoveryPending } = useTaskRecoveryTask();
 
   const invalidateAllGroups = useInvalidateAllGroups();
   const invalidateDiaryTasks = useInvalidateAllTasks();
@@ -48,6 +50,13 @@ function DeletedTasks() {
     });
   };
 
+  const handleRecoveryTask = (taskId: number, groupId: number) => {
+    recoveryTask(
+      { params: { path: { taskId } }, body: { data: { groupId } } },
+      { onSuccess: invalidate },
+    );
+  };
+
   return (
     <>
       <InfinityScroll
@@ -67,16 +76,19 @@ function DeletedTasks() {
       </InfinityScroll>
 
       <AssignInboxTaskToGroupDialog
+        loading={isTaskRecoveryPending}
         open={taskInfo != null}
         onOpenChange={(value) => {
           if (!value) setTaskInfo(null);
         }}
         onSelect={(groupInfo, close) => {
-          console.log(groupInfo);
+          if (taskInfo == null) return;
+          handleRecoveryTask(taskInfo.id, groupInfo.id);
           close();
         }}
         onInboxSelect={(groupInfo, close) => {
-          console.log(groupInfo);
+          if (taskInfo == null) return;
+          handleRecoveryTask(taskInfo.id, groupInfo.id);
           close();
         }}
       />

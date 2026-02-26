@@ -13,6 +13,7 @@ import {
   GoalGetAssignableTasks,
   GoalGetTasks,
   GoalReplaceTask,
+  GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
   TaskStatus,
 } from '@big-d/api-contracts';
@@ -48,6 +49,8 @@ import {
   GetTasksRes,
   ReplaceTaskReq,
   ReplaceTaskRes,
+  TaskRecoveryReq,
+  TaskRecoveryRes,
   UnassignTaskFromGroupRes,
 } from './dtos';
 
@@ -222,14 +225,40 @@ export class TasksController {
     );
   }
 
+  @Post('/:taskId/recovery')
+  @ApiOperation({ summary: 'Восстановление дела' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: TaskRecoveryRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(TaskRecoveryRes)
+  async taskRecovery(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Body() { data }: TaskRecoveryReq,
+  ): Promise<TaskRecoveryRes> {
+    return await this.goalClient.send<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
+      GoalTaskRecovery.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId,
+          groupId: data?.groupId,
+        },
+      },
+    );
+  }
+
   @Delete('/:taskId/complete')
   @ApiOperation({ summary: 'Полное удаление дела' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.NO_CONTENT,
     type: CompleteDeleteTaskRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @ValidateRpcResponse(CompleteDeleteTaskRes)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async completeDeleteTask(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('taskId', ParseIntPipe) taskId: number,

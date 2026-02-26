@@ -7,6 +7,7 @@ import {
   allowTaskStatusTransitions,
   TaskStatusActions,
 } from '../../specifications';
+import { Priority, Weight } from '../../value-objects';
 import { taskAsserts } from './tasks.invariants';
 import { TaskCreateInput, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
 
@@ -128,6 +129,35 @@ class Task extends AggregateRoot {
 
     throw new ExceptionTaskDomainInvalidInvariant({
       message: `Task can't be deleted at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
+  }
+
+  public deleteComplete(): this {
+    if (this.#isAllowTo('DELETE_COMPLETE')) {
+      return this;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be deleted complete at current status: ${this.#state.status}`,
+      field: 'status',
+      taskId: this.#state.id,
+    });
+  }
+
+  public recovery(): this {
+    if (this.#isAllowTo('RECOVERY')) {
+      this.#state.priority = Priority.defaultValue();
+      this.#state.weight = Weight.defaultValue();
+      this.#state.startDate = undefined;
+      this.#state.deadline = undefined;
+      this.#state.recurrence = undefined;
+      return this.#setStatus(TaskStatus.NOT_STARTED);
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Task can't be recovery at current status: ${this.#state.status}`,
       field: 'status',
       taskId: this.#state.id,
     });
