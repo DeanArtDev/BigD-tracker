@@ -1,6 +1,7 @@
 import { usePwaUpdateToast } from '@/app/components/use-pwa-update-toast';
-import { FetchInterceptors } from './components/fetch-interceptors';
 import { Outlet } from 'react-router-dom';
+import { FetchInterceptors } from './components/fetch-interceptors';
+import { Providers } from './providers';
 
 import './styles/index.css';
 
@@ -16,8 +17,10 @@ export function App() {
   usePwaUpdateToast();
 
   return (
-    <FetchInterceptors>
-      <Outlet />
-    </FetchInterceptors>
+    <Providers>
+      <FetchInterceptors>
+        <Outlet />
+      </FetchInterceptors>
+    </Providers>
   );
 }

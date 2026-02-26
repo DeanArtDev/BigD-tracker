@@ -1,12 +1,15 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
+import { mockDate } from '@shared/__tests__';
+import {
+  futureDate,
+  oneMsBeforeStartOfToday,
+  pastDate,
+  startOfToday,
+} from '@shared/__tests__/time/helpers';
 import { taskAsserts, assertHasCancelReason, assertTaskReplace } from '../tasks.invariants';
 
-const futureDate = (offsetDays: number) =>
-  new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
-
-const pastDate = (offsetDays: number) =>
-  new Date(Date.now() - offsetDays * 24 * 60 * 60 * 1000).toISOString();
+mockDate();
 
 describe('task invariants', () => {
   it('rejects start dates in the past', () => {
@@ -25,6 +28,22 @@ describe('task invariants', () => {
     ).not.toThrow();
   });
 
+  it('allows start dates exactly at start of current day', () => {
+    expect(() =>
+      taskAsserts.startDateInThePast({
+        start: DateVo.create(startOfToday()),
+      }),
+    ).not.toThrow();
+  });
+
+  it('rejects start dates before start of current day', () => {
+    expect(() =>
+      taskAsserts.startDateInThePast({
+        start: DateVo.create(oneMsBeforeStartOfToday()),
+      }),
+    ).toThrow();
+  });
+
   it('rejects end dates in the past', () => {
     expect(() =>
       taskAsserts.endDateNotInThePast({
@@ -37,6 +56,22 @@ describe('task invariants', () => {
     expect(() =>
       taskAsserts.deadlineInThePast({
         deadline: DateVo.create(pastDate(1)),
+      }),
+    ).toThrow();
+  });
+
+  it('allows deadlines exactly at start of current day', () => {
+    expect(() =>
+      taskAsserts.deadlineInThePast({
+        deadline: DateVo.create(startOfToday()),
+      }),
+    ).not.toThrow();
+  });
+
+  it('rejects deadlines before start of current day', () => {
+    expect(() =>
+      taskAsserts.deadlineInThePast({
+        deadline: DateVo.create(oneMsBeforeStartOfToday()),
       }),
     ).toThrow();
   });

@@ -1,4 +1,4 @@
-import { useMeSuspense } from '@/entity/auth';
+import { useMe } from '@/entity/auth';
 import { mapTrainingType } from '@/entity/trainings/lib';
 import type { ApiSchemas } from '@/shared/api/types';
 import { Badge } from '@/shared/ui-kit/ui/badge';
@@ -26,7 +26,7 @@ function useTrainingsTable(
   params: UseTrainingsTableParams,
 ): ColumnDef<ApiSchemas['TrainingTemplateDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
-  const { me } = useMeSuspense();
+  const { me } = useMe();
 
   return [
     {
@@ -112,8 +112,8 @@ function useTrainingsTable(
       id: 'actions',
       cell: ({ row }) => (
         <TrainingsTableActions
-          canEdit={me.id === row.original.userId}
-          canDelete={me.id === row.original.userId}
+          canEdit={me?.id === row.original.userId}
+          canDelete={me?.id === row.original.userId}
           disable={loading}
           onAssign={() => void onAssign(row.original.id)}
           onEdit={() => void onEdit(row.original)}

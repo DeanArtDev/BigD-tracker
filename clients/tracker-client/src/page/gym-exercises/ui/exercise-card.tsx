@@ -1,5 +1,5 @@
 import placeholderSrc from '@/assets/exercise-placeholder.webp';
-import { useMeSuspense } from '@/entity/auth';
+import { useMe } from '@/entity/auth';
 import { ExerciseConfirmDelete, ExerciseEditTooltip } from '@/entity/exercises/ui';
 import { useYoutubeUrlParse } from '@/shared/lib/react/use-youtube-url-parse';
 import { AspectRatio } from '@/shared/ui-kit/ui/aspect-ratio';
@@ -30,8 +30,8 @@ function ExerciseCard({
 }: ExerciseCardProps) {
   const { previewUrl } = useYoutubeUrlParse(exampleUrl);
 
-  const { me } = useMeSuspense();
-  const isMine = ownerId === me.id;
+  const { me } = useMe();
+  const isMine = ownerId === me?.id;
 
   return (
     <Card className="p-3 gap-3">

@@ -1,8 +1,10 @@
-import { queryClient } from '@/shared/api/query-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { isEqual } from 'lodash-es';
 import { trainingsQueryKeys } from './query';
 
 function useInvalidateTrainings() {
+  const queryClient = useQueryClient();
+
   return (filters?: { from: string; to: string }, options?: { drop: boolean }) => {
     const { drop = false } = options ?? {};
 

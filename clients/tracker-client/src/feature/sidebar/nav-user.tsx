@@ -1,15 +1,15 @@
-import { UserDropdownMenu } from '@/feature/sidebar/user-dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 import { DropdownMenu, DropdownMenuTrigger } from '@/shared/ui-kit/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/shared/ui-kit/ui/sidebar';
 import { ChevronsUpDown } from 'lucide-react';
+import { UserDropdownMenu } from './user-dropdown-menu';
 
 export function NavUser({
   user,
 }: {
   user: {
     name?: string;
-    email: string;
+    email?: string;
     avatar?: string;
   };
 }) {

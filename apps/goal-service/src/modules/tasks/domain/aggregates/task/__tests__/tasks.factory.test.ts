@@ -1,8 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
+import { futureDate } from '@shared/__tests__';
 import { TaskFactory } from '../tasks.factory';
-
-const futureDate = (offsetDays: number) =>
-  new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
 
 describe('TaskFactory', () => {
   it('creates task with default priority and weight', () => {

@@ -1,5 +1,5 @@
-import { SIDEBAR_COOKIE_NAME } from '@/shared/ui-kit/ui/sidebar';
-import { create } from 'zustand/index';
+import { SIDEBAR_COOKIE_NAME } from './constants';
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface SidebarStore {

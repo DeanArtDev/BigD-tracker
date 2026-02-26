@@ -5,10 +5,9 @@ import { plannerRoutesMap } from '@/page/planner/lib/constants';
 import { type RoutePaths } from '@/shared/lib/routes';
 import type { ValueOf } from '@/shared/lib/type-helpers';
 import { useIsMobile } from '@/shared/ui-kit/helpers/use-mobile';
-import { useSidebarStore } from '@/shared/ui-kit/helpers/use-sidebar-storage';
 import { AppBreadcrumb, type AppBreadcrumbProps } from '@/shared/ui-kit/ui/app-breadcrumb';
 import { Separator } from '@/shared/ui-kit/ui/separator';
-import { SidebarTrigger } from '@/shared/ui-kit/ui/sidebar';
+import { SidebarTrigger, useSidebarStore } from '@/shared/ui-kit/ui/sidebar';
 import { useMemo } from 'react';
 import { matchPath, useLocation } from 'react-router-dom';
 

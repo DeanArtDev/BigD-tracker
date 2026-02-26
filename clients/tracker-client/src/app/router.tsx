@@ -1,33 +1,23 @@
-import { AppMain } from './components/app-main';
-import { ContentWrapper } from './components/content-wrapper';
-import { OutOfAuthRoutes } from './components/out-of-auth-routes';
-import { RouterErrorBoundary } from './components/router-error-boundary';
-import { AppSidebar } from '@/feature/sidebar';
+import { AppGlobalSidebar } from '@/app/components/global-sidebar';
+import { ContentWrapper } from '@/shared/components/content-wrapper';
 import { routes } from '@/shared/lib/routes';
 import { createBrowserRouter, Outlet, redirect } from 'react-router-dom';
 import { App } from './app';
-import { AppHeader } from './components/app-header';
-import { AuthErrorBoundary } from './components/auth-error-boundary';
 import { ProtectedRoutes } from './components/protected-routes';
+import { PublicRoutes } from './components/public-routes';
+import { RouterErrorBoundary } from './components/router-error-boundary';
 
 export const router = createBrowserRouter([
   {
     element: <App />,
-    errorElement: <RouterErrorBoundary />,
+    errorElement: <RouterErrorBoundary homeHref={routes.home.path} />,
     children: [
       {
-        errorElement: <AuthErrorBoundary />,
         element: (
           <ProtectedRoutes>
-            <AppSidebar />
-
-            <ContentWrapper className="md:pl-0">
-              <AppHeader />
-
-              <AppMain>
-                <Outlet />
-              </AppMain>
-            </ContentWrapper>
+            <AppGlobalSidebar>
+              <Outlet />
+            </AppGlobalSidebar>
           </ProtectedRoutes>
         ),
         children: [
@@ -100,7 +90,7 @@ export const router = createBrowserRouter([
       {
         element: (
           <ContentWrapper>
-            <OutOfAuthRoutes />
+            <PublicRoutes />
           </ContentWrapper>
         ),
         children: [
@@ -112,11 +102,12 @@ export const router = createBrowserRouter([
             path: routes.login.path,
             lazy: () => import('@/page/login.page'),
           },
-          {
-            path: '*',
-            loader: () => redirect(routes.home.path),
-          },
         ],
+      },
+
+      {
+        path: '*',
+        lazy: () => import('@/page/404.page'),
       },
     ],
   },

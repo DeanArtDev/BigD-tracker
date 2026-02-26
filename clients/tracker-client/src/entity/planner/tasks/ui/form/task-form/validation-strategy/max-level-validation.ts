@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { taskPrioritySchema } from '../../../../lib/validation-schemas';
 import dayjs from '@/shared/lib/time';
 
-const getNowTime = () => dayjs(new Date()).set('seconds', 59).set('milliseconds', 59).valueOf();
+const getNowTime = (): number =>
+  dayjs(new Date()).set('seconds', 59).set('milliseconds', 59).valueOf();
+const getStartOfToday = (): number => dayjs(getNowTime()).startOf('day').valueOf();
 
 const maxLevelValidation = z
   .object({
@@ -35,11 +37,11 @@ const maxLevelValidation = z
       .refine(
         (startDate) => {
           if (startDate != null) {
-            return dayjs(startDate).valueOf() >= getNowTime();
+            return dayjs(startDate).valueOf() >= getStartOfToday();
           }
           return true;
         },
-        { error: 'Начало не должно быть в прошлом' },
+        { error: 'Начало может быть только сегодня' },
       ),
 
     deadline: z
@@ -50,7 +52,7 @@ const maxLevelValidation = z
       .refine(
         (deadline) => {
           if (deadline != null) {
-            return dayjs(deadline).valueOf() >= getNowTime();
+            return dayjs(deadline).valueOf() >= dayjs(getNowTime()).startOf('day').valueOf();
           }
           return true;
         },

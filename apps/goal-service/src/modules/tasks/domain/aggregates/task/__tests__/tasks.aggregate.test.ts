@@ -1,17 +1,17 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { mockDate } from '@shared/__tests__';
-import { Priority } from '../../../value-objects/priority.vo';
-import { Weight } from '../../../value-objects/weight.vo';
+import {
+  futureDate,
+  oneSecondBeforeStartOfToday,
+  pastDate,
+  startOfToday,
+} from '@shared/__tests__/';
+import { Priority } from '@/modules/tasks/domain';
+import { Weight } from '@/modules/tasks/domain';
 import { Task } from '../tasks.aggregate';
 
 mockDate();
-
-const futureDate = (offsetDays: number) =>
-  new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
-
-const pastDate = (offsetDays: number) =>
-  new Date(Date.now() - offsetDays * 24 * 60 * 60 * 1000).toISOString();
 
 const buildCreateInput = (overrides?: Partial<Parameters<typeof Task.create>[0]>) => ({
   userId: 42,
@@ -54,11 +54,31 @@ describe('Task aggregate', () => {
     ).toThrow();
   });
 
+  it('rejects creation with start date one second before start of current day', () => {
+    expect(() =>
+      Task.create(
+        buildCreateInput({
+          startDate: DateVo.create(oneSecondBeforeStartOfToday()),
+        }),
+      ),
+    ).toThrow();
+  });
+
   it('rejects creation with deadline in the past', () => {
     expect(() =>
       Task.create(
         buildCreateInput({
           deadline: DateVo.create(pastDate(1)),
+        }),
+      ),
+    ).toThrow();
+  });
+
+  it('rejects creation with deadline one second before start of current day', () => {
+    expect(() =>
+      Task.create(
+        buildCreateInput({
+          deadline: DateVo.create(oneSecondBeforeStartOfToday()),
         }),
       ),
     ).toThrow();
@@ -158,6 +178,21 @@ describe('Task aggregate', () => {
         deadline: DateVo.create(futureDate(4)),
       }),
     ).toThrow();
+  });
+
+  it('allows updates with start date at start of current day', () => {
+    const task = Task.create(buildCreateInput());
+
+    expect(() =>
+      task.replace({
+        name: Name.create('Boundary update'),
+        description: 'Start of current day is valid',
+        priority: Priority.create(2),
+        weight: Weight.create(20),
+        startDate: DateVo.create(startOfToday()),
+        deadline: DateVo.create(futureDate(1)),
+      }),
+    ).not.toThrow();
   });
 
   it('soft deletes task when allowed', () => {

@@ -1,3 +1,4 @@
+import { useAccessTokenStore, useAuthStore } from '@/entity/auth';
 import { useLogout } from '@/feature/logout';
 import { routes } from '@/shared/lib/routes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
@@ -12,10 +13,12 @@ import { useSidebar } from '@/shared/ui-kit/ui/sidebar';
 import { LogOut, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-function UserDropdownMenu(props: { name?: string; email: string; avatar?: string }) {
+function UserDropdownMenu(props: { name?: string; email?: string; avatar?: string }) {
   const { name, email, avatar } = props;
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
+  const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
+  const setIsAuth = useAuthStore((state) => state.setIsAuth);
 
   const { logout, isPending } = useLogout();
 
@@ -50,7 +53,18 @@ function UserDropdownMenu(props: { name?: string; email: string; avatar?: string
 
       <DropdownMenuSeparator />
 
-      <DropdownMenuItem disabled={isPending} onClick={logout}>
+      <DropdownMenuItem
+        disabled={isPending}
+        onClick={() =>
+          void logout(undefined, {
+            onSuccess: async () => {
+              setIsAuth(false);
+              setAccessToken(undefined);
+              await navigate(routes.login.path);
+            },
+          })
+        }
+      >
         <LogOut />
         Log out
       </DropdownMenuItem>

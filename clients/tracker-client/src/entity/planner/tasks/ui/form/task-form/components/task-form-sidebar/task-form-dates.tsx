@@ -139,11 +139,11 @@ function getMinMaxValues(dates: {
   return {
     startDate: {
       min: dayjs().subtract(1, 'day').toDate(),
-      max: deadline != null ? new Date(deadline) : undefined,
+      max: deadline != null ? dayjs(deadline).toDate() : undefined,
     },
 
     deadline: {
-      min: startDate != null ? dayjs(startDate).subtract(1, 'day').toDate() : dayjs().toDate(),
+      min: startDate != null ? dayjs(startDate).toDate() : dayjs().subtract(1, 'day').toDate(),
       max: undefined,
     },
   };

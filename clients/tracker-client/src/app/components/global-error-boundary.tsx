@@ -7,10 +7,6 @@ class GlobalErrorBoundary extends Component<PropsWithChildren> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: any, info: unknown) {
-    console.error('Error caught by boundary:', error, info);
-  }
-
   render() {
     if (this.state.hasError) {
       return <div>Что-то пошло не так: {String(this.state.error)}</div>;
