@@ -25,7 +25,9 @@ function AssignableGroupItem({
       })}
       variant={disabled ? 'muted' : 'outline'}
       size="xs"
-      onClick={() => {
+      onClick={(evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
         if (!disabled) onClick();
       }}
     >

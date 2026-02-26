@@ -9,9 +9,9 @@ interface HandleProps {
   [key: string]: any;
 }
 
-interface VerticalDndItemRenderProps {
+interface VerticalDndItemRenderProps<TElement extends Element> {
   readonly style: CSSProperties;
-  readonly ref?: Ref<HTMLLIElement>;
+  readonly ref?: Ref<TElement>;
 }
 
 interface VerticalDnDProps<T extends HasId> {

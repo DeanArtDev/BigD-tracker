@@ -1,3 +1,4 @@
+import { DropdownItem } from '@/shared/components/app-dropdown';
 import { TaskActionType } from '../../model';
 import { DropdownMenuItem } from '@/shared/ui-kit/ui/dropdown-menu';
 import type { ComponentProps, PropsWithChildren } from 'react';
@@ -20,18 +21,10 @@ function TaskAction({
   const Icon = taskActionToIconMap[action];
 
   return (
-    <DropdownMenuItem
-      variant={variant}
-      key="finish"
-      disabled={loading}
-      onClick={(evt) => {
-        evt.stopPropagation();
-        onClick?.();
-      }}
-    >
+    <DropdownItem variant={variant} disabled={loading} onClick={onClick}>
       <Icon />
       {children}
-    </DropdownMenuItem>
+    </DropdownItem>
   );
 }
 

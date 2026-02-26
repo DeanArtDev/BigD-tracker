@@ -3,7 +3,7 @@ import type { VerticalDndItemRenderProps } from '@/shared/components/vertical-dn
 import { cn } from '@/shared/ui-kit/utils';
 import type { ReactNode } from 'react';
 
-interface TaskFrameProps extends Partial<VerticalDndItemRenderProps> {
+interface TaskFrameProps extends Partial<VerticalDndItemRenderProps<HTMLDivElement>> {
   readonly name: string;
   readonly className?: string;
   readonly priority: number | string;
@@ -28,20 +28,35 @@ function TaskFrame({
   const isPriorityValid = [1, 2, 3].includes(prior);
 
   return (
-    <li
+    <div
       className={cn(
-        'group/task-frame bg-background relative p-2 pl-3 flex justify-center w-full rounded-md border shadow-md hover:shadow',
+        'group/task-frame bg-background relative flex justify-center w-full rounded-md border shadow-md hover:shadow',
         className,
       )}
       ref={ref}
       style={style}
-      onClick={(evt) => {
-        evt.stopPropagation();
-        evt.preventDefault();
-        void onClick?.();
-      }}
     >
-      <div className="flex flex-col grow w-[calc(100%-40px)]">
+      <div
+        className="flex flex-col grow w-[calc(100%-40px)] p-2 pl-3"
+        onClick={(evt) => {
+          evt.stopPropagation();
+          evt.preventDefault();
+          void onClick?.();
+        }}
+      >
+        {isPriorityValid && (
+          <div
+            className={cn(
+              'absolute top-0 left-0 bottom-0 w-[3px] h-full rounded-tl-md rounded-bl-md',
+              {
+                [`bg-(--priority-1)`]: prior === 1,
+                [`bg-(--priority-2)`]: prior === 2,
+                [`bg-(--priority-3)`]: prior === 3,
+              },
+            )}
+          />
+        )}
+
         <div className="flex grow w-full items-center mb-auto">
           {beforeNameSlot}
 
@@ -53,20 +68,7 @@ function TaskFrame({
       </div>
 
       {actionsSlot}
-
-      {isPriorityValid && (
-        <div
-          className={cn(
-            'absolute top-0 left-0 bottom-0 w-[3px] h-full rounded-tl-md rounded-bl-md',
-            {
-              [`bg-(--priority-1)`]: prior === 1,
-              [`bg-(--priority-2)`]: prior === 2,
-              [`bg-(--priority-3)`]: prior === 3,
-            },
-          )}
-        />
-      )}
-    </li>
+    </div>
   );
 }
 

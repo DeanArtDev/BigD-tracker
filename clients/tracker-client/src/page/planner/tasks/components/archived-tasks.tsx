@@ -1,19 +1,17 @@
-import { type TaskEntity, useTasksDeletedQuery } from '@/entity/planner/tasks';
+import { type TaskEntity, useTasksArchivedQuery } from '@/entity/planner/tasks';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
 import { InfinityScroll } from '@/shared/components/infinity-scroll';
 import { useState } from 'react';
 import { TaskList } from './task-list';
 
-function DeletedTasks() {
+function ArchivedTasks() {
   const {
     taskList,
     fetchNextPage,
     hasNextPage,
     isLoading: isTaskLoading,
     isFetchingNextPage,
-  } = useTasksDeletedQuery({
-    perPage: 20,
-  });
+  } = useTasksArchivedQuery({ perPage: 20 });
 
   const [task, setTask] = useState<TaskEntity>();
 
@@ -38,4 +36,4 @@ function DeletedTasks() {
   );
 }
 
-export { DeletedTasks };
+export { ArchivedTasks };

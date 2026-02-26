@@ -1,5 +1,5 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
-import { TaskActions } from '@/entity/planner/tasks/ui';
+import { TaskActions } from '@/feature/planner/tasks/task-actions';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -30,15 +30,7 @@ interface TaskListProps {
   readonly onRecover?: (task: TaskEntity) => void;
 }
 
-function TaskList({
-  tasks,
-  initialLoading = false,
-  loading = false,
-  onClick,
-  onDelete,
-  onFinish,
-  onRecover,
-}: TaskListProps) {
+function TaskList({ tasks, initialLoading = false, onClick }: TaskListProps) {
   return (
     <ul className="flex flex-col gap-1.5 sm:gap-2 justify-center h-full min-h-0 w-full pb-18">
       <DataLoader
@@ -55,12 +47,10 @@ function TaskList({
               task={task}
               actionsSlot={
                 <TaskActions
-                  className="my-auto"
-                  taskStatus={task.status}
-                  loading={loading}
-                  onFinish={() => onFinish?.(task)}
-                  onDelete={() => onDelete?.(task)}
-                  onRecover={() => onRecover?.(task)}
+                  taskId={task.id}
+                  status={task.status}
+                  groupId={task.groupId}
+                  trigger={{ className: 'my-auto mr-2' }}
                 />
               }
               onClick={() => onClick(task)}

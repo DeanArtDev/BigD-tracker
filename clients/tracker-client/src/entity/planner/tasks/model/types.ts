@@ -10,4 +10,9 @@ type TaskDeletedQueryParams = Omit<
   'page'
 >;
 
-export type { TaskQueryParams, TaskDeletedQueryParams };
+type TaskArchivedQueryParams = Omit<
+  ApiEndpoints['TasksController_getArchivedTasks']['parameters']['query'],
+  'page'
+>;
+
+export type { TaskQueryParams, TaskDeletedQueryParams, TaskArchivedQueryParams };

@@ -53,7 +53,7 @@ function TaskFormSidebar(props: TaskFormSidebarProps) {
 
       <SidebarSeparator className="separator mx-0" />
 
-      <SidebarGroup className="mt-auto">{props.footerSidebarSlot}</SidebarGroup>
+      {props.footerSidebarSlot}
     </TaskSidebarRootForm>
   );
 }

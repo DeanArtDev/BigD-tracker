@@ -41,6 +41,8 @@ import {
   CreateTaskReq,
   CreateTaskRes,
   FinishTaskRes,
+  GetArchivedTasksQuery,
+  GetArchivedTasksRes,
   GetAssignableTasksQuery,
   GetAssignableTasksRes,
   GetDeletedTasksQuery,
@@ -116,6 +118,31 @@ export class TasksController {
         data: {
           userId: uid,
           filter: { status: [TaskStatus.DELETED] },
+          page: query.page,
+          perPage: query.perPage,
+        },
+      },
+    );
+  }
+
+  @Get('/archived')
+  @ApiOperation({ summary: 'Получение архивные дел' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetArchivedTasksRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GetArchivedTasksRes)
+  async getArchivedTasks(
+    @Query() query: GetArchivedTasksQuery,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GetArchivedTasksRes> {
+    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(
+      GoalGetTasks.pattern,
+      {
+        data: {
+          userId: uid,
+          filter: { status: [TaskStatus.ARCHIVED] },
           page: query.page,
           perPage: query.perPage,
         },

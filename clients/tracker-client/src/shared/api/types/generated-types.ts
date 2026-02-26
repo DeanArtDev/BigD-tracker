@@ -522,6 +522,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/tasks/archived": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение архивные дел */
+        get: operations["TasksController_getArchivedTasks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tasks/assignable": {
         parameters: {
             query?: never;
@@ -1576,6 +1593,16 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["GetDeletedTasksResData"];
         };
+        GetArchivedTasksResData: {
+            /** @description Ответ сервера */
+            items: components["schemas"]["TaskDto"][];
+            /** @description Метаинформация */
+            meta: components["schemas"]["PaginationResDto"];
+        };
+        GetArchivedTasksRes: {
+            /** @description Ответ сервера */
+            data: components["schemas"]["GetArchivedTasksResData"];
+        };
         GetAssignableTasksRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"][];
@@ -2619,6 +2646,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetDeletedTasksRes"];
+                };
+            };
+        };
+    };
+    TasksController_getArchivedTasks: {
+        parameters: {
+            query: {
+                /** @description Какая страниц */
+                page: number;
+                /** @description Элементов в странице */
+                perPage: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetArchivedTasksRes"];
                 };
             };
         };

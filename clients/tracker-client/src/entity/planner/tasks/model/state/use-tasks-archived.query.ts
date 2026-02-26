@@ -1,14 +1,14 @@
 import { $privetQueryClient } from '@/shared/api/api-client';
 import { taskDtoToEntity } from '../../lib/adapters';
 import type { TaskEntity } from '../task.entity';
-import type { TaskDeletedQueryParams } from '../types';
+import type { TaskArchivedQueryParams } from '../types';
 import { tasksQueryKeys } from './query';
 
 const EMPTY_PLACEHOLDER: TaskEntity[] = [];
 
-function useTasksDeletedQuery(params: TaskDeletedQueryParams) {
+function useTasksArchivedQuery(params: TaskArchivedQueryParams) {
   const { data, ...others } = $privetQueryClient.useInfiniteQuery(
-    ...tasksQueryKeys.getTasksDeleted(params),
+    ...tasksQueryKeys.getTasksArchived(params),
     {
       pageParamName: 'page',
       initialPageParam: 1,
@@ -33,4 +33,4 @@ function useTasksDeletedQuery(params: TaskDeletedQueryParams) {
   };
 }
 
-export { useTasksDeletedQuery };
+export { useTasksArchivedQuery };

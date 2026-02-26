@@ -1,4 +1,5 @@
 import { queryClient } from '@/shared/api/query-client';
+import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { useSidebarStore } from '@/shared/ui-kit/helpers/use-sidebar-storage';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { Toaster } from '@/shared/ui-kit/ui/sonner';
@@ -15,6 +16,8 @@ setDefaultOptions({ locale: ru });
 export function Providers({ children }: { children: ReactNode }) {
   const { sidebar_state: sidebarState } = useSidebarStore();
 
+  const isMobile = useIsMobile();
+
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools client={queryClient} buttonPosition="bottom-left" />
@@ -24,7 +27,11 @@ export function Providers({ children }: { children: ReactNode }) {
 
       {createPortal(
         <DismissableLayerBranch>
-          <Toaster richColors className="z-51 pointer-events-auto" />
+          <Toaster
+            richColors
+            className="z-51 pointer-events-auto"
+            position={isMobile ? 'bottom-center' : 'top-center'}
+          />
         </DismissableLayerBranch>,
         document.body,
       )}
