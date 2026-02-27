@@ -111,7 +111,10 @@ class TaskService {
 
   async addTaskToGroup(input: AddTaskToGroupInput, trx?: TaskTransaction): Promise<void> {
     const { taskId, userId, groupId } = input;
-    await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
+    await this.groupCheckerService.ensureGroupExists(
+      { groupId, userId },
+      { trx, includeInbox: true },
+    );
     await this.tasksWriteRepo.addTaskToGroup({ taskId, groupId }, trx);
   }
 }
