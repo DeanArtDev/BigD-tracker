@@ -1,7 +1,7 @@
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
-import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
 import { Group } from '../group.aggregate';
+import { DescriptionVo, ProgressVo } from '../../value-objects';
 
 describe('Group aggregate', () => {
   it('creates group with defaults', () => {

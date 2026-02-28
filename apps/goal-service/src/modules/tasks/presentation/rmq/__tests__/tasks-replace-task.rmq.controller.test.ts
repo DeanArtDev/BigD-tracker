@@ -75,9 +75,11 @@ describe('TasksRmqController (rmq e2e)', () => {
           description: 'Updated desc',
           priority: 2,
           weight: 5,
-          startDate: '2099-01-01T00:00:00.000Z',
-          deadline: '2099-02-01T00:00:00.000Z',
-          recurrence: 'weekly',
+          recurrence: {
+            frequency: 2,
+            startDate: '2099-01-01T00:00:00.000Z',
+            deadline: '2099-02-01T00:00:00.000Z',
+          },
         },
       });
 
@@ -97,9 +99,9 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(replacedTaskArg.description).toBe('Updated desc');
       expect(replacedTaskArg.priority).toBe(2);
       expect(replacedTaskArg.weight).toBe(5);
-      expect(replacedTaskArg.startDate).toBe('2099-01-01T00:00:00.000Z');
-      expect(replacedTaskArg.deadline).toBe('2099-02-01T00:00:00.000Z');
-      expect(replacedTaskArg.recurrence).toBe('weekly');
+      expect(replacedTaskArg.recurrence?.value.startDate?.value).toBe('2099-01-01T00:00:00.000Z');
+      expect(replacedTaskArg.recurrence?.value.deadline?.value).toBe('2099-02-01T00:00:00.000Z');
+      expect(replacedTaskArg.recurrence?.value.frequency).toBe(2);
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: {
@@ -110,11 +112,13 @@ describe('TasksRmqController (rmq e2e)', () => {
           priority: 2,
           weight: 5,
           cancelReason: undefined,
-          startDate: '2099-01-01T00:00:00.000Z',
           endDate: undefined,
-          deadline: '2099-02-01T00:00:00.000Z',
           status: TaskStatus.IN_PROGRESS,
-          recurrence: 'weekly',
+          recurrence: {
+            frequency: 2,
+            startDate: '2099-01-01T00:00:00.000Z',
+            deadline: '2099-02-01T00:00:00.000Z',
+          },
         },
       });
     });
@@ -134,8 +138,11 @@ describe('TasksRmqController (rmq e2e)', () => {
           description: 'Updated desc',
           priority: 2,
           weight: 3,
-          startDate: '2099-02-01T00:00:00.000Z',
-          deadline: '2099-01-01T00:00:00.000Z',
+          recurrence: {
+            frequency: 2,
+            startDate: '2099-02-01T00:00:00.000Z',
+            deadline: '2099-01-01T00:00:00.000Z',
+          },
         },
       });
 

@@ -57,7 +57,7 @@ export class TasksInboxController {
         priority: data.priority,
         description: data.description,
         name: data.name,
-        deadline: data.deadline,
+        recurrence: data.recurrence,
       },
     });
   }
@@ -109,7 +109,7 @@ export class TasksInboxController {
           priority: data.priority,
           name: data.name,
           description: data.description,
-          deadline: data.deadline,
+          recurrence: data.recurrence,
         },
       },
     );

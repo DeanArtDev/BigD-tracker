@@ -69,7 +69,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         weight: 2,
         startDate: '2026-03-02T00:00:00.000Z',
         deadline: '2026-03-10T00:00:00.000Z',
-        recurrence: 'weekly',
       });
       const taskB = getTaskView({
         id: 8802,
@@ -80,7 +79,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         weight: 3,
         startDate: '2026-03-03T00:00:00.000Z',
         deadline: '2026-03-11T00:00:00.000Z',
-        recurrence: 'daily',
       });
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([taskA, taskB]);
 
@@ -132,8 +130,6 @@ describe('TasksRmqController (rmq e2e)', () => {
               description: taskA.description,
               priority: taskA.priority,
               weight: taskA.weight,
-              startDate: taskA.startDate,
-              deadline: taskA.deadline,
               status: taskA.status,
               recurrence: taskA.recurrence,
             },
@@ -144,8 +140,6 @@ describe('TasksRmqController (rmq e2e)', () => {
               description: taskB.description,
               priority: taskB.priority,
               weight: taskB.weight,
-              startDate: taskB.startDate,
-              deadline: taskB.deadline,
               status: taskB.status,
               recurrence: taskB.recurrence,
             },
@@ -199,9 +193,8 @@ describe('TasksRmqController (rmq e2e)', () => {
               description: task.description,
               priority: task.priority,
               weight: task.weight,
-              startDate: task.startDate,
-              deadline: task.deadline,
               status: task.status,
+              recurrence: task.recurrence,
             },
           ],
           meta: { nextPage: false },

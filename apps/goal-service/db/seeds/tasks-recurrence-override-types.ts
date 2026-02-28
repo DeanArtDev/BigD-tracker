@@ -1,7 +1,7 @@
 import { DB } from '../../src/infrastructure/types';
 import { Kysely } from 'kysely';
 
-const thingStatuses = [
+const overrideTypes = [
   { name: 'OVERRIDE' },
   { name: 'CANCELED' },
   { name: 'DELETED' },
@@ -14,10 +14,10 @@ export default {
   target: 'tasks_recurrence_override_types',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
-      for (const status of thingStatuses) {
+      for (const type of overrideTypes) {
         await trx
           .insertInto('tasks_recurrence_override_types')
-          .values({ name: status.name })
+          .values({ name: type.name })
           .onConflict((oc) => oc.column('name').doNothing())
           .executeTakeFirstOrThrow();
       }

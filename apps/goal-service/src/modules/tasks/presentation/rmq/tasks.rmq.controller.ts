@@ -53,12 +53,10 @@ export class TasksRmqController {
           userId: payload.userId,
           groupId: payload.groupId,
           priority: payload.priority,
-          deadline: payload.deadline,
           name: payload.name,
           description: payload.description,
           recurrence: payload.recurrence,
           weight: payload.weight,
-          startDate: payload.startDate,
         }),
       ),
     };
@@ -86,12 +84,10 @@ export class TasksRmqController {
     return {
       data: await this.commandBus.execute(
         new ReplaceTaskCommand({
-          deadline: payload.deadline,
           name: payload.name,
           id: payload.id,
           userId: payload.userId,
           weight: payload.weight,
-          startDate: payload.startDate,
           description: payload.description,
           recurrence: payload.recurrence,
           priority: payload.priority,
@@ -110,9 +106,9 @@ export class TasksRmqController {
           id: payload.id,
           userId: payload.userId,
           name: payload.name,
-          deadline: payload.deadline,
           description: payload.description,
           priority: payload.priority,
+          recurrence: payload.recurrence,
         }),
       ),
     };

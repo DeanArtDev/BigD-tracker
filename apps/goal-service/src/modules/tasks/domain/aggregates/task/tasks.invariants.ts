@@ -1,16 +1,14 @@
-import { Priority, Weight } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
+import { Priority, RecurrenceVo, Weight } from './value-objects';
 
 interface PartlyFields {
   readonly id: number;
   readonly status: TaskStatus;
   readonly priority: Priority;
   readonly weight: Weight;
-  readonly startDate?: DateVo;
-  readonly deadline?: DateVo;
-  readonly recurrence?: string;
+  readonly recurrence?: RecurrenceVo;
 }
 
 const startOfToday = () => DateVo.create(new Date(new Date().setHours(0, 0, 0, 0)));
@@ -51,8 +49,8 @@ const taskAsserts = {
     }
   },
 
-  datesIntersections: (input: { start?: DateVo; end?: DateVo; deadline?: DateVo }) => {
-    const { start, end, deadline } = input;
+  datesIntersections: (input: { start?: DateVo; end?: DateVo }) => {
+    const { start, end } = input;
 
     if (start != null && end != null) {
       if (start.equals(end) || start.isAfter(end.value)) {
@@ -62,35 +60,10 @@ const taskAsserts = {
         });
       }
     }
-
-    if (start != null && deadline != null) {
-      if (start.equals(deadline) || start.isAfter(deadline.value)) {
-        throw new ExceptionTaskDomainInvalidInvariant({
-          message: `startDate:${start.value} must not be after or equal to deadline:${deadline.value}`,
-          field: 'startDate',
-        });
-      }
-    }
   },
 
-  partlyReplaceableFields(currentState: PartlyFields, path: Omit<PartlyFields, 'id' | 'status'>) {
-    if (path.deadline != null && !currentState.deadline?.equals(path.deadline)) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Field can't be updated at this status: ${currentState.status}`,
-        field: 'deadline',
-        taskId: currentState.id,
-      });
-    }
-
-    if (path.startDate != null && !currentState.startDate?.equals(path.startDate)) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Field can't be updated at this status: ${currentState.status}`,
-        field: 'startDate',
-        taskId: currentState.id,
-      });
-    }
-
-    if (path.priority != null && !currentState.priority?.equals(path.priority)) {
+  partlyReplaceableFields(currentState: PartlyFields, patch: Omit<PartlyFields, 'id' | 'status'>) {
+    if (patch.priority != null && !currentState.priority?.equals(patch.priority)) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Field can't be updated at this status: ${currentState.status}`,
         field: 'priority',
@@ -98,7 +71,7 @@ const taskAsserts = {
       });
     }
 
-    if (path.weight != null && !currentState.weight?.equals(path.weight)) {
+    if (patch.weight != null && !currentState.weight?.equals(patch.weight)) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Field can't be updated at this status: ${currentState.status}`,
         field: 'weight',
@@ -106,11 +79,21 @@ const taskAsserts = {
       });
     }
 
-    if (path.recurrence != null && currentState.recurrence !== path.recurrence) {
+    if (patch.recurrence != null && currentState.recurrence?.equals(patch.recurrence)) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Field can't be updated at this status: ${currentState.status}`,
         field: 'recurrence',
         taskId: currentState.id,
+      });
+    }
+  },
+
+  neededRecurrenceFields: (input: { start?: DateVo; deadline?: DateVo }) => {
+    const { start, deadline } = input;
+    if (start == null || deadline == null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: `Дело должно иметь дату начала и дедлайн для задания повторяемости`,
+        field: 'recurrence',
       });
     }
   },

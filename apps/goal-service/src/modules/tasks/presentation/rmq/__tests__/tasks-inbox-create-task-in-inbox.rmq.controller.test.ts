@@ -29,9 +29,7 @@ const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   priority: taskView.priority,
   weight: taskView.weight,
   cancelReason: taskView.cancelReason,
-  startDate: taskView.startDate,
   endDate: taskView.endDate,
-  deadline: taskView.deadline,
   status: taskView.status,
   recurrence: taskView.recurrence,
 });
@@ -117,8 +115,13 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       expect(res).toEqual({ data: toTaskResponse(taskView) });
     });
 
-    test('should throw when deadline in past', async () => {
+    test('should proceed to inbox checks when deadline in past', async () => {
       const userId = 104;
+      const createdTask = getTask({ id: 9004, userId, name: 'Inbox Task' });
+      tasksWriteRepoMock.createTask.mockResolvedValueOnce(createdTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(createdTask);
+      inboxReadRepoMock.getInboxWithTasksByUserId.mockResolvedValueOnce(null);
+
       const payload: GoalCreateTaskInInbox.Request = buildPayload({
         data: {
           userId,
@@ -138,15 +141,14 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(0);
-      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledTimes(0);
+      expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledTimes(0);
       expect(tasksReadRepoMock.getById).toHaveBeenCalledTimes(0);
       expect(unwrapRpcError(error)).toMatchObject({
-        code: exceptionCode.taskInvariantFailed.code,
-        key: 'INVARIANT_FAILED',
-        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'deadline' },
+        code: exceptionCode.inboxNotExist.code,
+        key: 'INBOX_NOT_EXIST',
+        kind: RmqErrorKind.NOT_FOUND,
       });
     });
 

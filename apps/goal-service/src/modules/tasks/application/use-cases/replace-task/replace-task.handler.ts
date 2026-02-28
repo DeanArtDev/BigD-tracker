@@ -7,7 +7,7 @@ import { ReplaceTaskUseCase } from './replace-task.use-case';
 export class ReplaceTaskHandler implements ICommandHandler<ReplaceTaskCommand> {
   constructor(private replaceTaskUseCase: ReplaceTaskUseCase) {}
 
-  async execute({ input }: ReplaceTaskCommand): Promise<TaskView> {
-    return await this.replaceTaskUseCase.execute(input);
+  async execute(command: ReplaceTaskCommand): Promise<TaskView> {
+    return await this.replaceTaskUseCase.execute(command);
   }
 }

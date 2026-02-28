@@ -4,7 +4,14 @@ import { Transaction } from 'kysely';
 
 type TasksDB = Pick<
   DB,
-  'tasks' | 'groups' | 'group_statuses' | 'task_statuses' | 'tag_to_tasks' | 'task_to_group'
+  | 'tasks'
+  | 'groups'
+  | 'group_statuses'
+  | 'task_statuses'
+  | 'tag_to_tasks'
+  | 'task_to_group'
+  | 'tasks_recurrence_overrides'
+  | 'tasks_recurrence_override_types'
 >;
 
 type GoalsDB = Pick<

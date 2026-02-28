@@ -12,7 +12,18 @@ function TaskInboxCreateController() {
       loading={isPending}
       onSubmit={(formResult, { close }) => {
         createInboxTask(
-          { body: { data: formResult } },
+          {
+            body: {
+              data: {
+                name: formResult.name,
+                description: formResult.description,
+                priority: formResult.priority,
+                recurrence: {
+                  deadline: formResult.deadline,
+                },
+              },
+            },
+          },
           {
             onSuccess: async () => {
               await invalidateDiaryTasks();

@@ -1,3 +1,4 @@
 export * from './aggregates/task';
-export * from './value-objects';
 export * from './specifications';
+export * from './aggregates/value-objects';
+export * from './aggregates/task/value-objects';

@@ -23,6 +23,7 @@
     "class-transformer": "catalog:",
     "class-validator": "catalog:",
     "reflect-metadata": "catalog:",
+    "rrule": "2.8.1",
     "rxjs": "catalog:"
   },
   "devDependencies": {

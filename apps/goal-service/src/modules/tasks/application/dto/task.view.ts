@@ -1,3 +1,4 @@
+import { TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 
 interface TaskViewState {
@@ -9,11 +10,9 @@ interface TaskViewState {
   readonly priority: number;
   readonly weight: number;
   readonly cancelReason?: string;
-  readonly startDate?: string;
   readonly endDate?: string;
-  readonly deadline?: string;
   readonly status: TaskStatus;
-  readonly recurrence?: string;
+  readonly recurrence?: TaskRecurrence;
 }
 
 class TaskView {
@@ -27,10 +26,8 @@ class TaskView {
     public readonly groupId?: number,
     public readonly description?: string,
     public readonly cancelReason?: string,
-    public readonly startDate?: string,
     public readonly endDate?: string,
-    public readonly deadline?: string,
-    public readonly recurrence?: string,
+    public readonly recurrence?: TaskRecurrence,
   ) {}
 
   static restore(input: TaskViewState): TaskView {
@@ -44,9 +41,7 @@ class TaskView {
       input.groupId,
       input.description,
       input.cancelReason,
-      input.startDate,
       input.endDate,
-      input.deadline,
       input.recurrence,
     );
   }

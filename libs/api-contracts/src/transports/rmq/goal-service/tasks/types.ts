@@ -1,3 +1,5 @@
+import { Frequency as RecurrenceFrequency } from 'rrule';
+
 enum TaskStatus {
   NOT_STARTED = 'NOT_STARTED',
   IN_PROGRESS = 'IN_PROGRESS',
@@ -8,4 +10,4 @@ enum TaskStatus {
   DELETED = 'DELETED',
 }
 
-export { TaskStatus };
+export { TaskStatus, RecurrenceFrequency };

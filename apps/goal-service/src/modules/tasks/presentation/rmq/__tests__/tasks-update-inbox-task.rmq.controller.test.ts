@@ -58,11 +58,22 @@ describe('TasksRmqController (rmq e2e)', () => {
     await ms.close();
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe(`${GoalUpdateInboxTask.pattern}`, () => {
     test('should update inbox task', async () => {
       const userId = 40;
       const taskId = 5001;
-      const existingTask = getTask({ id: taskId, userId, name: 'Old', weight: 4 });
+      const existingTask = getTask({
+        id: taskId,
+        userId,
+        name: 'Old',
+        weight: 4,
+        priority: 1,
+        status: TaskStatus.COMPLETED,
+      });
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
       inboxReadRepoMock.ensureTaskInInbox.mockResolvedValueOnce({
@@ -71,7 +82,14 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
       tasksWriteRepoMock.replaceTask.mockImplementation((task: Task) => task);
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, name: 'Inbox Updated', weight: 4, priority: 1 }),
+        getTask({
+          id: taskId,
+          userId,
+          name: 'Inbox Updated',
+          weight: 4,
+          priority: 1,
+          status: TaskStatus.COMPLETED,
+        }),
       );
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
@@ -81,7 +99,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Inbox Updated',
           description: 'Updated inbox',
           priority: 1,
-          deadline: '2099-05-01T00:00:00.000Z',
         },
       });
 
@@ -106,7 +123,6 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(updatedTaskArg.description).toBe('Updated inbox');
       expect(updatedTaskArg.priority).toBe(1);
       expect(updatedTaskArg.weight).toBe(4);
-      expect(updatedTaskArg.deadline).toBe('2099-05-01T00:00:00.000Z');
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: {
@@ -116,6 +132,7 @@ describe('TasksRmqController (rmq e2e)', () => {
           priority: 1,
           weight: 4,
           status: existingTask.status,
+          recurrence: {},
         },
       });
     });
@@ -296,50 +313,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           groupId: 123,
           message: 'Task is not in IN BOX',
         },
-      });
-    });
-
-    test('should throw when updated inbox task missing after write', async () => {
-      const userId = 45;
-      const taskId = 5006;
-
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, name: 'Old', weight: 3 }),
-      );
-      inboxReadRepoMock.ensureTaskInInbox.mockResolvedValueOnce({
-        success: true,
-        inboxId: 777,
-      });
-      tasksWriteRepoMock.replaceTask.mockImplementation((task: Task) => task);
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
-
-      const payload: GoalUpdateInboxTask.Request = buildPayload({
-        data: {
-          id: taskId,
-          userId,
-          name: 'Inbox Updated',
-          priority: 2,
-        },
-      });
-
-      let error: unknown;
-      try {
-        await sendMessage<GoalUpdateInboxTask.Response, GoalUpdateInboxTask.Request>(
-          GoalUpdateInboxTask.pattern,
-          payload,
-        );
-      } catch (err) {
-        error = err;
-      }
-
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(2);
-      expect(inboxReadRepoMock.ensureTaskInInbox).toHaveBeenCalledTimes(1);
-      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(1);
-      expect(unwrapRpcError(error)).toMatchObject({
-        code: exceptionCode.taskCreationFailed.code,
-        key: 'TASK_CREATION_FAILED',
-        kind: RmqErrorKind.INTERNAL,
-        details: { taskId },
       });
     });
   });

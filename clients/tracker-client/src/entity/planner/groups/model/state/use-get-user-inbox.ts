@@ -14,7 +14,7 @@ function useGetUserInbox() {
           groupId: task.groupId,
           description: task.description,
           priority: task.priority,
-          deadline: task.deadline,
+          recurrence: task.recurrence,
         }));
       },
     },

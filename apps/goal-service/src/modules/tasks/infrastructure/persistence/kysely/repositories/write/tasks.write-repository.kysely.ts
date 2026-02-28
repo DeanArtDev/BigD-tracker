@@ -10,6 +10,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
+import { recurrenceVoToString } from '../../mappers/helpers';
 
 @Injectable()
 export class TasksWriteRepositoryKysely
@@ -88,6 +89,15 @@ export class TasksWriteRepositoryKysely
         trx,
       ).executeTakeFirstOrThrow();
 
+      const recurrence =
+        task.recurrence?.value.frequency != null && task.startDate != null && task.deadline != null
+          ? recurrenceVoToString({
+              frequency: task.recurrence.value.frequency,
+              deadline: task.deadline,
+              startDate: task.startDate,
+            })
+          : null;
+
       const result = await this.db
         .qb(trx)
         .updateTable(this.#tableName)
@@ -101,7 +111,7 @@ export class TasksWriteRepositoryKysely
           start_date: task.startDate ?? null,
           end_date: task.endDate,
           deadline: task.deadline ?? null,
-          recurrence: task.recurrence ?? null,
+          recurrence,
           status_id,
         })
         .returning([

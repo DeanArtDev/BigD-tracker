@@ -68,15 +68,22 @@ describe('GroupsRmqController (rmq e2e)', () => {
         description: 'desc-a',
         priority: 2,
         weight: 10,
-        startDate: '2026-01-01T00:00:00.000Z',
-        deadline: '2026-02-01T00:00:00.000Z',
-        recurrence: 'daily',
+        recurrence: {
+          frequency: 3,
+          startDate: '2026-01-01T00:00:00.000Z',
+          deadline: '2026-02-01T00:00:00.000Z',
+        },
       };
       const taskInputTwo = {
         id: 202,
         name: 'Task B',
         priority: 3,
         weight: 20,
+        recurrence: {
+          frequency: 3,
+          startDate: '2026-03-01T00:00:00.000Z',
+          deadline: '2026-04-01T00:00:00.000Z',
+        },
       };
       const groupWithTasks = getGroupWithTasks({ id: groupId, user_id: userId, name: 'Old' });
       const restoredTaskOne = getTask({ id: taskInputOne.id, userId });
@@ -160,9 +167,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
               priority: responseTask.priority,
               weight: responseTask.weight,
               cancelReason: responseTask.cancelReason,
-              startDate: responseTask.startDate,
               endDate: responseTask.endDate,
-              deadline: responseTask.deadline,
               status: responseTask.status,
               recurrence: responseTask.recurrence,
             },

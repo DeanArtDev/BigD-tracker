@@ -1,8 +1,8 @@
-import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
 import { assertGroupUpdate } from './group.invariants';
+import { DescriptionVo, ProgressVo } from '../value-objects';
 
 interface GroupState {
   readonly id: number;

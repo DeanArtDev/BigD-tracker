@@ -1,6 +1,6 @@
 import { TaskView } from '@/modules/tasks/application/dto';
-import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain/aggregates/value-objects';
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
 

@@ -47,10 +47,11 @@ function TaskInboxForm(props: TaskInboxFormProps) {
 
   const isEdit = inboxTask != null;
 
+  const { deadline } = inboxTask?.recurrence ?? {};
   const values = isEdit
     ? {
         name: inboxTask.name,
-        deadline: inboxTask.deadline != null ? new Date(inboxTask.deadline) : undefined,
+        deadline: deadline != null ? new Date(deadline) : undefined,
         description: inboxTask.description,
         priority: inboxTask.priority?.toString(),
         isDescriptionDirty: false,

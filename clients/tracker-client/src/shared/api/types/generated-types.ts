@@ -1309,6 +1309,18 @@ export interface components {
             /** @description Данные для запроса */
             data: components["schemas"]["UpdateExerciseWithRepetitionsData"];
         };
+        TaskRecurrencyDto: {
+            /**
+             * @description Частота
+             * @example 3
+             * @enum {number}
+             */
+            frequency?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+            /** @example 2025-06-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
+        };
         TaskDto: {
             /** @example 1 */
             id: number;
@@ -1326,11 +1338,7 @@ export interface components {
              */
             priority: number;
             /** @example 2025-05-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
             endDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
-            deadline?: string;
             /**
              * @description От 0 до 100
              * @example 100
@@ -1344,11 +1352,8 @@ export interface components {
              * @enum {string}
              */
             status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED";
-            /**
-             * @description Паттерн повторения дела
-             * @example ----
-             */
-            recurrence?: string;
+            /** @description Паттерн повторения дела */
+            recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
         GetInBoxRes: {
             /** @description Ответ сервера */
@@ -1478,20 +1483,13 @@ export interface components {
              * @example 2
              */
             priority?: number;
-            /** @example 2025-05-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
-            deadline?: string;
             /**
              * @description От 0 до 100
              * @example 100
              */
             weight: number;
-            /**
-             * @description Паттерн повторения дела
-             * @example ----
-             */
-            recurrence?: string;
+            /** @description Паттерн повторения дела */
+            recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
         ReplaceGroupReqData: {
             /** @example Название группы */
@@ -1622,17 +1620,10 @@ export interface components {
              * @example 100
              */
             weight?: number;
-            /** @example 2026-05-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2026-08-24T13:01:02.471Z */
-            deadline?: string;
             /** @example Описание дела */
             description?: string;
-            /**
-             * @description Паттерн повторения дела
-             * @example ----
-             */
-            recurrence?: string;
+            /** @description Паттерн повторения дела */
+            recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
         CreateTaskReq: {
             /** @description Запрос сервера */
@@ -1713,15 +1704,8 @@ export interface components {
              * @example 100
              */
             weight: number;
-            /** @example 2025-06-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2026-05-24T13:01:02.471Z */
-            deadline?: string;
-            /**
-             * @description Паттерн повторения дела
-             * @example ----
-             */
-            recurrence?: string;
+            /** @description Паттерн повторения дела */
+            recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
         ReplaceTaskReq: {
             /** @description Запрос сервера */
@@ -1739,10 +1723,10 @@ export interface components {
              * @example 2
              */
             priority?: number;
-            /** @example 2026-06-24T13:01:02.471Z */
-            deadline?: string;
             /** @example Описание дела */
             description?: string;
+            /** @description Паттерн повторения дела */
+            recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
         CreateTaskInINBOXReq: {
             /** @description Запрос сервера */
@@ -1766,8 +1750,8 @@ export interface components {
              * @example 2
              */
             priority: number;
-            /** @example 2026-05-24T13:01:02.471Z */
-            deadline?: string;
+            /** @description Паттерн повторения дела */
+            recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
         UpdateInboxTaskReq: {
             /** @description Запрос сервера */

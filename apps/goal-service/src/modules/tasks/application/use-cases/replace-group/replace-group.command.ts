@@ -1,3 +1,5 @@
+import { TaskRecurrence } from '@/modules/tasks/domain';
+
 export class ReplaceGroupCommand {
   constructor(
     readonly input: {
@@ -11,9 +13,7 @@ export class ReplaceGroupCommand {
         readonly description?: string;
         readonly weight: number;
         readonly priority: number;
-        readonly startDate?: string;
-        readonly deadline?: string;
-        readonly recurrence?: string;
+        readonly recurrence?: TaskRecurrence;
       }[];
     },
   ) {}

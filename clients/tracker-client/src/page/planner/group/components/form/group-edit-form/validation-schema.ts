@@ -11,7 +11,6 @@ const taskSchema = z.object({
   deadline: z.string().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
   startDate: z.string().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
   weight: z.number().min(0).max(100),
-  recurrence: z.string().optional(),
   status: z.enum(TaskStatus),
 });
 

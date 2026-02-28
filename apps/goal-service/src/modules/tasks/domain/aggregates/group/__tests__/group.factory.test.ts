@@ -5,7 +5,7 @@ describe('GroupFactory', () => {
     const sanitizer = {
       sanitize: jest.fn((input: string) => input),
     };
-    const factory = new GroupFactory({ sanitizer });
+    const factory = new GroupFactory();
 
     const group = factory.create({
       userId: 78,

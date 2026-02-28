@@ -31,9 +31,7 @@ const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   priority: taskView.priority,
   weight: taskView.weight,
   cancelReason: taskView.cancelReason,
-  startDate: taskView.startDate,
   endDate: taskView.endDate,
-  deadline: taskView.deadline,
   status: taskView.status,
   recurrence: taskView.recurrence,
 });
@@ -109,7 +107,9 @@ describe('TasksRmqController (rmq e2e)', () => {
         { id: clonedTask.id, userId },
         expectTransaction(),
       );
-      expect(res).toEqual({ data: toTaskResponse(clonedTask) });
+      expect(res).toEqual({
+        data: toTaskResponse(taskView),
+      });
     });
 
     test('should clone task with group', async () => {
@@ -144,7 +144,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       );
 
       expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId, userId },
+        { groupId, userId, includeInbox: true },
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledWith(
@@ -220,7 +220,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       }
 
       expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId, userId },
+        { groupId, userId, includeInbox: true },
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
