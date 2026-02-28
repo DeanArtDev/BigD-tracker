@@ -1,16 +1,8 @@
-import { TaskDto } from './task.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsInt,
-  IsISO8601,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
+import { TaskRecurrencyDto } from './task-recurrency.dto';
+import { TaskDto } from './task.dto';
 
 class UpdateInboxTaskReqData {
   @ApiProperty({ example: 'Имя дела' })
@@ -29,11 +21,15 @@ class UpdateInboxTaskReqData {
   @IsInt()
   priority: number;
 
-  @ApiPropertyOptional({ example: '2026-05-24T13:01:02.471Z' })
-  @IsISO8601()
+  @ApiPropertyOptional({
+    type: TaskRecurrencyDto,
+    description: 'Паттерн повторения дела',
+  })
+  @Expose()
   @IsOptional()
-  @IsString()
-  deadline?: string;
+  @ValidateNested()
+  @Type(() => TaskRecurrencyDto)
+  recurrence?: TaskRecurrencyDto;
 }
 
 class UpdateInboxTaskReq {

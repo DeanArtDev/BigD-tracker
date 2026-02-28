@@ -1,9 +1,9 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { TasksViewMapper } from '@/modules/tasks/application/dto/task.view-mapper';
-import { TaskDatabase } from '@/modules/tasks/application/ports';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { ReplaceTaskInput, TaskService } from '../../services';
+import { TasksViewMapper, TaskView } from '../../dto';
+import { TaskDatabase } from '../../ports';
+import { TaskService } from '../../services';
+import { ReplaceTaskCommand } from './replace-task.command';
 
 @Injectable()
 class ReplaceTaskUseCase {
@@ -12,9 +12,10 @@ class ReplaceTaskUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute(input: ReplaceTaskInput): Promise<TaskView> {
+  async execute({ input }: ReplaceTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const task = await this.taskServices.replaceTask(input, trx);
+
       return TasksViewMapper.fromAggregateToView(task);
     });
   }

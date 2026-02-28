@@ -25,10 +25,12 @@ function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelinePro
 
   const events = useMemo(() => {
     return taskList.map((task) => {
+      const { startDate, deadline } = task?.recurrence ?? {};
+
       return {
         name: task.name,
-        from: task.startDate != null ? new Date(task.startDate) : 0,
-        to: task.deadline != null ? new Date(task.deadline) : 0,
+        from: startDate != null ? new Date(startDate) : 0,
+        to: deadline != null ? new Date(deadline) : 0,
         extra: task,
       };
     });

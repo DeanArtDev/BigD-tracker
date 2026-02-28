@@ -8,7 +8,7 @@ interface TaskInboxEntity {
   readonly groupId: TaskDto['groupId'];
   readonly description: TaskDto['description'];
   readonly priority: TaskDto['priority'];
-  readonly deadline: TaskDto['deadline'];
+  readonly recurrence: TaskDto['recurrence'];
 }
 
 export type { TaskInboxEntity };

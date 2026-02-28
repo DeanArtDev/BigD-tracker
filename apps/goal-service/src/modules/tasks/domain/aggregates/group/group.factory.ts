@@ -1,5 +1,5 @@
+import { TasksViewMapper } from '@/modules/tasks/application/dto';
 import { DescriptionVo, Task, TaskFactory, TaskFactoryReplaceInput } from '@/modules/tasks/domain';
-import { HtmlSanitizer } from '@/modules/tasks/domain/ports';
 import { Name } from '@big-d/api-utils';
 import { GroupWithTasks } from './group-with-tasks.aggregate';
 import { Group } from './group.aggregate';
@@ -20,7 +20,7 @@ interface GroupFactoryReplaceWithTasksInput extends GroupFactoryReplaceInput {
 }
 
 class GroupFactory {
-  constructor(private readonly options: { sanitizer: HtmlSanitizer }) {}
+  constructor() {}
 
   create(input: GroupFactoryCreateInput): Group {
     return Group.create({
@@ -45,7 +45,9 @@ class GroupFactory {
 
     return group.replace({
       group: (group) => this.replace(group, others),
-      tasks: tasks.map((task) => TaskFactory.replace(task.task, task.input)),
+      tasks: tasks.map((task) =>
+        TasksViewMapper.fromAggregateToView(TaskFactory.replace(task.task, task.input)),
+      ),
     });
   }
 

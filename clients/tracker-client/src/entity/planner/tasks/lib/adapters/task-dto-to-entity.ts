@@ -15,13 +15,12 @@ function taskDtoToEntity(dto: ApiSchemas['TaskDto']): TaskEntity {
     name: dto.name,
     groupId: dto.groupId,
     status: dto.status as TaskStatus,
-    deadline: dto.deadline,
     priority: priorityMap[dto.priority] ?? TaskPriority.DELETE,
     description: dto.description,
     endDate: dto.endDate,
     cancelReason: dto.cancelReason,
-    startDate: dto.startDate,
     weight: dto.weight,
+    recurrence: dto.recurrence,
   };
 }
 

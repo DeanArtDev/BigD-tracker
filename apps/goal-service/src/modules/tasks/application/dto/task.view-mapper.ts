@@ -12,11 +12,13 @@ class TasksViewMapper {
       priority: agr.priority,
       weight: agr.weight,
       cancelReason: agr.cancelReason,
-      startDate: agr.startDate,
       endDate: agr.endDate,
-      deadline: agr.deadline,
       status: agr.status,
-      recurrence: agr.recurrence,
+      recurrence: {
+        frequency: agr.recurrence?.value.frequency,
+        deadline: agr.recurrence?.value.deadline?.value,
+        startDate: agr.recurrence?.value.startDate?.value,
+      },
     });
   };
 }

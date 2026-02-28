@@ -1,5 +1,5 @@
 import { ExceptionTaskCreationFailed } from '@/modules/tasks/application/exceptions';
-import { Task, TaskFactory } from '@/modules/tasks/domain';
+import { Task, TaskFactory, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteRepository, TaskTransaction } from '../ports';
@@ -18,9 +18,7 @@ interface CreateTaskInput {
   readonly description?: string;
   readonly priority?: number;
   readonly weight?: number;
-  readonly startDate?: string;
-  readonly deadline?: string;
-  readonly recurrence?: string;
+  readonly recurrence?: TaskRecurrence;
 }
 
 interface ReplaceTaskInput {
@@ -30,9 +28,7 @@ interface ReplaceTaskInput {
   readonly description?: string;
   readonly priority: number;
   readonly weight: number;
-  readonly startDate?: string;
-  readonly deadline?: string;
-  readonly recurrence?: string;
+  readonly recurrence?: TaskRecurrence;
 }
 
 interface AddTaskToGroupInput {

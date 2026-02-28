@@ -1,5 +1,15 @@
-import { IsEnum, IsInt, IsISO8601, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsInt,
+  IsISO8601,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { TaskStatus } from '../types';
+import { TaskRecurrencyDto } from './task-recurrency.dto';
 
 class TaskDto {
   @IsInt()
@@ -28,24 +38,15 @@ class TaskDto {
   @IsISO8601()
   @IsOptional()
   @IsString()
-  startDate?: string;
-
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
   endDate?: string;
-
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  deadline?: string;
 
   @IsEnum(TaskStatus)
   status: TaskStatus;
 
   @IsOptional()
-  @IsString()
-  recurrence?: string;
+  @IsObject()
+  @Type(() => TaskRecurrencyDto)
+  recurrence?: TaskRecurrencyDto;
 
   @IsOptional()
   @IsString()

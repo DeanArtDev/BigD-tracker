@@ -16,7 +16,8 @@ interface ThingCardProps {
 }
 
 function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
-  const { name, priority, deadline, startDate, status } = task;
+  const { name, priority, recurrence, status } = task;
+  const { deadline, startDate } = recurrence ?? {};
   const isAllowIndication = isAllowAccentIndicationTask(status);
 
   return (

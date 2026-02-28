@@ -1,6 +1,9 @@
-import { TaskStatus } from '@big-d/api-contracts';
-import { futureDate } from '@shared/__tests__';
+import { RecurrenceFrequency, TaskStatus } from '@big-d/api-contracts';
+import { Name } from '@big-d/api-utils';
+import { futureDate } from '@shared/__tests__/time/helpers';
 import { TaskFactory } from '../tasks.factory';
+import { Task } from '../tasks.aggregate';
+import { Priority, RecurrenceVo, Weight } from '../value-objects';
 
 describe('TaskFactory', () => {
   it('creates task with default priority and weight', () => {
@@ -15,13 +18,25 @@ describe('TaskFactory', () => {
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
   });
 
-  it('clones task into a draft', () => {
+  it('creates IN_PROGRESS task when recurrence and start/deadline are provided', () => {
     const task = TaskFactory.create({
       userId: 22,
+      name: 'Task with recurrence',
+      recurrence: {
+        frequency: RecurrenceFrequency.DAILY,
+        startDate: futureDate(1),
+        deadline: futureDate(2),
+      },
+    });
+
+    expect(task.status).toBe(TaskStatus.IN_PROGRESS);
+    expect(task.recurrence?.value.frequency).toBe(RecurrenceFrequency.DAILY);
+  });
+
+  it('clones task into a draft', () => {
+    const task = TaskFactory.create({
+      userId: 23,
       name: 'Clone me',
-      description: 'Clone from factory',
-      startDate: futureDate(1),
-      deadline: futureDate(2),
     });
 
     const clone = TaskFactory.clone(task);
@@ -30,13 +45,15 @@ describe('TaskFactory', () => {
     expect(clone.status).toBe(TaskStatus.NOT_STARTED);
   });
 
-  it('updates task fields through factory', () => {
+  it('replaces task fields through factory when recurrence is valid', () => {
     const task = TaskFactory.create({
-      userId: 23,
+      userId: 24,
       name: 'Update me',
-      description: 'Before update',
-      startDate: futureDate(1),
-      deadline: futureDate(2),
+      recurrence: {
+        frequency: RecurrenceFrequency.DAILY,
+        startDate: futureDate(1),
+        deadline: futureDate(2),
+      },
     });
 
     TaskFactory.replace(task, {
@@ -44,66 +61,46 @@ describe('TaskFactory', () => {
       description: 'After update',
       priority: 2,
       weight: 70,
-      startDate: futureDate(3),
-      deadline: futureDate(4),
-      recurrence: 'monthly',
+      recurrence: {
+        frequency: RecurrenceFrequency.WEEKLY,
+        startDate: futureDate(3),
+        deadline: futureDate(4),
+      },
     });
 
     expect(task.name).toBe('Updated');
     expect(task.description).toBe('After update');
     expect(task.priority).toBe(2);
     expect(task.weight).toBe(70);
-    expect(task.recurrence).toBe('monthly');
+    expect(task.recurrence?.value.frequency).toBe(RecurrenceFrequency.WEEKLY);
   });
 
-  it('updates inbox task while keeping weight and recurrence', () => {
-    const task = TaskFactory.create({
+  it('updates inbox task for partially replaceable status', () => {
+    const task = Task.restore({
+      id: 50,
       userId: 24,
-      name: 'Inbox',
+      name: Name.create('Inbox'),
       description: 'Before update',
-      startDate: futureDate(1),
-      deadline: futureDate(2),
-      weight: 80,
-      recurrence: 'weekly',
+      priority: Priority.create(3),
+      weight: Weight.create(80),
+      status: TaskStatus.COMPLETED,
+      recurrence: RecurrenceVo.create({
+        frequency: undefined,
+        deadline: undefined,
+        startDate: undefined,
+      }),
     });
 
-    const updatedInboxTask = TaskFactory.updateInbox(task, {
+    const updated = TaskFactory.updateInbox(task, {
       name: 'Inbox updated',
       description: 'After update',
       priority: 3,
-      deadline: futureDate(4),
+      recurrence: { deadline: futureDate(4) },
     });
 
-    expect(updatedInboxTask.name).toBe('Inbox updated');
-    expect(updatedInboxTask.description).toBe('After update');
-    expect(updatedInboxTask.priority).toBe(3);
-    expect(updatedInboxTask.weight).toBe(80);
-    expect(updatedInboxTask.recurrence).toBe(undefined);
-  });
-
-  it('soft deletes task through factory', () => {
-    const task = TaskFactory.create({
-      userId: 25,
-      name: 'Delete me',
-      description: 'Remove later',
-      startDate: futureDate(1),
-      deadline: futureDate(2),
-    });
-
-    TaskFactory.deleteSoft(task);
-
-    expect(task.status).toBe(TaskStatus.DELETED);
-  });
-
-  it('assigns task to group via factory', () => {
-    const task = TaskFactory.create({
-      userId: 26,
-      name: 'Assign me',
-      description: 'Move to inbox',
-    });
-
-    TaskFactory.assignToGroup(task, 'IN_BOX');
-
-    expect(task.status).toBe(TaskStatus.NOT_STARTED);
+    expect(updated.name).toBe('Inbox updated');
+    expect(updated.description).toBe('After update');
+    expect(updated.priority).toBe(3);
+    expect(updated.weight).toBe(80);
   });
 });

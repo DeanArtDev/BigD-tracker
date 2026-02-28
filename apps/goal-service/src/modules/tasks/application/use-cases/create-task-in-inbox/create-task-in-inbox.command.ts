@@ -1,3 +1,5 @@
+import { TaskRecurrence } from '@/modules/tasks/domain';
+
 export class CreateTaskInInboxCommand {
   constructor(
     readonly input: {
@@ -5,7 +7,7 @@ export class CreateTaskInInboxCommand {
       readonly userId: number;
       readonly description?: string;
       readonly priority?: number;
-      readonly deadline?: string;
+      readonly recurrence?: TaskRecurrence;
     },
   ) {}
 }

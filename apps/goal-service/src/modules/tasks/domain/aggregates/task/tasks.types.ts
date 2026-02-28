@@ -1,6 +1,6 @@
-import { TaskStatus } from '@big-d/api-contracts';
-import { Priority, Weight } from '../../value-objects';
+import { RecurrenceFrequency, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
+import { Priority, RecurrenceVo, Weight } from './value-objects';
 
 interface TaskState {
   readonly id: number;
@@ -11,11 +11,9 @@ interface TaskState {
   priority: Priority;
   weight: Weight;
   cancelReason?: string;
-  startDate?: DateVo;
   endDate?: DateVo;
-  deadline?: DateVo;
   status: TaskStatus;
-  recurrence?: string;
+  recurrence: RecurrenceVo;
 }
 
 interface TaskCreateInput {
@@ -25,9 +23,7 @@ interface TaskCreateInput {
   readonly description?: string;
   readonly priority: Priority;
   readonly weight: Weight;
-  readonly startDate?: DateVo;
-  readonly deadline?: DateVo;
-  readonly recurrence?: string;
+  readonly recurrence: RecurrenceVo;
 }
 
 interface TaskRestoreInput {
@@ -39,11 +35,9 @@ interface TaskRestoreInput {
   readonly priority: Priority;
   readonly weight: Weight;
   readonly cancelReason?: string;
-  readonly startDate?: DateVo;
   readonly endDate?: DateVo;
-  readonly deadline?: DateVo;
   readonly status: TaskStatus;
-  readonly recurrence?: string;
+  readonly recurrence: RecurrenceVo;
 }
 
 interface TaskReplaceInput {
@@ -51,9 +45,13 @@ interface TaskReplaceInput {
   readonly description?: string;
   readonly priority: Priority;
   readonly weight: Weight;
-  readonly startDate?: DateVo;
-  readonly deadline?: DateVo;
-  readonly recurrence?: string;
+  readonly recurrence: RecurrenceVo;
 }
 
-export { TaskCreateInput, TaskRestoreInput, TaskState, TaskReplaceInput };
+interface TaskRecurrence {
+  readonly frequency?: RecurrenceFrequency;
+  readonly startDate?: string;
+  readonly deadline?: string;
+}
+
+export { TaskCreateInput, TaskRestoreInput, TaskState, TaskReplaceInput, TaskRecurrence };

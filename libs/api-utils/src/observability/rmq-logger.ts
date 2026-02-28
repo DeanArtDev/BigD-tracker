@@ -23,14 +23,13 @@ export class RmqLogger implements ILoggerService {
     this.logger = pino({
       redact: {
         paths: [
+          'data.refreshToken',
           'data.sessionToken',
           'data.session',
           'data.token',
           'token',
           'err.stack',
           'error.stack',
-          'error.type',
-          'err.type',
         ],
         remove: true,
       },

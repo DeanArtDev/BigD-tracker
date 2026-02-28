@@ -1,11 +1,10 @@
 import { ExceptionGroupWriteConflict } from '@/modules/tasks/application/exceptions';
 import { GroupDeleteByUserPolicy } from '@/modules/tasks/application/policies';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
-import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { TaskDatabase, GroupsWriteRepository } from '../../ports';
+import { GroupsWriteRepository, TaskDatabase } from '../../ports';
 import { GroupCheckerService } from '../../services';
 import { DeleteGroupCommand } from './delete-group.command';
 
@@ -26,7 +25,7 @@ class DeleteGroupUseCase {
         { trx },
       );
 
-      const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
+      const groupFactory = new GroupFactory();
       const deletedGroup = groupFactory.delete(ensureGroup);
 
       const isDeleted = await this.groupsWriteRepo.delete(

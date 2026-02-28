@@ -50,7 +50,18 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
         updateTask(
           {
             params: { path: { taskId: task.id } },
-            body: { data: formData },
+            body: {
+              data: {
+                name: formData.name,
+                description: formData.description,
+                priority: formData.priority,
+                weight: formData.weight,
+                recurrence: {
+                  deadline: formData.deadline,
+                  startDate: formData.startDate,
+                },
+              },
+            },
           },
           { onSuccess: invalidate },
         );

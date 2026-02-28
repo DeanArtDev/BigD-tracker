@@ -46,19 +46,7 @@ export class RmqInboundLoggingInterceptor implements NestInterceptor {
       appId: props.appId,
       type: props.type,
       ...requestContext.state,
-      data: {
-        taskId: payload?.data?.taskId,
-        groupId: payload?.data?.groupId,
-        goalId: payload?.data?.goalId,
-        from: payload?.data?.from,
-        to: payload?.data?.to,
-        filter: payload?.data?.filter,
-        userId: payload?.data?.userId,
-        cursor: payload?.data?.cursor,
-        limit: payload?.data?.limit,
-        sort: payload?.data?.sort,
-        search: payload?.data?.search,
-      },
+      data: payload,
     });
 
     return defer(() =>

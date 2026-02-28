@@ -1,11 +1,6 @@
 import { formPlaceholderValues, formTransform, transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 import { taskPrioritySchema } from '../../../../lib/validation-schemas';
-import dayjs from '@/shared/lib/time';
-
-const getNowTime = (): number =>
-  dayjs(new Date()).set('seconds', 59).set('milliseconds', 59).valueOf();
-const getStartOfToday = (): number => dayjs(getNowTime()).startOf('day').valueOf();
 
 const maxLevelValidation = z
   .object({
@@ -33,31 +28,13 @@ const maxLevelValidation = z
       .date()
       .optional()
       .or(z.literal(formPlaceholderValues.date))
-      .transform(formTransform.dateToISOSFormat)
-      .refine(
-        (startDate) => {
-          if (startDate != null) {
-            return dayjs(startDate).valueOf() >= getStartOfToday();
-          }
-          return true;
-        },
-        { error: 'Начало может быть только сегодня' },
-      ),
+      .transform(formTransform.dateToISOSFormat),
 
     deadline: z
       .date()
       .optional()
       .or(z.literal(formPlaceholderValues.date))
-      .transform(formTransform.dateToISOSFormat)
-      .refine(
-        (deadline) => {
-          if (deadline != null) {
-            return dayjs(deadline).valueOf() >= dayjs(getNowTime()).startOf('day').valueOf();
-          }
-          return true;
-        },
-        { error: 'Дедлайн не должен быть в прошлом' },
-      ),
+      .transform(formTransform.dateToISOSFormat),
   })
   .check((ctx) => {
     const { startDate, deadline } = ctx.value;

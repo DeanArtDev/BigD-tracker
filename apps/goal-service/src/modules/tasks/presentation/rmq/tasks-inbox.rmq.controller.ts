@@ -24,7 +24,7 @@ export class TasksInboxRmqController {
           name: payload.name,
           description: payload.description,
           priority: payload.priority,
-          deadline: payload.deadline,
+          recurrence: payload.recurrence,
         }),
       ),
     };

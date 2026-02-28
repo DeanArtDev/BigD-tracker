@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { TaskRecurrencyDto } from './task-recurrency.dto';
 import { TaskDto } from './task.dto';
 
 class ReplaceTaskReqData {
@@ -18,23 +19,14 @@ class ReplaceTaskReqData {
   @IsNumber()
   weight: number;
 
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  startDate?: string;
-
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  deadline?: string;
-
   @IsOptional()
   @IsString()
   description?: string;
 
   @IsOptional()
-  @IsString()
-  recurrence?: string;
+  @IsObject()
+  @Type(() => TaskRecurrencyDto)
+  recurrence?: TaskRecurrencyDto;
 }
 
 class ReplaceTaskReq {

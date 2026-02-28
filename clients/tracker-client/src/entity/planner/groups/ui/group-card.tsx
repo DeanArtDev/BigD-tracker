@@ -23,7 +23,7 @@ interface GroupCardProps {
 function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardProps) {
   const { total, overdue, done } = getTasksStatusCount(tasks);
 
-  const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
+  const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.recurrence?.deadline));
   const isDeadlineToday =
     closestTaskDeadline != null ? dayjs(closestTaskDeadline).isToday() : false;
   const isAllowIndicationGroup = isAllowAccentIndicationGroup(status);

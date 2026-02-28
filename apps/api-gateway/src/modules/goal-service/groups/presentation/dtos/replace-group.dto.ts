@@ -1,10 +1,11 @@
+import { TaskRecurrencyDto } from '@/modules/goal-service/tasks';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import {
   IsArray,
   IsInt,
-  IsISO8601,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Max,
@@ -38,20 +39,6 @@ class ReplaceGroupTask {
   @IsInt()
   priority: number;
 
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
-  @Expose()
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  startDate?: string;
-
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
-  @Expose()
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  deadline?: string;
-
   @ApiProperty({ example: 100, description: 'От 0 до 100' })
   @Expose()
   @Min(0)
@@ -60,12 +47,14 @@ class ReplaceGroupTask {
   weight: number;
 
   @ApiPropertyOptional({
-    example: '----',
+    type: TaskRecurrencyDto,
     description: 'Паттерн повторения дела',
   })
+  @Expose()
   @IsOptional()
-  @IsString()
-  recurrence?: string;
+  @IsObject()
+  @Type(() => TaskRecurrencyDto)
+  recurrence?: TaskRecurrencyDto;
 }
 
 class ReplaceGroupReqData {

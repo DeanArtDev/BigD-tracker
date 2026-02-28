@@ -6,11 +6,10 @@ import {
   GroupInbox,
   groupsCombinators,
 } from '@/modules/tasks/application/specifications';
-import { GroupsReadRepository, GroupsWriteRepository, TaskTransaction } from '../ports';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
-import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
+import { GroupsReadRepository, GroupsWriteRepository, TaskTransaction } from '../ports';
 
 interface CreateGroupInput {
   readonly name: string;
@@ -28,7 +27,7 @@ class GroupsService {
   ) {}
 
   async createGroup(input: CreateGroupInput, trx?: TaskTransaction): Promise<GroupView> {
-    const groupDraft = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() }).create(input);
+    const groupDraft = new GroupFactory().create(input);
     const group = await this.groupsWriteRepo.createGroup(groupDraft, trx);
     const groupView = await this.groupReadRepo.getGroup(
       and(GroupById(group.id), GroupByUserId(input.userId), not(GroupInbox())),

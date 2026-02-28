@@ -8,6 +8,7 @@ import {
   startOfToday,
 } from '@shared/__tests__/time/helpers';
 import { taskAsserts, assertHasCancelReason, assertTaskReplace } from '../tasks.invariants';
+import { Priority, Weight } from '../value-objects';
 
 mockDate();
 
@@ -92,20 +93,18 @@ describe('task invariants', () => {
     ).toThrow();
   });
 
-  it('rejects deadlines before or equal start dates', () => {
+  it('allows datesIntersections when one of dates is missing', () => {
     expect(() =>
       taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(3)),
-        deadline: DateVo.create(futureDate(2)),
       }),
-    ).toThrow();
+    ).not.toThrow();
 
     expect(() =>
       taskAsserts.datesIntersections({
-        start: DateVo.create(futureDate(3)),
-        deadline: DateVo.create(futureDate(3)),
+        end: DateVo.create(futureDate(3)),
       }),
-    ).toThrow();
+    ).not.toThrow();
   });
 
   it('allows valid date ordering', () => {
@@ -113,7 +112,6 @@ describe('task invariants', () => {
       taskAsserts.datesIntersections({
         start: DateVo.create(futureDate(1)),
         end: DateVo.create(futureDate(2)),
-        deadline: DateVo.create(futureDate(3)),
       }),
     ).not.toThrow();
   });
@@ -123,6 +121,45 @@ describe('task invariants', () => {
       assertTaskReplace({
         status: TaskStatus.COMPLETED,
       }),
+    ).toThrow();
+  });
+
+  it('requires start and deadline for recurrence-based replace', () => {
+    expect(() =>
+      taskAsserts.neededRecurrenceFields({
+        start: DateVo.create(futureDate(1)),
+      }),
+    ).toThrow();
+
+    expect(() =>
+      taskAsserts.neededRecurrenceFields({
+        deadline: DateVo.create(futureDate(2)),
+      }),
+    ).toThrow();
+
+    expect(() =>
+      taskAsserts.neededRecurrenceFields({
+        start: DateVo.create(futureDate(1)),
+        deadline: DateVo.create(futureDate(2)),
+      }),
+    ).not.toThrow();
+  });
+
+  it('rejects partly-replaceable fields when priority changes', () => {
+    expect(() =>
+      taskAsserts.partlyReplaceableFields(
+        {
+          id: 1,
+          status: TaskStatus.COMPLETED,
+          priority: Priority.create(2),
+          weight: Weight.create(10),
+        },
+        {
+          priority: Priority.create(3),
+          weight: Weight.create(10),
+          recurrence: undefined,
+        },
+      ),
     ).toThrow();
   });
 

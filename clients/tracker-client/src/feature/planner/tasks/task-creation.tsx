@@ -31,7 +31,17 @@ function TaskCreation({ trigger, groupId, onSuccess, onCansel }: TaskCreationPro
         createTask(
           {
             body: {
-              data: { ...formData, groupId },
+              data: {
+                name: formData.name,
+                description: formData.description,
+                priority: formData.priority,
+                weight: formData.weight,
+                groupId,
+                recurrence: {
+                  deadline: formData.deadline,
+                  startDate: formData.startDate,
+                },
+              },
             },
           },
 

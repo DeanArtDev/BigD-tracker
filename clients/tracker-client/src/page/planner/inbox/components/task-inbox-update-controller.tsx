@@ -32,7 +32,7 @@ function TaskInboxUpdateController({
 
   const { updateInboxTask, isPending: isInboxTaskUpdatePending } = useUpdateInboxTask();
   const invalidateInbox = useInvalidateInbox();
-  const invalidateDiaryTasks = useInvalidateAllTasks();
+  const invalidateAllTasks = useInvalidateAllTasks();
   const invalidateAllGroups = useInvalidateAllGroups();
   const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
 
@@ -86,11 +86,20 @@ function TaskInboxUpdateController({
             updateInboxTask(
               {
                 params: { path: { taskId: inboxTask.id } },
-                body: { data: formResult },
+                body: {
+                  data: {
+                    name: formResult.name,
+                    description: formResult.description,
+                    priority: formResult.priority,
+                    recurrence: {
+                      deadline: formResult.deadline,
+                    },
+                  },
+                },
               },
               {
                 onSuccess: async () => {
-                  await invalidateDiaryTasks();
+                  await invalidateAllTasks();
                   await invalidateInbox();
                   onSuccess?.();
                 },

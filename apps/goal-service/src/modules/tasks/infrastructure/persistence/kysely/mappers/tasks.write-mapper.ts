@@ -1,6 +1,7 @@
-import { Task, Weight, Priority } from '@/modules/tasks/domain';
+import { Priority, Task, Weight } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
+import { rawRecurrenceToVo } from './helpers';
 
 interface RawTask {
   readonly id: number;
@@ -20,6 +21,12 @@ interface RawTask {
 
 class TasksWriteKyselyMapper {
   static fromRawToAgr(raw: RawTask): Task {
+    const recurrence = rawRecurrenceToVo({
+      recurrence: raw.recurrence,
+      startDate: raw.start_date,
+      deadline: raw.deadline,
+    });
+
     return Task.restore({
       id: raw.id,
       userId: raw.user_id,
@@ -29,11 +36,9 @@ class TasksWriteKyselyMapper {
       priority: Priority.restore(raw.priority),
       weight: Weight.restore(raw.weight),
       cancelReason: raw.cancel_reason ?? undefined,
-      startDate: raw.start_date != null ? DateVo.restore(raw.start_date.toISOString()) : undefined,
       endDate: raw.end_date != null ? DateVo.restore(raw.end_date.toISOString()) : undefined,
-      deadline: raw.deadline != null ? DateVo.restore(raw.deadline.toISOString()) : undefined,
       status: raw.status as TaskStatus,
-      recurrence: raw.recurrence ?? undefined,
+      recurrence,
     });
   }
 }

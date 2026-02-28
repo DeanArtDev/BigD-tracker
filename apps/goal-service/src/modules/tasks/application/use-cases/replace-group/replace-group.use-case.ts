@@ -1,18 +1,17 @@
-import { GroupWithTasksView } from '@/modules/tasks/application/dto';
 import {
-  TaskDatabase,
   GroupsReadRepository,
   GroupsWriteRepository,
+  TaskDatabase,
 } from '@/modules/tasks/application/ports';
-import { GroupCheckerService, TaskCheckerService } from '@/modules/tasks/application/services';
 import {
   GroupFactory,
   GroupFactoryReplaceWithTasksInput,
 } from '@/modules/tasks/domain/aggregates/group';
-import { SanitizeHtmlAdapter } from '@/modules/tasks/infrastructure/sanitizers';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { GroupWithTasksView } from '../../dto';
+import { GroupCheckerService, TaskCheckerService } from '../../services';
 import { ReplaceGroupCommand } from './replace-group.command';
 
 @Injectable()
@@ -48,7 +47,7 @@ class ReplaceGroupUseCase {
         readyToReplaceTasks.push({ task: restoredTask, input: taskInput });
       }
 
-      const groupFactory = new GroupFactory({ sanitizer: new SanitizeHtmlAdapter() });
+      const groupFactory = new GroupFactory();
       const groupWithTasks = groupFactory.replaceWithTasksByGroup(ensureGroup, {
         name,
         description,

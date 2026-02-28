@@ -1,6 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
@@ -10,7 +10,9 @@ import {
   IsString,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { TaskRecurrencyDto } from './task-recurrency.dto';
 
 class TaskDto {
   @ApiProperty({ example: 1 })
@@ -52,21 +54,7 @@ class TaskDto {
   @IsISO8601()
   @IsOptional()
   @IsString()
-  startDate?: string;
-
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
-  @Expose()
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
   endDate?: string;
-
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
-  @Expose()
-  @IsISO8601()
-  @IsOptional()
-  @IsString()
-  deadline?: string;
 
   @ApiProperty({ example: 100, description: 'От 0 до 100' })
   @Expose()
@@ -91,12 +79,14 @@ class TaskDto {
   status: TaskStatus;
 
   @ApiPropertyOptional({
-    example: '----',
+    type: TaskRecurrencyDto,
     description: 'Паттерн повторения дела',
   })
+  @Expose()
   @IsOptional()
-  @IsString()
-  recurrence?: string;
+  @ValidateNested()
+  @Type(() => TaskRecurrencyDto)
+  recurrence?: TaskRecurrencyDto;
 }
 
 export { TaskDto };

@@ -1,9 +1,9 @@
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
-import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain';
 import { TaskView } from '@/modules/tasks/application/dto';
 import { Group } from '../group.aggregate';
 import { GroupWithTasks } from '../group-with-tasks.aggregate';
+import { DescriptionVo, ProgressVo } from '../../value-objects';
 
 describe('GroupWithTasks aggregate', () => {
   const buildGroup = (status: GroupStatus) =>

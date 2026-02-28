@@ -15,3 +15,4 @@ export * from './get-deleted-tasks.dto';
 export * from './complete-delete-task.dto';
 export * from './task-recovery.dto';
 export * from './get-archived-tasks.dto';
+export * from './task-recurrency.dto';

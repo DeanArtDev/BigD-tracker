@@ -98,7 +98,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId, userId },
+        { groupId, userId, includeInbox: true },
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledWith(
@@ -260,7 +260,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         expectTransaction(),
       );
       expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId, userId },
+        { groupId, userId, includeInbox: true },
         expectTransaction(),
       );
       expect(tasksWriteRepoMock.addTaskToGroup).not.toHaveBeenCalled();

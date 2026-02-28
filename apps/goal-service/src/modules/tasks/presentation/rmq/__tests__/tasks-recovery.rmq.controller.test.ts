@@ -72,7 +72,6 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
           weight: 10,
           startDate: '2099-05-01T00:00:00.000Z',
           deadline: '2099-05-02T00:00:00.000Z',
-          recurrence: 'daily',
         }),
       );
       tasksWriteRepoMock.replaceTask.mockImplementation((task) => task);
