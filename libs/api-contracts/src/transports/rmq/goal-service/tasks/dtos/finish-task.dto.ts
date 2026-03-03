@@ -1,12 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, ValidateNested } from 'class-validator';
+import { IsBoolean, IsInt, IsString, ValidateNested } from 'class-validator';
 
 class FinishFinishReqData {
   @IsInt()
   userId: number;
 
-  @IsInt()
-  taskId: number;
+  @IsString()
+  taskId: string;
 }
 
 class FinishTaskReq {

@@ -4,6 +4,7 @@ import {
   GroupsReadRepository,
   GroupsWriteRepository,
   GoalsReadRepository,
+  TasksOverridesRepositoryWritePort,
   TasksReadRepository,
   TasksWriteRepository,
 } from '@/modules/tasks/application/ports';
@@ -23,6 +24,11 @@ const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
   replaceTask: jest.fn(),
   addTaskToGroup: jest.fn(),
   removeTaskFromGroup: jest.fn(),
+};
+
+const tasksOverridesWriteRepoMock: Record<keyof TasksOverridesRepositoryWritePort, jest.Mock> = {
+  getManyMasterEvents: jest.fn(),
+  getManyOverrides: jest.fn(),
 };
 
 const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
@@ -61,6 +67,7 @@ export {
   inboxReadRepoMock,
   inboxWriteRepoMock,
   goalsReadRepoMock,
+  tasksOverridesWriteRepoMock,
   tasksReadRepoMock,
   tasksWriteRepoMock,
 };

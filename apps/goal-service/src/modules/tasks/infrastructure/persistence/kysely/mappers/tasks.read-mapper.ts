@@ -1,4 +1,5 @@
 import { TaskView } from '@/modules/tasks/application/dto';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { rawRecurrenceToVo } from './helpers';
 import { TaskStatus } from '@big-d/api-contracts';
 
@@ -23,7 +24,7 @@ class TasksReadKyselyMapper {
     const recurrence = rawRecurrenceToVo(raw.recurrence);
 
     return TaskView.restore({
-      id: raw.id,
+      id: TaskIdBuilder.wrapOriginId(raw.id),
       userId: raw.user_id,
       groupId: raw.group_id ?? undefined,
       name: raw.name,

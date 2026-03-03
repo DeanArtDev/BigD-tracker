@@ -34,6 +34,10 @@ export class GoalExceptionToRpc implements ExceptionFilter {
         return throwError(() => RpcExceptionFactory.createNotFoundError(exception));
       }
 
+      if ([exceptionCode.taskUnprocessable.code].some((code) => code === exception.code)) {
+        return throwError(() => RpcExceptionFactory.createDomainInvariantViolation(exception));
+      }
+
       if (
         [exceptionCode.taskAlreadyInGroup.code, exceptionCode.inboxAlreadyExist.code].some(
           (code) => code === exception.code,

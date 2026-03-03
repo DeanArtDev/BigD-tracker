@@ -5,17 +5,13 @@ import { Clock } from 'lucide-react';
 import { type JSX } from 'react';
 import { useEventsState } from '../model/selectors';
 
-interface EventListProps<TExtra extends { id: number }> {
+interface EventListProps<TExtra = any> {
   readonly events: TimeViewEvent<TExtra>[];
   readonly renderEvent?: (props: { event: TimeEvent<TExtra> }) => JSX.Element;
   readonly onEventClick?: (event: TimeEvent<TExtra>) => void;
 }
 
-function EventList<TExtra extends { id: number }>({
-  events,
-  renderEvent,
-  onEventClick,
-}: EventListProps<TExtra>) {
+function EventList<TExtra = any>({ events, renderEvent, onEventClick }: EventListProps<TExtra>) {
   const { eventList } = useEventsState<TExtra>({ events });
 
   const isRenderPassed = isFunction(renderEvent);

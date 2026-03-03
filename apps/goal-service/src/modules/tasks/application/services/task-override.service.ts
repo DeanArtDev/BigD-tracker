@@ -1,23 +1,13 @@
-import { TaskOverride } from '@/modules/tasks/domain';
+import { TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
 import { TasksOverridesToken } from '@/modules/tasks/tokens';
-import { TaskStatus } from '@big-d/api-contracts';
+import { numberToWeekdayMap, TaskStatus } from '@big-d/api-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { applyTimeParts, timeAndDate } from '@shared/date-and-time';
 import { keyBy } from 'lodash';
 import { RRule } from 'rrule';
-import { TaskVirtualView } from '../dto';
+import { TasksViewMapper, TaskView } from '../dto';
 import { GetMasterEvents, GetTasksOverrides } from '../policies';
 import { TasksOverridesRepositoryWritePort, TaskTransaction } from '../ports';
-
-const numberToWeekdayMap = {
-  0: RRule.MO,
-  1: RRule.TU,
-  2: RRule.WE,
-  3: RRule.TH,
-  4: RRule.FR,
-  5: RRule.SA,
-  6: RRule.SU,
-};
 
 @Injectable()
 class TaskOverrideService {
@@ -29,7 +19,7 @@ class TaskOverrideService {
   async getVirtualViews(
     input: { userId: number; from: Date; to: Date; userTimezone?: string },
     trx?: TaskTransaction,
-  ): Promise<TaskVirtualView[]> {
+  ): Promise<TaskView[]> {
     const { to, from, userId } = input;
     const masterEvents = await this.tasksOverridesRepository.getManyMasterEvents(
       GetMasterEvents({ userId, to, from }),
@@ -45,13 +35,20 @@ class TaskOverrideService {
       }),
       trx,
     );
-    const overridesMap = keyBy(overrides, (o) => `${o.masterTaskId}:${o.startDate}`);
 
-    const virtualViews: TaskVirtualView[] = [];
+    const overridesMap = keyBy(overrides, ({ masterTaskId, startDate }) =>
+      TaskIdBuilder.wrapVirtualId({
+        masterTaskId: masterTaskId,
+        timestamp: startDate != null ? new Date(startDate).getTime() : 0,
+      }),
+    );
+
+    const virtualViews: TaskView[] = [];
     for (const masterEvent of masterEvents) {
       if (masterEvent.isRecurrence()) {
         const safeEndDate =
           masterEvent.recurrence.end ?? timeAndDate().utc(false).add(90, 'day').toJSON();
+
         const rule = new RRule({
           tzid: input.userTimezone,
           byweekday: masterEvent.recurrence.weekdays?.map((wd) => numberToWeekdayMap[wd]),
@@ -61,22 +58,23 @@ class TaskOverrideService {
         });
 
         for (const date of rule.between(from, to, true)) {
-          const isosDate = date.toISOString();
+          const timestamp = date.getTime();
 
-          const override = overridesMap[`${masterEvent.id}:${isosDate}`] as
-            | TaskOverride
-            | undefined;
+          const hasKey = TaskIdBuilder.wrapVirtualId({ masterTaskId: masterEvent.id, timestamp });
+          const override = overridesMap[hasKey] as TaskOverride | undefined;
           if (override?.isCancelled || override?.isDeleted || override?.isArchived) continue;
-
-          const id = `v:${masterEvent.id}:${isosDate}`;
 
           if (override?.isOverride) {
             const startDate = override?.startDate ?? masterEvent.startDate;
             const deadline = override?.deadline ?? masterEvent.deadline;
 
             virtualViews.push(
-              TaskVirtualView.restore({
-                id,
+              TasksViewMapper.fromPlainToView({
+                id: TaskIdBuilder.wrapOverrideId({
+                  masterTaskId: masterEvent.id,
+                  overrideId: override.id,
+                  timestamp,
+                }),
                 userId: masterEvent.userId,
                 groupId: masterEvent.groupId,
                 name: override?.name ?? masterEvent.name,
@@ -97,8 +95,8 @@ class TaskOverrideService {
             const deadline = masterEvent.deadline;
 
             virtualViews.push(
-              TaskVirtualView.restore({
-                id,
+              TasksViewMapper.fromPlainToView({
+                id: hasKey,
                 userId: masterEvent.userId,
                 description: masterEvent.description,
                 endDate: masterEvent.endDate,

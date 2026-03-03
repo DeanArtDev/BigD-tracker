@@ -1,4 +1,4 @@
-import { TaskView } from '@/modules/tasks/application/dto';
+import { Task } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain/aggregates/value-objects';
 import { GroupStatus } from '@big-d/api-contracts';
@@ -14,7 +14,7 @@ interface RawGroup {
 }
 
 interface RawGroupWithTasks extends RawGroup {
-  readonly tasks: TaskView[];
+  readonly tasks: Task[];
 }
 
 class GroupWriteKyselyMapper {

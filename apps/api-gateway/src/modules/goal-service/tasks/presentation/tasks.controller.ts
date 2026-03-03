@@ -240,7 +240,7 @@ export class TasksController {
   @ValidateRpcResponse(CloneTaskRes)
   async cloneTask(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @Body() { data }: CloneTaskReq,
   ): Promise<CloneTaskRes> {
     return await this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(
@@ -265,7 +265,7 @@ export class TasksController {
   @ValidateRpcResponse(FinishTaskRes)
   async finishTask(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
   ): Promise<FinishTaskRes> {
     return await this.goalClient.send<GoalFinishTask.Response, GoalFinishTask.Request>(
       GoalFinishTask.pattern,
@@ -288,7 +288,7 @@ export class TasksController {
   @ValidateRpcResponse(TaskRecoveryRes)
   async taskRecovery(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @Body() { data }: TaskRecoveryReq,
   ): Promise<TaskRecoveryRes> {
     return await this.goalClient.send<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
@@ -314,7 +314,7 @@ export class TasksController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async completeDeleteTask(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
   ): Promise<CompleteDeleteTaskRes> {
     return await this.goalClient.send<
       GoalCompleteDeleteTask.Response,
@@ -337,7 +337,7 @@ export class TasksController {
   @ValidateRpcResponse(AssignTaskToGroupRes)
   async assignTaskToGroup(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<AssignTaskToGroupRes> {
     return await this.goalClient.send<
@@ -362,7 +362,7 @@ export class TasksController {
   @ValidateRpcResponse(UnassignTaskFromGroupRes)
   async unassignTaskFromGroup(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<UnassignTaskFromGroupRes> {
     return await this.goalClient.send<
@@ -387,7 +387,7 @@ export class TasksController {
   @HttpCode(HttpStatus.OK)
   @ValidateRpcResponse(ReplaceTaskRes)
   async replaceTask(
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: ReplaceTaskReq,
   ): Promise<ReplaceTaskRes> {
@@ -415,12 +415,12 @@ export class TasksController {
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTask(
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<void> {
     await this.goalClient.send<GoalDeleteTask.Response, GoalDeleteTask.Request>(
       GoalDeleteTask.pattern,
-      { data: { id: taskId, userId: uid } },
+      { data: { taskId, userId: uid } },
     );
     return;
   }

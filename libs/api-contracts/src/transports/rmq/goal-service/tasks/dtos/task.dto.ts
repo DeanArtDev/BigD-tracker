@@ -12,8 +12,8 @@ import { TaskStatus } from '../types';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
 
 class TaskDto {
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 
   @IsInt()
   userId: number;

@@ -3,8 +3,8 @@ import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-va
 import { TaskDto } from './task.dto';
 
 class UpdateInboxTaskReqData {
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 
   @IsString()
   name: string;

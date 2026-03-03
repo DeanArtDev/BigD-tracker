@@ -3,6 +3,7 @@ export * from './task-checker.service';
 export * from './task-query.service';
 
 export * from './task-override.service';
+export * from './task-type.service';
 
 export * from './group.service';
 export * from './group-checker.service';

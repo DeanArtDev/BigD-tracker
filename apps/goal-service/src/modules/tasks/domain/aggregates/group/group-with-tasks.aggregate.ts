@@ -1,4 +1,4 @@
-import { TaskView } from '@/modules/tasks/application/dto';
+import { Task } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { GroupStatus } from '@big-d/api-contracts';
 import { isFunction } from 'lodash';
@@ -6,28 +6,28 @@ import { Group } from './group.aggregate';
 
 interface GroupWithTasksState {
   group: Group;
-  tasks: TaskView[];
+  tasks: Task[];
 }
 
 interface GroupWithTasksRestoreInput {
   readonly group: Group;
-  readonly tasks: TaskView[];
+  readonly tasks: Task[];
 }
 
 interface GroupWithTasksReplaceInput {
   readonly group: Group | ((group: Group) => Group);
-  readonly tasks: TaskView[];
+  readonly tasks: Task[];
 }
 
 interface GroupWithTasksCreateInput {
   readonly group: Group;
-  readonly tasks: TaskView[];
+  readonly tasks: Task[];
 }
 
 class GroupWithTasks {
   #state: GroupWithTasksState;
 
-  private constructor(input: Readonly<{ group: Group; tasks: TaskView[] }>) {
+  private constructor(input: Readonly<{ group: Group; tasks: Task[] }>) {
     this.#state = {
       group: input.group,
       tasks: input.tasks,
@@ -91,7 +91,7 @@ class GroupWithTasks {
     return this.#state.group.status;
   }
 
-  get tasks(): TaskView[] {
+  get tasks(): Task[] {
     return this.#state.tasks;
   }
 }

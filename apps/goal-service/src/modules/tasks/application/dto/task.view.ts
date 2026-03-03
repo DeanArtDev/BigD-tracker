@@ -2,7 +2,7 @@ import { TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 
 interface TaskViewState {
-  readonly id: number;
+  readonly id: string;
   readonly userId: number;
   readonly groupId?: number;
   readonly name: string;
@@ -19,7 +19,7 @@ interface TaskViewState {
 
 class TaskView {
   constructor(
-    public readonly id: number,
+    public readonly id: string,
     public readonly userId: number,
     public readonly name: string,
     public readonly priority: number,

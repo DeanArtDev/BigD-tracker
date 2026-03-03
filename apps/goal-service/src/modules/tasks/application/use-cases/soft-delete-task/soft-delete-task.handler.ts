@@ -6,7 +6,7 @@ import { SoftDeleteTaskUseCase } from './soft-delete-task.use-case';
 export class SoftDeleteTaskHandler implements ICommandHandler<SoftDeleteTaskCommand> {
   constructor(private softDeleteTaskUseCase: SoftDeleteTaskUseCase) {}
 
-  async execute({ input }: SoftDeleteTaskCommand): Promise<{ id: number }> {
-    return await this.softDeleteTaskUseCase.execute(input);
+  async execute(command: SoftDeleteTaskCommand): Promise<{ id: number }> {
+    return await this.softDeleteTaskUseCase.execute(command);
   }
 }

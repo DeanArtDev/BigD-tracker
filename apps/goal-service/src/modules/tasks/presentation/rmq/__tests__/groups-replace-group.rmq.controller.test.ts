@@ -1,4 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupReadKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GoalsToken, GroupsToken, TasksToken } from '@/modules/tasks/tokens';
@@ -109,7 +110,10 @@ describe('GroupsRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           description: 'New',
-          tasks: [taskInputOne, taskInputTwo],
+          tasks: [
+            { ...taskInputOne, id: TaskIdBuilder.wrapOriginId(taskInputOne.id) },
+            { ...taskInputTwo, id: TaskIdBuilder.wrapOriginId(taskInputTwo.id) },
+          ],
         },
       });
 
@@ -248,7 +252,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
           description: 'New',
           tasks: [
             {
-              id: taskId,
+              id: TaskIdBuilder.wrapOriginId(taskId),
               name: 'Task',
               priority: 2,
               weight: 10,
@@ -365,7 +369,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
           description: 'New',
           tasks: [
             {
-              id: 555,
+              id: TaskIdBuilder.wrapOriginId(555),
               name: 'Task',
               priority: 2,
               weight: 10,
@@ -412,7 +416,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
           description: 'New',
           tasks: [
             {
-              id: 556,
+              id: TaskIdBuilder.wrapOriginId(556),
               name: 'Task',
               priority: 2,
               weight: 10,

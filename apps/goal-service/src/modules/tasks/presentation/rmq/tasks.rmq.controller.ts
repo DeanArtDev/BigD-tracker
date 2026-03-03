@@ -106,9 +106,7 @@ export class TasksRmqController {
     @Payload() { data: payload }: GoalDeleteTask.Request,
   ): Promise<GoalDeleteTask.Response> {
     return {
-      data: await this.commandBus.execute(
-        new SoftDeleteTaskCommand({ taskId: payload.id, userId: payload.userId }),
-      ),
+      data: await this.commandBus.execute(new SoftDeleteTaskCommand(payload)),
     };
   }
 
@@ -117,9 +115,7 @@ export class TasksRmqController {
     @Payload() { data: payload }: GoalCompleteDeleteTask.Request,
   ): Promise<GoalCompleteDeleteTask.Response> {
     return {
-      data: await this.commandBus.execute(
-        new CompleteDeleteTaskCommand({ taskId: payload.taskId, userId: payload.userId }),
-      ),
+      data: await this.commandBus.execute(new CompleteDeleteTaskCommand(payload)),
     };
   }
 

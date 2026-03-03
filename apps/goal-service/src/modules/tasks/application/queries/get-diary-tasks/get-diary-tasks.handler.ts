@@ -3,7 +3,7 @@ import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GoalServiceRequestContext } from '@shared/request-context';
-import { TasksViewMapper, TaskVirtualView } from '../../dto';
+import { TaskView } from '../../dto';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
 import { TaskOverrideService } from '../../services';
 import {
@@ -46,12 +46,12 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
    *   userId, from\to
    *
    * [x] вычислить на какие даты нужно создать виртуальные дела
-   * [x] создать виртуальные дела TaskVirtualView
+   * [x] создать виртуальные дела TaskView
    * [x] смешать с tasks и отсортировать по start_date
    * []
    * []
    * */
-  async execute({ input }: GetDiaryTasksQuery): Promise<TaskVirtualView[]> {
+  async execute({ input }: GetDiaryTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
       const { userId, meta } = input;
       const { filter } = meta;
@@ -76,9 +76,7 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
         trx,
       );
 
-      const tasksVV = tasks.map(TasksViewMapper.fromViewToVirtualView);
-
-      return [...virtualViews, ...tasksVV].sort((a, b) => {
+      return [...virtualViews, ...tasks].sort((a, b) => {
         if (!a.startDate && !b.startDate) return 0;
         if (!a.startDate) return 1;
         if (!b.startDate) return -1;

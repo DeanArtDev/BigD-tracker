@@ -8,17 +8,7 @@ import {
   GoalCreateTaskInInbox,
   GoalUpdateInboxTask,
 } from '@big-d/api-contracts';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
@@ -74,7 +64,7 @@ export class TasksInboxController {
   @ValidateRpcResponse(AssignTaskToInboxRes)
   async assignTaskToInbox(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
   ): Promise<AssignTaskToInboxRes> {
     return await this.goalClient.send<
       GoalAssignTaskToInbox.Response,
@@ -97,7 +87,7 @@ export class TasksInboxController {
   @HttpCode(HttpStatus.OK)
   @ValidateRpcResponse(UpdateInboxTaskRes)
   async updateTaskInInbox(
-    @Param('taskId', ParseIntPipe) taskId: number,
+    @Param('taskId') taskId: string,
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: UpdateInboxTaskReq,
   ): Promise<UpdateInboxTaskRes> {

@@ -1,4 +1,5 @@
-import { GroupDetailedView, GroupInfoView, TaskView } from '@/modules/tasks/application/dto';
+import { GroupDetailedView, GroupInfoView } from '@/modules/tasks/application/dto';
+import { Task } from '@/modules/tasks/domain';
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import {
   GroupReadKyselyMapper,
@@ -20,9 +21,7 @@ const getGroupRaw = (data: Partial<RawGroup> = {}): RawGroup => {
   };
 };
 
-const getGroupWithTasks = (
-  data: Partial<RawGroup> & { tasks?: TaskView[] } = {},
-): GroupWithTasks => {
+const getGroupWithTasks = (data: Partial<RawGroup> & { tasks?: Task[] } = {}): GroupWithTasks => {
   const groupRaw = getGroupRaw(data);
 
   return GroupWriteKyselyMapper.fromRawToAgrWithTasks({

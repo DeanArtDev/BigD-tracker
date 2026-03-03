@@ -8,7 +8,7 @@ export class ReplaceGroupCommand {
       readonly userId: number;
       readonly description?: string;
       readonly tasks: {
-        readonly id: number;
+        readonly id: string;
         readonly name: string;
         readonly description?: string;
         readonly weight: number;

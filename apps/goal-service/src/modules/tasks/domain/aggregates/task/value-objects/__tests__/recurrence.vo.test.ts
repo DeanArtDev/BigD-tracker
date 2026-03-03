@@ -1,12 +1,7 @@
 import { RecurrenceFrequency } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { mockDate } from '@shared/__tests__';
-import {
-  futureDate,
-  oneMsBeforeStartOfToday,
-  pastDate,
-  startOfToday,
-} from '@shared/__tests__/time/helpers';
+import { futureDate, pastDate, startOfToday } from '@shared/__tests__/time/helpers';
 import { RecurrenceVo } from '../recurrence.vo';
 
 mockDate();
@@ -22,15 +17,6 @@ describe('RecurrenceVo', () => {
     expect(recurrence.value.frequency).toBe(RecurrenceFrequency.DAILY);
     expect(recurrence.value.start?.value).toBe(futureDate(1));
     expect(recurrence.value.end?.value).toBe(futureDate(2));
-  });
-
-  it.skip('rejects past startDate', () => {
-    expect(() =>
-      RecurrenceVo.create({
-        start: DateVo.create(pastDate(1)),
-        end: DateVo.create(futureDate(1)),
-      }),
-    ).toThrow();
   });
 
   it('rejects past deadline', () => {
@@ -56,22 +42,6 @@ describe('RecurrenceVo', () => {
       RecurrenceVo.create({
         start: DateVo.create(futureDate(1)),
         end: DateVo.create(startOfToday()),
-      }),
-    ).toThrow();
-  });
-
-  it.skip('rejects values before start of today boundary', () => {
-    expect(() =>
-      RecurrenceVo.create({
-        start: DateVo.create(oneMsBeforeStartOfToday()),
-        end: DateVo.create(futureDate(1)),
-      }),
-    ).toThrow();
-
-    expect(() =>
-      RecurrenceVo.create({
-        start: DateVo.create(futureDate(1)),
-        end: DateVo.create(oneMsBeforeStartOfToday()),
       }),
     ).toThrow();
   });

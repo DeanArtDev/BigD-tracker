@@ -1,5 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
-import { Task } from '@/modules/tasks/domain';
+import { Task, TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalReplaceTask, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -59,7 +59,7 @@ describe('TasksRmqController (rmq e2e)', () => {
   });
 
   describe(`${GoalReplaceTask.pattern}`, () => {
-    test.skip('should replace task', async () => {
+    test('should replace task', async () => {
       const userId = 31;
       const taskId = 4011;
       const existingTask = getTask({ id: taskId, userId, name: 'Old' });
@@ -69,17 +69,12 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalReplaceTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Updated',
           description: 'Updated desc',
           priority: 2,
           weight: 5,
-          recurrence: {
-            frequency: 2,
-            startDate: '2099-01-01T00:00:00.000Z',
-            deadline: '2099-02-01T00:00:00.000Z',
-          },
         },
       });
 
@@ -99,13 +94,10 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(replacedTaskArg.description).toBe('Updated desc');
       expect(replacedTaskArg.priority).toBe(2);
       expect(replacedTaskArg.weight).toBe(5);
-      expect(replacedTaskArg.recurrence?.value.startDate?.value).toBe('2099-01-01T00:00:00.000Z');
-      expect(replacedTaskArg.recurrence?.value.deadline?.value).toBe('2099-02-01T00:00:00.000Z');
-      expect(replacedTaskArg.recurrence?.value.frequency).toBe(2);
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Updated',
           description: 'Updated desc',
@@ -113,56 +105,9 @@ describe('TasksRmqController (rmq e2e)', () => {
           weight: 5,
           cancelReason: undefined,
           endDate: undefined,
-          status: TaskStatus.IN_PROGRESS,
-          recurrence: {
-            frequency: 2,
-            startDate: '2099-01-01T00:00:00.000Z',
-            deadline: '2099-02-01T00:00:00.000Z',
-          },
+          status: TaskStatus.NOT_STARTED,
+          recurrence: undefined,
         },
-      });
-    });
-
-    test.skip('should throw when startDate after deadline', async () => {
-      const userId = 33;
-      const taskId = 4013;
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.NOT_STARTED }),
-      );
-
-      const payload: GoalReplaceTask.Request = buildPayload({
-        data: {
-          id: taskId,
-          userId,
-          name: 'Updated',
-          description: 'Updated desc',
-          priority: 2,
-          weight: 3,
-          recurrence: {
-            frequency: 2,
-            startDate: '2099-02-01T00:00:00.000Z',
-            deadline: '2099-01-01T00:00:00.000Z',
-          },
-        },
-      });
-
-      let error: unknown;
-      try {
-        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
-          GoalReplaceTask.pattern,
-          payload,
-        );
-      } catch (err) {
-        error = err;
-      }
-
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
-      expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(0);
-      expect(unwrapRpcError(error)).toMatchObject({
-        code: exceptionCode.taskInvariantFailed.code,
-        key: 'INVARIANT_FAILED',
-        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'startDate' },
       });
     });
 
@@ -175,7 +120,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalReplaceTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Updated',
           priority: 2,
@@ -213,7 +158,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalReplaceTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Updated',
           priority: 2,
@@ -248,7 +193,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalReplaceTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Updated',
           priority: 2,

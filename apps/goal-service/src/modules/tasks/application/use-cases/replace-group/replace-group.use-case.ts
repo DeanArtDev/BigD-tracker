@@ -1,3 +1,4 @@
+import { ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
 import {
   GroupsReadRepository,
   GroupsWriteRepository,
@@ -11,7 +12,7 @@ import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupWithTasksView } from '../../dto';
-import { GroupCheckerService, TaskCheckerService } from '../../services';
+import { GroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
 import { ReplaceGroupCommand } from './replace-group.command';
 
 @Injectable()
@@ -19,6 +20,8 @@ class ReplaceGroupUseCase {
   constructor(
     private readonly groupCheckerService: GroupCheckerService,
     private readonly taskCheckerService: TaskCheckerService,
+    private readonly taskTypeService: TaskTypeService,
+
     @Inject(GroupsToken.WRITE_REPOSITORY) private readonly groupsWriteRepo: GroupsWriteRepository,
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupsReadRepo: GroupsReadRepository,
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
@@ -34,17 +37,24 @@ class ReplaceGroupUseCase {
 
       const readyToReplaceTasks: GroupFactoryReplaceWithTasksInput['tasks'] = [];
       for (const taskInput of tasks) {
-        const restoredTask = await this.taskCheckerService.ensureTaskExists(
-          { userId, taskId: taskInput.id },
-          { trx },
-        );
+        const { isOrigin, data } = this.taskTypeService.getType({ taskId: taskInput.id });
 
-        await this.groupCheckerService.ensureTaskInGroup(
-          { taskId: taskInput.id, groupId, userId },
-          { trx },
-        );
+        if (isOrigin) {
+          const restoredTask = await this.taskCheckerService.ensureTaskExists(
+            { userId, taskId: data.id },
+            { trx },
+          );
 
-        readyToReplaceTasks.push({ task: restoredTask, input: taskInput });
+          await this.groupCheckerService.ensureTaskInGroup(
+            { taskId: data.id, groupId, userId },
+            { trx },
+          );
+
+          readyToReplaceTasks.push({ task: restoredTask, input: taskInput });
+          continue;
+        }
+
+        throw new ExceptionTaskUnprocessable({ taskId: taskInput.id, message: 'Не валидный id' });
       }
 
       const groupFactory = new GroupFactory();

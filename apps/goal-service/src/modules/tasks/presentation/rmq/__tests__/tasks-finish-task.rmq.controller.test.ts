@@ -1,4 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalFinishTask, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -72,7 +73,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       tasksWriteRepoMock.removeTaskFromGroup.mockResolvedValueOnce(undefined);
 
       const payload: GoalFinishTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       const res = await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
@@ -104,7 +105,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
 
       const payload: GoalFinishTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       const res = await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
@@ -127,7 +128,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(existingTask);
 
       const payload: GoalFinishTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
@@ -158,7 +159,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
 
       const payload: GoalFinishTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
@@ -195,7 +196,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
 
       const payload: GoalFinishTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;

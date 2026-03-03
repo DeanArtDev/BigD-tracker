@@ -12,8 +12,8 @@ import { TaskRecurrencyDto } from './task-recurrency.dto';
 import { TaskDto } from './task.dto';
 
 class ReplaceTaskReqData {
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 
   @IsString()
   name: string;

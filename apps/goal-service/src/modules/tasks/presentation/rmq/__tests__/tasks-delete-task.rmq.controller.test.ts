@@ -1,5 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
-import { Task } from '@/modules/tasks/domain';
+import { Task, TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalDeleteTask, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -70,7 +70,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalDeleteTask.Request = buildPayload({
         data: {
-          id: taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
         },
       });
@@ -100,7 +100,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalDeleteTask.Request = buildPayload({
         data: {
-          id: taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
         },
       });
@@ -134,7 +134,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalDeleteTask.Request = buildPayload({
         data: {
-          id: taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
         },
       });

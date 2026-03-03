@@ -1,4 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalCompleteDeleteTask, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -69,7 +70,7 @@ describe('TasksRmqController goal.complete-delete-task.command (rmq e2e)', () =>
       tasksWriteRepoMock.deleteTask.mockResolvedValueOnce(true);
 
       const payload: GoalCompleteDeleteTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       const res = await sendMessage<
@@ -91,7 +92,7 @@ describe('TasksRmqController goal.complete-delete-task.command (rmq e2e)', () =>
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
 
       const payload: GoalCompleteDeleteTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
@@ -123,7 +124,7 @@ describe('TasksRmqController goal.complete-delete-task.command (rmq e2e)', () =>
       );
 
       const payload: GoalCompleteDeleteTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
@@ -156,7 +157,7 @@ describe('TasksRmqController goal.complete-delete-task.command (rmq e2e)', () =>
       tasksWriteRepoMock.deleteTask.mockResolvedValueOnce(false);
 
       const payload: GoalCompleteDeleteTask.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
