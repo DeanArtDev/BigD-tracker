@@ -2,9 +2,8 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { RmqContext } from '@nestjs/microservices';
 import { defer, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { AppContext } from './app-context';
-import { CORRELATION_HEADER_KEY } from './constants';
-import { RequestContext, RequestContextState } from './request-context';
+import { CORRELATION_HEADER_KEY, USER_TIME_ZONE_HEADER_KEY } from './constants';
+import { RequestContext } from './request-context';
 import { RmqLogger } from './rmq-logger';
 
 @Injectable()
@@ -23,15 +22,21 @@ export class RmqInboundLoggingInterceptor implements NestInterceptor {
       headers[CORRELATION_HEADER_KEY.toUpperCase()] ??
       msg?.properties?.correlationId;
 
+    const userTimezone =
+      headers[USER_TIME_ZONE_HEADER_KEY] ??
+      headers[USER_TIME_ZONE_HEADER_KEY.toUpperCase()] ??
+      msg?.properties?.[USER_TIME_ZONE_HEADER_KEY];
+
     const fields = msg?.fields ?? {};
     const props = msg?.properties ?? {};
     const payload = context.switchToRpc().getData();
 
-    const requestContext = new RequestContext<RequestContextState>({
+    const requestContext = new RequestContext({
       correlationId,
       initiator: 'user',
       userId: payload?.data?.userId,
       source: 'rmq',
+      userTimezone,
       subjectId: payload?.data?.taskId ?? payload?.data?.groupId ?? payload?.data?.goalId,
     });
 
@@ -49,29 +54,24 @@ export class RmqInboundLoggingInterceptor implements NestInterceptor {
       data: payload,
     });
 
-    return defer(() =>
-      AppContext.run(requestContext, () => {
-        const started = Date.now();
-        this.logger.log(getContent(), 'rmq.request');
+    return defer(() => {
+      const started = Date.now();
+      this.logger.log(getContent(), 'rmq.request');
 
-        return next.handle().pipe(
-          tap(
-            () =>
-              void this.logger.log(
-                { ...getContent(), durationMs: Date.now() - started },
-                'rmq.done',
-              ),
-          ),
+      return next.handle().pipe(
+        tap(
+          () =>
+            void this.logger.log({ ...getContent(), durationMs: Date.now() - started }, 'rmq.done'),
+        ),
 
-          catchError((err: any) => {
-            this.logger.error(
-              { ...getContent(), durationMs: Date.now() - started, err },
-              'rmq.error',
-            );
-            return throwError(() => err);
-          }),
-        );
-      }),
-    );
+        catchError((err: any) => {
+          this.logger.error(
+            { ...getContent(), durationMs: Date.now() - started, err },
+            'rmq.error',
+          );
+          return throwError(() => err);
+        }),
+      );
+    });
   }
 }

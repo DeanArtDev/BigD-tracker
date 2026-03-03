@@ -27,7 +27,7 @@ class TaskOverrideService {
   ) {}
 
   async getVirtualViews(
-    input: { userId: number; from: Date; to: Date },
+    input: { userId: number; from: Date; to: Date; userTimezone?: string },
     trx?: TaskTransaction,
   ): Promise<TaskVirtualView[]> {
     const { to, from, userId } = input;
@@ -53,7 +53,7 @@ class TaskOverrideService {
         const safeEndDate =
           masterEvent.recurrence.end ?? timeAndDate().utc(false).add(90, 'day').toJSON();
         const rule = new RRule({
-          tzid: 'Asia/Novosibirsk',
+          tzid: input.userTimezone,
           byweekday: masterEvent.recurrence.weekdays?.map((wd) => numberToWeekdayMap[wd]),
           freq: masterEvent.recurrence.frequency,
           dtstart: new Date(masterEvent.recurrence.start),

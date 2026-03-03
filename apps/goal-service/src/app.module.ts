@@ -5,10 +5,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScheduleModule } from '@nestjs/schedule';
+import { GoalServiceRequestContext, RequestContextInterceptor } from '@shared/request-context';
 import { appConfigFactory, dbConfigFactory, envSchema } from './infrastructure/configs';
 import { RmqClientsModule } from './infrastructure/rmq-clients';
 
 @Module({
+  providers: [RequestContextInterceptor],
   imports: [
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
@@ -20,9 +22,9 @@ import { RmqClientsModule } from './infrastructure/rmq-clients';
       envFilePath: ['.env.production', '.env.development'],
       validate: (config) => envSchema.parse(config),
     }),
-
     ObservabilityModule.forRootAsync({
       global: true,
+      requestContext: GoalServiceRequestContext,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService): LoggerModuleOptions => {

@@ -9,8 +9,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AccountRequestContext, RequestContextInterceptor } from '@shared/request-context';
 
 @Module({
+  providers: [RequestContextInterceptor],
   imports: [
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
@@ -24,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
     ObservabilityModule.forRootAsync({
       global: true,
+      requestContext: AccountRequestContext,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService): LoggerModuleOptions => {

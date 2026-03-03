@@ -9,6 +9,7 @@ import { TrainingTemplatesModule } from '@modules/traning-templates';
 import { TrainingsModule } from '@modules/tranings';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TrainingServiceRequestContext } from '@shared/request-context';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     DatabaseModule.forRootAsync(dbConfigFactory()),
     ObservabilityModule.forRootAsync({
       global: true,
+      requestContext: TrainingServiceRequestContext,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService): LoggerModuleOptions => {

@@ -1,1 +1,1 @@
-export * from './goal-exception-to.rpc.filter';
+export * from './app-exception-to-rpc.filter';

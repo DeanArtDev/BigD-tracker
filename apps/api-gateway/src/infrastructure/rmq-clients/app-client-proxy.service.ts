@@ -1,8 +1,14 @@
 import { ExceptionRpcRequestTimeout } from '@/infrastructure/rmq-clients/exceptions';
 import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
-import { CORRELATION_HEADER_KEY, AppContext, RmqLogger, RequestContext } from '@big-d/api-utils';
+import {
+  CORRELATION_HEADER_KEY,
+  RequestContext,
+  RmqLogger,
+  USER_TIME_ZONE_HEADER_KEY,
+} from '@big-d/api-utils';
 import { isBaseException } from '@big-d/exceptions';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
+import { ApiGatewayRequestContext } from '@shared/request-context';
 import { catchError, firstValueFrom, throwError, timeout, TimeoutError } from 'rxjs';
 
 class AppRmqClient {
@@ -19,7 +25,9 @@ class AppRmqClient {
     payload: TReq,
   ): Promise<TRes> {
     const started = Date.now();
-    const cid = AppContext.getStore()?.correlationId ?? 'There is no correlation id!';
+    const cid = ApiGatewayRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
+    const utz = ApiGatewayRequestContext.getStore()?.state?.userTimezone ?? 'UTC';
+
     const requestContext = new RequestContext({
       correlationId: cid,
       initiator: 'user',
@@ -30,6 +38,7 @@ class AppRmqClient {
       .setOptions({
         headers: {
           [CORRELATION_HEADER_KEY]: cid,
+          [USER_TIME_ZONE_HEADER_KEY]: utz,
         },
       })
       .build();

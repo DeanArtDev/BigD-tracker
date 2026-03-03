@@ -3,6 +3,7 @@ import { merge } from 'lodash';
 
 interface RequestContextState {
   correlationId?: string;
+  userTimezone?: string;
   readonly userId?: number;
   readonly source: 'http' | 'rmq' | string;
   readonly subjectId?: string;

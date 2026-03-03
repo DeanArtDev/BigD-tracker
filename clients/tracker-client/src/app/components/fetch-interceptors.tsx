@@ -16,6 +16,7 @@ function FetchInterceptors({ children }: React.PropsWithChildren) {
         if (accessToken != null) {
           request.headers.set('Authorization', `Bearer ${accessToken}`);
         }
+        request.headers.set('X-User-Timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
       },
 
       async onResponse({ response }) {
