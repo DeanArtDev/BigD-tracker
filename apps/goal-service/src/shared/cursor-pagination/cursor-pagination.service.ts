@@ -16,10 +16,7 @@ type CursorPayload = z.infer<typeof cursorSchema> & {
 
 @Injectable()
 export class CursorPaginationService {
-  public getNextCursor(
-    cursor: string | undefined,
-    payload: CursorPayload,
-  ): { nextCursor?: string } {
+  public getNextCursor(cursor: string | undefined, payload: CursorPayload): { nextCursor?: string } {
     const { lastId, sort, search, filter, limit, currentPartLength } = payload;
     if (lastId == null) return { nextCursor: undefined };
     if ((limit ?? 0) > currentPartLength) return { nextCursor: undefined };

@@ -23,13 +23,10 @@ export class RefreshUseCase {
     private readonly commandBus: CommandBus,
   ) {}
 
-  async execute(
-    input: RefreshUseCaseInput,
-  ): Promise<{ sessionToken: string; accessToken: string }> {
-    const session = await this.queryBus.execute<
-      GetSessionQuery,
-      ReturnHandlerType<typeof GetSessionHandler>
-    >(new GetSessionQuery({ token: input.sessionToken }));
+  async execute(input: RefreshUseCaseInput): Promise<{ sessionToken: string; accessToken: string }> {
+    const session = await this.queryBus.execute<GetSessionQuery, ReturnHandlerType<typeof GetSessionHandler>>(
+      new GetSessionQuery({ token: input.sessionToken }),
+    );
 
     if (session == null) {
       throw new UnauthorizedException('Session expired or not existed');

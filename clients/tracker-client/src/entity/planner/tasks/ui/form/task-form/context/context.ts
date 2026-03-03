@@ -27,8 +27,7 @@ interface TaskFieldsRulesContext {
 
 const taskFieldsRulesContext = createStrictContext<TaskFieldsRulesContext>();
 
-const useTaskFieldsRulesContext = () =>
-  useStrictContext<TaskFieldsRulesContext>(taskFieldsRulesContext);
+const useTaskFieldsRulesContext = () => useStrictContext<TaskFieldsRulesContext>(taskFieldsRulesContext);
 
 export {
   useTaskFieldsRulesContext,

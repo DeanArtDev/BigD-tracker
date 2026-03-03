@@ -21,26 +21,15 @@ import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { firstOrThrowError, getAvailableGroupQuery } from '../helpers';
-import {
-  groupWithStatusQuery,
-  innerJoinGroupLinks,
-  taskFullSelect,
-  tasksWithStatusQuery,
-} from '../utils';
+import { groupWithStatusQuery, innerJoinGroupLinks, taskFullSelect, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
-export class GroupsReadRepositoryKysely
-  extends BaseTasksRepository
-  implements GroupsReadRepository
-{
+export class GroupsReadRepositoryKysely extends BaseTasksRepository implements GroupsReadRepository {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 
-  async getInfoGroups(
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<GroupInfoView[]> {
+  async getInfoGroups(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupInfoView[]> {
     return await this.errorCatcher('groups.get-info', async () => {
       const groups = await groupWithStatusQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
@@ -55,10 +44,7 @@ export class GroupsReadRepositoryKysely
     });
   }
 
-  async getByName(
-    input: { name: string; userId: number },
-    trx?: TaskTransaction,
-  ): Promise<GroupView | null> {
+  async getByName(input: { name: string; userId: number }, trx?: TaskTransaction): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get-by-name', async () => {
       const result = await getAvailableGroupQuery(this.db, trx)
         .where('g.name', '=', input.name)
@@ -77,10 +63,7 @@ export class GroupsReadRepositoryKysely
     });
   }
 
-  async getGroup(
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<GroupView | null> {
+  async getGroup(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get.read', async () => {
       const group = await groupWithStatusQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
@@ -230,9 +213,7 @@ export class GroupsReadRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<GroupWithTasksView[]> {
     return await this.errorCatcher('groups.get-group-list-with-tasks', async () => {
-      const groupsQuery = groupWithStatusQuery(this.db, trx).where((eb) =>
-        groupSpecifications.toExpr(eb),
-      );
+      const groupsQuery = groupWithStatusQuery(this.db, trx).where((eb) => groupSpecifications.toExpr(eb));
 
       const groups = await groupsQuery.limit(params.limit).orderBy('groups.id', 'asc').execute();
       if (groups.length === 0) return [];

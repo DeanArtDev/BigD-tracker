@@ -13,15 +13,7 @@ interface TaskInboxCardProps {
   readonly setOpenId?: (openId?: string) => void;
 }
 
-function TaskInboxCardMobile({
-  task,
-  openId,
-  loading,
-  onClick,
-  onDelete,
-  onFinish,
-  setOpenId,
-}: TaskInboxCardProps) {
+function TaskInboxCardMobile({ task, openId, loading, onClick, onDelete, onFinish, setOpenId }: TaskInboxCardProps) {
   return (
     <LeftSwiper
       id={task.id}

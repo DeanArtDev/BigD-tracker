@@ -30,15 +30,11 @@ function TaskDiaryTimeline({ onEventClick }: TaskDiaryTimelineProps) {
     <DataLoader loadingElement={<AppLoader />}>
       <TimeView<TaskEntity>
         events={events}
-        renderEvent={({ event }) => (
-          <EventView event={event} onClick={(event) => void onEventClick(event.extra)} />
-        )}
+        renderEvent={({ event }) => <EventView event={event} onClick={(event) => void onEventClick(event.extra)} />}
         renderALlDayEvent={({ event }) => (
           <AllDayEventView event={event} onClick={(event) => void onEventClick(event.extra)} />
         )}
-        onDateChange={(dateSet) =>
-          void setDateSet({ from: dateSet.from.toISOString(), to: dateSet.to.toISOString() })
-        }
+        onDateChange={(dateSet) => void setDateSet({ from: dateSet.from.toISOString(), to: dateSet.to.toISOString() })}
       />
     </DataLoader>
   );

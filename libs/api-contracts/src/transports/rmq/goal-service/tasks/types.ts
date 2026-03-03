@@ -39,10 +39,4 @@ const numberToWeekdayMap = {
   6: RRule.SU,
 };
 
-export {
-  TaskStatus,
-  TaskOverrideType,
-  RecurrenceFrequency,
-  TaskRecurrenceWeekday,
-  numberToWeekdayMap,
-};
+export { TaskStatus, TaskOverrideType, RecurrenceFrequency, TaskRecurrenceWeekday, numberToWeekdayMap };

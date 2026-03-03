@@ -11,20 +11,11 @@ export class GetTrainingsQuery {
     private readonly trainingsRepo: TrainingsRepository,
   ) {}
 
-  async all(
-    input: { userId: number; from?: string; to?: string },
-    trx?: Transaction<DB>,
-  ): Promise<TrainingEntity[]> {
-    return await this.trainingsRepo.find(
-      { userId: input.userId, from: input.from, to: input.to },
-      trx,
-    );
+  async all(input: { userId: number; from?: string; to?: string }, trx?: Transaction<DB>): Promise<TrainingEntity[]> {
+    return await this.trainingsRepo.find({ userId: input.userId, from: input.from, to: input.to }, trx);
   }
 
-  async one(
-    input: { id: number; userId?: number },
-    trx?: Transaction<DB>,
-  ): Promise<TrainingEntity> {
+  async one(input: { id: number; userId?: number }, trx?: Transaction<DB>): Promise<TrainingEntity> {
     const training = await this.trainingsRepo.findOneById({ id: input.id }, trx);
     if (training == null) {
       throw new NotFoundException(`Training with id ${input.id} not found`);

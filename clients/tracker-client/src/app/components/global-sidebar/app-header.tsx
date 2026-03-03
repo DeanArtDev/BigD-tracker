@@ -43,9 +43,7 @@ function AppHeader() {
     const applicationNavItem = findApplicationNavItem(application);
     if (applicationNavItem == null) return [];
 
-    const buffer: AppBreadcrumbProps['items'] = [
-      { to: applicationNavItem.to, children: applicationNavItem.title },
-    ];
+    const buffer: AppBreadcrumbProps['items'] = [{ to: applicationNavItem.to, children: applicationNavItem.title }];
 
     const page = findPage(location.pathname);
     if (page != null) {
@@ -59,10 +57,7 @@ function AppHeader() {
   return (
     <header className="bg-background group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
       <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger
-          className="-ml-1"
-          onClick={() => void (isMobile ? undefined : toggleSidebarState())}
-        />
+        <SidebarTrigger className="-ml-1" onClick={() => void (isMobile ? undefined : toggleSidebarState())} />
 
         <Separator orientation="vertical" className="mx-2" />
 

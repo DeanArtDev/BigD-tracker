@@ -25,21 +25,10 @@ import { SessionCreatedEvent } from './domain';
 import { KyselyAuthRepository } from './infra/kysely-auth.repository';
 
 const commands = [CreateSessionCommand, DeleteSessionCommand, ReferralTokenCommand];
-const handlers = [
-  CreateSessionHandler,
-  GetSessionHandler,
-  DeleteSessionHandler,
-  ReferralTokenHandler,
-];
+const handlers = [CreateSessionHandler, GetSessionHandler, DeleteSessionHandler, ReferralTokenHandler];
 const events = [SessionCreatedEvent];
 const queries = [GetSessionQuery];
-const useCases = [
-  RegisterUseCase,
-  RefreshUseCase,
-  LogoutUseCase,
-  LoginUseCase,
-  ReferralTokenUseCase,
-];
+const useCases = [RegisterUseCase, RefreshUseCase, LogoutUseCase, LoginUseCase, ReferralTokenUseCase];
 
 @Module({
   imports: [

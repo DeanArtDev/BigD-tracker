@@ -1,8 +1,4 @@
-import {
-  TaskDatabase,
-  TasksWriteRepository,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { TaskDatabase, TasksWriteRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -13,20 +9,14 @@ import { getTasksWithStatusQuery } from '../helpers';
 import { statusByNameQuery } from '../utils';
 
 @Injectable()
-export class TasksWriteRepositoryKysely
-  extends BaseTasksRepository
-  implements TasksWriteRepository
-{
+export class TasksWriteRepositoryKysely extends BaseTasksRepository implements TasksWriteRepository {
   #tableName = 'tasks' as const;
 
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 
-  async getTaskById(
-    input: { taskId: number; userId: number },
-    trx?: TaskTransaction,
-  ): Promise<Task | null> {
+  async getTaskById(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
       const task = await getTasksWithStatusQuery(this.db, trx)
         .leftJoin('task_to_group', 'task_to_group.task_id', 't.id')
@@ -84,11 +74,7 @@ export class TasksWriteRepositoryKysely
 
   async replaceTask(task: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.replace', async () => {
-      const { id: status_id } = await statusByNameQuery(
-        [task.status],
-        this.db,
-        trx,
-      ).executeTakeFirstOrThrow();
+      const { id: status_id } = await statusByNameQuery([task.status], this.db, trx).executeTakeFirstOrThrow();
 
       const result = await this.db
         .qb(trx)
@@ -125,10 +111,7 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async addTaskToGroup(
-    input: { groupId: number; taskId: number },
-    trx?: TaskTransaction,
-  ): Promise<void> {
+  async addTaskToGroup(input: { groupId: number; taskId: number }, trx?: TaskTransaction): Promise<void> {
     return await this.errorCatcher('tasks.add-to-group', async () => {
       const lastPosition = await this.db
         .qb(trx)
@@ -175,11 +158,7 @@ export class TasksWriteRepositoryKysely
     return await this.errorCatcher('tasks.change-task-status', async () => {
       const { id, userId, status } = task;
 
-      const { id: status_id } = await statusByNameQuery(
-        [status],
-        this.db,
-        trx,
-      ).executeTakeFirstOrThrow();
+      const { id: status_id } = await statusByNameQuery([status], this.db, trx).executeTakeFirstOrThrow();
 
       await this.db
         .qb(trx)
@@ -191,10 +170,7 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async deleteTask(
-    input: { userId: number; taskId: number },
-    trx?: TaskTransaction,
-  ): Promise<boolean> {
+  async deleteTask(input: { userId: number; taskId: number }, trx?: TaskTransaction): Promise<boolean> {
     return await this.errorCatcher('tasks.task-deleting', async () => {
       const result = await this.db
         .qb(trx)

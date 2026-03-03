@@ -1,9 +1,4 @@
-import {
-  type GroupEntity,
-  isAllowGroupDelete,
-  useGroupUpdate,
-  useInvalidateAllGroups,
-} from '@/entity/planner/groups';
+import { type GroupEntity, isAllowGroupDelete, useGroupUpdate, useInvalidateAllGroups } from '@/entity/planner/groups';
 import { GroupConfirmedDelete } from '@/entity/planner/groups/ui';
 import { AppTooltip } from '@/shared/components/app-tooltip';
 import { ButtonTrash } from '@/shared/components/button-trash';
@@ -35,16 +30,8 @@ function GroupEditController({ group }: GroupEditControllerProps) {
           }}
         >
           {({ isLoading, onDelete }) => (
-            <AppTooltip
-              content="Нельзя удалить пока содержит дела"
-              disable={!isNotAllowGroupDelete}
-            >
-              <ButtonTrash
-                disabled={isNotAllowGroupDelete}
-                variant="ghost"
-                isLoading={isLoading}
-                onClick={onDelete}
-              />
+            <AppTooltip content="Нельзя удалить пока содержит дела" disable={!isNotAllowGroupDelete}>
+              <ButtonTrash disabled={isNotAllowGroupDelete} variant="ghost" isLoading={isLoading} onClick={onDelete} />
             </AppTooltip>
           )}
         </GroupConfirmedDelete>

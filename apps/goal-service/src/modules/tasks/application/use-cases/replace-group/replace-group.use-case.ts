@@ -1,13 +1,6 @@
 import { ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import {
-  GroupsReadRepository,
-  GroupsWriteRepository,
-  TaskDatabase,
-} from '@/modules/tasks/application/ports';
-import {
-  GroupFactory,
-  GroupFactoryReplaceWithTasksInput,
-} from '@/modules/tasks/domain/aggregates/group';
+import { GroupsReadRepository, GroupsWriteRepository, TaskDatabase } from '@/modules/tasks/application/ports';
+import { GroupFactory, GroupFactoryReplaceWithTasksInput } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -30,25 +23,16 @@ class ReplaceGroupUseCase {
   async execute({ input }: ReplaceGroupCommand): Promise<GroupWithTasksView> {
     return this.db.runTransaction(async (trx) => {
       const { id: groupId, userId, description, name, tasks } = input;
-      const ensureGroup = await this.groupCheckerService.ensureGroupExists(
-        { groupId, userId },
-        { trx },
-      );
+      const ensureGroup = await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
 
       const readyToReplaceTasks: GroupFactoryReplaceWithTasksInput['tasks'] = [];
       for (const taskInput of tasks) {
         const { isOrigin, data } = this.taskTypeService.getType({ taskId: taskInput.id });
 
         if (isOrigin) {
-          const restoredTask = await this.taskCheckerService.ensureTaskExists(
-            { userId, taskId: data.id },
-            { trx },
-          );
+          const restoredTask = await this.taskCheckerService.ensureTaskExists({ userId, taskId: data.id }, { trx });
 
-          await this.groupCheckerService.ensureTaskInGroup(
-            { taskId: data.id, groupId, userId },
-            { trx },
-          );
+          await this.groupCheckerService.ensureTaskInGroup({ taskId: data.id, groupId, userId }, { trx });
 
           readyToReplaceTasks.push({ task: restoredTask, input: taskInput });
           continue;
@@ -65,10 +49,7 @@ class ReplaceGroupUseCase {
       });
 
       await this.groupsWriteRepo.replaceGroupWithTasks(groupWithTasks, trx);
-      return await this.groupsReadRepo.getGroupWithTasksById(
-        { groupId, userId },
-        { trx, throwError: true },
-      );
+      return await this.groupsReadRepo.getGroupWithTasksById({ groupId, userId }, { trx, throwError: true });
     });
   }
 }

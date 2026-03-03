@@ -58,10 +58,7 @@ class RepetitionEntity {
     finishType: RepetitionFinishType;
   }): this {
     if (this.status !== 'inactive') {
-      validator.throwError(
-        `Repetition: ${this.data.id} with status ${this.status} can not get facts`,
-        'setFact',
-      );
+      validator.throwError(`Repetition: ${this.data.id} with status ${this.status} can not get facts`, 'setFact');
     }
 
     if (data.description != null) {
@@ -87,11 +84,7 @@ class RepetitionEntity {
     return this;
   }
 
-  public updateTargets(data: {
-    targetCount: number;
-    targetWeight: string;
-    targetBreak: number;
-  }): this {
+  public updateTargets(data: { targetCount: number; targetWeight: string; targetBreak: number }): this {
     if (this.data.finishType != null) {
       validator.throwError('Can not update target after repetition finishing', 'updateTargets');
     }
@@ -182,9 +175,7 @@ class RepetitionEntity {
   }
 
   get status(): 'inactive' | 'done' | 'break' {
-    if (
-      [this.finishType, this.factWeight, this.factBreak, this.factCount].every((i) => i != null)
-    ) {
+    if ([this.finishType, this.factWeight, this.factBreak, this.factCount].every((i) => i != null)) {
       return 'done';
     }
 

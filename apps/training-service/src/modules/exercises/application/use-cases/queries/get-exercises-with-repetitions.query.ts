@@ -19,10 +19,10 @@ export class GetExercisesWithRepetitionsQuery {
   ) {}
 
   async all(
-    input: (
-      | { trainingId?: never; templateId?: number }
-      | { trainingId?: number; templateId?: never }
-    ) & { userId?: number; onlyUser?: boolean },
+    input: ({ trainingId?: never; templateId?: number } | { trainingId?: number; templateId?: never }) & {
+      userId?: number;
+      onlyUser?: boolean;
+    },
     trx?: Transaction<DB>,
   ): Promise<ExerciseWithRepetitionsEntity[]> {
     const exercises = await this.exercisesRepo.findAllByFilters(
@@ -37,10 +37,7 @@ export class GetExercisesWithRepetitionsQuery {
     return await this.#addRepetitionsToExercises(exercises);
   }
 
-  async allTemplates(input: {
-    userId?: number;
-    onlyUser?: boolean;
-  }): Promise<ExerciseWithRepetitionsEntity[]> {
+  async allTemplates(input: { userId?: number; onlyUser?: boolean }): Promise<ExerciseWithRepetitionsEntity[]> {
     const exercises = await this.exercisesRepo.findTemplatable(input);
     return await this.#addRepetitionsToExercises(exercises);
   }

@@ -8,11 +8,9 @@ import { ApiGatewayRequestContext } from './app-request-context';
 import { NextFunction, Request, Response } from 'express';
 
 export function RequestContextMiddleware(req: Request, _: Response, next: NextFunction) {
-  const correlationId =
-    req.header(CORRELATION_HEADER_KEY) || req.header(CORRELATION_HEADER_KEY.toUpperCase());
+  const correlationId = req.header(CORRELATION_HEADER_KEY) || req.header(CORRELATION_HEADER_KEY.toUpperCase());
 
-  const userTimezone =
-    req.header(USER_TIME_ZONE_HEADER_KEY) || req.header(USER_TIME_ZONE_HEADER_KEY.toUpperCase());
+  const userTimezone = req.header(USER_TIME_ZONE_HEADER_KEY) || req.header(USER_TIME_ZONE_HEADER_KEY.toUpperCase());
 
   const utz = resolveSafeTimezone(userTimezone);
 

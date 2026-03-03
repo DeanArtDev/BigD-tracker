@@ -20,9 +20,7 @@ function GymExercisesPage() {
   const invalidate = useInvalidateExerciseTemplates();
   const { data, isLoading, isFetching, isEmpty } = useExerciseQuery({ my: isMy });
 
-  const [exerciseTemplate, setExerciseTemplate] = useState<
-    ApiSchemas['ExerciseWithRepetitionsDto'] | undefined
-  >();
+  const [exerciseTemplate, setExerciseTemplate] = useState<ApiSchemas['ExerciseWithRepetitionsDto'] | undefined>();
   const [openPreview, setOpenPreview] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -81,9 +79,7 @@ function GymExercisesPage() {
             </div>
           }
         >
-          <div
-            className={cn('grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3')}
-          >
+          <div className={cn('grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3')}>
             {data?.map((exercise) => {
               return (
                 <ExerciseCard

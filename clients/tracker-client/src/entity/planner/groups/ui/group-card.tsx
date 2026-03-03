@@ -24,8 +24,7 @@ function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardPr
   const { total, overdue, done } = getTasksStatusCount(tasks);
 
   const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
-  const isDeadlineToday =
-    closestTaskDeadline != null ? dayjs(closestTaskDeadline).isToday() : false;
+  const isDeadlineToday = closestTaskDeadline != null ? dayjs(closestTaskDeadline).isToday() : false;
   const isAllowIndicationGroup = isAllowAccentIndicationGroup(status);
 
   return (
@@ -43,9 +42,7 @@ function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardPr
           {name}
 
           <div className="flex gap-2 ml-auto">
-            {isDeadlineToday && isAllowIndicationGroup && (
-              <Flame className="size-5 stroke-red-600" />
-            )}
+            {isDeadlineToday && isAllowIndicationGroup && <Flame className="size-5 stroke-red-600" />}
 
             <Tooltip>
               <TooltipTrigger>
@@ -54,11 +51,7 @@ function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardPr
 
               <TooltipContent>
                 <Typography.P>
-                  {
-                    { NOT_STARTED: 'Еще не начата', DONE: 'Завершена', IN_PROGRESS: 'В процессе' }[
-                      status
-                    ]
-                  }
+                  {{ NOT_STARTED: 'Еще не начата', DONE: 'Завершена', IN_PROGRESS: 'В процессе' }[status]}
                 </Typography.P>
               </TooltipContent>
             </Tooltip>

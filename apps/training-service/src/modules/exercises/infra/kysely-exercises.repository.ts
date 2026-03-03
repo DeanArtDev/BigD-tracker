@@ -14,11 +14,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
   }
 
   async findOneById(id: number, trx?: Transaction<DB>): Promise<ExerciseEntity | null> {
-    const result = await this.db(trx)
-      .selectFrom('exercises')
-      .where('id', '=', id)
-      .selectAll()
-      .executeTakeFirst();
+    const result = await this.db(trx).selectFrom('exercises').where('id', '=', id).selectAll().executeTakeFirst();
 
     if (result == null) return null;
 
@@ -26,11 +22,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
   }
 
   async findAllByIds(ids: number[], trx?: Transaction<DB>): Promise<ExerciseEntity[]> {
-    const result = await this.db(trx)
-      .selectFrom('exercises')
-      .where('id', 'in', ids)
-      .selectAll()
-      .execute();
+    const result = await this.db(trx).selectFrom('exercises').where('id', 'in', ids).selectAll().execute();
     return result.map(this.#map);
   }
 
@@ -100,10 +92,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
     return result.map(this.#map);
   }
 
-  async create(
-    data: ExerciseRawData['insertable'],
-    trx?: Transaction<DB>,
-  ): Promise<ExerciseEntity | null> {
+  async create(data: ExerciseRawData['insertable'], trx?: Transaction<DB>): Promise<ExerciseEntity | null> {
     const result = await this.db(trx)
       .insertInto('exercises')
       .values({
@@ -191,10 +180,7 @@ export class KyselyExercisesRepository extends BaseRepository<DB> implements Exe
   }
 
   async delete(id: number, trx?: Transaction<DB>): Promise<boolean> {
-    const result = await this.db(trx)
-      .deleteFrom('exercises')
-      .where('id', '=', id)
-      .executeTakeFirst();
+    const result = await this.db(trx).deleteFrom('exercises').where('id', '=', id).executeTakeFirst();
 
     return result.numDeletedRows > 0;
   }

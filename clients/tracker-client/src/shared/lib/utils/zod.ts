@@ -8,16 +8,14 @@ const formPlaceholderValues = {
 };
 
 const transformPlaceholder = {
-  number: (value: number | null | undefined): number =>
-    value == null ? formPlaceholderValues.number : value,
+  number: (value: number | null | undefined): number => (value == null ? formPlaceholderValues.number : value),
 
   percentNumber: (value: number | null | undefined): number => {
     if (value == null) return formPlaceholderValues.number;
     return value < 1 ? value * 100 : value;
   },
 
-  string: (value: string | null | undefined): string =>
-    value == null ? formPlaceholderValues.string : value,
+  string: (value: string | null | undefined): string => (value == null ? formPlaceholderValues.string : value),
 
   optional: <T>(value: T): T | undefined => (value == null || value === '' ? undefined : value),
 

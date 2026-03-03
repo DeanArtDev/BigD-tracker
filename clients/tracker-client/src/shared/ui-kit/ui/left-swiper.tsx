@@ -10,14 +10,7 @@ interface LeftSwiperProps {
   readonly actionsSpace?: number;
 }
 
-export const LeftSwiper = ({
-  id,
-  openId,
-  setOpenId,
-  children,
-  content,
-  actionsSpace = 128,
-}: LeftSwiperProps) => {
+export const LeftSwiper = ({ id, openId, setOpenId, children, content, actionsSpace = 128 }: LeftSwiperProps) => {
   const [offsetX, setOffsetX] = useState(0);
 
   useEffect(() => {

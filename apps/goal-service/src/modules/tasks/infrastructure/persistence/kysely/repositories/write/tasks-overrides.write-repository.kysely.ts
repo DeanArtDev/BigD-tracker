@@ -1,8 +1,4 @@
-import {
-  TaskDatabase,
-  TasksOverridesRepositoryWritePort,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { TaskDatabase, TasksOverridesRepositoryWritePort, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { Task, TaskOverride } from '@/modules/tasks/domain';
 import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
@@ -22,10 +18,7 @@ export class TasksOverridesWriteRepositoryKysely
     super();
   }
 
-  async getManyMasterEvents(
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<Task[]> {
+  async getManyMasterEvents(specifications: TasksSpecification, trx?: TaskTransaction): Promise<Task[]> {
     return await this.errorCatcher('tasks.get-many-master-events', async () => {
       const result = await tasksWithStatusQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
@@ -35,10 +28,7 @@ export class TasksOverridesWriteRepositoryKysely
     });
   }
 
-  async getManyOverrides(
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<TaskOverride[]> {
+  async getManyOverrides(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride[]> {
     return await this.errorCatcher('tasks.get-many-overrides', async () => {
       const overrides = await this.db
         .qb(trx)

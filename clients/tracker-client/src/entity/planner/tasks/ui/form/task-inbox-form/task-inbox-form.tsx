@@ -1,9 +1,5 @@
 import { ButtonLoading } from '@/shared/components/button-loading';
-import {
-  FormStateEmitter,
-  type FormStateEmitterProps,
-  WysiwygForm,
-} from '@/shared/components/form';
+import { FormStateEmitter, type FormStateEmitterProps, WysiwygForm } from '@/shared/components/form';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
@@ -16,22 +12,13 @@ import type { TaskInboxEntity } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
 import { TaskFormInboxSidebar } from './components/task-form-inbox-sidebar';
-import {
-  type TaskInboxFormData,
-  type TaskInboxSubmitFormData,
-  validationSchema,
-} from './validation-schema';
+import { type TaskInboxFormData, type TaskInboxSubmitFormData, validationSchema } from './validation-schema';
 
 interface TaskInboxFormProps extends FormStateEmitterProps {
   readonly inboxTask?: Omit<TaskInboxEntity, 'id'>;
   readonly afterNameSlot?: ReactNode;
   readonly footerSidebarSlot?: ReactNode | ((props: { disabled: boolean }) => ReactNode);
-  readonly onSubmit?: (data: {
-    name: string;
-    priority: number;
-    deadline?: string;
-    description?: string;
-  }) => void;
+  readonly onSubmit?: (data: { name: string; priority: number; deadline?: string; description?: string }) => void;
 }
 
 function TaskInboxForm(props: TaskInboxFormProps) {
@@ -130,11 +117,7 @@ function TaskInboxForm(props: TaskInboxFormProps) {
             </div>
           </div>
 
-          <FormStateEmitter
-            isLoading={isLoading}
-            emitIsDirty={emitIsDirty}
-            emitIsLoading={emitIsLoading}
-          />
+          <FormStateEmitter isLoading={isLoading} emitIsDirty={emitIsDirty} emitIsLoading={emitIsLoading} />
         </SidebarProvider>
       </form>
     </Form>

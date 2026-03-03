@@ -18,10 +18,7 @@ export class ExercisesService {
     private readonly updateExercisesWithRepetitions: UpdateExercisesWithRepetitionsCommand,
   ) {}
 
-  async getExerciseTemplates(input: {
-    userId: number;
-    my: boolean;
-  }): Promise<ExerciseWithRepetitionsDto[]> {
+  async getExerciseTemplates(input: { userId: number; my: boolean }): Promise<ExerciseWithRepetitionsDto[]> {
     const exercises = await this.getExercisesWithRepetitionsQuery.allTemplates({
       userId: input.userId,
       onlyUser: input.my,
@@ -36,16 +33,12 @@ export class ExercisesService {
     return this.exercisesWithRepetitionsMapper.fromEntityToDTO(exercise);
   }
 
-  async createExercise(
-    input: CreateExerciseWithRepetitionsInput,
-  ): Promise<ExerciseWithRepetitionsDto> {
+  async createExercise(input: CreateExerciseWithRepetitionsInput): Promise<ExerciseWithRepetitionsDto> {
     const exercise = await this.createExercisesWithRepetitions.execute(input);
     return this.exercisesWithRepetitionsMapper.fromEntityToDTO(exercise);
   }
 
-  async updateExercise(
-    input: UpdateExerciseWithRepetitionsInput,
-  ): Promise<ExerciseWithRepetitionsDto> {
+  async updateExercise(input: UpdateExerciseWithRepetitionsInput): Promise<ExerciseWithRepetitionsDto> {
     const exercise = await this.updateExercisesWithRepetitions.execute(input);
     return this.exercisesWithRepetitionsMapper.fromEntityToDTO(exercise);
   }

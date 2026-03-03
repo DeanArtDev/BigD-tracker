@@ -8,11 +8,7 @@ type DeleteTemplateButtonProps = Parameters<typeof Button>[0] & {
   readonly onSuccess?: () => void;
 };
 
-function DeleteTemplateButton({
-  trainingId,
-  onSuccess,
-  ...buttonProps
-}: DeleteTemplateButtonProps) {
+function DeleteTemplateButton({ trainingId, onSuccess, ...buttonProps }: DeleteTemplateButtonProps) {
   const { deleteTrigger, isPending } = useTrainingDelete();
 
   return (

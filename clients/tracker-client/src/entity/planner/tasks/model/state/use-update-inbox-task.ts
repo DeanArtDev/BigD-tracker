@@ -3,11 +3,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 
 function useUpdateInboxTask() {
   const options = getDefaultQueryNotifications();
-  const { mutate: updateInboxTask, ...states } = $privetQueryClient.useMutation(
-    'put',
-    '/tasks/{taskId}/inbox',
-    { onError: options.onError },
-  );
+  const { mutate: updateInboxTask, ...states } = $privetQueryClient.useMutation('put', '/tasks/{taskId}/inbox', {
+    onError: options.onError,
+  });
 
   return {
     updateInboxTask,

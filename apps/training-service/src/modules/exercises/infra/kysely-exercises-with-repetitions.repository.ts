@@ -19,9 +19,7 @@ import { Transaction } from 'kysely';
 @Injectable()
 export class KyselyExercisesWithRepetitionsRepository
   extends BaseRepository<DB>
-  implements
-    ISyncCollectionMethods<ExerciseWithRepetitionsEntity, DB>,
-    ExercisesWithRepetitionsRepository
+  implements ISyncCollectionMethods<ExerciseWithRepetitionsEntity, DB>, ExercisesWithRepetitionsRepository
 {
   private syncCollection: SyncCollectionRepositoryHelper<ExerciseWithRepetitionsEntity, DB>;
 

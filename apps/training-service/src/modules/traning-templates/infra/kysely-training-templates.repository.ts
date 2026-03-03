@@ -8,25 +8,15 @@ import { TrainingTemplateRawData, TrainingTemplatesRepository } from '../applica
 import { TrainingTemplateEntity } from '../domain/entities';
 
 @Injectable()
-export class KyselyTrainingTemplatesRepository
-  extends BaseRepository<DB>
-  implements TrainingTemplatesRepository
-{
+export class KyselyTrainingTemplatesRepository extends BaseRepository<DB> implements TrainingTemplatesRepository {
   private tableName = 'trainings_templates' as const;
 
   constructor(@Inject(DATABASE_CONNECTION) readonly database: Database<DB>) {
     super(database);
   }
 
-  async findOneById(
-    { id }: { id: number },
-    trx?: Transaction<DB>,
-  ): Promise<TrainingTemplateEntity | null> {
-    const result = await this.db(trx)
-      .selectFrom(this.tableName)
-      .where('id', '=', id)
-      .selectAll()
-      .executeTakeFirst();
+  async findOneById({ id }: { id: number }, trx?: Transaction<DB>): Promise<TrainingTemplateEntity | null> {
+    const result = await this.db(trx).selectFrom(this.tableName).where('id', '=', id).selectAll().executeTakeFirst();
 
     if (result == null) return null;
     return this.#map(result);
@@ -141,10 +131,7 @@ export class KyselyTrainingTemplatesRepository
   }
 
   async delete({ id }: { id: number }, trx?: Transaction<DB>): Promise<boolean> {
-    const result = await this.db(trx)
-      .deleteFrom(this.tableName)
-      .where('id', '=', id)
-      .executeTakeFirst();
+    const result = await this.db(trx).deleteFrom(this.tableName).where('id', '=', id).executeTakeFirst();
 
     return result.numDeletedRows > 0;
   }

@@ -8,9 +8,7 @@ import { cn } from '@/shared/ui-kit/utils';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
-const TaskInboxFormLazy = withLazy(() =>
-  import('./form/task-inbox-form').then((m) => ({ default: m.TaskInboxForm })),
-);
+const TaskInboxFormLazy = withLazy(() => import('./form/task-inbox-form').then((m) => ({ default: m.TaskInboxForm })));
 
 interface AddTaskInboxDialogProps {
   readonly loading?: boolean;
@@ -39,10 +37,9 @@ function AddTaskInboxDialog({ inboxTask, loading, onSubmit }: AddTaskInboxDialog
         trigger={
           <Button
             size="icon"
-            className={cn(
-              'absolute bottom-5 sm:bottom-7 right-5 sm:right-5 rounded-full p-6 z-49',
-              { 'sm:-right-15': open },
-            )}
+            className={cn('absolute bottom-5 sm:bottom-7 right-5 sm:right-5 rounded-full p-6 z-49', {
+              'sm:-right-15': open,
+            })}
           >
             <Plus className="size-6" />
           </Button>

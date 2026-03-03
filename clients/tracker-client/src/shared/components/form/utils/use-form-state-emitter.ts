@@ -8,8 +8,7 @@ function useFormStateEmitter() {
     formEmitterState,
     formStateEmitterProps: {
       emitIsDirty: (v: boolean) => void setFormEmitterState((prev) => ({ ...prev, isDirty: v })),
-      emitIsLoading: (v: boolean) =>
-        void setFormEmitterState((prev) => ({ ...prev, isLoading: v })),
+      emitIsLoading: (v: boolean) => void setFormEmitterState((prev) => ({ ...prev, isLoading: v })),
     } satisfies Omit<FormStateEmitterProps, 'isLoading'>,
   };
 }

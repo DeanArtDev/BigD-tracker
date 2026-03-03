@@ -9,16 +9,7 @@ type RenderControlsData = Pick<
 
 type RenderContentData = Pick<
   ReturnType<typeof useStopwatch>,
-  | 'hours'
-  | 'minutes'
-  | 'seconds'
-  | 'milliseconds'
-  | 'days'
-  | 'totalSeconds'
-  | 'start'
-  | 'pause'
-  | 'reset'
-  | 'isRunning'
+  'hours' | 'minutes' | 'seconds' | 'milliseconds' | 'days' | 'totalSeconds' | 'start' | 'pause' | 'reset' | 'isRunning'
 >;
 
 interface StopwatchProps {
@@ -36,18 +27,7 @@ function Stopwatch({
   renderControls,
   renderContent,
 }: StopwatchProps) {
-  const {
-    seconds,
-    minutes,
-    isRunning,
-    totalSeconds,
-    hours,
-    days,
-    milliseconds,
-    start,
-    pause,
-    reset,
-  } = useStopwatch({
+  const { seconds, minutes, isRunning, totalSeconds, hours, days, milliseconds, start, pause, reset } = useStopwatch({
     autoStart,
     interval,
   });
@@ -62,8 +42,7 @@ function Stopwatch({
     setProgress(percentage * 100);
   }, [seconds, minutes, TOTAL_SECONDS]);
 
-  const progressColor =
-    totalSeconds > targetSeconds ? 'var(--destructive)' : 'var(--color-primary)';
+  const progressColor = totalSeconds > targetSeconds ? 'var(--destructive)' : 'var(--color-primary)';
 
   return (
     <DialView

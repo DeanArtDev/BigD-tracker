@@ -4,11 +4,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 function useTaskFinish() {
   const options = getDefaultQueryNotifications();
 
-  const { mutate: finishTask, ...states } = $privetQueryClient.useMutation(
-    'post',
-    '/tasks/{taskId}/finish',
-    { onError: options.onError },
-  );
+  const { mutate: finishTask, ...states } = $privetQueryClient.useMutation('post', '/tasks/{taskId}/finish', {
+    onError: options.onError,
+  });
 
   return {
     finishTask,

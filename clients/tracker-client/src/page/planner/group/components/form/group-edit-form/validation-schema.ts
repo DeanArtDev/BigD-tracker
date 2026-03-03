@@ -15,10 +15,7 @@ const taskSchema = z.object({
 });
 
 const validationSchema = z.object({
-  name: z
-    .string({ error: '' })
-    .min(3, { error: 'Не меньше 3 символов' })
-    .max(254, { error: 'Слишком длинное имя' }),
+  name: z.string({ error: '' }).min(3, { error: 'Не меньше 3 символов' }).max(254, { error: 'Слишком длинное имя' }),
 
   description: z.string().optional().transform(transformPlaceholder.optional),
   isDescriptionDirty: z.boolean(),

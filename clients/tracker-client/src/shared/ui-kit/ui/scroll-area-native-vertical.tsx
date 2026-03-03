@@ -2,10 +2,7 @@ import type { PropsWithChildren } from 'react';
 
 import { cn } from '@/shared/ui-kit/utils';
 
-function ScrollAreaNativeVertical({
-  className,
-  children,
-}: PropsWithChildren<{ className?: string }>) {
+function ScrollAreaNativeVertical({ className, children }: PropsWithChildren<{ className?: string }>) {
   return (
     <div
       className={cn(

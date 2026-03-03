@@ -6,44 +6,41 @@ import { type GroupEntity, GroupStatus } from '../group.entity';
 import { groupsQueryKeys } from './query';
 
 function useGroupsQuery(params: { search?: string; limit: number }) {
-  const { data, ...others } = $privetQueryClient.useInfiniteQuery(
-    ...groupsQueryKeys.getGroups(params),
-    {
-      initialPageParam: null,
-      getNextPageParam: (lastPage: ApiSchemas['GetUserGroupsRes']) => lastPage.data.meta.cursor,
-      select: ({ pages = [] }: { pages: ApiSchemas['GetUserGroupsRes'][] }) => {
-        const byPage = pages.map((page) => {
-          const items = page.data.items.map((group) => ({
-            id: group.id,
-            name: group.name,
-            description: group.description,
-            status: group.status as GroupStatus,
-            progress: group.progress,
-            tasks: group.tasks.map(taskDtoToEntity),
-          }));
+  const { data, ...others } = $privetQueryClient.useInfiniteQuery(...groupsQueryKeys.getGroups(params), {
+    initialPageParam: null,
+    getNextPageParam: (lastPage: ApiSchemas['GetUserGroupsRes']) => lastPage.data.meta.cursor,
+    select: ({ pages = [] }: { pages: ApiSchemas['GetUserGroupsRes'][] }) => {
+      const byPage = pages.map((page) => {
+        const items = page.data.items.map((group) => ({
+          id: group.id,
+          name: group.name,
+          description: group.description,
+          status: group.status as GroupStatus,
+          progress: group.progress,
+          tasks: group.tasks.map(taskDtoToEntity),
+        }));
 
-          return {
-            items: items,
-            byId: keyBy(items, 'id'),
-          };
-        });
+        return {
+          items: items,
+          byId: keyBy(items, 'id'),
+        };
+      });
 
-        const allItems = byPage.reduce<{
-          items: GroupEntity[];
-          byId: Record<number, GroupEntity>;
-        }>(
-          (acc, { items, byId }) => {
-            acc.items.push(...items);
-            acc.byId = { ...acc.byId, ...byId };
-            return acc;
-          },
-          { items: [], byId: {} },
-        );
+      const allItems = byPage.reduce<{
+        items: GroupEntity[];
+        byId: Record<number, GroupEntity>;
+      }>(
+        (acc, { items, byId }) => {
+          acc.items.push(...items);
+          acc.byId = { ...acc.byId, ...byId };
+          return acc;
+        },
+        { items: [], byId: {} },
+      );
 
-        return { pages: byPage, allItems };
-      },
+      return { pages: byPage, allItems };
     },
-  );
+  });
 
   return {
     pages: data?.pages,

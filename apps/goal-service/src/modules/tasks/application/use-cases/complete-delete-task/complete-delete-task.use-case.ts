@@ -1,7 +1,4 @@
-import {
-  ExceptionTaskNotFound,
-  ExceptionTaskUnprocessable,
-} from '@/modules/tasks/application/exceptions';
+import { ExceptionTaskNotFound, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
 import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -26,10 +23,7 @@ class CompleteDeleteTaskUseCase {
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
 
       if (isOrigin) {
-        const task = await this.taskCheckerService.ensureTaskExists(
-          { taskId: data.id, userId },
-          { trx },
-        );
+        const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         TaskFactory.deleteComplete(task);
 
         const isDeleted = await this.tasksWriteRepo.deleteTask({ taskId: data.id, userId }, trx);

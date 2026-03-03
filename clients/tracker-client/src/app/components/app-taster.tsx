@@ -8,11 +8,7 @@ function AppTaster() {
 
   return createPortal(
     <DismissableLayerBranch>
-      <Toaster
-        richColors
-        className="z-51 pointer-events-auto"
-        position={isMobile ? 'bottom-center' : 'top-center'}
-      />
+      <Toaster richColors className="z-51 pointer-events-auto" position={isMobile ? 'bottom-center' : 'top-center'} />
     </DismissableLayerBranch>,
     document.body,
   );

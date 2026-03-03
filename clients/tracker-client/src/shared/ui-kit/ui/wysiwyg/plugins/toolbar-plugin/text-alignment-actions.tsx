@@ -49,9 +49,7 @@ function TextAlignmentActions({ disabled }: { disabled: boolean }) {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(
-        ({ editorState }) => void editorState.read($updateToolbar, { editor }),
-      ),
+      editor.registerUpdateListener(({ editorState }) => void editorState.read($updateToolbar, { editor })),
     );
   }, [editor]);
 

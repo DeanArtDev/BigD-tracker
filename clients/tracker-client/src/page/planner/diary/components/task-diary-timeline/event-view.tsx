@@ -12,9 +12,7 @@ interface EventViewProps {
 
 function EventView({ event, onClick }: EventViewProps) {
   const Icon = taskStatusToIconMap[event.extra!.status];
-  const isPriorityIndicate = [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED].some(
-    (s) => s === event.extra?.status,
-  );
+  const isPriorityIndicate = [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED].some((s) => s === event.extra?.status);
 
   return (
     <article

@@ -23,10 +23,9 @@ function TaskSidebarRootForm({ children }: TaskSidebarRootFormProps) {
       variant="sidebar"
       collapsible="offcanvas"
       style={style}
-      className={cn(
-        'sticky h-full min-h-0 border-t border-b rounded-bl-md rounded-tl-md overflow-hidden',
-        { 'w-0': isCollapsed },
-      )}
+      className={cn('sticky h-full min-h-0 border-t border-b rounded-bl-md rounded-tl-md overflow-hidden', {
+        'w-0': isCollapsed,
+      })}
     >
       <SidebarContent>{children}</SidebarContent>
     </Sidebar>

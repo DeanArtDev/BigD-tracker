@@ -25,10 +25,7 @@ function DiaryPage() {
           'lg:w-full lg:max-w-[1400px] lg:mx-auto lg:grid-cols-[2fr_min-content_1fr]',
         )}
       >
-        <TaskDiaryTimeline
-          filterByGroup={pageQuery?.filter?.group}
-          onEventClick={setSelectedTask}
-        />
+        <TaskDiaryTimeline filterByGroup={pageQuery?.filter?.group} onEventClick={setSelectedTask} />
 
         {isLgUp && (
           <>

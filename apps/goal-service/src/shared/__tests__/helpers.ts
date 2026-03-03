@@ -60,12 +60,4 @@ function mockDate(dataToUse: ReturnType<Date['toISOString']> = TEST_DATE): void 
   });
 }
 
-export {
-  mockDate,
-  buildPayload,
-  sendMessageBuilder,
-  unwrapRpcError,
-  expectTransaction,
-  firstArg,
-  nthArgs,
-};
+export { mockDate, buildPayload, sendMessageBuilder, unwrapRpcError, expectTransaction, firstArg, nthArgs };

@@ -40,10 +40,7 @@ class ProcessTrainingCommand {
 
     training.startTraining();
 
-    await this.trainingsRepo.update(
-      { id: training.id, in_progress: training.inProgress },
-      { replace: false },
-    );
+    await this.trainingsRepo.update({ id: training.id, in_progress: training.inProgress }, { replace: false });
   }
 
   async finish(input: StartTrainingInput): Promise<void> {
@@ -66,21 +63,11 @@ class ProcessTrainingCommand {
     await this.finishRepetitionsService.setFact(input);
   }
 
-  async setRepetitionBreak({
-    repetitionId,
-    factBreak,
-    trainingId,
-    userId,
-  }: SetRepetitionBreakInput): Promise<void> {
+  async setRepetitionBreak({ repetitionId, factBreak, trainingId, userId }: SetRepetitionBreakInput): Promise<void> {
     const training = await this.getTrainingsWithExercises.one({ id: trainingId, userId });
     training.canUpdateRepetitionBreak(repetitionId);
     await this.finishRepetitionsService.setDuration({ factBreak, repetitionId, userId });
   }
 }
 
-export {
-  ProcessTrainingCommand,
-  StartTrainingInput,
-  SetRepetitionFactInput,
-  SetRepetitionBreakInput,
-};
+export { ProcessTrainingCommand, StartTrainingInput, SetRepetitionFactInput, SetRepetitionBreakInput };

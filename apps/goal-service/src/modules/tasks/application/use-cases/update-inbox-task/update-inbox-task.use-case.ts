@@ -1,8 +1,5 @@
 import { TasksViewMapper, TaskView } from '@/modules/tasks/application/dto';
-import {
-  ExceptionTaskCreationFailed,
-  ExceptionTaskUnprocessable,
-} from '@/modules/tasks/application/exceptions';
+import { ExceptionTaskCreationFailed, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
@@ -28,14 +25,8 @@ class UpdateInboxTaskUseCase {
       const { isOrigin, data } = this.taskTypeService.getType({ taskId: id });
 
       if (isOrigin) {
-        const task = await this.taskCheckerService.ensureTaskExists(
-          { userId, taskId: data.id },
-          { trx },
-        );
-        await this.inboxGroupCheckerService.ensureTaskInInboxGroup(
-          { userId, taskId: data.id },
-          { trx },
-        );
+        const task = await this.taskCheckerService.ensureTaskExists({ userId, taskId: data.id }, { trx });
+        await this.inboxGroupCheckerService.ensureTaskInInboxGroup({ userId, taskId: data.id }, { trx });
 
         const updatedTaskDraft = TaskFactory.updateInbox(task, patch);
         await this.tasksWriteRepo.replaceTask(updatedTaskDraft, trx);

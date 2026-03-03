@@ -30,9 +30,7 @@ export class TrainingTemplatesController {
   }
 
   @MessagePattern(TrainingCreateTemplate.pattern)
-  async createTemplates(
-    @Payload() { data }: TrainingCreateTemplate.Request,
-  ): Promise<TrainingCreateTemplate.Response> {
+  async createTemplates(@Payload() { data }: TrainingCreateTemplate.Request): Promise<TrainingCreateTemplate.Response> {
     return {
       data: await this.trainingTemplatesService.createOneWithExercises({
         userId: data.userId,
@@ -47,9 +45,7 @@ export class TrainingTemplatesController {
   }
 
   @MessagePattern(TrainingGetOneTemplate.pattern)
-  async getOneTemplate(
-    @Payload() { data }: TrainingGetOneTemplate.Request,
-  ): Promise<TrainingGetOneTemplate.Response> {
+  async getOneTemplate(@Payload() { data }: TrainingGetOneTemplate.Request): Promise<TrainingGetOneTemplate.Response> {
     return {
       data: await this.trainingTemplatesService.oneWithExercises({
         userId: data.userId,
@@ -59,18 +55,14 @@ export class TrainingTemplatesController {
   }
 
   @MessagePattern(TrainingUpdateTemplate.pattern)
-  async updateTemplate(
-    @Payload() { data }: TrainingUpdateTemplate.Request,
-  ): Promise<TrainingUpdateTemplate.Response> {
+  async updateTemplate(@Payload() { data }: TrainingUpdateTemplate.Request): Promise<TrainingUpdateTemplate.Response> {
     return {
       data: await this.trainingTemplatesService.updateOneWithExercises(data),
     };
   }
 
   @MessagePattern(TrainingDeleteTemplate.pattern)
-  async deleteTemplate(
-    @Payload() { data }: TrainingDeleteTemplate.Request,
-  ): Promise<TrainingDeleteTemplate.Response> {
+  async deleteTemplate(@Payload() { data }: TrainingDeleteTemplate.Request): Promise<TrainingDeleteTemplate.Response> {
     await this.deleteTrainingTemplateCommand.execute({ id: data.id, userId: data.userId });
     return {
       data: { id: data.id },

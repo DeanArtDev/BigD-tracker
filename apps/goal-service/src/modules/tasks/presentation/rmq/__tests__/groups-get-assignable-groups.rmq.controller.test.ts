@@ -72,10 +72,10 @@ describe('GroupsRmqController (rmq e2e)', () => {
         data: { userId: 300 },
       });
 
-      const res = await sendMessage<
-        GoalGetAssignableGroups.Response,
-        GoalGetAssignableGroups.Request
-      >(GoalGetAssignableGroups.pattern, payload);
+      const res = await sendMessage<GoalGetAssignableGroups.Response, GoalGetAssignableGroups.Request>(
+        GoalGetAssignableGroups.pattern,
+        payload,
+      );
 
       expect(groupReadRepoMock.getInfoGroups).toHaveBeenCalledTimes(1);
       expect(goalsReadRepoMock.getGoalInfoByChildGroups).toHaveBeenCalledTimes(1);

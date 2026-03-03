@@ -2,10 +2,7 @@ import { RepetitionEntity } from '@/modules/repetitions';
 import { ExerciseType } from '@big-d/api-contracts';
 import { TrainingEntity, TrainingEntityData } from './training.entity';
 import { DomainValidator } from '@big-d/api-utils';
-import {
-  ExerciseWithRepetitionsEntity,
-  UpdateExerciseRepetitionsInput,
-} from '@/modules/exercises/domain';
+import { ExerciseWithRepetitionsEntity, UpdateExerciseRepetitionsInput } from '@/modules/exercises/domain';
 
 const validator = new DomainValidator('trainings-with-exercises');
 
@@ -23,9 +20,7 @@ type UpdateExerciseInput = {
 }[];
 
 class TrainingWithExercisesEntity extends TrainingEntity {
-  static create = (
-    data: Parameters<typeof TrainingEntity.create>[0],
-  ): TrainingWithExercisesEntity => {
+  static create = (data: Parameters<typeof TrainingEntity.create>[0]): TrainingWithExercisesEntity => {
     const training = TrainingEntity.create(data);
 
     return new TrainingWithExercisesEntity({
@@ -43,9 +38,7 @@ class TrainingWithExercisesEntity extends TrainingEntity {
     });
   };
 
-  static restore = (
-    data: Omit<TrainingWithExercisesEntityData, 'exercises'>,
-  ): TrainingWithExercisesEntity => {
+  static restore = (data: Omit<TrainingWithExercisesEntityData, 'exercises'>): TrainingWithExercisesEntity => {
     const training = TrainingEntity.restore(data);
     return new TrainingWithExercisesEntity({
       id: training.id,
@@ -81,10 +74,7 @@ class TrainingWithExercisesEntity extends TrainingEntity {
     const indexMap = new Map<number, UpdateExerciseInput[0]>();
     for (const rep of input) {
       if (indexMap.has(rep.id)) {
-        validator.throwError(
-          `There are duplicated exercise ids ${input.map((i) => i.id).join(', ')}`,
-          'exercises',
-        );
+        validator.throwError(`There are duplicated exercise ids ${input.map((i) => i.id).join(', ')}`, 'exercises');
       }
       indexMap.set(rep.id, rep);
     }
@@ -116,18 +106,13 @@ class TrainingWithExercisesEntity extends TrainingEntity {
       validator.throwError(`Exercises must belong to training {id: ${this.id}}`, 'exercises');
     }
 
-    if (
-      new Set(this.data.exercises.map((item) => item.position)).size !== this.data.exercises.length
-    ) {
+    if (new Set(this.data.exercises.map((item) => item.position)).size !== this.data.exercises.length) {
       validator.throwError(`Exercises must not have position duplicates`, 'exercises');
     }
 
     const LIMIT = 10;
     if (this.data.exercises.length > LIMIT) {
-      validator.throwError(
-        `There are to much exercises for training {id: ${this.id}} limit is ${LIMIT}`,
-        'exercises',
-      );
+      validator.throwError(`There are to much exercises for training {id: ${this.id}} limit is ${LIMIT}`, 'exercises');
     }
 
     for (const exercise of this.data.exercises) {
@@ -155,10 +140,7 @@ class TrainingWithExercisesEntity extends TrainingEntity {
 
   public canUpdateRepetitionFact(repetitionId: number): boolean {
     if (!this.inProgress) {
-      validator.throwError(
-        `Training: ${this.data.id} has not started yet`,
-        'canUpdateRepetitionFact',
-      );
+      validator.throwError(`Training: ${this.data.id} has not started yet`, 'canUpdateRepetitionFact');
     }
 
     this.#allRepetitionsAccordanceToTrainingFlow(repetitionId, 'canUpdateRepetitionFact');
@@ -168,10 +150,7 @@ class TrainingWithExercisesEntity extends TrainingEntity {
 
   public canUpdateRepetitionBreak(repetitionId: number): boolean {
     if (!this.inProgress) {
-      validator.throwError(
-        `Training: ${this.data.id} has not started yet`,
-        'canUpdateRepetitionBreak',
-      );
+      validator.throwError(`Training: ${this.data.id} has not started yet`, 'canUpdateRepetitionBreak');
     }
 
     this.#allRepetitionsAccordanceToTrainingFlow(repetitionId, 'canUpdateRepetitionBreak');
@@ -195,10 +174,7 @@ class TrainingWithExercisesEntity extends TrainingEntity {
 
     const index = buffer.findIndex((i) => i.id === repetitionId);
     if (index === -1) {
-      validator.throwError(
-        `Training: ${this.data.id} doesn't nave a repetition: ${repetitionId}`,
-        field,
-      );
+      validator.throwError(`Training: ${this.data.id} doesn't nave a repetition: ${repetitionId}`, field);
     }
 
     let left = index - 1;

@@ -2,15 +2,7 @@ import { CreateExerciseWithRepetitionsData } from '@/modules/exercises/applicati
 import { TrainingType } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsISO8601,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class CreateTrainingWithExercisesRequestData {
   @ApiProperty({ example: 'MEDIUM', enum: TrainingType })

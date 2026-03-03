@@ -20,10 +20,7 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
     return from.isSameOrBefore(startCurrentDate) && to.isSameOrAfter(endCurrentDate);
   }
 
-  public calculateEventsPositions(
-    events: TimeViewEvent<TExtra>[],
-    selectedDate: Dayjs,
-  ): TimeEvent[] {
+  public calculateEventsPositions(events: TimeViewEvent<TExtra>[], selectedDate: Dayjs): TimeEvent[] {
     const buffer: TimeEvent[] = [];
 
     for (const { extra, ...event } of events) {
@@ -123,8 +120,7 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
           .isBetween(parentEvent.from, parentEvent.to, 'minutes', '[)');
 
         if (isBetween) {
-          const set =
-            map.get(hashKey) ?? map.set(hashKey, new Set<TimeEvent<TExtra>>()).get(hashKey);
+          const set = map.get(hashKey) ?? map.set(hashKey, new Set<TimeEvent<TExtra>>()).get(hashKey);
           set?.add(nextEvent);
         } else {
           break;
@@ -138,21 +134,10 @@ class DayViewPlugin<TExtra = any> implements TimeViewPlugin<TExtra> {
     return map;
   }
 
-  #calculateEventPosition(
-    event: { readonly to: Dayjs; readonly from: Dayjs },
-    selectedDate?: Dayjs,
-  ): TimeViewPosition {
-    const {
-      date: fromDays,
-      hours: fromHours,
-      minutes: fromMinutes,
-    } = this.#time.createDate(event.from).toObject();
+  #calculateEventPosition(event: { readonly to: Dayjs; readonly from: Dayjs }, selectedDate?: Dayjs): TimeViewPosition {
+    const { date: fromDays, hours: fromHours, minutes: fromMinutes } = this.#time.createDate(event.from).toObject();
 
-    const {
-      date: toDays,
-      hours: toHours,
-      minutes: toMinutes,
-    } = this.#time.createDate(event.to).toObject();
+    const { date: toDays, hours: toHours, minutes: toMinutes } = this.#time.createDate(event.to).toObject();
 
     const lineCount = this.shapeTimeLines().length;
     const yHourPart = 100 / lineCount;

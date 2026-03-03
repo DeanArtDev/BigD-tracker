@@ -20,10 +20,7 @@ class DeleteGroupUseCase {
     return this.db.runTransaction(async (trx) => {
       const { groupId, userId } = input;
 
-      const ensureGroup = await this.groupCheckerService.ensureGroupExists(
-        { groupId, userId },
-        { trx },
-      );
+      const ensureGroup = await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
 
       const groupFactory = new GroupFactory();
       const deletedGroup = groupFactory.delete(ensureGroup);

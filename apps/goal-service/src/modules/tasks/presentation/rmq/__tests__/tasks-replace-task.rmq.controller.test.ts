@@ -83,10 +83,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       const [[replacedTaskArg, trxArg]] = tasksWriteRepoMock.replaceTask.mock.calls;
       expect(replacedTaskArg).toBeInstanceOf(Task);
       expect(replacedTaskArg.id).toBe(taskId);
@@ -114,9 +111,7 @@ describe('TasksRmqController (rmq e2e)', () => {
     test('should throw when task status not replaceable', async () => {
       const userId = 34;
       const taskId = 4014;
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
 
       const payload: GoalReplaceTask.Request = buildPayload({
         data: {
@@ -130,10 +125,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
-          GoalReplaceTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(GoalReplaceTask.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -168,10 +160,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
-          GoalReplaceTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(GoalReplaceTask.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -203,18 +192,12 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(
-          GoalReplaceTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(GoalReplaceTask.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       expect(tasksWriteRepoMock.replaceTask).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotExist.code,

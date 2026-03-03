@@ -11,10 +11,7 @@ const AUTH_REPOSITORY = Symbol('AUTH_REPOSITORY');
 interface AuthRepository {
   findByToken(token: string, trx?: Transaction<DB>): Promise<SessionEntity | null>;
   findByUserId(id: number, trx?: Transaction<DB>): Promise<SessionEntity | null>;
-  findAnd(
-    input: { userId: number; userAgent?: string },
-    trx?: Transaction<DB>,
-  ): Promise<SessionEntity | null>;
+  findAnd(input: { userId: number; userAgent?: string }, trx?: Transaction<DB>): Promise<SessionEntity | null>;
   create(input: SessionEntity, trx?: Transaction<DB>): Promise<SessionEntity | null>;
   delete(input: { userId: number; userAgent?: string }, trx?: Transaction<DB>): Promise<boolean>;
   deleteExpired(): Promise<void>;

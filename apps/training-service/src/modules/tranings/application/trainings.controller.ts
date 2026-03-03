@@ -38,9 +38,7 @@ export class TrainingsController {
   }
 
   @MessagePattern(TrainingGetTrainings.pattern)
-  async getTrainings(
-    @Payload() { data }: TrainingGetTrainings.Request,
-  ): Promise<TrainingGetTrainings.Response> {
+  async getTrainings(@Payload() { data }: TrainingGetTrainings.Request): Promise<TrainingGetTrainings.Response> {
     return {
       data: await this.trainingsService.all({
         userId: data.userId,
@@ -51,9 +49,7 @@ export class TrainingsController {
   }
 
   @MessagePattern(TrainingGetOneTraining.pattern)
-  async getOneTraining(
-    @Payload() { data }: TrainingGetOneTraining.Request,
-  ): Promise<TrainingGetOneTraining.Response> {
+  async getOneTraining(@Payload() { data }: TrainingGetOneTraining.Request): Promise<TrainingGetOneTraining.Response> {
     return {
       data: await this.trainingsService.oneWithExercises({
         userId: data.userId,
@@ -63,9 +59,7 @@ export class TrainingsController {
   }
 
   @MessagePattern(TrainingCreateTraining.pattern)
-  async createTraining(
-    @Payload() { data }: TrainingCreateTraining.Request,
-  ): Promise<TrainingCreateTraining.Response> {
+  async createTraining(@Payload() { data }: TrainingCreateTraining.Request): Promise<TrainingCreateTraining.Response> {
     return {
       data: await this.trainingsService.createWithExercises(data),
     };
@@ -81,9 +75,7 @@ export class TrainingsController {
   }
 
   @MessagePattern(TrainingUpdateTraining.pattern)
-  async updateTraining(
-    @Payload() { data }: TrainingUpdateTraining.Request,
-  ): Promise<TrainingUpdateTraining.Response> {
+  async updateTraining(@Payload() { data }: TrainingUpdateTraining.Request): Promise<TrainingUpdateTraining.Response> {
     return {
       data: await this.trainingsService.updateWithExercises(data),
     };
@@ -100,17 +92,13 @@ export class TrainingsController {
   }
 
   @MessagePattern(TrainingStartTraining.pattern)
-  async startTrainings(
-    @Payload() { data }: TrainingStartTraining.Request,
-  ): Promise<TrainingStartTraining.Response> {
+  async startTrainings(@Payload() { data }: TrainingStartTraining.Request): Promise<TrainingStartTraining.Response> {
     await this.processTrainingCommand.start(data);
     return { data: { id: data.id } };
   }
 
   @MessagePattern(TrainingFinishTraining.pattern)
-  async finishTrainings(
-    @Payload() { data }: TrainingFinishTraining.Request,
-  ): Promise<TrainingFinishTraining.Response> {
+  async finishTrainings(@Payload() { data }: TrainingFinishTraining.Request): Promise<TrainingFinishTraining.Response> {
     await this.processTrainingCommand.finish(data);
     return { data: { id: data.id } };
   }
@@ -122,17 +110,13 @@ export class TrainingsController {
   }
 
   @MessagePattern(TrainingSetBreakFact.pattern)
-  async setBreakFact(
-    @Payload() { data }: TrainingSetBreakFact.Request,
-  ): Promise<TrainingSetBreakFact.Response> {
+  async setBreakFact(@Payload() { data }: TrainingSetBreakFact.Request): Promise<TrainingSetBreakFact.Response> {
     await this.processTrainingCommand.setRepetitionBreak(data);
     return { data: { repetitionId: data.repetitionId, trainingId: data.trainingId } };
   }
 
   @MessagePattern(TrainingDeleteTraining.pattern)
-  async deleteTraining(
-    @Payload() { data }: TrainingDeleteTraining.Request,
-  ): Promise<TrainingDeleteTraining.Response> {
+  async deleteTraining(@Payload() { data }: TrainingDeleteTraining.Request): Promise<TrainingDeleteTraining.Response> {
     await this.deleteTrainingCommand.execute(data.id, data.userId);
     return { data: { id: data.id } };
   }

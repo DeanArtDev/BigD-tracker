@@ -18,9 +18,7 @@ type UpdateExerciseRepetitionsInput = {
 }[];
 
 class ExerciseWithRepetitionsEntity extends ExerciseEntity {
-  static create = (
-    data: Parameters<typeof ExerciseEntity.create>[0],
-  ): ExerciseWithRepetitionsEntity => {
+  static create = (data: Parameters<typeof ExerciseEntity.create>[0]): ExerciseWithRepetitionsEntity => {
     const exercise = ExerciseEntity.create(data);
     return new ExerciseWithRepetitionsEntity({
       id: exercise.id,
@@ -36,9 +34,7 @@ class ExerciseWithRepetitionsEntity extends ExerciseEntity {
     }).validate();
   };
 
-  static restore = (
-    data: Omit<ExerciseWithRepetitionsData, 'repetitions'>,
-  ): ExerciseWithRepetitionsEntity => {
+  static restore = (data: Omit<ExerciseWithRepetitionsData, 'repetitions'>): ExerciseWithRepetitionsEntity => {
     const exercise = ExerciseEntity.restore(data);
     return new ExerciseWithRepetitionsEntity({
       id: exercise.id,
@@ -155,10 +151,7 @@ class ExerciseWithRepetitionsEntity extends ExerciseEntity {
       validator.throwError(`Repetitions must belong to exercise {id: ${this.id}}`, 'repetitions');
     }
 
-    if (
-      new Set(this.data.repetitions.map((item) => item.position)).size !==
-      this.data.repetitions.length
-    ) {
+    if (new Set(this.data.repetitions.map((item) => item.position)).size !== this.data.repetitions.length) {
       validator.throwError(`Repetitions must not have position duplicates`, 'repetitions');
     }
 

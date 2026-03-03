@@ -144,6 +144,10 @@ test:
   tags: [docker]
   extends: .install_environment
   script:
+    - |
+      if [ -n "$CLIENT_TESTING_ENV" ]; then
+        cat "$CLIENT_TESTING_ENV" > clients/tracker-client/.env.test
+      fi
     - pnpm run test:all
 
 # ======================== BUILD ===============================

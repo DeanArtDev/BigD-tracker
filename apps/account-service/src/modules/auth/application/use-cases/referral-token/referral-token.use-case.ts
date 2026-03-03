@@ -1,9 +1,5 @@
 import { AUTH_REPOSITORY, AuthRepository } from '@/modules/auth/application';
-import {
-  ExceptionSessionExpired,
-  ExceptionSessionNotFound,
-  ExceptionUserNotFound,
-} from '@/modules/auth/exceptions';
+import { ExceptionSessionExpired, ExceptionSessionNotFound, ExceptionUserNotFound } from '@/modules/auth/exceptions';
 import { USER_REPOSITORY, UsersRepository } from '@/modules/users/application';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';

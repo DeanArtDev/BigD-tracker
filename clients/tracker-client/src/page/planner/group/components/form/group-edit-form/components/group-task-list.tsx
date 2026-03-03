@@ -91,10 +91,8 @@ function GroupTaskList({
             getId={(task) => task.formUid}
             onChange={({ oldIndex, newIndex }) => void move(oldIndex, newIndex)}
             renderItem={({ item: task, setNodeRef, isDragging, style, handleProps }) => {
-              const isDeadlineToday =
-                task.deadline != null ? dayjs(task.deadline).isToday() : false;
-              const isDeadlineTomorrow =
-                task.deadline != null ? dayjs(task.deadline).isTomorrow() : false;
+              const isDeadlineToday = task.deadline != null ? dayjs(task.deadline).isToday() : false;
+              const isDeadlineTomorrow = task.deadline != null ? dayjs(task.deadline).isTomorrow() : false;
               const isAllowIndication = isAllowAccentIndicationTask(task.status);
 
               const StatusIcon = taskStatusToIconMap[task.status];

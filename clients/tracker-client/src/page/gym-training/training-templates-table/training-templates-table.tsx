@@ -37,10 +37,7 @@ function TrainingTemplatesTable() {
     onEdit: (row) => void setTemplateId(row.id),
     onAssign: setAssignTemplateId,
     onDelete: (id) => {
-      deleteTrainingTemplate(
-        { params: { path: { templateId: id } } },
-        { onSuccess: invalidateTemplates },
-      );
+      deleteTrainingTemplate({ params: { path: { templateId: id } } }, { onSuccess: invalidateTemplates });
     },
   });
 

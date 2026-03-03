@@ -1,14 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsISO8601,
-  IsOptional,
-  IsString,
-  IsUrl,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { ExerciseType } from '../../exercises';
 import { TrainingType } from './shared/training.dto';
 import { TrainingWithExercisesResSingle } from './shared/trainings-response.dto';

@@ -24,18 +24,12 @@ class TaskRecoveryUseCase {
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
 
       if (isOrigin) {
-        const task = await this.taskCheckerService.ensureTaskExists(
-          { taskId: data.id, userId },
-          { trx },
-        );
+        const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const recoveredTask = TaskFactory.recovery(task);
         const replacedTask = await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
 
         if (groupId != null) {
-          await this.groupCheckerService.ensureGroupExists(
-            { groupId, userId },
-            { trx, includeInbox: true },
-          );
+          await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
           TaskFactory.assignToGroup(replacedTask);
           await this.tasksWriteRepo.addTaskToGroup({ taskId: data.id, groupId }, trx);
         }

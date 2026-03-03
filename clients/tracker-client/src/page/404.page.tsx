@@ -1,14 +1,7 @@
 import { routes } from '@/shared/lib/routes';
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { Button } from '@/shared/ui-kit/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/ui-kit/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
 import { Input } from '@/shared/ui-kit/ui/input';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { type FormEvent, useState } from 'react';
@@ -54,9 +47,7 @@ function NotFoundPage({ homeHref = '/', quickLinks = [], searchHref }: NotFoundP
                 </div>
                 <div className="min-w-0">
                   <CardTitle className="truncate">Страница не найдена</CardTitle>
-                  <CardDescription className="mt-1">
-                    Похоже, такого маршрута нет или он был перемещён.
-                  </CardDescription>
+                  <CardDescription className="mt-1">Похоже, такого маршрута нет или он был перемещён.</CardDescription>
                 </div>
               </div>
 
@@ -80,12 +71,7 @@ function NotFoundPage({ homeHref = '/', quickLinks = [], searchHref }: NotFoundP
               <form onSubmit={onSubmit} className="space-y-2">
                 <div className="text-sm font-medium">Попробовать найти</div>
                 <div className="flex gap-2">
-                  <Input
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder="Поиск..."
-                    className="h-9"
-                  />
+                  <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск..." className="h-9" />
                   <Button type="submit" variant="secondary" className="gap-2">
                     <Search className="h-4 w-4" />
                     Найти

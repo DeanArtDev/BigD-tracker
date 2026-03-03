@@ -92,9 +92,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const responseTask = getTaskView({ id: taskInputOne.id, userId, name: taskInputOne.name });
 
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(groupWithTasks);
-      tasksWriteRepoMock.getTaskById
-        .mockResolvedValueOnce(restoredTaskOne)
-        .mockResolvedValueOnce(restoredTaskTwo);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(restoredTaskOne).mockResolvedValueOnce(restoredTaskTwo);
       groupReadRepoMock.ensureTaskInGroup.mockResolvedValue(true);
       groupWriteRepoMock.replaceGroupWithTasks.mockResolvedValueOnce(undefined);
       groupReadRepoMock.getGroupWithTasksById.mockResolvedValueOnce(
@@ -122,10 +120,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId, userId },
-        expectTransaction(),
-      );
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith({ groupId, userId }, expectTransaction());
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
         { taskId: taskInputOne.id, userId },
         expectTransaction(),
@@ -236,12 +231,8 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const groupId = 122;
       const taskId = 601;
 
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: groupId, user_id: userId }),
-      );
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(getGroupWithTasks({ id: groupId, user_id: userId }));
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
       groupReadRepoMock.ensureTaskInGroup.mockResolvedValueOnce(true);
 
       const payload: GoalReplaceGroup.Request = buildPayload({
@@ -263,10 +254,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
-          GoalReplaceGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(GoalReplaceGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -303,10 +291,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
-          GoalReplaceGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(GoalReplaceGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -337,18 +322,12 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
-          GoalReplaceGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(GoalReplaceGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId: 999, userId: 9 },
-        expectTransaction(),
-      );
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith({ groupId: 999, userId: 9 }, expectTransaction());
 
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.groupNotExist.code,
@@ -377,25 +356,17 @@ describe('GroupsRmqController (rmq e2e)', () => {
           ],
         },
       });
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: groupId, user_id: userId }),
-      );
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(getGroupWithTasks({ id: groupId, user_id: userId }));
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
-          GoalReplaceGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(GoalReplaceGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId: 555, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId: 555, userId }, expectTransaction());
       expect(groupReadRepoMock.ensureTaskInGroup).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotExist.code,
@@ -424,18 +395,13 @@ describe('GroupsRmqController (rmq e2e)', () => {
           ],
         },
       });
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: groupId, user_id: userId }),
-      );
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(getGroupWithTasks({ id: groupId, user_id: userId }));
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: 556, userId }));
       groupReadRepoMock.ensureTaskInGroup.mockResolvedValueOnce(false);
 
       let error: unknown;
       try {
-        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
-          GoalReplaceGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(GoalReplaceGroup.pattern, payload);
       } catch (err) {
         error = err;
       }

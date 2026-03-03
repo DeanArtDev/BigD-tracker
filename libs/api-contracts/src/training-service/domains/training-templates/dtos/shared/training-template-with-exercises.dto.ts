@@ -2,15 +2,7 @@ import { ExerciseType } from '../../../exercises';
 import { RepetitionDto } from '../../../repetitions';
 import { TrainingTemplateDto } from './training-template.dto';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsUrl,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 class Exercise {
   @IsInt()

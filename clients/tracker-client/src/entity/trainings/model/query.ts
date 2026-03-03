@@ -1,11 +1,7 @@
 const trainingsQueryKeys = {
   mainKey: ['get', '/trainings'] as const,
   getTrainingById: (params: { id?: number }) => {
-    return [
-      'get',
-      '/trainings/{trainingId}',
-      { params: { path: { trainingId: params.id ?? NaN } } },
-    ] as const;
+    return ['get', '/trainings/{trainingId}', { params: { path: { trainingId: params.id ?? NaN } } }] as const;
   },
 
   getTrainings: (filters?: { from: string; to: string }) => {

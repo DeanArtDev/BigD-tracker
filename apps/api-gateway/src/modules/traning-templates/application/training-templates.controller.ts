@@ -25,15 +25,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
-import {
-  GetTrainingTemplatesDto,
-  TrainingTemplateResponse,
-  TrainingTemplateWithExercisesResponseSingle,
-} from './dtos';
-import {
-  CreateTrainingTemplateWithExercisesRequest,
-  UpdateTrainingTemplateWithExerciseRequest,
-} from './use-cases';
+import { GetTrainingTemplatesDto, TrainingTemplateResponse, TrainingTemplateWithExercisesResponseSingle } from './dtos';
+import { CreateTrainingTemplateWithExercisesRequest, UpdateTrainingTemplateWithExerciseRequest } from './use-cases';
 
 @ApiTags('Training templates')
 @Controller('trainings-templates')
@@ -54,10 +47,10 @@ export class TrainingTemplatesController {
     @Query() { my = false }: GetTrainingTemplatesDto,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingTemplateResponse> {
-    return await this.trainingClient.send<
-      TrainingGetTrainingTemplates.Response,
-      TrainingGetTrainingTemplates.Request
-    >(TrainingGetTrainingTemplates.pattern, { data: { my, userId: uid } });
+    return await this.trainingClient.send<TrainingGetTrainingTemplates.Response, TrainingGetTrainingTemplates.Request>(
+      TrainingGetTrainingTemplates.pattern,
+      { data: { my, userId: uid } },
+    );
   }
 
   @Get('/:templateId')
@@ -74,10 +67,10 @@ export class TrainingTemplatesController {
     @Param('templateId', ParseIntPipe) templateId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingTemplateWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingGetOneTemplate.Response,
-      TrainingGetOneTemplate.Request
-    >(TrainingGetOneTemplate.pattern, { data: { id: templateId, userId: uid } });
+    return await this.trainingClient.send<TrainingGetOneTemplate.Response, TrainingGetOneTemplate.Request>(
+      TrainingGetOneTemplate.pattern,
+      { data: { id: templateId, userId: uid } },
+    );
   }
 
   @Post()
@@ -94,10 +87,10 @@ export class TrainingTemplatesController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingTemplateWithExercisesRequest,
   ): Promise<TrainingTemplateWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingCreateTemplate.Response,
-      TrainingCreateTemplate.Request
-    >(TrainingCreateTemplate.pattern, { data: { ...data, userId: uid } });
+    return await this.trainingClient.send<TrainingCreateTemplate.Response, TrainingCreateTemplate.Request>(
+      TrainingCreateTemplate.pattern,
+      { data: { ...data, userId: uid } },
+    );
   }
 
   @Put('/:templateId')
@@ -116,21 +109,21 @@ export class TrainingTemplatesController {
     @Param('templateId', ParseIntPipe) templateId: number,
     @Body() { data }: UpdateTrainingTemplateWithExerciseRequest,
   ): Promise<TrainingTemplateWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingUpdateTemplate.Response,
-      TrainingUpdateTemplate.Request
-    >(TrainingUpdateTemplate.pattern, {
-      data: {
-        id: templateId,
-        userId: uid,
-        type: data.type,
-        name: data.name,
-        description: data.description,
-        postTrainingDuration: data.postTrainingDuration,
-        wormUpDuration: data.wormUpDuration,
-        exercises: data.exercises,
+    return await this.trainingClient.send<TrainingUpdateTemplate.Response, TrainingUpdateTemplate.Request>(
+      TrainingUpdateTemplate.pattern,
+      {
+        data: {
+          id: templateId,
+          userId: uid,
+          type: data.type,
+          name: data.name,
+          description: data.description,
+          postTrainingDuration: data.postTrainingDuration,
+          wormUpDuration: data.wormUpDuration,
+          exercises: data.exercises,
+        },
       },
-    });
+    );
   }
 
   @Delete(':templateId')

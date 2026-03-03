@@ -76,10 +76,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
-      const res = await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
-        GoalFinishTask.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(GoalFinishTask.pattern, payload);
 
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       const [, getTaskTrx] = tasksWriteRepoMock.getTaskById.mock.calls[0];
@@ -108,10 +105,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
-      const res = await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
-        GoalFinishTask.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(GoalFinishTask.pattern, payload);
 
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.replaceTask).toHaveBeenCalledTimes(1);
@@ -133,10 +127,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
-          GoalFinishTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(GoalFinishTask.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -164,10 +155,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
-          GoalFinishTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(GoalFinishTask.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -201,10 +189,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(
-          GoalFinishTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalFinishTask.Response, GoalFinishTask.Request>(GoalFinishTask.pattern, payload);
       } catch (err) {
         error = err;
       }

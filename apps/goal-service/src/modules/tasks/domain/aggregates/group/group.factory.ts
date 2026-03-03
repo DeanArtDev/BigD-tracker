@@ -36,10 +36,7 @@ class GroupFactory {
     });
   }
 
-  replaceWithTasksByGroup(
-    group: GroupWithTasks,
-    input: GroupFactoryReplaceWithTasksInput,
-  ): GroupWithTasks {
+  replaceWithTasksByGroup(group: GroupWithTasks, input: GroupFactoryReplaceWithTasksInput): GroupWithTasks {
     const { tasks, ...others } = input;
 
     return group.replace({

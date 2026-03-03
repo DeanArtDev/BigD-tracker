@@ -22,10 +22,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     super();
   }
 
-  async getById(
-    input: { userId: number; id: number },
-    trx?: TaskTransaction,
-  ): Promise<TaskView | null> {
+  async getById(input: { userId: number; id: number }, trx?: TaskTransaction): Promise<TaskView | null> {
     return await this.errorCatcher('tasks.get-by-id', async () => {
       const { id, userId } = input;
 
@@ -41,10 +38,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async isTaskIntoGroup(
-    input: { taskId: number; groupId: number },
-    trx?: TaskTransaction,
-  ): Promise<boolean> {
+  async isTaskIntoGroup(input: { taskId: number; groupId: number }, trx?: TaskTransaction): Promise<boolean> {
     return await this.errorCatcher('tasks.is-task-into-group', async () => {
       const result = await this.db
         .qb(trx)

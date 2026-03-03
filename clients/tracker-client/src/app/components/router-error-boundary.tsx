@@ -1,31 +1,11 @@
 import { Badge } from '@/shared/ui-kit/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/ui-kit/ui/card';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/shared/ui-kit/ui/collapsible';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui-kit/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui-kit/ui/collapsible';
 import { ScrollArea } from '@/shared/ui-kit/ui/scroll-area';
 import { Separator } from '@/shared/ui-kit/ui/separator';
 import { type ReactNode, useMemo, useState } from 'react';
 import { isRouteErrorResponse, useLocation, useRouteError } from 'react-router-dom';
-import {
-  AlertTriangle,
-  Bug,
-  Clipboard,
-  Home,
-  RefreshCcw,
-  ShieldAlert,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import { AlertTriangle, Bug, Clipboard, Home, RefreshCcw, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { toast } from 'sonner';
 import { ContentWrapper } from '@/shared/components/content-wrapper';
@@ -50,12 +30,7 @@ function normalizeUnknownError(err: unknown) {
   }
 
   const asAny = err as any;
-  const msg =
-    typeof asAny?.message === 'string'
-      ? asAny.message
-      : typeof err === 'string'
-        ? err
-        : 'Неизвестная ошибка';
+  const msg = typeof asAny?.message === 'string' ? asAny.message : typeof err === 'string' ? err : 'Неизвестная ошибка';
 
   return {
     kind: 'unknown' as const,
@@ -220,8 +195,8 @@ function RouterErrorBoundary(props: RouterErrorBoundaryProps) {
                 <div className="rounded-lg border bg-muted/40 p-3 text-sm">{supportHint}</div>
               ) : (
                 <div className="rounded-lg border bg-muted/40 p-3 text-sm text-muted-foreground">
-                  Попробуй обновить страницу. Если ошибка повторяется — скопируй детали и отправь в
-                  поддержку/в баг-трекер.
+                  Попробуй обновить страницу. Если ошибка повторяется — скопируй детали и отправь в поддержку/в
+                  баг-трекер.
                 </div>
               )}
 
@@ -278,9 +253,7 @@ function RouterErrorBoundary(props: RouterErrorBoundaryProps) {
             </CardFooter>
           </Card>
 
-          <div className="text-center text-xs text-muted-foreground">
-            тут будет correlationId, но попозже, отвечаю!
-          </div>
+          <div className="text-center text-xs text-muted-foreground">тут будет correlationId, но попозже, отвечаю!</div>
         </div>
       </div>
     </ContentWrapper>

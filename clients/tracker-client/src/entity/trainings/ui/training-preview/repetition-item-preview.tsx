@@ -7,12 +7,7 @@ interface RepetitionItemPreviewProps {
   readonly weight: string;
 }
 
-function RepetitionItemPreview({
-  count,
-  weight,
-  breakDuration,
-  index,
-}: RepetitionItemPreviewProps) {
+function RepetitionItemPreview({ count, weight, breakDuration, index }: RepetitionItemPreviewProps) {
   return (
     <li className="flex gap-2 grow items-center">
       <span className="ml-3 mr-auto mb-auto">{index + 1}.</span>

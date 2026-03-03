@@ -3,11 +3,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 
 function useExerciseCreate() {
   const options = getDefaultQueryNotifications();
-  const { mutate: create, ...others } = $privetQueryClient.useMutation(
-    'post',
-    '/exercises/repetitions',
-    { onError: options.onError },
-  );
+  const { mutate: create, ...others } = $privetQueryClient.useMutation('post', '/exercises/repetitions', {
+    onError: options.onError,
+  });
 
   return {
     create,

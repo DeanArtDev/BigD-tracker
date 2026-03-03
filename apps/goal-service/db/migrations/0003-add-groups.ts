@@ -52,12 +52,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   // === Внешние ключи таблиц ===
   await db.schema
     .alterTable('groups')
-    .addForeignKeyConstraint(
-      'group_group_statuses_id_fk',
-      ['status_id'],
-      'group_statuses',
-      ['id'],
-      (cb) => cb.onDelete('no action').onUpdate('no action'),
+    .addForeignKeyConstraint('group_group_statuses_id_fk', ['status_id'], 'group_statuses', ['id'], (cb) =>
+      cb.onDelete('no action').onUpdate('no action'),
     )
     .execute();
 

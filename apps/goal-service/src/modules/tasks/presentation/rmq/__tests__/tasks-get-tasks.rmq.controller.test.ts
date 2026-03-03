@@ -102,10 +102,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalGetTasks.Response, GoalGetTasks.Request>(
-        GoalGetTasks.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, payload);
 
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
       expect(specToDebugString(firstArg(tasksReadRepoMock.getByRange))).toMatchInlineSnapshot(`
@@ -173,10 +170,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalGetTasks.Response, GoalGetTasks.Request>(
-        GoalGetTasks.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, payload);
 
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
       expect(specToDebugString(firstArg(tasksReadRepoMock.getByRange))).toMatchInlineSnapshot(`

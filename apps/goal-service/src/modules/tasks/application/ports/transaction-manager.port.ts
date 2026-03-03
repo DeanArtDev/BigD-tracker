@@ -14,10 +14,7 @@ type TasksDB = Pick<
   | 'tasks_recurrence_override_types'
 >;
 
-type GoalsDB = Pick<
-  DB,
-  'goals' | 'goal_statuses' | 'goal_to_goals' | 'groups' | 'group_statuses' | 'group_to_goals'
->;
+type GoalsDB = Pick<DB, 'goals' | 'goal_statuses' | 'goal_to_goals' | 'groups' | 'group_statuses' | 'group_to_goals'>;
 
 type TaskDatabase = IKyselyPostgresDB<TasksDB>;
 type GoalDatabase = IKyselyPostgresDB<GoalsDB>;

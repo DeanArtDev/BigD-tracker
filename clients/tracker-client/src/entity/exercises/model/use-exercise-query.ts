@@ -2,9 +2,7 @@ import { $privetQueryClient } from '@/shared/api/api-client';
 import { exerciseQueryKeys } from './query';
 
 function useExerciseQuery(params: { my: boolean } = { my: false }) {
-  const { data, ...others } = $privetQueryClient.useQuery(
-    ...exerciseQueryKeys.getExerciseTemplates(params),
-  );
+  const { data, ...others } = $privetQueryClient.useQuery(...exerciseQueryKeys.getExerciseTemplates(params));
 
   return {
     data: data?.data,

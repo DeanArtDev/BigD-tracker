@@ -1,7 +1,4 @@
-type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type> = Omit<
-  Entity,
-  Key
-> &
+type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type> = Omit<Entity, Key> &
   Record<Key, Type>;
 
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

@@ -1,11 +1,4 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormField,
-} from '@/shared/ui-kit/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormField } from '@/shared/ui-kit/ui/form';
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import { ToggleGroup } from '@/shared/ui-kit/ui/toggle-group';
 import { cn } from '@/shared/ui-kit/utils';

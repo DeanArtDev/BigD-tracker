@@ -15,10 +15,7 @@ export class RpcResponseValidationInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const schema = this.reflector.get<ClassConstructor<any>>(
-      RPC_RESPONSE_SCHEMA,
-      context.getHandler(),
-    );
+    const schema = this.reflector.get<ClassConstructor<any>>(RPC_RESPONSE_SCHEMA, context.getHandler());
 
     if (!schema) {
       return next.handle();

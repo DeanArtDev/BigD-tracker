@@ -1,11 +1,7 @@
 import { RepetitionForm } from '@/entity/exercises/ui';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { ButtonChevron } from '@/shared/ui-kit/ui/button-chevron';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/shared/ui-kit/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui-kit/ui/collapsible';
 import { X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -19,13 +15,7 @@ interface ExerciseElementsProps {
   readonly onRemove: (index: number) => void;
 }
 
-function ExerciseElements({
-  disabled,
-  index,
-  name,
-  beforeStartSlot,
-  onRemove,
-}: ExerciseElementsProps) {
+function ExerciseElements({ disabled, index, name, beforeStartSlot, onRemove }: ExerciseElementsProps) {
   const methods = useFormContext<TrainingManageFormData>();
   const { fields } = useFieldArray({
     name: `exercises.${index}.repetitions`,
@@ -53,13 +43,7 @@ function ExerciseElements({
           />
         </CollapsibleTrigger>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          disabled={disabled}
-          onClick={() => void onRemove(index)}
-        >
+        <Button type="button" variant="ghost" size="sm" disabled={disabled} onClick={() => void onRemove(index)}>
           <X />
         </Button>
       </div>

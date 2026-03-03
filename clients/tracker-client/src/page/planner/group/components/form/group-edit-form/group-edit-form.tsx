@@ -16,11 +16,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { GroupEditFormHeader } from './components/group-edit-form-header';
 import { GroupTaskListController } from './components/group-task-list-controller';
-import {
-  type GroupEditFormData,
-  type GroupEditSubmitFormData,
-  validationSchema,
-} from './validation-schema';
+import { type GroupEditFormData, type GroupEditSubmitFormData, validationSchema } from './validation-schema';
 
 interface GroupEditFormProps {
   readonly loading?: boolean;
@@ -89,9 +85,7 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
           })(evt);
         }}
       >
-        <GroupEditFormHeader
-          onCancel={() => void form.resetField('name', { defaultValue: group.name })}
-        />
+        <GroupEditFormHeader onCancel={() => void form.resetField('name', { defaultValue: group.name })} />
 
         <div className="flex gap-2 items-center mb-3">
           <Progress value={group.progress} className="w-full bg-primary/30" />
@@ -103,10 +97,7 @@ function GroupEditForm({ loading, footerSlot, group, onSubmit }: GroupEditFormPr
           )}
         </div>
 
-        <ResizablePanelGroup
-          className="resize-panel-group relative grow min-h-0 min-w-0"
-          orientation={orientation}
-        >
+        <ResizablePanelGroup className="resize-panel-group relative grow min-h-0 min-w-0" orientation={orientation}>
           <ResizablePanel
             className="flex min-h-0 min-w-0 grow"
             defaultValue="75%"

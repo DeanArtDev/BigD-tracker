@@ -1,9 +1,4 @@
-import {
-  connectSwagger,
-  DOCUMENTATION_URL,
-  initApp,
-  SWAGGER_URL,
-} from '@/infrastructure/bootstrap';
+import { connectSwagger, DOCUMENTATION_URL, initApp, SWAGGER_URL } from '@/infrastructure/bootstrap';
 import { APP_ENV } from '@/infrastructure/configs';
 import { ConfigService } from '@nestjs/config';
 

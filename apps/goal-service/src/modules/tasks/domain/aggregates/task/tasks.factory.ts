@@ -1,10 +1,4 @@
-import {
-  Priority,
-  RecurrenceVo,
-  TaskRecurrence,
-  TaskReplaceInput,
-  Weight,
-} from '@/modules/tasks/domain';
+import { Priority, RecurrenceVo, TaskRecurrence, TaskReplaceInput, Weight } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';

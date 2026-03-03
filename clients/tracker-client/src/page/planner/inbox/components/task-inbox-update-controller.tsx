@@ -1,10 +1,6 @@
 import { useInvalidateAllGroups, useInvalidateInbox } from '@/entity/planner/groups';
 import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
-import {
-  type TaskInboxEntity,
-  useAssignTaskToGroup,
-  useInvalidateAllTasks,
-} from '@/entity/planner/tasks';
+import { type TaskInboxEntity, useAssignTaskToGroup, useInvalidateAllTasks } from '@/entity/planner/tasks';
 import { useUpdateInboxTask } from '@/entity/planner/tasks/model';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
@@ -21,11 +17,7 @@ interface TaskInboxUpdateControllerProps {
   readonly onSuccess?: () => void;
 }
 
-function TaskInboxUpdateController({
-  inboxTask,
-  onCancel,
-  onSuccess,
-}: TaskInboxUpdateControllerProps) {
+function TaskInboxUpdateController({ inboxTask, onCancel, onSuccess }: TaskInboxUpdateControllerProps) {
   const { formEmitterState, formStateEmitterProps } = useFormStateEmitter();
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const open = inboxTask != null;

@@ -5,10 +5,7 @@ import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
 
 interface TrainingRawData {
   readonly selectable: Omit<Selectable<DB['trainings']>, 'updated_at' | 'created_at'>;
-  readonly updateable: Omit<
-    Override<Updateable<DB['trainings']>, 'id', number>,
-    'updated_at' | 'created_at'
-  >;
+  readonly updateable: Omit<Override<Updateable<DB['trainings']>, 'id', number>, 'updated_at' | 'created_at'>;
   readonly insertable: OmitCreateFields<Insertable<DB['trainings']>>;
 }
 
@@ -23,10 +20,7 @@ interface TrainingsRepository {
     },
     trx?: Transaction<DB>,
   ): Promise<TrainingEntity[]>;
-  create(
-    data: TrainingRawData['insertable'],
-    trx?: Transaction<DB>,
-  ): Promise<TrainingEntity | null>;
+  create(data: TrainingRawData['insertable'], trx?: Transaction<DB>): Promise<TrainingEntity | null>;
   update(
     data: TrainingRawData['updateable'],
     options?: { replace: boolean },

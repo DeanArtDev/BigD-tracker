@@ -3,12 +3,7 @@ import { RegisterSage } from '@/modules/auth/application';
 import { ValidateReferralTokenQuery } from '@/modules/auth/dto/referral-token-validation.dto';
 import { ReferralTokenRes } from '@/modules/auth/dto/referral-token.dto';
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
-import {
-  AccountLogin,
-  AccountLogout,
-  AccountReferralToken,
-  AccountRefresh,
-} from '@big-d/api-contracts';
+import { AccountLogin, AccountLogout, AccountReferralToken, AccountRefresh } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -55,8 +50,7 @@ export class AuthController {
   @Public()
   @ApiOperation({
     summary: 'Регистрация пользователя',
-    description:
-      'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly) strict',
+    description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly) strict',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -102,10 +96,10 @@ export class AuthController {
     @RefreshToken() refreshToken: string,
   ) {
     try {
-      const { data } = await this.accountClient.send<
-        AccountRefresh.Response,
-        AccountRefresh.Request
-      >(AccountRefresh.pattern, { data: { ip, userAgent, refreshToken } });
+      const { data } = await this.accountClient.send<AccountRefresh.Response, AccountRefresh.Request>(
+        AccountRefresh.pattern,
+        { data: { ip, userAgent, refreshToken } },
+      );
       this.cookieService.setRefreshToken(res, { token: data.refreshToken, maxAge: data.maxAge });
       return { data: { token: data.accessToken } };
     } catch {
@@ -160,12 +154,9 @@ export class AuthController {
   ): Promise<LoginResponse> {
     const {
       data: { refreshToken, accessToken, maxAge },
-    } = await this.accountClient.send<AccountLogin.Response, AccountLogin.Request>(
-      AccountLogin.pattern,
-      {
-        data: { ip, userAgent, login: data.login, password: data.password },
-      },
-    );
+    } = await this.accountClient.send<AccountLogin.Response, AccountLogin.Request>(AccountLogin.pattern, {
+      data: { ip, userAgent, login: data.login, password: data.password },
+    });
 
     this.cookieService.setRefreshToken(res, { token: refreshToken, maxAge });
     return { data: { token: accessToken } };
@@ -182,15 +173,13 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @ValidateRpcResponse(ReferralTokenRes)
-  async generateReferralToken(
-    @TokenPayload() token: AccessTokenPayload,
-  ): Promise<ReferralTokenRes> {
-    const { data } = await this.accountClient.send<
-      AccountReferralToken.Response,
-      AccountReferralToken.Request
-    >(AccountReferralToken.pattern, {
-      data: token,
-    });
+  async generateReferralToken(@TokenPayload() token: AccessTokenPayload): Promise<ReferralTokenRes> {
+    const { data } = await this.accountClient.send<AccountReferralToken.Response, AccountReferralToken.Request>(
+      AccountReferralToken.pattern,
+      {
+        data: token,
+      },
+    );
 
     return { data: { token: data.referralToken } };
   }

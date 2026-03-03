@@ -14,31 +14,20 @@ export class KyselyAuthRepository extends BaseRepository<DB> implements AuthRepo
   }
 
   async findByToken(token: string, trx?: Transaction<DB>): Promise<SessionEntity | null> {
-    const result = await this.db(trx)
-      .selectFrom('sessions')
-      .where('token', '=', token)
-      .selectAll()
-      .executeTakeFirst();
+    const result = await this.db(trx).selectFrom('sessions').where('token', '=', token).selectAll().executeTakeFirst();
 
     if (result == null) return null;
     return this.#map(result);
   }
 
   async findByUserId(id: number, trx?: Transaction<DB>): Promise<SessionEntity | null> {
-    const result = await this.db(trx)
-      .selectFrom('sessions')
-      .where('user_id', '=', id)
-      .selectAll()
-      .executeTakeFirst();
+    const result = await this.db(trx).selectFrom('sessions').where('user_id', '=', id).selectAll().executeTakeFirst();
 
     if (result == null) return null;
     return this.#map(result);
   }
 
-  async findAnd(
-    input: { userId: number; userAgent?: string },
-    trx?: Transaction<DB>,
-  ): Promise<SessionEntity | null> {
+  async findAnd(input: { userId: number; userAgent?: string }, trx?: Transaction<DB>): Promise<SessionEntity | null> {
     let query = this.db(trx).selectFrom('sessions').selectAll();
 
     query = query.where((eb) => {
@@ -56,10 +45,7 @@ export class KyselyAuthRepository extends BaseRepository<DB> implements AuthRepo
     return this.#map(result);
   }
 
-  async delete(
-    input: { userId: number; userAgent?: string },
-    trx?: Transaction<DB>,
-  ): Promise<boolean> {
+  async delete(input: { userId: number; userAgent?: string }, trx?: Transaction<DB>): Promise<boolean> {
     let query = this.db(trx).deleteFrom('sessions');
 
     query = query.where((eb) => {

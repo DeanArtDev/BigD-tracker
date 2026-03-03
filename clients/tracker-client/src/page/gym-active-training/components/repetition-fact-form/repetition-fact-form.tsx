@@ -1,14 +1,7 @@
 import type { ApiSchemas } from '@/shared/api/types';
 import { InputNumberForm } from '@/shared/components/form';
 import { Button } from '@/shared/ui-kit/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui-kit/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui-kit/ui/form';
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import { ToggleGroup, ToggleGroupItem } from '@/shared/ui-kit/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,12 +18,7 @@ interface RepetitionFactFormProps {
   }) => void;
 }
 
-const finishType: (ApiSchemas['RepetitionDto']['finishType'] & string)[] = [
-  'DONE',
-  'SKIP',
-  'TRIED',
-  'OVER',
-];
+const finishType: (ApiSchemas['RepetitionDto']['finishType'] & string)[] = ['DONE', 'SKIP', 'TRIED', 'OVER'];
 
 const requiredMessage = 'Обязательное поле';
 const validationSchema = z.object({

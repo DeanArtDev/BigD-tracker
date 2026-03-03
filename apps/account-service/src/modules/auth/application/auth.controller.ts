@@ -11,13 +11,7 @@ import { Controller } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import {
-  LoginUseCase,
-  LogoutUseCase,
-  ReferralTokenCommand,
-  RefreshUseCase,
-  RegisterUseCase,
-} from './use-cases';
+import { LoginUseCase, LogoutUseCase, ReferralTokenCommand, RefreshUseCase, RegisterUseCase } from './use-cases';
 
 @Controller()
 export class AuthController {
@@ -49,9 +43,7 @@ export class AuthController {
   }
 
   @MessagePattern(AccountRefresh.pattern)
-  async refreshToken(
-    @Payload() { data }: AccountRefresh.Request,
-  ): Promise<AccountRefresh.Response> {
+  async refreshToken(@Payload() { data }: AccountRefresh.Request): Promise<AccountRefresh.Response> {
     const { sessionToken, accessToken } = await this.refreshUseCase.execute({
       sessionToken: data.refreshToken,
       ip: data.ip,
@@ -100,9 +92,7 @@ export class AuthController {
     @Payload() { data }: AccountReferralToken.Request,
   ): Promise<AccountReferralToken.Response> {
     return {
-      data: await this.commandBus.execute(
-        new ReferralTokenCommand({ userId: data.uid, sessionId: data.sid }),
-      ),
+      data: await this.commandBus.execute(new ReferralTokenCommand({ userId: data.uid, sessionId: data.sid })),
     };
   }
 }

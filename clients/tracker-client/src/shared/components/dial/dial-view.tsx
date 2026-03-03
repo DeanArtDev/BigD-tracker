@@ -7,12 +7,7 @@ interface DialViewProps {
   readonly progressColor?: string;
 }
 
-function DialView({
-  progress,
-  contentSlot,
-  afterSlot,
-  progressColor = 'var(--color-primary)',
-}: DialViewProps) {
+function DialView({ progress, contentSlot, afterSlot, progressColor = 'var(--color-primary)' }: DialViewProps) {
   const radius = 140;
   const circumference = 2 * Math.PI * radius;
   const center = 295 / 2;
@@ -50,9 +45,7 @@ function DialView({
           />
         </svg>
 
-        <div className="absolute inset-0 flex items-center justify-center text-6xl tracking-wide">
-          {contentSlot}
-        </div>
+        <div className="absolute inset-0 flex items-center justify-center text-6xl tracking-wide">{contentSlot}</div>
       </div>
 
       {afterSlot}

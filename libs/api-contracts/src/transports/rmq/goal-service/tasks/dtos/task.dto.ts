@@ -1,13 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsISO8601,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsInt, IsISO8601, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 import { TaskStatus } from '../types';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
 

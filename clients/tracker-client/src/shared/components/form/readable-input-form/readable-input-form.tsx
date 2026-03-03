@@ -19,9 +19,7 @@ interface ReadableInputFormProps<FormValues extends FieldValues = FieldValues> {
   readonly onModeChange?: (mode: ReadableInputFormProps<FormValues>['mode']) => void;
 }
 
-function ReadableInputForm<FormValues extends FieldValues = FieldValues>(
-  props: ReadableInputFormProps<FormValues>,
-) {
+function ReadableInputForm<FormValues extends FieldValues = FieldValues>(props: ReadableInputFormProps<FormValues>) {
   const {
     name,
     beforeNameSlot,

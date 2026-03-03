@@ -3,11 +3,7 @@ import {
   CreateTaskInInboxCommand,
   UpdateInboxTaskCommand,
 } from '@/modules/tasks/application/use-cases';
-import {
-  GoalAssignTaskToInbox,
-  GoalCreateTaskInInbox,
-  GoalUpdateInboxTask,
-} from '@big-d/api-contracts';
+import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, GoalUpdateInboxTask } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';

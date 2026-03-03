@@ -18,14 +18,7 @@ function EditTogglePlugin({ className, disabled }: { disabled?: boolean; classNa
 
   if (isEditable) return null;
   return (
-    <Button
-      className={cn(className)}
-      disabled={disabled}
-      type="button"
-      size="icon"
-      variant="ghost"
-      onClick={toggle}
-    >
+    <Button className={cn(className)} disabled={disabled} type="button" size="icon" variant="ghost" onClick={toggle}>
       <NotebookPen className="size-4" color="var(--color-gray-500)" />
     </Button>
   );

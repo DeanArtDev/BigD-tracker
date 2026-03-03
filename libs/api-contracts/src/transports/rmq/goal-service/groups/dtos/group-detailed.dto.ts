@@ -1,14 +1,6 @@
 import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { GroupStatus } from '../types';
 
 class GroupDetailedDto {

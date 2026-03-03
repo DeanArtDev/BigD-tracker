@@ -8,11 +8,7 @@ import {
   TaskOverrideType,
   TaskStatus,
 } from '@big-d/api-contracts';
-import {
-  CORRELATION_HEADER_KEY,
-  specToDebugString,
-  USER_TIME_ZONE_HEADER_KEY,
-} from '@big-d/api-utils';
+import { CORRELATION_HEADER_KEY, specToDebugString, USER_TIME_ZONE_HEADER_KEY } from '@big-d/api-utils';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import {
@@ -143,16 +139,14 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(tasksOverridesWriteRepoMock.getManyOverrides).toHaveBeenCalledTimes(1);
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
 
-      expect(specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyMasterEvents)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyMasterEvents))).toMatchInlineSnapshot(`
         "AND[tasks.policy.get-master-events](
           tasks.byStartDateLessOrEqual,
           tasks.byUserId,
           tasks.hasRecurrence
         )"
       `);
-      expect(specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyOverrides)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyOverrides))).toMatchInlineSnapshot(`
         "AND[tasks.policy.get-tasks-overrides](
           tasks.overrideByUserId,
           tasks.overridesByMasterIds,
@@ -171,9 +165,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         )"
       `);
 
-      expect(nthArgs(1, tasksOverridesWriteRepoMock.getManyMasterEvents)).toEqual(
-        expectTransaction(),
-      );
+      expect(nthArgs(1, tasksOverridesWriteRepoMock.getManyMasterEvents)).toEqual(expectTransaction());
       expect(nthArgs(1, tasksOverridesWriteRepoMock.getManyOverrides)).toEqual(expectTransaction());
       expect(nthArgs(3, tasksReadRepoMock.getByRange)).toEqual(expectTransaction());
 

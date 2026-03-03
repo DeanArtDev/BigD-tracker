@@ -35,15 +35,8 @@ function TrainingsCalendar() {
   const calendarRef = useRef<FullCalendar | null>(null);
   useResizeTable({ onResize: () => void calendarRef.current?.doResize() });
 
-  const {
-    isLoading,
-    isAssignLoading,
-    events,
-    setFilters,
-    assignTraining,
-    updateStartDate,
-    invalidateCalendarData,
-  } = useTrainingsCalendar();
+  const { isLoading, isAssignLoading, events, setFilters, assignTraining, updateStartDate, invalidateCalendarData } =
+    useTrainingsCalendar();
 
   const [trainingId, setTrainingId] = useState<number | undefined>();
 

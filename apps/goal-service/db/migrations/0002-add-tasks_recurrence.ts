@@ -53,12 +53,8 @@ export async function up(db: Kysely<any>): Promise<void> {
   // === Внешние ключи таблиц ===
   await db.schema
     .alterTable('tasks_recurrence_overrides')
-    .addForeignKeyConstraint(
-      'tro_task_statuses_status_id_fk',
-      ['status_id'],
-      'task_statuses',
-      ['id'],
-      (cb) => cb.onDelete('no action').onUpdate('no action'),
+    .addForeignKeyConstraint('tro_task_statuses_status_id_fk', ['status_id'], 'task_statuses', ['id'], (cb) =>
+      cb.onDelete('no action').onUpdate('no action'),
     )
     .execute();
 

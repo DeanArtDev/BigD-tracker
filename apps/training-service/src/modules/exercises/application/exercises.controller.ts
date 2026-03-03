@@ -30,9 +30,7 @@ export class ExercisesController {
   }
 
   @MessagePattern(TrainingGetOneExercise.pattern)
-  async getOneExercise(
-    @Payload() { data }: TrainingGetOneExercise.Request,
-  ): Promise<TrainingGetOneExercise.Response> {
+  async getOneExercise(@Payload() { data }: TrainingGetOneExercise.Request): Promise<TrainingGetOneExercise.Response> {
     return {
       data: await this.exercisesService.getOneExercise({
         id: data.id,
@@ -42,9 +40,7 @@ export class ExercisesController {
   }
 
   @MessagePattern(TrainingCreateExercise.pattern)
-  async createExercise(
-    @Payload() { data }: TrainingCreateExercise.Request,
-  ): Promise<TrainingCreateExercise.Response> {
+  async createExercise(@Payload() { data }: TrainingCreateExercise.Request): Promise<TrainingCreateExercise.Response> {
     return {
       data: await this.exercisesService.createExercise({
         position: 0,
@@ -54,9 +50,7 @@ export class ExercisesController {
   }
 
   @MessagePattern(TrainingUpdateExercise.pattern)
-  async updateExercise(
-    @Payload() { data }: TrainingUpdateExercise.Request,
-  ): Promise<TrainingUpdateExercise.Response> {
+  async updateExercise(@Payload() { data }: TrainingUpdateExercise.Request): Promise<TrainingUpdateExercise.Response> {
     return {
       data: await this.exercisesService.updateExercise({
         id: data.id,
@@ -71,9 +65,7 @@ export class ExercisesController {
   }
 
   @MessagePattern(TrainingDeleteExercise.pattern)
-  async deleteExercise(
-    @Payload() { data }: TrainingDeleteExercise.Request,
-  ): Promise<TrainingDeleteExercise.Response> {
+  async deleteExercise(@Payload() { data }: TrainingDeleteExercise.Request): Promise<TrainingDeleteExercise.Response> {
     await this.deleteExercisesWithRepetitions.execute({ id: data.id, userId: data.userId });
     return { data: { id: data.id } };
   }

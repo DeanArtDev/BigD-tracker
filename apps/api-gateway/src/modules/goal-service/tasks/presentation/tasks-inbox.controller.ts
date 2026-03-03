@@ -3,11 +3,7 @@ import { GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients/clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import {
-  GoalAssignTaskToInbox,
-  GoalCreateTaskInInbox,
-  GoalUpdateInboxTask,
-} from '@big-d/api-contracts';
+import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, GoalUpdateInboxTask } from '@big-d/api-contracts';
 import { Body, Controller, HttpCode, HttpStatus, Inject, Param, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
@@ -38,19 +34,19 @@ export class TasksInboxController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTaskInINBOXReq,
   ): Promise<CreateTaskInINBOXRes> {
-    return await this.goalClient.send<
-      GoalCreateTaskInInbox.Response,
-      GoalCreateTaskInInbox.Request
-    >(GoalCreateTaskInInbox.pattern, {
-      data: {
-        userId: uid,
-        priority: data.priority,
-        description: data.description,
-        deadline: data.deadline,
-        startDate: data.startDate,
-        name: data.name,
+    return await this.goalClient.send<GoalCreateTaskInInbox.Response, GoalCreateTaskInInbox.Request>(
+      GoalCreateTaskInInbox.pattern,
+      {
+        data: {
+          userId: uid,
+          priority: data.priority,
+          description: data.description,
+          deadline: data.deadline,
+          startDate: data.startDate,
+          name: data.name,
+        },
       },
-    });
+    );
   }
 
   @Post('/:taskId/in-box/assign')
@@ -66,15 +62,15 @@ export class TasksInboxController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('taskId') taskId: string,
   ): Promise<AssignTaskToInboxRes> {
-    return await this.goalClient.send<
-      GoalAssignTaskToInbox.Response,
-      GoalAssignTaskToInbox.Request
-    >(GoalAssignTaskToInbox.pattern, {
-      data: {
-        userId: uid,
-        taskId,
+    return await this.goalClient.send<GoalAssignTaskToInbox.Response, GoalAssignTaskToInbox.Request>(
+      GoalAssignTaskToInbox.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId,
+        },
       },
-    });
+    );
   }
 
   @Put('/:taskId/inbox')

@@ -11,9 +11,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('repetitions')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('exercise_id', 'integer', (col) =>
-      col.references('exercises.id').onDelete('cascade').notNull(),
-    )
+    .addColumn('exercise_id', 'integer', (col) => col.references('exercises.id').onDelete('cascade').notNull())
 
     .addColumn('description', 'text')
     .addColumn('user_id', 'integer')
@@ -29,9 +27,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('target_break', 'integer', (col) => col.notNull().check(sql`target_break <= 600`))
     .addColumn('fact_break', 'integer', (col) => col.check(sql`fact_break <= 600`))
 
-    .addColumn('finish_type', 'text', (col) =>
-      col.references('repetitions_types.value').onDelete('restrict'),
-    )
+    .addColumn('finish_type', 'text', (col) => col.references('repetitions_types.value').onDelete('restrict'))
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))

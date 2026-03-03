@@ -4,10 +4,7 @@ import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
 import { ExerciseWithRepetitionsDto } from '../dtos/exercise-with-repetitions.dto';
 
 @Injectable()
-class ExercisesWithRepetitionsMapper extends BaseMapper<
-  ExerciseWithRepetitionsDto,
-  ExerciseWithRepetitionsEntity
-> {
+class ExercisesWithRepetitionsMapper extends BaseMapper<ExerciseWithRepetitionsDto, ExerciseWithRepetitionsEntity> {
   constructor() {
     super();
   }

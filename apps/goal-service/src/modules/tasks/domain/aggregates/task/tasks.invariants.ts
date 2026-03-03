@@ -111,11 +111,7 @@ function assertHasCancelReason(input: { status: TaskStatus; reason?: string }): 
 function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): void {
   const { status } = input;
 
-  if (
-    [TaskStatus.DELETED, TaskStatus.ARCHIVED, TaskStatus.OVERDUE, TaskStatus.COMPLETED].includes(
-      status,
-    )
-  ) {
+  if ([TaskStatus.DELETED, TaskStatus.ARCHIVED, TaskStatus.OVERDUE, TaskStatus.COMPLETED].includes(status)) {
     throw new ExceptionTaskDomainInvalidInvariant({
       message: `Task can't be updated at current status: ${status}`,
       field: 'status',

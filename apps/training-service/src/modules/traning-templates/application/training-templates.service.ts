@@ -1,9 +1,6 @@
 import { TrainingTemplateDto, TrainingTemplateWithExercisesDto } from '@big-d/api-contracts';
 import { Injectable } from '@nestjs/common';
-import {
-  TrainingTemplatesMapper,
-  TrainingTemplatesWithExercisesMapper,
-} from '../application/mappers';
+import { TrainingTemplatesMapper, TrainingTemplatesWithExercisesMapper } from '../application/mappers';
 import {
   CreateTrainingTemplateWithExercisesCommand,
   CreateTrainingTemplateWithExercisesInput,
@@ -28,10 +25,7 @@ class TrainingTemplatesService {
     return template.map(this.trainingTemplatesMapper.fromEntityToDTO);
   }
 
-  async oneWithExercises(input: {
-    id: number;
-    userId: number;
-  }): Promise<TrainingTemplateWithExercisesDto> {
+  async oneWithExercises(input: { id: number; userId: number }): Promise<TrainingTemplateWithExercisesDto> {
     const template = await this.getTrainingTemplatesQuery.oneWithExercises(input);
     return this.trainingTemplatesWithExercisesMapper.fromEntityToDTO(template);
   }

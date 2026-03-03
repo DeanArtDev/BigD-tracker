@@ -56,8 +56,7 @@ const useAccessTokenStore = create<AccessTokenStore>()(
         const payload = jwtDecode<{ exp: number }>(token);
         return payload.exp > Date.now() / 1000;
       },
-      setAccessToken: (value: string | undefined) =>
-        void set((state) => ({ ...state, accessToken: value })),
+      setAccessToken: (value: string | undefined) => void set((state) => ({ ...state, accessToken: value })),
       refreshToken: async () => {
         if (awaiter == null) {
           awaiter = apiPublicClient

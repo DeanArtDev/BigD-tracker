@@ -2,9 +2,7 @@ import { useDocumentTitle } from 'usehooks-ts';
 import type { PropsWithChildren } from 'react';
 import { cn } from '@/shared/ui-kit/utils';
 
-function PageWrapper(
-  props: PropsWithChildren<{ className?: string; fixContainer?: boolean; title?: string }>,
-) {
+function PageWrapper(props: PropsWithChildren<{ className?: string; fixContainer?: boolean; title?: string }>) {
   useDocumentTitle(props?.title ?? window.document.title, { preserveTitleOnUnmount: false });
 
   return (

@@ -10,10 +10,7 @@ export class DeleteRepetitionsUseCase {
     private readonly repetitionsRepo: RepetitionsRepository,
   ) {}
 
-  async execute(
-    input: { exerciseId: number; userId: number },
-    trx?: Transaction<DB>,
-  ): Promise<number> {
+  async execute(input: { exerciseId: number; userId: number }, trx?: Transaction<DB>): Promise<number> {
     const currentRepetitions = await this.repetitionsRepo.findAllByFilters(input);
     if (currentRepetitions.some((repetition) => repetition.userId !== input.userId)) {
       throw new ForbiddenException('Cannot delete not your repetitions');

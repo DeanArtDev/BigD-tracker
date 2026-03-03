@@ -7,16 +7,12 @@ function useTrainingAssign(
   } = {},
 ) {
   const notifications = getDefaultQueryNotifications();
-  const { mutate: assignTraining, ...others } = $privetQueryClient.useMutation(
-    'post',
-    '/trainings/assign',
-    {
-      onSuccess: async () => {
-        notifications.onSuccess();
-        await options.onSuccess?.();
-      },
+  const { mutate: assignTraining, ...others } = $privetQueryClient.useMutation('post', '/trainings/assign', {
+    onSuccess: async () => {
+      notifications.onSuccess();
+      await options.onSuccess?.();
     },
-  );
+  });
 
   return {
     assignTraining,

@@ -45,9 +45,7 @@ export class TasksRmqController {
   ) {}
 
   @MessagePattern(GoalCreateTask.pattern)
-  async createTask(
-    @Payload() { data: payload }: GoalCreateTask.Request,
-  ): Promise<GoalCreateTask.Response> {
+  async createTask(@Payload() { data: payload }: GoalCreateTask.Request): Promise<GoalCreateTask.Response> {
     return {
       data: await this.commandBus.execute(
         new CreateTaskCommand({
@@ -66,9 +64,7 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalCloneTask.pattern)
-  async cloneTask(
-    @Payload() { data: payload }: GoalCloneTask.Request,
-  ): Promise<GoalCloneTask.Response> {
+  async cloneTask(@Payload() { data: payload }: GoalCloneTask.Request): Promise<GoalCloneTask.Response> {
     return {
       data: await this.commandBus.execute(
         new CloneTaskCommand({
@@ -81,9 +77,7 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalReplaceTask.pattern)
-  async replaceTask(
-    @Payload() { data: payload }: GoalReplaceTask.Request,
-  ): Promise<GoalReplaceTask.Response> {
+  async replaceTask(@Payload() { data: payload }: GoalReplaceTask.Request): Promise<GoalReplaceTask.Response> {
     return {
       data: await this.commandBus.execute(
         new ReplaceTaskCommand({
@@ -102,9 +96,7 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalDeleteTask.pattern)
-  async deleteTask(
-    @Payload() { data: payload }: GoalDeleteTask.Request,
-  ): Promise<GoalDeleteTask.Response> {
+  async deleteTask(@Payload() { data: payload }: GoalDeleteTask.Request): Promise<GoalDeleteTask.Response> {
     return {
       data: await this.commandBus.execute(new SoftDeleteTaskCommand(payload)),
     };
@@ -120,9 +112,7 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalTaskRecovery.pattern)
-  async taskRecovery(
-    @Payload() { data: payload }: GoalTaskRecovery.Request,
-  ): Promise<GoalTaskRecovery.Response> {
+  async taskRecovery(@Payload() { data: payload }: GoalTaskRecovery.Request): Promise<GoalTaskRecovery.Response> {
     return {
       data: await this.commandBus.execute(
         new TaskRecoveryCommand({
@@ -165,15 +155,10 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalGetTasks.pattern)
-  async getTasks(
-    @Payload() { data: payload }: GoalGetTasks.Request,
-  ): Promise<GoalGetTasks.Response> {
+  async getTasks(@Payload() { data: payload }: GoalGetTasks.Request): Promise<GoalGetTasks.Response> {
     const { userId, search, filter, sort, page, perPage } = payload;
 
-    const tasks = await this.queryBus.execute<
-      GetTasksQuery,
-      ReturnHandlerType<typeof GetTasksHandler>
-    >(
+    const tasks = await this.queryBus.execute<GetTasksQuery, ReturnHandlerType<typeof GetTasksHandler>>(
       new GetTasksQuery({
         userId,
         meta: { search, filter, sort, page, perPage },
@@ -189,15 +174,10 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalGetDiaryTasks.pattern)
-  async getDiaryTasks(
-    @Payload() { data: payload }: GoalGetDiaryTasks.Request,
-  ): Promise<GoalGetDiaryTasks.Response> {
+  async getDiaryTasks(@Payload() { data: payload }: GoalGetDiaryTasks.Request): Promise<GoalGetDiaryTasks.Response> {
     const { userId, filter } = payload;
 
-    const tasks = await this.queryBus.execute<
-      GetDiaryTasksQuery,
-      ReturnHandlerType<typeof GetDiaryTasksHandler>
-    >(
+    const tasks = await this.queryBus.execute<GetDiaryTasksQuery, ReturnHandlerType<typeof GetDiaryTasksHandler>>(
       new GetDiaryTasksQuery({
         userId,
         meta: { filter },
@@ -226,9 +206,7 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalFinishTask.pattern)
-  async finishTask(
-    @Payload() { data: payload }: GoalFinishTask.Request,
-  ): Promise<GoalFinishTask.Response> {
+  async finishTask(@Payload() { data: payload }: GoalFinishTask.Request): Promise<GoalFinishTask.Response> {
     await this.commandBus.execute(
       new FinishTaskCommand({
         userId: payload.userId,

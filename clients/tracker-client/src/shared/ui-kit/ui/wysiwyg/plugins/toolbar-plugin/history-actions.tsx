@@ -1,12 +1,6 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
-import {
-  CAN_REDO_COMMAND,
-  CAN_UNDO_COMMAND,
-  COMMAND_PRIORITY_LOW,
-  REDO_COMMAND,
-  UNDO_COMMAND,
-} from 'lexical';
+import { CAN_REDO_COMMAND, CAN_UNDO_COMMAND, COMMAND_PRIORITY_LOW, REDO_COMMAND, UNDO_COMMAND } from 'lexical';
 import { Redo, Undo } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useWysiwygContext } from '../../context/context';

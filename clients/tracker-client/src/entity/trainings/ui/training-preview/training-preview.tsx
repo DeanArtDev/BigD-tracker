@@ -30,13 +30,9 @@ function TrainingPreview({ trainingId, appendContentSlot, onOpenChange }: Traini
       <DataLoader loadingElement={<AppLoader />} parallelMount isLoading={isLoading}>
         <div className="flex flex-col p-2.5 sm:p-4 gap-2 md:gap-4">
           <div className="text-xs flex gap-4">
-            {training?.wormUpDuration && (
-              <span>{`Разминка: ${training?.wormUpDuration} мин.`}</span>
-            )}
+            {training?.wormUpDuration && <span>{`Разминка: ${training?.wormUpDuration} мин.`}</span>}
 
-            {training?.postTrainingDuration && (
-              <span>{`Заминка: ${training?.postTrainingDuration} мин.`}</span>
-            )}
+            {training?.postTrainingDuration && <span>{`Заминка: ${training?.postTrainingDuration} мин.`}</span>}
           </div>
 
           {training?.description && (

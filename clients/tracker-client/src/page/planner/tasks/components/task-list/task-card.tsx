@@ -1,11 +1,6 @@
 import type { TaskEntity } from '@/entity/planner/tasks';
 import { isAllowAccentIndicationTask } from '@/entity/planner/tasks/lib';
-import {
-  TaskDeadlineDate,
-  TaskFrame,
-  TaskStartDate,
-  TaskStatusIndication,
-} from '@/entity/planner/tasks/ui';
+import { TaskDeadlineDate, TaskFrame, TaskStartDate, TaskStatusIndication } from '@/entity/planner/tasks/ui';
 import type { ReactNode } from 'react';
 
 interface ThingCardProps {
@@ -29,19 +24,11 @@ function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
           <TaskStatusIndication size="sm" status={task.status} />
 
           {isAllowIndication && startDate != null && (
-            <TaskStartDate
-              warningIndication={isAllowIndication}
-              startDate={new Date(startDate)}
-              size={12}
-            />
+            <TaskStartDate warningIndication={isAllowIndication} startDate={new Date(startDate)} size={12} />
           )}
 
           {isAllowIndication && deadline != null && (
-            <TaskDeadlineDate
-              warningIndication={isAllowIndication}
-              deadline={new Date(deadline)}
-              size={12}
-            />
+            <TaskDeadlineDate warningIndication={isAllowIndication} deadline={new Date(deadline)} size={12} />
           )}
         </div>
       }

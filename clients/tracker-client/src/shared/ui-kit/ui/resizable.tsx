@@ -5,10 +5,7 @@ import * as ResizablePrimitive from 'react-resizable-panels';
 import { cn } from '@/shared/ui-kit/utils';
 import { Button } from './button';
 
-function ResizablePanelGroup({
-  className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Group>) {
+function ResizablePanelGroup({ className, ...props }: React.ComponentProps<typeof ResizablePrimitive.Group>) {
   return (
     <ResizablePrimitive.Group
       data-slot="resizable-panel-group"

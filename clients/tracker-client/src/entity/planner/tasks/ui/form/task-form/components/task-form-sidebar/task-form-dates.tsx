@@ -43,11 +43,7 @@ function TaskFormDates(props: { disabled?: boolean }) {
                   tabIndex={-1}
                   onBlur={onBlur}
                 >
-                  {value != null ? (
-                    <TaskStartDate startDate={value} size={15} showDate />
-                  ) : (
-                    <Plus />
-                  )}
+                  {value != null ? <TaskStartDate startDate={value} size={15} showDate /> : <Plus />}
                 </Button>
               );
             }}
@@ -94,11 +90,7 @@ function TaskFormDates(props: { disabled?: boolean }) {
                   onBlur={onBlur}
                   tabIndex={-1}
                 >
-                  {value != null ? (
-                    <TaskDeadlineDate deadline={value} size={15} showDate />
-                  ) : (
-                    <Plus />
-                  )}
+                  {value != null ? <TaskDeadlineDate deadline={value} size={15} showDate /> : <Plus />}
                 </Button>
               );
             }}
@@ -125,10 +117,7 @@ function TaskFormDates(props: { disabled?: boolean }) {
   );
 }
 
-function getMinMaxValues(dates: {
-  startDate: Date | null | undefined;
-  deadline: Date | null | undefined;
-}): {
+function getMinMaxValues(dates: { startDate: Date | null | undefined; deadline: Date | null | undefined }): {
   startDate: { min: Date | undefined; max: Date | undefined };
   deadline: { min: Date | undefined; max: Date | undefined };
 } {
@@ -144,9 +133,7 @@ function getMinMaxValues(dates: {
 
     deadline: {
       min:
-        (deadlineMin ?? startDate != null)
-          ? dayjs(startDate).startOf('day').toDate()
-          : dayjs().startOf('day').toDate(),
+        (deadlineMin ?? startDate != null) ? dayjs(startDate).startOf('day').toDate() : dayjs().startOf('day').toDate(),
       max: undefined,
     },
   };

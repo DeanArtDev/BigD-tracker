@@ -17,17 +17,15 @@ export class LogoutUseCase {
   ) {}
 
   async execute(input: RefreshUseCaseInput): Promise<void> {
-    const user = await this.queryBus.execute<
-      GetUserQuery,
-      ReturnHandlerType<typeof GetUserHandler>
-    >(new GetUserQuery({ id: input.userId }));
+    const user = await this.queryBus.execute<GetUserQuery, ReturnHandlerType<typeof GetUserHandler>>(
+      new GetUserQuery({ id: input.userId }),
+    );
     if (user == null) {
       throw new UnauthorizedException('Session owner is not existed');
     }
 
-    await this.commandBus.execute<
-      DeleteSessionCommand,
-      ReturnHandlerType<typeof DeleteSessionHandler>
-    >(new DeleteSessionCommand(input.userId, input.userAgent));
+    await this.commandBus.execute<DeleteSessionCommand, ReturnHandlerType<typeof DeleteSessionHandler>>(
+      new DeleteSessionCommand(input.userId, input.userAgent),
+    );
   }
 }

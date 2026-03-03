@@ -83,10 +83,10 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<
-        GoalGetAssignableTasks.Response,
-        GoalGetAssignableTasks.Request
-      >(GoalGetAssignableTasks.pattern, payload);
+      const res = await sendMessage<GoalGetAssignableTasks.Response, GoalGetAssignableTasks.Request>(
+        GoalGetAssignableTasks.pattern,
+        payload,
+      );
 
       expect(tasksReadRepoMock.getMany).toHaveBeenCalledTimes(1);
       const [, specArg, tasksTrx] = tasksReadRepoMock.getMany.mock.calls[0];

@@ -1,9 +1,6 @@
 import type { GroupInfoEntity } from '@/entity/planner/groups/model';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
-import {
-  isStringIncludesSearch,
-  useEndToEndSearch,
-} from '@/shared/lib/react/use-end-to-end-search';
+import { isStringIncludesSearch, useEndToEndSearch } from '@/shared/lib/react/use-end-to-end-search';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui-kit/ui/input-group';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
@@ -86,9 +83,7 @@ function AssignableGroupPicker({
                   item={groupIndo}
                   disabled={disabled || isSelected}
                   actionSlot={
-                    isSelected && (
-                      <Check className={cn('size-4 stroke-3 ', { 'stroke-gray-500': disabled })} />
-                    )
+                    isSelected && <Check className={cn('size-4 stroke-3 ', { 'stroke-gray-500': disabled })} />
                   }
                   onClick={() => void onSelect(groupIndo)}
                 />

@@ -13,12 +13,7 @@ interface TrainingProgressProps {
   readonly appendSlot?: (() => ReactNode) | ReactNode;
 }
 
-function TrainingProgress({
-  repetitionList,
-  exerciseList,
-  trainingName,
-  appendSlot,
-}: TrainingProgressProps) {
+function TrainingProgress({ repetitionList, exerciseList, trainingName, appendSlot }: TrainingProgressProps) {
   const activeExercise = exerciseList.find((i) => i.stage === 'active');
 
   if (activeExercise == null) {
@@ -57,10 +52,7 @@ function TrainingProgress({
               {isDone && <Check className="ml-3" color="var(--color-primary)" />}
               {isBreak && <Clock4 className="ml-3" color="var(--color-primary)" />}
               {isActive && (
-                <MoveLeft
-                  className={cn('ml-3', { 'opacity-50': isPrevBreak })}
-                  color="var(--color-primary)"
-                />
+                <MoveLeft className={cn('ml-3', { 'opacity-50': isPrevBreak })} color="var(--color-primary)" />
               )}
             </li>
           );

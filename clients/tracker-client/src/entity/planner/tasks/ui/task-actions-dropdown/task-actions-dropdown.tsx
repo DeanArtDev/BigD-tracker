@@ -35,12 +35,7 @@ function TaskActionsDropdown({
   const actions = [
     {
       element: (
-        <TaskAction
-          action={TaskActionType.RECOVER}
-          loading={loading}
-          key="recover"
-          onClick={onRecover}
-        >
+        <TaskAction action={TaskActionType.RECOVER} loading={loading} key="recover" onClick={onRecover}>
           {capitalize(taskActionToHumanize[TaskActionType.RECOVER])}
         </TaskAction>
       ),
@@ -49,12 +44,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction
-          action={TaskActionType.FINISH}
-          loading={loading}
-          key="finish"
-          onClick={onFinish}
-        >
+        <TaskAction action={TaskActionType.FINISH} loading={loading} key="finish" onClick={onFinish}>
           {capitalize(taskActionToHumanize[TaskActionType.FINISH])}
         </TaskAction>
       ),
@@ -72,12 +62,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction
-          action={TaskActionType.ASSIGN}
-          loading={loading}
-          key="assign"
-          onClick={onAssign}
-        >
+        <TaskAction action={TaskActionType.ASSIGN} loading={loading} key="assign" onClick={onAssign}>
           {capitalize(taskActionToHumanize[TaskActionType.ASSIGN])}
         </TaskAction>
       ),

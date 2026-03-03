@@ -10,8 +10,7 @@ function useExerciseUrlParams() {
   return {
     isMy: Boolean(search?.my),
     search,
-    setSearch: (data: TSchema) =>
-      data.my === true ? setSearch({ my: data.my }) : setSearch({ my: undefined }),
+    setSearch: (data: TSchema) => (data.my === true ? setSearch({ my: data.my }) : setSearch({ my: undefined })),
   };
 }
 

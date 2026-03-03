@@ -27,10 +27,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     const newUser = await this.usersRepository.create(draftUser);
 
     if (newUser == null) {
-      throw new InternalServerErrorException(
-        { email: input.email },
-        { cause: 'User was not created' },
-      );
+      throw new InternalServerErrorException({ email: input.email }, { cause: 'User was not created' });
     }
 
     this.eventBus.publish(new UserCreatedEvent(newUser.id));

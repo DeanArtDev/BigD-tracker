@@ -7,10 +7,7 @@ interface CollectionDelta<TId extends IdType = number> {
 }
 
 class CollectionDeltaCalculator {
-  static calculate<TId extends IdType = number>(data: {
-    currentIds: TId[];
-    previousIds: TId[];
-  }): CollectionDelta<TId> {
+  static calculate<TId extends IdType = number>(data: { currentIds: TId[]; previousIds: TId[] }): CollectionDelta<TId> {
     const { previousIds, currentIds } = data;
 
     const previousSet = new Set(previousIds);

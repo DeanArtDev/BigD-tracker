@@ -2,10 +2,7 @@ import { DB } from '@infrastructure/types';
 import { GetExercisesWithRepetitionsQuery } from '@modules/exercises/application';
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Transaction } from 'kysely';
-import {
-  TrainingTemplateEntity,
-  TrainingTemplateWithExercisesEntity,
-} from '../../../domain/entities';
+import { TrainingTemplateEntity, TrainingTemplateWithExercisesEntity } from '../../../domain/entities';
 import { TRAINING_TEMPLATES_REPOSITORY, TrainingTemplatesRepository } from '../../repositories';
 
 @Injectable()
@@ -17,10 +14,7 @@ export class GetTrainingTemplatesQuery {
     private readonly getExercisesWithRepetitions: GetExercisesWithRepetitionsQuery,
   ) {}
 
-  async all(
-    input: { userId: number; my?: boolean },
-    trx?: Transaction<DB>,
-  ): Promise<TrainingTemplateEntity[]> {
+  async all(input: { userId: number; my?: boolean }, trx?: Transaction<DB>): Promise<TrainingTemplateEntity[]> {
     return await this.trainingTemplateRepo.find({ userId: input.userId, onlyUser: input.my }, trx);
   }
 
@@ -33,10 +27,7 @@ export class GetTrainingTemplatesQuery {
     return template;
   }
 
-  async oneWithExercises(input: {
-    id: number;
-    userId: number;
-  }): Promise<TrainingTemplateWithExercisesEntity> {
+  async oneWithExercises(input: { id: number; userId: number }): Promise<TrainingTemplateWithExercisesEntity> {
     const template = await this.one({ id: input.id });
     const exercises = await this.getExercisesWithRepetitions.all({
       templateId: input.id,

@@ -77,23 +77,17 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<
-        GoalUnassignTaskFromGroup.Response,
-        GoalUnassignTaskFromGroup.Request
-      >(GoalUnassignTaskFromGroup.pattern, payload);
-
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
+      const res = await sendMessage<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
+        GoalUnassignTaskFromGroup.pattern,
+        payload,
       );
+
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       expect(groupReadRepoMock.ensureTaskInGroup).toHaveBeenCalledWith(
         { taskId, userId, groupId },
         expectTransaction(),
       );
-      expect(tasksWriteRepoMock.removeTaskFromGroup).toHaveBeenCalledWith(
-        { taskId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.removeTaskFromGroup).toHaveBeenCalledWith({ taskId }, expectTransaction());
       expect(res).toEqual({ data: { success: true } });
     });
 
@@ -161,10 +155,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       expect(groupReadRepoMock.ensureTaskInGroup).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotExist.code,

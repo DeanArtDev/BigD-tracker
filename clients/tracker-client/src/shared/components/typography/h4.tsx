@@ -5,12 +5,7 @@ function H4({
   className,
   ...props
 }: PropsWithChildren<DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>>) {
-  return (
-    <h4
-      className={cn('text-xl font-semibold tracking-tight wrap-break-word min-w-0', className)}
-      {...props}
-    />
-  );
+  return <h4 className={cn('text-xl font-semibold tracking-tight wrap-break-word min-w-0', className)} {...props} />;
 }
 
 export { H4 };

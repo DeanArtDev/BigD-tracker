@@ -1,12 +1,6 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui-kit/ui/form';
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui-kit/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit/ui/select';
 
 function TrainingTypeSelectForm(props: { disabled?: boolean }) {
   return (

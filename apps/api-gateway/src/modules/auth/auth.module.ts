@@ -1,7 +1,4 @@
-import {
-  AccountServiceClientModule,
-  GoalServiceClientModule,
-} from '@/infrastructure/rmq-clients/clients';
+import { AccountServiceClientModule, GoalServiceClientModule } from '@/infrastructure/rmq-clients/clients';
 import { RegisterSage } from '@/modules/auth/application';
 import { AuthGuard } from './guards/auth.guard';
 import { UsersModule } from '@/modules/users/users.module';

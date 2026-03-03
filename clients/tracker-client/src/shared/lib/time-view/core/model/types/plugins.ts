@@ -4,10 +4,7 @@ import type { TimeViewPosition } from '.';
 import { TimeEvent } from '../time-event';
 
 interface TimeViewPlugin<TExtra = any> {
-  readonly calculateEventsPositions: (
-    events: TimeViewEvent<TExtra>[],
-    selectedDate: Dayjs,
-  ) => TimeEvent[];
+  readonly calculateEventsPositions: (events: TimeViewEvent<TExtra>[], selectedDate: Dayjs) => TimeEvent[];
   readonly shapeTimeLines: () => Dayjs[];
   readonly calculateTimeIndicator: () => TimeViewPosition;
 }

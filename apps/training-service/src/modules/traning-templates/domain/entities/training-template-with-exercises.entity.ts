@@ -2,10 +2,7 @@ import { RepetitionEntity } from '@modules/repetitions';
 import { ExerciseType } from '@big-d/api-contracts';
 import { TrainingTemplateEntity, TrainingTemplateEntityData } from './training-template.entity';
 import { DomainValidator } from '@big-d/api-utils';
-import {
-  ExerciseWithRepetitionsEntity,
-  UpdateExerciseRepetitionsInput,
-} from '@modules/exercises/domain';
+import { ExerciseWithRepetitionsEntity, UpdateExerciseRepetitionsInput } from '@modules/exercises/domain';
 
 const validator = new DomainValidator('training-templates-with-exercises');
 
@@ -24,9 +21,7 @@ type UpdateTemplateExerciseInput = {
 }[];
 
 class TrainingTemplateWithExercisesEntity extends TrainingTemplateEntity {
-  static create = (
-    data: Parameters<typeof TrainingTemplateEntity.create>[0],
-  ): TrainingTemplateWithExercisesEntity => {
+  static create = (data: Parameters<typeof TrainingTemplateEntity.create>[0]): TrainingTemplateWithExercisesEntity => {
     const training = TrainingTemplateEntity.create(data);
 
     return new TrainingTemplateWithExercisesEntity({
@@ -41,9 +36,7 @@ class TrainingTemplateWithExercisesEntity extends TrainingTemplateEntity {
     });
   };
 
-  static restore = (
-    data: Omit<TrainingWithExercisesEntityData, 'exercises'>,
-  ): TrainingTemplateWithExercisesEntity => {
+  static restore = (data: Omit<TrainingWithExercisesEntityData, 'exercises'>): TrainingTemplateWithExercisesEntity => {
     const training = TrainingTemplateEntity.restore(data);
     return new TrainingTemplateWithExercisesEntity({
       id: training.id,
@@ -130,18 +123,13 @@ class TrainingTemplateWithExercisesEntity extends TrainingTemplateEntity {
       validator.throwError(`Exercises must belong to training {id: ${this.id}}`, 'exercises');
     }
 
-    if (
-      new Set(this.data.exercises.map((item) => item.position)).size !== this.data.exercises.length
-    ) {
+    if (new Set(this.data.exercises.map((item) => item.position)).size !== this.data.exercises.length) {
       validator.throwError(`Exercises must not have position duplicates`, 'exercises');
     }
 
     const LIMIT = 10;
     if (this.data.exercises.length > LIMIT) {
-      validator.throwError(
-        `There are to much exercises for training {id: ${this.id}} limit is ${LIMIT}`,
-        'exercises',
-      );
+      validator.throwError(`There are to much exercises for training {id: ${this.id}} limit is ${LIMIT}`, 'exercises');
     }
 
     for (const exercise of this.data.exercises) {

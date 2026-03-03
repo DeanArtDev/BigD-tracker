@@ -8,9 +8,7 @@ class TrainingTemplatesWithExercisesMapper extends BaseMapper<
   TrainingTemplateWithExercisesDto,
   TrainingTemplateWithExercisesEntity
 > {
-  fromEntityToDTO = (
-    entity: TrainingTemplateWithExercisesEntity,
-  ): TrainingTemplateWithExercisesDto => {
+  fromEntityToDTO = (entity: TrainingTemplateWithExercisesEntity): TrainingTemplateWithExercisesDto => {
     return this.entityToDTO(entity, TrainingTemplateWithExercisesDto);
   };
 }

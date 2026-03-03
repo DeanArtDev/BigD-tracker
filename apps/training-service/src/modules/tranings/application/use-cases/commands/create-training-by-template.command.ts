@@ -48,9 +48,7 @@ class CreateTrainingByTemplateCommand extends KyselyUnitOfWork<DB> {
           transaction,
         );
         if (newTraining == null) {
-          throw new InternalServerErrorException(
-            `Failed to create training by template, templateId: ${templateId}`,
-          );
+          throw new InternalServerErrorException(`Failed to create training by template, templateId: ${templateId}`);
         }
 
         const newExercises = await Promise.all(

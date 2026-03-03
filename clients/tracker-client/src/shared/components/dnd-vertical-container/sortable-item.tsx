@@ -11,10 +11,9 @@ interface SortableItemProps<TItem extends DndItem> {
 function SortableItem<TItem extends DndItem>(props: SortableItemProps<TItem>) {
   const { item, itemRender } = props;
 
-  const { attributes, listeners, setNodeRef, transform, transition, isSorting, isDragging } =
-    useSortable({
-      id: item.moveId,
-    });
+  const { attributes, listeners, setNodeRef, transform, transition, isSorting, isDragging } = useSortable({
+    id: item.moveId,
+  });
 
   if (itemRender == null) return <div>Implement itemRender function</div>;
 

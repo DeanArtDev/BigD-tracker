@@ -151,9 +151,7 @@ class ActiveTrainingController implements IActiveTrainingController {
       const repetitions = this.#calculateRepetitions(exercise.repetitions);
 
       const isDone = repetitions.every((rep) => rep.stage === 'done');
-      const isActive = repetitions.some((rep) =>
-        this.#activeRepetitionStatuses.includes(rep.stage),
-      );
+      const isActive = repetitions.some((rep) => this.#activeRepetitionStatuses.includes(rep.stage));
       const stage = isDone ? 'done' : isActive ? 'active' : 'inactive';
 
       buffer.push([
@@ -242,17 +240,13 @@ class ActiveTrainingController implements IActiveTrainingController {
   }
 
   #computeRepStage(rep: ApiSchemas['RepetitionDto']) {
-    const isDone = [rep.finishType, rep.factCount, rep.factWeight, rep.factBreak].every(
-      (i) => i != null,
-    );
+    const isDone = [rep.finishType, rep.factCount, rep.factWeight, rep.factBreak].every((i) => i != null);
 
     const isActive =
       [rep.finishType, rep.factCount, rep.factWeight, rep.factBreak].every((i) => i == null) &&
       this.#activeRepetition == null;
 
-    const isBreak =
-      rep.factBreak == null &&
-      [rep.factCount, rep.factWeight, rep.finishType].every((i) => i != null);
+    const isBreak = rep.factBreak == null && [rep.factCount, rep.factWeight, rep.finishType].every((i) => i != null);
 
     return {
       isDone,

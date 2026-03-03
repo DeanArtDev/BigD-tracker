@@ -7,10 +7,7 @@ import { CreateRepetitionsUseCase } from '@modules/repetitions/application/use-c
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { ExerciseWithRepetitionsEntity } from '@modules/exercises/domain';
-import {
-  EXERCISE_REPOSITORY,
-  ExercisesRepository,
-} from '@modules/exercises/application/repositories';
+import { EXERCISE_REPOSITORY, ExercisesRepository } from '@modules/exercises/application/repositories';
 
 type CreateExerciseWithRepetitionsInput = (
   | {

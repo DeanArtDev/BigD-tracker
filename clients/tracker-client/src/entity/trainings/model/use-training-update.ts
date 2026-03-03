@@ -7,14 +7,10 @@ function useTrainingUpdate(
   } = {},
 ) {
   const notifications = getDefaultQueryNotifications();
-  const { mutate: updateTraining, ...others } = $privetQueryClient.useMutation(
-    'put',
-    '/trainings/{trainingId}',
-    {
-      onError: notifications.onError,
-      onSuccess: options.onSuccess,
-    },
-  );
+  const { mutate: updateTraining, ...others } = $privetQueryClient.useMutation('put', '/trainings/{trainingId}', {
+    onError: notifications.onError,
+    onSuccess: options.onSuccess,
+  });
 
   return {
     updateTraining,

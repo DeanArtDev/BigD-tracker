@@ -17,9 +17,7 @@ class PostgresDbModule {
   static forRootAsync<TEnv extends object>(options: {
     imports?: ModuleMetadata['imports'];
     inject?: Array<InjectionToken | OptionalFactoryDependency>;
-    useFactory: (
-      config: ConfigService<TEnv>,
-    ) => Promise<KyselyPostgresDBOptions> | KyselyPostgresDBOptions;
+    useFactory: (config: ConfigService<TEnv>) => Promise<KyselyPostgresDBOptions> | KyselyPostgresDBOptions;
   }): DynamicModule {
     const asyncProvider: Provider = {
       provide: databaseToken.CONNECTION,

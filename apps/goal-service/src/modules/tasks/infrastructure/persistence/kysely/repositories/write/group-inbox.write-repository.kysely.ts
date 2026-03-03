@@ -1,9 +1,5 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto';
-import {
-  TaskDatabase,
-  GroupInboxWriteRepository,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { TaskDatabase, GroupInboxWriteRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { INBOX_GROUP_NAME } from '@/modules/tasks/domain/constants';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
@@ -12,10 +8,7 @@ import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 
 @Injectable()
-export class GroupInboxWriteRepositoryKysely
-  extends BaseTasksRepository
-  implements GroupInboxWriteRepository
-{
+export class GroupInboxWriteRepositoryKysely extends BaseTasksRepository implements GroupInboxWriteRepository {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }

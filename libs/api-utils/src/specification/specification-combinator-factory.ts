@@ -6,8 +6,7 @@ function specificationCombinatorFactory<TTable extends TDB>(tableName: keyof TTa
     and: andFor(tableName),
     or: orFor(tableName),
     not: notFor(tableName),
-    leaf: (params: Omit<LeafSpecParams<TTable>, 'tableName'>) =>
-      leafSpec<TTable>({ tableName, ...params }),
+    leaf: (params: Omit<LeafSpecParams<TTable>, 'tableName'>) => leafSpec<TTable>({ tableName, ...params }),
   };
 }
 

@@ -30,10 +30,10 @@ export class RegisterSage {
   }): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
     const { ip, userAgent, login, password } = input;
 
-    const response = await this.accountClient.send<
-      AccountRegister.Response,
-      AccountRegister.Request
-    >(AccountRegister.pattern, { data: { ip, userAgent, login, password } });
+    const response = await this.accountClient.send<AccountRegister.Response, AccountRegister.Request>(
+      AccountRegister.pattern,
+      { data: { ip, userAgent, login, password } },
+    );
 
     const instance = plainToInstance(RegisterRpcRes, response, {
       excludeExtraneousValues: true,
@@ -45,10 +45,7 @@ export class RegisterSage {
     });
 
     if (issues.length > 0) {
-      throw BaseHttpException.createFromBase(
-        new ExceptionWrongRpcResponse({ issues }),
-        HttpStatus.BAD_GATEWAY,
-      );
+      throw BaseHttpException.createFromBase(new ExceptionWrongRpcResponse({ issues }), HttpStatus.BAD_GATEWAY);
     }
 
     const { uid } = this.jwtService.decode<AccessTokenPayload>(response.data.accessToken);
@@ -77,9 +74,8 @@ export class RegisterSage {
       // логнуть для чистки в будущем
     }
 
-    await this.accountClient.send<AccountDeleteUser.Response, AccountDeleteUser.Request>(
-      AccountDeleteUser.pattern,
-      { data: { id: userId } },
-    );
+    await this.accountClient.send<AccountDeleteUser.Response, AccountDeleteUser.Request>(AccountDeleteUser.pattern, {
+      data: { id: userId },
+    });
   }
 }

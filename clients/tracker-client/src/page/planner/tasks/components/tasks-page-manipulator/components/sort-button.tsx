@@ -9,12 +9,7 @@ interface SortButtonProps {
   readonly onSortChange: (direction: SortDirection | undefined) => void;
 }
 
-function SortButton({
-  className,
-  children,
-  direction,
-  onSortChange,
-}: PropsWithChildren<SortButtonProps>) {
+function SortButton({ className, children, direction, onSortChange }: PropsWithChildren<SortButtonProps>) {
   return (
     <Button
       className={className}

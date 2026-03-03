@@ -11,11 +11,7 @@ interface TasksSorting {
 }
 
 interface TasksReadRepository {
-  getMany(
-    shapes: TasksShapeTypes[],
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<TaskView[]>;
+  getMany(shapes: TasksShapeTypes[], specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
 
   getByRange(
     specifications: TasksSpecification,
@@ -26,10 +22,7 @@ interface TasksReadRepository {
 
   getById(input: { id: number; userId: number }, trx?: TaskTransaction): Promise<TaskView | null>;
 
-  isTaskIntoGroup(
-    input: { taskId: number; groupId: number },
-    trx?: TaskTransaction,
-  ): Promise<boolean>;
+  isTaskIntoGroup(input: { taskId: number; groupId: number }, trx?: TaskTransaction): Promise<boolean>;
 }
 
 export { TasksReadRepository, TasksShapeTypes, TasksSorting };

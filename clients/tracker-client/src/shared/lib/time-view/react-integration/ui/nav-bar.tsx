@@ -26,9 +26,7 @@ function NavBar<TExtra = any>({ events, renderEvent, onEventClick }: NavBarProps
         <div className="flex flex-col">
           <data className="text-lg md:text-3xl font-bold mb-1 md:mb-2">{date}</data>
 
-          <data className="text-base md:text-2xl mb-1">
-            {upperFirst(selectedDate.format('dddd'))}
-          </data>
+          <data className="text-base md:text-2xl mb-1">{upperFirst(selectedDate.format('dddd'))}</data>
         </div>
 
         <NavActions />

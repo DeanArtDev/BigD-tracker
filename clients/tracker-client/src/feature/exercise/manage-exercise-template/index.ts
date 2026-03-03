@@ -1,4 +1,1 @@
-export {
-  type CreateExerciseTemplateProps,
-  ManageExerciseTemplate,
-} from './manage-exercise-template';
+export { type CreateExerciseTemplateProps, ManageExerciseTemplate } from './manage-exercise-template';

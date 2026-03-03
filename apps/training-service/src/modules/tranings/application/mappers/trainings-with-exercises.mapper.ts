@@ -4,10 +4,7 @@ import { TrainingWithExercisesEntity } from '@modules/tranings/domain';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-class TrainingsWithExercisesMapper extends BaseMapper<
-  TrainingWithExercisesDto,
-  TrainingWithExercisesEntity
-> {
+class TrainingsWithExercisesMapper extends BaseMapper<TrainingWithExercisesDto, TrainingWithExercisesEntity> {
   constructor() {
     super();
   }

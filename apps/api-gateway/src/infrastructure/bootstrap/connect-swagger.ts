@@ -17,10 +17,7 @@ const connectSwagger = (app: INestApplication) => {
 
   if (isProd) {
     app.use(passport.initialize());
-    app.use(
-      [`/${DOCUMENTATION_URL}`, `/${SWAGGER_URL}`],
-      passport.authenticate('swagger', { session: false }),
-    );
+    app.use([`/${DOCUMENTATION_URL}`, `/${SWAGGER_URL}`], passport.authenticate('swagger', { session: false }));
   }
 
   const config = new DocumentBuilder()

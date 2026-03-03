@@ -62,18 +62,13 @@ class UpdateTrainingTemplateWithExercisesCommand
     private readonly syncCollectionRepo: SyncCollectionRepository<DB>,
   ) {
     super(database);
-    this.syncCollection = new SyncCollectionRepositoryHelper<
-      TrainingTemplateWithExercisesEntity,
-      DB
-    >({
+    this.syncCollection = new SyncCollectionRepositoryHelper<TrainingTemplateWithExercisesEntity, DB>({
       upsertRoot: this.upsertRoot.bind(this),
       sync: this.sync.bind(this),
     });
   }
 
-  async execute(
-    input: UpdateTrainingTemplateWithExercisesInput,
-  ): Promise<TrainingTemplateWithExercisesEntity> {
+  async execute(input: UpdateTrainingTemplateWithExercisesInput): Promise<TrainingTemplateWithExercisesEntity> {
     const { exercises: exercisesDto, ...templateDto } = input;
     this.userId = templateDto.userId;
 
@@ -112,10 +107,7 @@ class UpdateTrainingTemplateWithExercisesCommand
     });
   }
 
-  async upsertRoot(
-    aggregate: TrainingTemplateWithExercisesEntity,
-    trx: Transaction<DB>,
-  ): Promise<void> {
+  async upsertRoot(aggregate: TrainingTemplateWithExercisesEntity, trx: Transaction<DB>): Promise<void> {
     await this.trainingTemplateRepo.upsert(
       {
         id: aggregate.id,

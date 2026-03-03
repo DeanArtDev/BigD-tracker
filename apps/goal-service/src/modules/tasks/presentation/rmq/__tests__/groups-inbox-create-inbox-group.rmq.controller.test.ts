@@ -60,19 +60,14 @@ describe('GroupsInboxRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith(
-        { userId },
-        expectTransaction(),
-      );
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(inboxWriteRepoMock.createInbox).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(res).toEqual({ data: inboxView });
     });
 
     test('should throw when inbox already exists', async () => {
       const userId = 202;
-      inboxReadRepoMock.getInboxWithTasksByUserId.mockResolvedValueOnce(
-        getGroupInboxView({ id: 3002, userId }),
-      );
+      inboxReadRepoMock.getInboxWithTasksByUserId.mockResolvedValueOnce(getGroupInboxView({ id: 3002, userId }));
 
       const payload: GoalCreateInboxGroup.Request = buildPayload({
         data: { userId },

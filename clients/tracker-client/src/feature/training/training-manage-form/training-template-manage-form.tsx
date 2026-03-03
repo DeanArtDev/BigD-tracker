@@ -14,13 +14,7 @@ import { useSubmit } from './use-submit';
 type TrainingManageFormData = z.input<typeof trainingManageValidationSchema>;
 type SubmitFormData = z.output<typeof trainingManageValidationSchema>;
 
-function TrainingTemplateManageForm({
-  templateId,
-  onSuccess,
-}: {
-  templateId?: number;
-  onSuccess: () => void;
-}) {
+function TrainingTemplateManageForm({ templateId, onSuccess }: { templateId?: number; onSuccess: () => void }) {
   const { trainingTemplate, isLoading, handleSubmitForm } = useSubmit({ templateId, onSuccess });
 
   const form = useForm<TrainingManageFormData, any, SubmitFormData>({
@@ -54,11 +48,7 @@ function TrainingTemplateManageForm({
 
   return (
     <Form {...form}>
-      <form
-        noValidate
-        onSubmit={form.handleSubmit(handleSubmitForm)}
-        className="space-y-8 flex flex-col grow w-full"
-      >
+      <form noValidate onSubmit={form.handleSubmit(handleSubmitForm)} className="space-y-8 flex flex-col grow w-full">
         <InputForm required name="name" label="Название" placeholder="Мошная тренировка ног" />
 
         <TextareaForm
@@ -73,28 +63,14 @@ function TrainingTemplateManageForm({
         </div>
 
         <div className="grid grid-cols-2 gap-3 min-h-[108px] items-start">
-          <InputNumberForm
-            isErrorMessage
-            name="wormUpDuration"
-            label="Время разминки"
-            placeholder="15 минут"
-          />
+          <InputNumberForm isErrorMessage name="wormUpDuration" label="Время разминки" placeholder="15 минут" />
 
-          <InputNumberForm
-            isErrorMessage
-            name="postTrainingDuration"
-            label="Время заминки"
-            placeholder="20 минут"
-          />
+          <InputNumberForm isErrorMessage name="postTrainingDuration" label="Время заминки" placeholder="20 минут" />
         </div>
 
         <ExerciseAddingBlock />
 
-        <Button
-          className="ml-auto mt-auto min-w-[89px]"
-          type="submit"
-          disabled={isLoading || !form.formState.isDirty}
-        >
+        <Button className="ml-auto mt-auto min-w-[89px]" type="submit" disabled={isLoading || !form.formState.isDirty}>
           <DataLoader isLoading={isLoading} loadingElement={<AppLoader inverse size={20} />}>
             {trainingTemplate == null ? 'Создать' : 'Редактировать'}
           </DataLoader>

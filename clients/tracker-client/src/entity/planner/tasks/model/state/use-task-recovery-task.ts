@@ -4,11 +4,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 function useTaskRecoveryTask() {
   const options = getDefaultQueryNotifications();
 
-  const { mutate: recoveryTask, ...states } = $privetQueryClient.useMutation(
-    'post',
-    '/tasks/{taskId}/recovery',
-    { onError: options.onError },
-  );
+  const { mutate: recoveryTask, ...states } = $privetQueryClient.useMutation('post', '/tasks/{taskId}/recovery', {
+    onError: options.onError,
+  });
 
   return {
     recoveryTask,
