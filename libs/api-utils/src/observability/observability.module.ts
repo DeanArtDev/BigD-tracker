@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
-import { AppContext } from './app-context';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { RequestContext } from './request-context';
 import { RmqInboundLoggingInterceptor } from './rmq-inbound-logger.interceptor';
 import { RmqLogger } from './rmq-logger';
 
@@ -23,6 +24,7 @@ class ObservabilityModule {
   static forRootAsync<TEnv extends object>(options: {
     global?: boolean;
     imports?: ModuleMetadata['imports'];
+    requestContext: AsyncLocalStorage<RequestContext>;
     inject?: Array<InjectionToken | OptionalFactoryDependency>;
     useFactory: (config: ConfigService<TEnv>) => Promise<LoggerModuleOptions> | LoggerModuleOptions;
   }): DynamicModule {
@@ -74,6 +76,7 @@ class ObservabilityModule {
                         'user-agent': req.headers['user-agent'],
                         'x-real-ip': req.headers['x-real-ip'],
                         'x-correlation-id': req.headers['x-correlation-id'],
+                        'x-user-timezone': req.headers['x-user-timezone'],
                         referer: req.headers['referer'],
                         'x-forwarded-for': req.ip || req.headers['x-forwarded-for'],
                       },
@@ -110,8 +113,9 @@ class ObservabilityModule {
                 },
 
                 mixin() {
-                  const cid = AppContext.getStore()?.correlationId ?? 'There is no correlation id!';
-                  return cid ? { correlationId: cid, ...AppContext.getStore() } : {};
+                  const requestContext = options.requestContext.getStore();
+                  const cid = requestContext?.correlationId ?? 'There is no correlation id!';
+                  return cid ? { correlationId: cid, ...requestContext } : {};
                 },
 
                 timestamp: () => `,"ts":"${new Date().toISOString()}"`,

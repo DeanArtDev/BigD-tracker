@@ -1,12 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { RequestContext } from './request-context';
 
-interface AppContextState {
-  readonly correlationId?: string;
-  readonly subjectId?: number;
-  readonly initiator?: 'user' | 'system';
-}
+const createAppContext = () => new AsyncLocalStorage<RequestContext>();
 
-const AppContext = new AsyncLocalStorage<AppContextState>();
-const createAppContext = () => new AsyncLocalStorage<AppContextState>();
-
-export { AppContext, AppContextState, createAppContext };
+export { createAppContext };

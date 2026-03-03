@@ -9,6 +9,7 @@ import { UsersModule } from '@/modules/users/users.module';
 import { ObservabilityModule, LoggerModuleOptions } from '@big-d/api-utils';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ApiGatewayRequestContext } from '@shared/request-context';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     GoalServiceModule,
     ObservabilityModule.forRootAsync({
       global: true,
+      requestContext: ApiGatewayRequestContext,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService<APP_ENV>): LoggerModuleOptions => {

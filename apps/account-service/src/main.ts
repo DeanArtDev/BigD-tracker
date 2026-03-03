@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { AccountExceptionToRpc } from '@shared/exception-filters';
+import { RequestContextInterceptor } from '@shared/request-context';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -32,6 +33,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ApplicationExceptionsInterceptor());
   app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
+  app.useGlobalInterceptors(new RequestContextInterceptor());
   app.useGlobalInterceptors(app.get(RmqInboundLoggingInterceptor));
   app.useGlobalFilters(new AccountExceptionToRpc());
 

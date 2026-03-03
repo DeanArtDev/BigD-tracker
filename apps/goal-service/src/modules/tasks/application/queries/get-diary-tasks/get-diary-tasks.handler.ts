@@ -2,6 +2,7 @@ import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { GoalServiceRequestContext } from '@shared/request-context';
 import { TasksViewMapper, TaskVirtualView } from '../../dto';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
 import { TaskOverrideService } from '../../services';
@@ -57,8 +58,9 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
       const toDate = new Date(filter.to);
       const fromDate = new Date(filter.from);
 
+      const request = GoalServiceRequestContext.getStore()?.state;
       const virtualViews = await this.taskOverrideService.getVirtualViews(
-        { userId, from: fromDate, to: toDate },
+        { userId, from: fromDate, to: toDate, userTimezone: request?.userTimezone },
         trx,
       );
 

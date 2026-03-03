@@ -1,8 +1,8 @@
 import { BaseRpcException, RpcExceptionFactory } from '@big-d/api-contracts';
 import { BaseException, exceptionCode, isBaseException } from '@big-d/exceptions';
 import { Catch, ExceptionFilter } from '@nestjs/common';
+import { AccountRequestContext } from '@shared/request-context';
 import { Observable, throwError } from 'rxjs';
-import { AccountRequestContext } from '../app-request-context';
 
 @Catch()
 export class AccountExceptionToRpc implements ExceptionFilter {
