@@ -20,6 +20,8 @@ function taskDtoToEntity(dto: ApiSchemas['TaskDto']): TaskEntity {
     endDate: dto.endDate,
     cancelReason: dto.cancelReason,
     weight: dto.weight,
+    startDate: dto.startDate,
+    deadline: dto.deadline,
     recurrence: dto.recurrence,
   };
 }

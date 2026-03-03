@@ -11,7 +11,6 @@ import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
-import { recurrenceVoToString } from '../../mappers/helpers';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
 import { groupWithStatusQuery } from '../utils';
@@ -136,16 +135,6 @@ export class GroupWriteRepositoryKysely
 
       for (let i = 0; i < group.tasks.length; i++) {
         const task = group.tasks[i];
-        const recurrence =
-          task.recurrence?.frequency != null &&
-          task.recurrence.startDate != null &&
-          task.recurrence.deadline != null
-            ? recurrenceVoToString({
-                frequency: task.recurrence.frequency,
-                startDate: task.recurrence.startDate,
-                deadline: task.recurrence.deadline,
-              })
-            : null;
 
         await this.db
           .qb(trx)
@@ -156,9 +145,8 @@ export class GroupWriteRepositoryKysely
             name: task.name,
             description: task.description,
             priority: task.priority,
-            start_date: task.recurrence?.startDate ?? null,
-            deadline: task.recurrence?.deadline ?? null,
-            recurrence,
+            start_date: task.startDate,
+            deadline: task.deadline,
             weight: task.weight,
           })
           .executeTakeFirstOrThrow();

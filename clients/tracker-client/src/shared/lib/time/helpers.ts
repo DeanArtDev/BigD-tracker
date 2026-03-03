@@ -14,4 +14,23 @@ function getClosestTimeToNow(dates: (string | undefined | Dayjs)[]): ConfigType 
   return dayjs.min(onlySameOrBeforeNowDates);
 }
 
-export { getClosestTimeToNow };
+function isWithinCalendarDaysFromToday(date: dayjs.ConfigType, days: number): boolean {
+  const d = dayjs(date);
+  if (!d.isValid()) return false;
+
+  const today = dayjs().startOf('day');
+  const limit = today.add(days, 'day').endOf('day');
+
+  return d.isSame(limit) || d.isBefore(limit);
+}
+
+function isSameDay(a: dayjs.ConfigType, b: dayjs.ConfigType): boolean {
+  const da = dayjs(a);
+  const db = dayjs(b);
+
+  if (!da.isValid() || !db.isValid()) return false;
+
+  return da.isSame(db, 'day');
+}
+
+export { getClosestTimeToNow, isWithinCalendarDaysFromToday, isSameDay };

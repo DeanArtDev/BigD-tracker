@@ -4,6 +4,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import {
   IsInt,
+  IsISO8601,
   IsNumber,
   IsOptional,
   IsString,
@@ -39,6 +40,24 @@ class ReplaceTaskReqData {
   @Max(100)
   @IsNumber()
   weight: number;
+
+  @ApiPropertyOptional({
+    example: '2025-06-24T13:01:02.471Z',
+  })
+  @Expose()
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  startDate?: string;
+
+  @ApiPropertyOptional({
+    example: '2026-05-24T13:01:02.471Z',
+  })
+  @Expose()
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  deadline?: string;
 
   @ApiPropertyOptional({
     description: 'Паттерн повторения дела',

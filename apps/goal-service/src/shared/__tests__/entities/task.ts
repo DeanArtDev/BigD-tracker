@@ -18,14 +18,8 @@ const getTask = (
     recurrence?: TaskRecurrence;
   }> = {},
 ): Task => {
-  const recurrence =
-    data.recurrence != null || data.startDate != null || data.deadline != null
-      ? {
-          frequency: data.recurrence?.frequency,
-          startDate: data.startDate ?? data.recurrence?.startDate,
-          deadline: data.deadline ?? data.recurrence?.deadline,
-        }
-      : undefined;
+  const { start, end, frequency } = data.recurrence ?? {};
+  const hasRecurrence = start != null;
 
   return Task.restore({
     id: data.id ?? 1,
@@ -36,11 +30,13 @@ const getTask = (
     weight: Weight.restore(data.weight ?? 1),
     endDate: undefined,
     status: data.status ?? TaskStatus.NOT_STARTED,
-    recurrence: RecurrenceVo.create({
-      frequency: recurrence?.frequency,
-      startDate: recurrence?.startDate ? DateVo.restore(recurrence.startDate) : undefined,
-      deadline: recurrence?.deadline ? DateVo.restore(recurrence.deadline) : undefined,
-    }),
+    recurrence: hasRecurrence
+      ? RecurrenceVo.create({
+          frequency: frequency,
+          start: DateVo.restore(start),
+          end: end ? DateVo.restore(end) : undefined,
+        })
+      : undefined,
   });
 };
 
@@ -60,14 +56,8 @@ const getTaskView = (
     recurrence?: TaskRecurrence;
   }> = {},
 ): TaskView => {
-  const recurrence =
-    data.recurrence != null || data.startDate != null || data.deadline != null
-      ? {
-          frequency: data.recurrence?.frequency,
-          startDate: data.startDate ?? data.recurrence?.startDate,
-          deadline: data.deadline ?? data.recurrence?.deadline,
-        }
-      : undefined;
+  const { start, end, frequency } = data.recurrence ?? {};
+  const hasRecurrence = start != null;
 
   return TaskView.restore({
     id: data.id ?? 1,
@@ -79,7 +69,13 @@ const getTaskView = (
     cancelReason: data.cancelReason,
     endDate: data.endDate,
     status: data.status ?? TaskStatus.NOT_STARTED,
-    recurrence,
+    recurrence: hasRecurrence
+      ? {
+          start,
+          frequency,
+          end,
+        }
+      : undefined,
   });
 };
 

@@ -1,3 +1,4 @@
+import { TaskRecurrenceForm } from '../recurrence';
 import { InputNumberForm } from '@/shared/components/form';
 import { Label } from '@/shared/ui-kit/ui/label';
 import { SidebarGroup, SidebarSeparator } from '@/shared/ui-kit/ui/sidebar';
@@ -7,7 +8,7 @@ import { z } from 'zod';
 import { TaskPriorityPickerForm } from '../../../task-priority-picker-form';
 import { TaskSidebarRootForm } from '../../../task-sidebar-root-form';
 import { useTaskFieldsRulesContext } from '../../context';
-import { validationStrategyByStatus } from '../../validation-strategy';
+import { useValidationSchema } from '../../lib/use-validation-schema';
 import { TaskFormDates } from './task-form-dates';
 
 interface TaskFormSidebarProps {
@@ -15,9 +16,9 @@ interface TaskFormSidebarProps {
 }
 
 function TaskFormSidebar(props: TaskFormSidebarProps) {
-  const { status, rules } = useTaskFieldsRulesContext();
+  const { rules, visibility } = useTaskFieldsRulesContext();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const validationSchema = validationStrategyByStatus(status);
+  const validationSchema = useValidationSchema();
   type TaskFormData = z.input<typeof validationSchema>;
 
   const weight = useWatch<{ weight: TaskFormData['weight'] }>({ name: 'weight' });
@@ -50,6 +51,15 @@ function TaskFormSidebar(props: TaskFormSidebarProps) {
           />
         )}
       </SidebarGroup>
+
+      {visibility?.recurrence && (
+        <>
+          <SidebarSeparator className="separator mx-0" />
+          <SidebarGroup key="recurrence" className="flex flex-row px-4 gap-4">
+            <TaskRecurrenceForm />
+          </SidebarGroup>
+        </>
+      )}
 
       <SidebarSeparator className="separator mx-0" />
 

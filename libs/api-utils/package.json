@@ -31,7 +31,7 @@
     "@nestjs/microservices": "catalog:",
     "class-transformer": "catalog:",
     "class-validator": "catalog:",
-    "dayjs": "^1.11.18",
+    "dayjs": "catalog:",
     "express": "catalog:",
     "kysely": "catalog:",
     "lodash": "catalog:",

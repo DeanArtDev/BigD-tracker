@@ -11,6 +11,7 @@ import {
   GoalDeleteTask,
   GoalFinishTask,
   GoalGetAssignableTasks,
+  GoalGetDiaryTasks,
   GoalGetTasks,
   GoalReplaceTask,
   GoalTaskRecovery,
@@ -47,6 +48,8 @@ import {
   GetAssignableTasksRes,
   GetDeletedTasksQuery,
   GetDeletedTasksRes,
+  GetDiaryTasksQuery,
+  GetDiaryTasksRes,
   GetTasksQuery,
   GetTasksRes,
   ReplaceTaskReq,
@@ -95,6 +98,29 @@ export class TasksController {
           filter,
           page: query.page,
           perPage: query.perPage,
+        },
+      },
+    );
+  }
+
+  @Get('/diary')
+  @ApiOperation({ summary: 'Получение дел для ежедневника' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GetTasksRes,
+  })
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @ValidateRpcResponse(GetDiaryTasksRes)
+  async getDiaryTasks(
+    @Query() query: GetDiaryTasksQuery,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GetDiaryTasksRes> {
+    return await this.goalClient.send<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(
+      GoalGetDiaryTasks.pattern,
+      {
+        data: {
+          userId: uid,
+          filter: query.filter,
         },
       },
     );
@@ -194,8 +220,10 @@ export class TasksController {
           priority: data.priority,
           description: data.description,
           name: data.name,
-          recurrence: data.recurrence,
           weight: data.weight,
+          startDate: data.startDate,
+          deadline: data.deadline,
+          recurrence: data.recurrence,
         },
       },
     );
@@ -373,6 +401,8 @@ export class TasksController {
           name: data.name,
           description: data.description,
           weight: data.weight,
+          startDate: data.startDate,
+          deadline: data.deadline,
           recurrence: data.recurrence,
         },
       },

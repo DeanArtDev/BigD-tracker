@@ -1,7 +1,7 @@
-import { RecurrenceFrequency } from '@big-d/api-contracts';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { RecurrenceFrequency, TaskRecurrenceWeekday } from '@big-d/api-contracts';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEnum, IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsISO8601, IsOptional, IsString } from 'class-validator';
 
 class TaskRecurrencyDto {
   @ApiPropertyOptional({
@@ -14,19 +14,36 @@ class TaskRecurrencyDto {
   @IsEnum(RecurrenceFrequency)
   frequency?: RecurrenceFrequency;
 
-  @ApiPropertyOptional({ example: '2025-06-24T13:01:02.471Z' })
+  @ApiPropertyOptional({
+    example: [TaskRecurrenceWeekday.MO, TaskRecurrenceWeekday.TH],
+    description: 'Дни недели',
+    enum: TaskRecurrenceWeekday,
+    isArray: true,
+  })
   @Expose()
-  @IsISO8601()
   @IsOptional()
-  @IsString()
-  startDate?: string;
+  @IsArray()
+  @IsEnum(TaskRecurrenceWeekday, { each: true })
+  weekdays?: TaskRecurrenceWeekday[];
 
-  @ApiPropertyOptional({ example: '2026-05-24T13:01:02.471Z' })
+  @ApiProperty({
+    example: '2025-06-24T13:01:02.471Z',
+    description: 'День начала повторения',
+  })
+  @Expose()
+  @IsISO8601()
+  @IsString()
+  start: string;
+
+  @ApiPropertyOptional({
+    example: '2026-05-24T13:01:02.471Z',
+    description: 'День окончания повторения',
+  })
   @Expose()
   @IsISO8601()
   @IsOptional()
   @IsString()
-  deadline?: string;
+  end?: string;
 }
 
 export { TaskRecurrencyDto };

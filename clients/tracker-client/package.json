@@ -50,7 +50,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "catalog:",
-    "dayjs": "^1.11.18",
+    "dayjs": "catalog:",
     "jwt-decode": "^4.0.0",
     "lexical": "0.39.0",
     "lodash-es": "catalog:",

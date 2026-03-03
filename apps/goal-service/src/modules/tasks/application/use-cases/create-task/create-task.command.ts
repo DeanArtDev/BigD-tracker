@@ -9,6 +9,8 @@ export class CreateTaskCommand {
       readonly description?: string;
       readonly priority?: number;
       readonly weight?: number;
+      readonly startDate?: string;
+      readonly deadline?: string;
       readonly recurrence?: TaskRecurrence;
     },
   ) {}

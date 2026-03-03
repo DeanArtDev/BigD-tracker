@@ -3,7 +3,7 @@ import { Name } from '@big-d/api-utils';
 import { futureDate } from '@shared/__tests__/time/helpers';
 import { TaskFactory } from '../tasks.factory';
 import { Task } from '../tasks.aggregate';
-import { Priority, RecurrenceVo, Weight } from '../value-objects';
+import { Priority, Weight } from '../value-objects';
 
 describe('TaskFactory', () => {
   it('creates task with default priority and weight', () => {
@@ -22,15 +22,17 @@ describe('TaskFactory', () => {
     const task = TaskFactory.create({
       userId: 22,
       name: 'Task with recurrence',
+      startDate: futureDate(1),
+      deadline: futureDate(2),
       recurrence: {
         frequency: RecurrenceFrequency.DAILY,
-        startDate: futureDate(1),
-        deadline: futureDate(2),
+        start: futureDate(1),
+        end: futureDate(2),
       },
     });
 
     expect(task.status).toBe(TaskStatus.IN_PROGRESS);
-    expect(task.recurrence?.value.frequency).toBe(RecurrenceFrequency.DAILY);
+    expect(task.recurrence?.frequency).toBe(RecurrenceFrequency.DAILY);
   });
 
   it('clones task into a draft', () => {
@@ -51,8 +53,8 @@ describe('TaskFactory', () => {
       name: 'Update me',
       recurrence: {
         frequency: RecurrenceFrequency.DAILY,
-        startDate: futureDate(1),
-        deadline: futureDate(2),
+        start: futureDate(1),
+        end: futureDate(2),
       },
     });
 
@@ -63,8 +65,8 @@ describe('TaskFactory', () => {
       weight: 70,
       recurrence: {
         frequency: RecurrenceFrequency.WEEKLY,
-        startDate: futureDate(3),
-        deadline: futureDate(4),
+        start: futureDate(3),
+        end: futureDate(4),
       },
     });
 
@@ -72,7 +74,7 @@ describe('TaskFactory', () => {
     expect(task.description).toBe('After update');
     expect(task.priority).toBe(2);
     expect(task.weight).toBe(70);
-    expect(task.recurrence?.value.frequency).toBe(RecurrenceFrequency.WEEKLY);
+    expect(task.recurrence?.frequency).toBe(RecurrenceFrequency.WEEKLY);
   });
 
   it('updates inbox task for partially replaceable status', () => {
@@ -84,18 +86,13 @@ describe('TaskFactory', () => {
       priority: Priority.create(3),
       weight: Weight.create(80),
       status: TaskStatus.COMPLETED,
-      recurrence: RecurrenceVo.create({
-        frequency: undefined,
-        deadline: undefined,
-        startDate: undefined,
-      }),
+      recurrence: undefined,
     });
 
     const updated = TaskFactory.updateInbox(task, {
       name: 'Inbox updated',
       description: 'After update',
       priority: 3,
-      recurrence: { deadline: futureDate(4) },
     });
 
     expect(updated.name).toBe('Inbox updated');

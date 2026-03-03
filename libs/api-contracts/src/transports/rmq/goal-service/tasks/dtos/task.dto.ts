@@ -40,6 +40,16 @@ class TaskDto {
   @IsString()
   endDate?: string;
 
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  startDate?: string;
+
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  deadline?: string;
+
   @IsEnum(TaskStatus)
   status: TaskStatus;
 

@@ -1,13 +1,11 @@
-import { TaskStatus } from '@/entity/planner/tasks';
+import { TaskStatus } from '../../../../model';
 import { getFieldRuleTypeByStatus } from '../constants';
 import { maxLevelValidation } from './max-level-validation';
-import { nameDescValidation } from './name-desc-validation';
 
 const validationStrategyByStatus = (status?: TaskStatus) => {
   if (status == null) {
     return maxLevelValidation;
   }
-
   const ruleType = getFieldRuleTypeByStatus(status);
 
   switch (ruleType) {
@@ -15,7 +13,7 @@ const validationStrategyByStatus = (status?: TaskStatus) => {
       return maxLevelValidation;
 
     case 'readonly':
-      return nameDescValidation;
+      return maxLevelValidation;
 
     default:
       throw new Error(`Unknown strategy by status: ${status}`);

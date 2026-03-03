@@ -15,4 +15,4 @@ export async function runMigrate() {
   });
 }
 
-runMigrate();
+runMigrate().catch(console.error);

@@ -57,12 +57,10 @@ function TaskManagerForm(props: ThingManagerFormProps) {
         onSubmit={form.handleSubmit((formData) => {
           onSubmit({
             name: formData.name,
-            recurrence: {
-              deadline: formData.deadline,
-              startDate: formData.startDate,
-            },
+            deadline: formData.deadline,
             description: formData.description,
             priority: formData.priority != null ? +formData.priority : undefined,
+            startDate: formData.startDate,
           });
         })}
       >

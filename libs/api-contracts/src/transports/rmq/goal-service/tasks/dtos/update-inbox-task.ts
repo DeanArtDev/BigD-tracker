@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { TaskRecurrencyDto } from './task-recurrency.dto';
+import { IsInt, IsISO8601, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
 
 class UpdateInboxTaskReqData {
@@ -20,10 +19,15 @@ class UpdateInboxTaskReqData {
   @IsString()
   description?: string;
 
+  @IsISO8601()
   @IsOptional()
-  @IsObject()
-  @Type(() => TaskRecurrencyDto)
-  recurrence?: TaskRecurrencyDto;
+  @IsString()
+  startDate?: string;
+
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  deadline?: string;
 }
 
 class UpdateInboxTaskReq {

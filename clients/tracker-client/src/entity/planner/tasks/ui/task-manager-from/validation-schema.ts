@@ -1,4 +1,4 @@
-import { taskPrioritySchema } from '@/entity/planner/tasks/lib/validation-schemas';
+import { taskPriorityEnumSchema } from '@/entity/planner/tasks/lib/validation-schemas';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 
@@ -10,7 +10,7 @@ const validationSchema = z
       .max(254, { error: 'Слишком длинное имя' }),
 
     priority: z
-      .enum(taskPrioritySchema)
+      .enum(taskPriorityEnumSchema)
       .optional()
       .or(z.literal(null))
       .transform(transformPlaceholder.optional),

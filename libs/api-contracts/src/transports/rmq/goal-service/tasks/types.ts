@@ -10,4 +10,23 @@ enum TaskStatus {
   DELETED = 'DELETED',
 }
 
-export { TaskStatus, RecurrenceFrequency };
+// отличия от мастер-дела
+enum TaskOverrideType {
+  OVERRIDE = 'OVERRIDE',
+  CANCELED = 'CANCELED',
+  DELETED = 'DELETED',
+  MOVED = 'MOVED',
+  ARCHIVED = 'ARCHIVED',
+}
+
+enum TaskRecurrenceWeekday {
+  MO = 0,
+  TU = 1,
+  WE = 2,
+  TH = 3,
+  FR = 4,
+  SA = 5,
+  SU = 6,
+}
+
+export { TaskStatus, TaskOverrideType, RecurrenceFrequency, TaskRecurrenceWeekday };

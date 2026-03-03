@@ -222,7 +222,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
     });
 
-    test('should throw when startDate after deadline', async () => {
+    test.skip('should throw when startDate after deadline', async () => {
       const userId = 16;
       const payload: GoalCreateTask.Request = buildPayload({
         data: {

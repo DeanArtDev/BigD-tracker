@@ -505,6 +505,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/tasks/diary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получение дел для ежедневника */
+        get: operations["TasksController_getDiaryTasks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tasks/deleted": {
         parameters: {
             query?: never;
@@ -1316,10 +1333,24 @@ export interface components {
              * @enum {number}
              */
             frequency?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-            /** @example 2025-06-24T13:01:02.471Z */
-            startDate?: string;
-            /** @example 2026-05-24T13:01:02.471Z */
-            deadline?: string;
+            /**
+             * @description Дни недели
+             * @example [
+             *       0,
+             *       3
+             *     ]
+             */
+            weekdays?: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
+            /**
+             * @description День начала повторения
+             * @example 2025-06-24T13:01:02.471Z
+             */
+            start: string;
+            /**
+             * @description День окончания повторения
+             * @example 2026-05-24T13:01:02.471Z
+             */
+            end?: string;
         };
         TaskDto: {
             /** @example 1 */
@@ -1339,6 +1370,10 @@ export interface components {
             priority: number;
             /** @example 2025-05-24T13:01:02.471Z */
             endDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2025-05-24T13:01:02.471Z */
+            deadline?: string;
             /**
              * @description От 0 до 100
              * @example 100
@@ -1581,6 +1616,18 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["GetTasksResData"];
         };
+        GetDiaryTasksFilterDto: {
+            /**
+             * @description Начало диапазона (ISO 8601). Должно приходить вместе с filter.to
+             * @example 2026-01-01T00:00:00.000Z
+             */
+            from: string;
+            /**
+             * @description Конец диапазона (ISO 8601). Должно приходить вместе с filter.from
+             * @example 2026-02-01T00:00:00.000Z
+             */
+            to: string;
+        };
         GetDeletedTasksResData: {
             /** @description Ответ сервера */
             items: components["schemas"]["TaskDto"][];
@@ -1622,6 +1669,10 @@ export interface components {
             weight?: number;
             /** @example Описание дела */
             description?: string;
+            /** @example 2025-06-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
@@ -1704,6 +1755,10 @@ export interface components {
              * @example 100
              */
             weight: number;
+            /** @example 2025-06-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
@@ -1725,8 +1780,10 @@ export interface components {
             priority?: number;
             /** @example Описание дела */
             description?: string;
-            /** @description Паттерн повторения дела */
-            recurrence?: components["schemas"]["TaskRecurrencyDto"];
+            /** @example 2025-06-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
         };
         CreateTaskInINBOXReq: {
             /** @description Запрос сервера */
@@ -1750,8 +1807,10 @@ export interface components {
              * @example 2
              */
             priority: number;
-            /** @description Паттерн повторения дела */
-            recurrence?: components["schemas"]["TaskRecurrencyDto"];
+            /** @example 2025-06-24T13:01:02.471Z */
+            startDate?: string;
+            /** @example 2026-05-24T13:01:02.471Z */
+            deadline?: string;
         };
         UpdateInboxTaskReq: {
             /** @description Запрос сервера */
@@ -2606,6 +2665,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateTaskRes"];
+                };
+            };
+        };
+    };
+    TasksController_getDiaryTasks: {
+        parameters: {
+            query?: {
+                /** @description Параметры фильтрации */
+                filter?: components["schemas"]["GetDiaryTasksFilterDto"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetTasksRes"];
                 };
             };
         };

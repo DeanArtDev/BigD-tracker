@@ -1,4 +1,4 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
+import { TaskView } from '@/modules/tasks/application/dto';
 import { rawRecurrenceToVo } from './helpers';
 import { TaskStatus } from '@big-d/api-contracts';
 
@@ -20,11 +20,7 @@ interface RawTask {
 
 class TasksReadKyselyMapper {
   static fromRawToView = (raw: RawTask): TaskView => {
-    const recurrence = rawRecurrenceToVo({
-      recurrence: raw.recurrence,
-      startDate: raw.start_date,
-      deadline: raw.deadline,
-    });
+    const recurrence = rawRecurrenceToVo(raw.recurrence);
 
     return TaskView.restore({
       id: raw.id,
@@ -35,13 +31,19 @@ class TasksReadKyselyMapper {
       priority: raw.priority,
       weight: raw.weight,
       cancelReason: raw.cancel_reason ?? undefined,
+      startDate: raw.start_date != null ? new Date(raw.start_date).toISOString() : undefined,
+      deadline: raw.deadline != null ? new Date(raw.deadline).toISOString() : undefined,
       endDate: raw.end_date != null ? new Date(raw.end_date).toISOString() : undefined,
       status: raw.status,
-      recurrence: {
-        frequency: recurrence?.value.frequency,
-        deadline: recurrence?.value.deadline?.value,
-        startDate: recurrence?.value.startDate?.value,
-      },
+      recurrence:
+        recurrence != null
+          ? {
+              frequency: recurrence?.value.frequency,
+              weekdays: recurrence?.value.weekdays,
+              end: recurrence?.value.end?.value,
+              start: recurrence?.value.start?.value,
+            }
+          : undefined,
     });
   };
 }

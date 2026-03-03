@@ -4,13 +4,13 @@ import {
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
-import { statusByNameQuery } from '@/modules/tasks/infrastructure/persistence/kysely/repositories/utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { recurrenceVoToString } from '../../mappers/helpers';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
-import { recurrenceVoToString } from '../../mappers/helpers';
+import { statusByNameQuery } from '../utils';
 
 @Injectable()
 export class TasksWriteRepositoryKysely
@@ -40,26 +40,27 @@ export class TasksWriteRepositoryKysely
     });
   }
 
-  async createTask(agr: Task, trx?: TaskTransaction): Promise<Task> {
+  async createTask(task: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.creation', async () => {
       const { id: status_id, name: status_name } = await statusByNameQuery(
-        [agr.status],
+        [task.status],
         this.db,
         trx,
       ).executeTakeFirstOrThrow();
 
-      const task = await this.db
+      const taskResponse = await this.db
         .qb(trx)
         .insertInto(this.#tableName)
         .values({
-          cancel_reason: agr.cancelReason,
-          name: agr.name,
-          deadline: agr.deadline,
-          end_date: agr.endDate,
-          start_date: agr.startDate,
-          description: agr.description,
-          user_id: agr.userId,
-          priority: agr.priority,
+          cancel_reason: task.cancelReason,
+          name: task.name,
+          deadline: task.deadline,
+          end_date: task.endDate,
+          start_date: task.startDate,
+          description: task.description,
+          user_id: task.userId,
+          priority: task.priority,
+          recurrence: this.#recurrenceToString(task),
           status_id,
         })
         .returning([
@@ -77,7 +78,7 @@ export class TasksWriteRepositoryKysely
         ])
         .executeTakeFirstOrThrow();
 
-      return TasksWriteKyselyMapper.fromRawToAgr({ ...task, status: status_name });
+      return TasksWriteKyselyMapper.fromRawToAgr({ ...taskResponse, status: status_name });
     });
   }
 
@@ -88,15 +89,6 @@ export class TasksWriteRepositoryKysely
         this.db,
         trx,
       ).executeTakeFirstOrThrow();
-
-      const recurrence =
-        task.recurrence?.value.frequency != null && task.startDate != null && task.deadline != null
-          ? recurrenceVoToString({
-              frequency: task.recurrence.value.frequency,
-              deadline: task.deadline,
-              startDate: task.startDate,
-            })
-          : null;
 
       const result = await this.db
         .qb(trx)
@@ -111,7 +103,7 @@ export class TasksWriteRepositoryKysely
           start_date: task.startDate ?? null,
           end_date: task.endDate,
           deadline: task.deadline ?? null,
-          recurrence,
+          recurrence: this.#recurrenceToString(task),
           status_id,
         })
         .returning([
@@ -213,5 +205,16 @@ export class TasksWriteRepositoryKysely
 
       return result.numDeletedRows > 0;
     });
+  }
+
+  #recurrenceToString(task: Task): string | null {
+    return task.isRecurrence()
+      ? recurrenceVoToString({
+          weekdays: task.recurrence.weekdays,
+          start: task.recurrence.start,
+          frequency: task.recurrence.frequency,
+          end: task.recurrence.end,
+        })
+      : null;
   }
 }

@@ -1,5 +1,6 @@
-import { TaskView } from './task.view';
 import { Task } from '@/modules/tasks/domain';
+import { TaskVirtualView } from './task-virtual.view';
+import { TaskView } from './task.view';
 
 class TasksViewMapper {
   static fromAggregateToView = (agr: Task): TaskView => {
@@ -12,13 +13,29 @@ class TasksViewMapper {
       priority: agr.priority,
       weight: agr.weight,
       cancelReason: agr.cancelReason,
+      startDate: agr.startDate,
+      deadline: agr.deadline,
       endDate: agr.endDate,
       status: agr.status,
-      recurrence: {
-        frequency: agr.recurrence?.value.frequency,
-        deadline: agr.recurrence?.value.deadline?.value,
-        startDate: agr.recurrence?.value.startDate?.value,
-      },
+      recurrence: agr.recurrence,
+    });
+  };
+
+  static fromViewToVirtualView = (view: TaskView): TaskVirtualView => {
+    return TaskVirtualView.restore({
+      id: `t:${view.id}`,
+      userId: view.userId,
+      groupId: view.groupId,
+      name: view.name,
+      description: view.description,
+      priority: view.priority,
+      weight: view.weight,
+      cancelReason: view.cancelReason,
+      startDate: view.startDate,
+      deadline: view.deadline,
+      endDate: view.endDate,
+      status: view.status,
+      recurrence: view.recurrence,
     });
   };
 }

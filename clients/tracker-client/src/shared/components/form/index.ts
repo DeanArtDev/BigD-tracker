@@ -9,3 +9,5 @@ export * from './toggle-group-form';
 export * from './time-form';
 export * from './wysiwyg-form';
 export * from './readable-input-form';
+export * from './switch-form';
+export * from './toggle-group-multi-form';

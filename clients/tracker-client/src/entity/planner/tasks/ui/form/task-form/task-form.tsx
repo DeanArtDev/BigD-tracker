@@ -1,4 +1,3 @@
-import { useTaskFormValues } from '@/entity/planner/tasks/ui/form/task-form/lib/use-task-form-values';
 import { ButtonLoading } from '@/shared/components/button-loading';
 import {
   FormStateEmitter,
@@ -10,21 +9,24 @@ import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
 import { useWysiwygController } from '@/shared/ui-kit/ui/wysiwyg';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { merge } from 'lodash-es';
 import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { TaskPriority } from '../../../lib/constants';
-import { type TaskEntity } from '../../../model';
+import { type TaskEntity, TaskRecurrenceFrequency, TaskRecurrenceWeekday } from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
 import { SidebarErrorCatcher } from './components/sidebar-error-catcher';
 import { TaskFormSidebar } from './components/task-form-sidebar';
-import { TaskFieldsRulesProvider, useTaskFieldsRulesContext } from './context';
-import { validationStrategyByStatus } from './validation-strategy';
+import { TaskFieldsRulesProvider, type TaskFieldsRulesProviderProps } from './context';
+import { useTaskFormValues } from './lib/use-task-form-values';
+import { useValidationSchema } from './lib/use-validation-schema';
 
 interface TaskFormProps extends FormStateEmitterProps {
   readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason'>;
+  readonly options?: TaskFieldsRulesProviderProps['options'];
   readonly afterNameSlot?: ReactNode;
   readonly defaultValue?: {
     readonly startDate?: Date;
@@ -40,12 +42,17 @@ interface TaskFormProps extends FormStateEmitterProps {
     startDate?: string;
     weight: number;
     description?: string;
+    recurrence?: {
+      frequency: TaskRecurrenceFrequency;
+      start: string;
+      end: string;
+      weekdays?: TaskRecurrenceWeekday[];
+    };
   }) => void;
 }
 
 function Component(props: TaskFormProps) {
-  const { status } = useTaskFieldsRulesContext();
-  const validationSchema = validationStrategyByStatus(status);
+  const validationSchema = useValidationSchema();
   type TaskFormData = z.input<typeof validationSchema>;
   type TaskSubmitFormData = z.output<typeof validationSchema>;
 
@@ -95,13 +102,20 @@ function Component(props: TaskFormProps) {
               return;
             }
 
+            const { start, end, frequency, weekdays } = formData.recurrence ?? {};
+            const recurrence =
+              start != null && end != null && frequency != null
+                ? { start, end, frequency, weekdays: weekdays?.map(Number) }
+                : undefined;
+
             onSubmit?.({
               name: formData.name,
               weight: formData.weight,
               startDate: formData.startDate,
               deadline: formData.deadline,
               description,
-              priority: formData.priority != null ? +formData.priority : TaskPriority.DELETE,
+              priority: formData.priority != null ? formData.priority : TaskPriority.DELETE,
+              recurrence,
             });
           })(evt);
         }}
@@ -162,8 +176,10 @@ function Component(props: TaskFormProps) {
 }
 
 function TaskForm(props: TaskFormProps) {
+  const options = merge({}, { visibility: { recurrence: true } }, props?.options);
+
   return (
-    <TaskFieldsRulesProvider status={props?.task?.status}>
+    <TaskFieldsRulesProvider status={props?.task?.status} options={options}>
       <Component {...props} />
     </TaskFieldsRulesProvider>
   );

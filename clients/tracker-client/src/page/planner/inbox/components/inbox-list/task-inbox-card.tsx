@@ -10,8 +10,7 @@ interface ThingInboxCardProps {
 }
 
 function TaskInboxCard({ task, className, actionsSlot, onClick }: ThingInboxCardProps) {
-  const { name, priority, recurrence } = task;
-  const { deadline } = recurrence ?? {};
+  const { name, priority, deadline } = task;
 
   return (
     <TaskFrame

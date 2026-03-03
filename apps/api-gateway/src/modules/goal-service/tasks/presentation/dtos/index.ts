@@ -1,4 +1,5 @@
 export * from './task.dto';
+export * from './task-virtual.dto';
 
 export * from './create-task.dto';
 export * from './create-task-in-inbox.dto';
@@ -16,3 +17,4 @@ export * from './complete-delete-task.dto';
 export * from './task-recovery.dto';
 export * from './get-archived-tasks.dto';
 export * from './task-recurrency.dto';
+export * from './get-diary-tasks.dto';

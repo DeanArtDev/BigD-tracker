@@ -13,8 +13,8 @@ const createRecurrence = (
   frequency = RecurrenceFrequency.DAILY,
 ) =>
   RecurrenceVo.create({
-    startDate: DateVo.create(startDate),
-    deadline: DateVo.create(deadline),
+    start: DateVo.create(startDate),
+    end: DateVo.create(deadline),
     frequency,
   });
 
@@ -25,13 +25,7 @@ const createTask = (params?: { recurrence?: RecurrenceVo }) =>
     description: 'desc',
     priority: Priority.create(2),
     weight: Weight.create(10),
-    recurrence:
-      params?.recurrence ??
-      RecurrenceVo.create({
-        frequency: undefined,
-        deadline: undefined,
-        startDate: undefined,
-      }),
+    recurrence: params?.recurrence,
   });
 
 describe('Task aggregate', () => {
@@ -39,19 +33,9 @@ describe('Task aggregate', () => {
     const task = createTask();
 
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
-    expect(task.recurrence.value.startDate).toBeUndefined();
-    expect(task.recurrence.value.deadline).toBeUndefined();
-    expect(task.recurrence.value.frequency).toBeUndefined();
-  });
-
-  it('creates IN_PROGRESS task with recurrence.startDate', () => {
-    const task = createTask({
-      recurrence: createRecurrence(futureDate(1), futureDate(2)),
-    });
-
-    expect(task.status).toBe(TaskStatus.IN_PROGRESS);
-    expect(task.startDate).toBe(futureDate(1));
-    expect(task.deadline).toBe(futureDate(2));
+    expect(task.recurrence?.start).toBeUndefined();
+    expect(task.recurrence?.end).toBeUndefined();
+    expect(task.recurrence?.frequency).toBeUndefined();
   });
 
   it('restores task with recurrence', () => {
@@ -67,27 +51,7 @@ describe('Task aggregate', () => {
     });
 
     expect(task.isDraft).toBe(false);
-    expect(task.recurrence?.value.frequency).toBe(RecurrenceFrequency.WEEKLY);
-  });
-
-  it('replaces full state for NOT_STARTED task when recurrence has both dates', () => {
-    const task = createTask({
-      recurrence: createRecurrence(futureDate(1), futureDate(2)),
-    });
-
-    task.replace({
-      name: Name.create('Updated'),
-      description: 'updated',
-      priority: Priority.create(3),
-      weight: Weight.create(20),
-      recurrence: createRecurrence(futureDate(3), futureDate(4), RecurrenceFrequency.MONTHLY),
-    });
-
-    expect(task.name).toBe('Updated');
-    expect(task.priority).toBe(3);
-    expect(task.weight).toBe(20);
-    expect(task.startDate).toBe(futureDate(3));
-    expect(task.deadline).toBe(futureDate(4));
+    expect(task.recurrence?.frequency).toBe(RecurrenceFrequency.WEEKLY);
   });
 
   it('allows partial replace for COMPLETED when immutable fields are unchanged', () => {
@@ -109,11 +73,7 @@ describe('Task aggregate', () => {
         description: 'updated',
         priority: Priority.create(2),
         weight: Weight.create(10),
-        recurrence: RecurrenceVo.create({
-          frequency: undefined,
-          deadline: undefined,
-          startDate: undefined,
-        }),
+        recurrence: undefined,
       }),
     ).not.toThrow();
   });

@@ -13,7 +13,7 @@ import {
   ThrowErrorOptions,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
+import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { flow } from 'lodash';
@@ -137,7 +137,7 @@ export class GroupsReadRepositoryKysely
             end_date: task.end_date,
             deadline: task.deadline,
             recurrence: task.recurrence,
-            status: task.status as TaskStatus,
+            status: task.status,
           }),
         ),
       });
@@ -193,7 +193,7 @@ export class GroupsReadRepositoryKysely
             end_date: task.end_date,
             deadline: task.deadline,
             recurrence: task.recurrence,
-            status: task.status as TaskStatus,
+            status: task.status,
           }),
         ),
       });
@@ -267,7 +267,7 @@ export class GroupsReadRepositoryKysely
           end_date: task.end_date,
           deadline: task.deadline,
           recurrence: task.recurrence,
-          status: task.status as TaskStatus,
+          status: task.status,
         });
 
         const arr = tasksByGroupIdMap.get(task.group_id);

@@ -10,6 +10,8 @@ interface TaskViewState {
   readonly priority: number;
   readonly weight: number;
   readonly cancelReason?: string;
+  readonly startDate?: string;
+  readonly deadline?: string;
   readonly endDate?: string;
   readonly status: TaskStatus;
   readonly recurrence?: TaskRecurrence;
@@ -26,6 +28,8 @@ class TaskView {
     public readonly groupId?: number,
     public readonly description?: string,
     public readonly cancelReason?: string,
+    public readonly startDate?: string,
+    public readonly deadline?: string,
     public readonly endDate?: string,
     public readonly recurrence?: TaskRecurrence,
   ) {}
@@ -41,6 +45,8 @@ class TaskView {
       input.groupId,
       input.description,
       input.cancelReason,
+      input.startDate,
+      input.deadline,
       input.endDate,
       input.recurrence,
     );
