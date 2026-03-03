@@ -60,6 +60,12 @@ const ApplicationExceptionStateList = {
     code: exceptionCode.writeConflict.code,
     details: exceptionCode.writeConflict.details,
   }),
+
+  TaskUnprocessable: defineExceptionState({
+    key: 'TASK_UNPROCESSABLE',
+    code: exceptionCode.taskUnprocessable.code,
+    details: exceptionCode.taskUnprocessable.details,
+  }),
 };
 
 export const {
@@ -73,4 +79,5 @@ export const {
   ExceptionGroupNotExist,
   ExceptionInboxAlreadyExist,
   ExceptionInboxNotExist,
+  ExceptionTaskUnprocessable,
 } = generateExceptionClasses(ApplicationExceptionStateList);

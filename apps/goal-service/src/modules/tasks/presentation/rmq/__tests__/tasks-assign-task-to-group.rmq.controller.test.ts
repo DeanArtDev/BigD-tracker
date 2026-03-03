@@ -1,4 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalAssignTaskToGroup, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -74,7 +75,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalAssignTaskToGroup.Request = buildPayload({
         data: {
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           groupId,
         },
@@ -119,7 +120,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalAssignTaskToGroup.Request = buildPayload({
         data: {
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           groupId,
         },
@@ -157,7 +158,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalAssignTaskToGroup.Request = buildPayload({
         data: {
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           groupId,
         },
@@ -197,7 +198,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalAssignTaskToGroup.Request = buildPayload({
         data: {
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           groupId,
         },
@@ -239,7 +240,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalAssignTaskToGroup.Request = buildPayload({
         data: {
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           groupId,
         },

@@ -6,17 +6,13 @@ import { type JSX, useMemo } from 'react';
 import { useEventsState, useSelectedDateState } from '../model/selectors';
 import { NavActions } from './nav-actions';
 
-interface NavBarProps<TExtra extends { id: number }> {
+interface NavBarProps<TExtra = any> {
   readonly events: TimeViewEvent<TExtra>[];
   readonly renderEvent?: (props: { event: TimeEvent<TExtra> }) => JSX.Element;
   readonly onEventClick?: (event: TimeEvent<TExtra>) => void;
 }
 
-function NavBar<TExtra extends { id: number }>({
-  events,
-  renderEvent,
-  onEventClick,
-}: NavBarProps<TExtra>) {
+function NavBar<TExtra = any>({ events, renderEvent, onEventClick }: NavBarProps<TExtra>) {
   const { selectedDate } = useSelectedDateState();
   const { allDayEvents } = useEventsState<TExtra>({ events });
 

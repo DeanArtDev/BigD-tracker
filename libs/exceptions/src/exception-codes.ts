@@ -40,26 +40,34 @@ const account = {
 // Goal service
 const tasks = {
   // Application
-  taskNotFound: { code: 'GT-A-0001', details: Details.Define<{ taskId?: number }>() },
-  taskNotExist: { code: 'GT-A-0002', details: Details.Define<{ taskId?: number }>() },
+  taskNotFound: { code: 'GT-A-0001', details: Details.Define<{ taskId?: string | number }>() },
+  taskNotExist: { code: 'GT-A-0002', details: Details.Define<{ taskId?: string | number }>() },
   taskNotInGroup: {
     code: 'GT-A-0003',
-    details: Details.Define<{ taskId: number; groupId?: number; message?: string }>(),
+    details: Details.Define<{ taskId: string | number; groupId?: number; message?: string }>(),
   },
   taskAlreadyInGroup: {
     code: 'GT-A-0004',
-    details: Details.Define<{ taskId: number; groupId: number; message?: string }>(),
+    details: Details.Define<{ taskId: string | number; groupId: number; message?: string }>(),
+  },
+
+  taskUnprocessable: {
+    code: 'GT-A-0005',
+    details: Details.Define<{ taskId: string | number; message?: string }>(),
   },
 
   // Domain
   taskInvariantFailed: {
     code: 'GT-D-0000',
-    details: Details.Define<{ message: string; field: string; taskId?: number }>(),
+    details: Details.Define<{ message: string; field: string; taskId?: string | number }>(),
   },
 
   // Infrastructure
   taskDBFailed: { code: 'GT-I-0000', details: Details.Any },
-  taskCreationFailed: { code: 'GT-I-0001', details: Details.Define<{ taskId?: number }>() },
+  taskCreationFailed: {
+    code: 'GT-I-0001',
+    details: Details.Define<{ taskId?: string | number }>(),
+  },
 } as const satisfies ExceptionConfig;
 
 const groups = {

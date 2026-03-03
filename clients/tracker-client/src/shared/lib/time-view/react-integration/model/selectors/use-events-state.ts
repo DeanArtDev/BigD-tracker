@@ -2,11 +2,7 @@ import type { TimeEvent, TimeViewEvent } from '@/shared/lib/time-view/core';
 import { useMemo } from 'react';
 import { useTimeViewController } from '../context';
 
-function useEventsState<TExtra extends { id: number }>({
-  events,
-}: {
-  events: TimeViewEvent<TExtra>[];
-}) {
+function useEventsState<TExtra = any>({ events }: { events: TimeViewEvent<TExtra>[] }) {
   const controller = useTimeViewController<TExtra>();
 
   return useMemo(() => {

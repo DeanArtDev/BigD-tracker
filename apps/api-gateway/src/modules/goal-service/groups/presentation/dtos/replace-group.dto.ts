@@ -16,10 +16,10 @@ import {
 import { GroupResSingle } from './shared/group-response.dto';
 
 class ReplaceGroupTask {
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ example: '1' })
   @Expose()
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 
   @ApiProperty({ example: 'Имя дела' })
   @Expose()

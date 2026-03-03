@@ -6,11 +6,11 @@ import {
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { TasksWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/tasks.write-mapper';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
-import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getTasksWithStatusQuery } from '../helpers';
 import { groupWithStatusQuery } from '../utils';
@@ -58,7 +58,7 @@ export class GroupWriteRepositoryKysely
         progress: group.progress,
         status: group.status as GroupStatus,
         tasks: tasks.map((task) =>
-          TasksReadKyselyMapper.fromRawToView({
+          TasksWriteKyselyMapper.fromRawToAgr({
             id: task.id,
             user_id: task.user_id,
             group_id: group.id,

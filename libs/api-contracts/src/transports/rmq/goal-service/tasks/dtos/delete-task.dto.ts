@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsInt, ValidateNested } from 'class-validator';
+import { IsInt, IsString, ValidateNested } from 'class-validator';
 
 class DeleteTaskReqData {
-  @IsInt()
-  id: number;
+  @IsString()
+  taskId: string;
 
   @IsInt()
   userId: number;

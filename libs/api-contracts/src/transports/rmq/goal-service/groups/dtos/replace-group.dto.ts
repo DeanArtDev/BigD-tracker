@@ -13,8 +13,8 @@ import {
 import { GroupResSingle } from './group-response.dto';
 
 class ReplaceGroupTask {
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 
   @IsString()
   name: string;

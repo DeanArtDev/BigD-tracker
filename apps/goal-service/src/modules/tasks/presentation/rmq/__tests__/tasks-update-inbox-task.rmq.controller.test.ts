@@ -1,5 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
-import { Task } from '@/modules/tasks/domain';
+import { Task, TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalUpdateInboxTask, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -63,7 +63,7 @@ describe('TasksRmqController (rmq e2e)', () => {
   });
 
   describe(`${GoalUpdateInboxTask.pattern}`, () => {
-    test.skip('should update inbox task', async () => {
+    test('should update inbox task', async () => {
       const userId = 40;
       const taskId = 5001;
       const existingTask = getTask({
@@ -94,7 +94,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Inbox Updated',
           description: 'Updated inbox',
@@ -126,13 +126,13 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Inbox Updated',
           priority: 1,
           weight: 4,
           status: existingTask.status,
-          recurrence: {},
+          recurrence: undefined,
         },
       });
     });
@@ -151,7 +151,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Inbox Updated',
           priority: 1,
@@ -188,7 +188,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Inbox Updated',
           priority: 2,
@@ -231,7 +231,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Inbox Updated',
           priority: 2,
@@ -278,7 +278,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       const payload: GoalUpdateInboxTask.Request = buildPayload({
         data: {
-          id: taskId,
+          id: TaskIdBuilder.wrapOriginId(taskId),
           userId,
           name: 'Inbox Updated',
           priority: 2,

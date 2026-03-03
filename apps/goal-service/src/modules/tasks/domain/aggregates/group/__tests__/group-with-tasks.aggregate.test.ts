@@ -1,6 +1,6 @@
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
-import { TaskView } from '@/modules/tasks/application/dto';
+import { getTask } from '@shared/__tests__/entities';
 import { Group } from '../group.aggregate';
 import { GroupWithTasks } from '../group-with-tasks.aggregate';
 import { DescriptionVo, ProgressVo } from '../../value-objects';
@@ -16,8 +16,8 @@ describe('GroupWithTasks aggregate', () => {
       status,
     });
 
-  const buildTaskView = (id: number) =>
-    TaskView.restore({
+  const buildTask = (id: number) =>
+    getTask({
       id,
       userId: 55,
       name: `Task ${id}`,
@@ -28,7 +28,7 @@ describe('GroupWithTasks aggregate', () => {
 
   it('creates and exposes group data with tasks', () => {
     const group = buildGroup(GroupStatus.NOT_STARTED);
-    const tasks = [buildTaskView(1)];
+    const tasks = [buildTask(1)];
 
     const aggregate = GroupWithTasks.create({ group, tasks });
 
@@ -45,7 +45,7 @@ describe('GroupWithTasks aggregate', () => {
     const group = buildGroup(GroupStatus.NOT_STARTED);
     const aggregate = GroupWithTasks.create({ group, tasks: [] });
 
-    const newTasks = [buildTaskView(2), buildTaskView(3)];
+    const newTasks = [buildTask(2), buildTask(3)];
 
     aggregate.replace({
       group: (current) =>
@@ -67,7 +67,7 @@ describe('GroupWithTasks aggregate', () => {
 
   it('restores group with tasks', () => {
     const group = buildGroup(GroupStatus.NOT_STARTED);
-    const tasks = [buildTaskView(4)];
+    const tasks = [buildTask(4)];
 
     const aggregate = GroupWithTasks.restore({ group, tasks });
 
@@ -77,7 +77,7 @@ describe('GroupWithTasks aggregate', () => {
 
   it('rejects delete when tasks remain', () => {
     const group = buildGroup(GroupStatus.NOT_STARTED);
-    const aggregate = GroupWithTasks.create({ group, tasks: [buildTaskView(5)] });
+    const aggregate = GroupWithTasks.create({ group, tasks: [buildTask(5)] });
 
     expect(() => aggregate.delete()).toThrow();
   });

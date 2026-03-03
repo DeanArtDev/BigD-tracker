@@ -1,4 +1,5 @@
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { GoalAssignTaskToInbox, TaskStatus, RmqErrorKind } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
@@ -68,7 +69,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       const payload: GoalAssignTaskToInbox.Request = buildPayload({
         data: {
           userId,
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
         },
       });
 
@@ -110,7 +111,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       const payload: GoalAssignTaskToInbox.Request = buildPayload({
         data: {
           userId,
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
         },
       });
 
@@ -146,7 +147,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       const payload: GoalAssignTaskToInbox.Request = buildPayload({
         data: {
           userId,
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
         },
       });
 
@@ -187,7 +188,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       const payload: GoalAssignTaskToInbox.Request = buildPayload({
         data: {
           userId,
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
         },
       });
 
@@ -232,7 +233,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       const payload: GoalAssignTaskToInbox.Request = buildPayload({
         data: {
           userId,
-          taskId,
+          taskId: TaskIdBuilder.wrapOriginId(taskId),
         },
       });
 

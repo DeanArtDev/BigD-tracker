@@ -1,4 +1,3 @@
-import { TasksViewMapper } from '@/modules/tasks/application/dto';
 import { DescriptionVo, Task, TaskFactory, TaskFactoryReplaceInput } from '@/modules/tasks/domain';
 import { Name } from '@big-d/api-utils';
 import { GroupWithTasks } from './group-with-tasks.aggregate';
@@ -45,9 +44,7 @@ class GroupFactory {
 
     return group.replace({
       group: (group) => this.replace(group, others),
-      tasks: tasks.map((task) =>
-        TasksViewMapper.fromAggregateToView(TaskFactory.replace(task.task, task.input)),
-      ),
+      tasks: tasks.map((task) => TaskFactory.replace(task.task, task.input)),
     });
   }
 

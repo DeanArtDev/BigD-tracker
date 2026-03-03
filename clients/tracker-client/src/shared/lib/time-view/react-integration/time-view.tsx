@@ -16,7 +16,7 @@ interface TimeViewEvent<TExtra = any> {
   readonly extra?: TExtra;
 }
 
-interface TimeViewProps<TExtra extends { id: number }> {
+interface TimeViewProps<TExtra = any> {
   readonly events: TimeViewEvent<TExtra>[];
   readonly options?: DeepPartial<TimeViewControllerOptions>;
 
@@ -27,7 +27,7 @@ interface TimeViewProps<TExtra extends { id: number }> {
   readonly renderALlDayEvent?: (props: { event: TimeEvent<TExtra> }) => JSX.Element;
 }
 
-function Component<TExtra extends { id: number }>(props: TimeViewProps<TExtra>) {
+function Component<TExtra = any>(props: TimeViewProps<TExtra>) {
   const { events, onEventClick, onDateChange, renderEvent, renderALlDayEvent } = props;
 
   const { dateSet } = useSelectedDateState();
@@ -56,7 +56,7 @@ function Component<TExtra extends { id: number }>(props: TimeViewProps<TExtra>) 
   );
 }
 
-function TimeView<TExtra extends { id: number }>({ options, ...props }: TimeViewProps<TExtra>) {
+function TimeView<TExtra>({ options, ...props }: TimeViewProps<TExtra>) {
   return (
     <TimeViewControllerProvider options={options}>
       <Component<TExtra> {...props} />

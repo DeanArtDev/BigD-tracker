@@ -1,12 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, ValidateNested } from 'class-validator';
+import { IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class TaskRecoveryReqData {
   @IsInt()
   userId: number;
 
-  @IsInt()
-  taskId: number;
+  @IsString()
+  taskId: string;
 
   @IsOptional()
   @IsInt()

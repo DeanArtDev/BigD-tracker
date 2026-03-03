@@ -4,7 +4,7 @@ import { transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 
 const taskSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   priority: z.enum(taskPriorityEnumSchema),
   description: z.string().optional().transform(transformPlaceholder.optional),

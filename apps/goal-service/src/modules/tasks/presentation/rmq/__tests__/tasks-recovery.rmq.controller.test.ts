@@ -1,4 +1,5 @@
 import { initTestEnvironment } from '@/../jest.setup';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalTaskRecovery, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
@@ -77,7 +78,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       tasksWriteRepoMock.replaceTask.mockImplementation((task) => task);
 
       const payload: GoalTaskRecovery.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       const res = await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
@@ -109,7 +110,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       tasksWriteRepoMock.addTaskToGroup.mockResolvedValueOnce(undefined);
 
       const payload: GoalTaskRecovery.Request = buildPayload({
-        data: { userId, taskId, groupId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId), groupId },
       });
 
       const res = await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
@@ -135,7 +136,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(null);
 
       const payload: GoalTaskRecovery.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
@@ -169,7 +170,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       );
 
       const payload: GoalTaskRecovery.Request = buildPayload({
-        data: { userId, taskId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
       let error: unknown;
@@ -206,7 +207,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(null);
 
       const payload: GoalTaskRecovery.Request = buildPayload({
-        data: { userId, taskId, groupId },
+        data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId), groupId },
       });
 
       let error: unknown;

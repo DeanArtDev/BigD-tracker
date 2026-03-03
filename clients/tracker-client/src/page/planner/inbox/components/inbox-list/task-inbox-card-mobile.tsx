@@ -5,12 +5,12 @@ import { TaskInboxCard } from './task-inbox-card';
 
 interface TaskInboxCardProps {
   readonly task: TaskInboxEntity;
-  readonly openId?: number;
+  readonly openId?: string;
   readonly loading: boolean;
   readonly onClick?: () => void;
   readonly onFinish: () => void;
   readonly onDelete: () => void;
-  readonly setOpenId?: (openId?: number) => void;
+  readonly setOpenId?: (openId?: string) => void;
 }
 
 function TaskInboxCardMobile({

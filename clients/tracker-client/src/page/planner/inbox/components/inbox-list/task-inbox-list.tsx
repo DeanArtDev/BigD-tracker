@@ -4,6 +4,7 @@ import {
   useDeleteTask,
   useTaskFinish,
   useInvalidateAllTasks,
+  type TaskEntity,
 } from '@/entity/planner/tasks';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog, useIsMobile } from '@/shared/ui-kit/helpers';
@@ -48,11 +49,11 @@ function TaskInboxList() {
   const { finishTask, isPending: isFinishPending } = useTaskFinish();
   const isLoading = isDeletePending || isFinishPending;
 
-  const handleFinish = (taskId: number) => {
+  const handleFinish = (taskId: TaskEntity['id']) => {
     finishTask({ params: { path: { taskId } } }, { onSuccess: invalidate });
   };
 
-  const handleDelete = (taskId: number) => {
+  const handleDelete = (taskId: TaskEntity['id']) => {
     viaConfirmation({
       isNeedConfirm: () => true,
       callback: () => void deleteTask({ params: { path: { taskId } } }, { onSuccess: invalidate }),
@@ -63,7 +64,7 @@ function TaskInboxList() {
     });
   };
 
-  const [swipedTaskId, setSwipedTaskId] = useState<number>();
+  const [swipedTaskId, setSwipedTaskId] = useState<string>();
 
   return (
     <ScrollAreaNativeVertical className="px-2 py-2 lg:py-4">

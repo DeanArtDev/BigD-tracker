@@ -1353,8 +1353,8 @@ export interface components {
             end?: string;
         };
         TaskDto: {
-            /** @example 1 */
-            id: number;
+            /** @example o:1 */
+            id: string;
             /** @example Имя дела */
             name: string;
             /** @example Описание */
@@ -1508,7 +1508,7 @@ export interface components {
         };
         ReplaceGroupTask: {
             /** @example 1 */
-            id: number;
+            id: string;
             /** @example Имя дела */
             name: string;
             /** @example Описание */
@@ -2766,7 +2766,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2791,7 +2791,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2812,7 +2812,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2837,7 +2837,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2858,7 +2858,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
                 groupId: number;
             };
             cookie?: never;
@@ -2880,7 +2880,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
                 groupId: number;
             };
             cookie?: never;
@@ -2902,7 +2902,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2927,7 +2927,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2969,7 +2969,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };
@@ -2990,7 +2990,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                taskId: number;
+                taskId: string;
             };
             cookie?: never;
         };

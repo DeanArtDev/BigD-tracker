@@ -7,7 +7,7 @@ import { SidebarGroup, SidebarSeparator } from '@/shared/ui-kit/ui/sidebar';
 interface SidebarActionsProps {
   readonly groupId?: number;
   readonly taskInfo: {
-    readonly id: number;
+    readonly id: string;
     readonly status: TaskStatus;
   };
 

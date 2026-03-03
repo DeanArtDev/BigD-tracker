@@ -1,5 +1,6 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import {
+  type TaskEntity,
   useAssignTaskToGroup,
   useAssignTaskToInbox,
   useDeleteCompleteTask,
@@ -57,7 +58,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     isTaskClonePending ||
     isTaskRecoveryPending;
 
-  const handleDelete = (taskId: number) => {
+  const handleDelete = (taskId: TaskEntity['id']) => {
     viaConfirmation({
       isNeedConfirm: () => true,
       callback: () =>
@@ -77,7 +78,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     });
   };
 
-  const handleDeleteComplete = (taskId: number) => {
+  const handleDeleteComplete = (taskId: TaskEntity['id']) => {
     viaConfirmation({
       isNeedConfirm: () => true,
       callback: () =>
@@ -97,7 +98,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     });
   };
 
-  const handleFinish = (taskId: number) => {
+  const handleFinish = (taskId: TaskEntity['id']) => {
     finishTask(
       { params: { path: { taskId } } },
       {
@@ -110,7 +111,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleClone = (taskId: number, groupId?: number) => {
+  const handleClone = (taskId: TaskEntity['id'], groupId?: number) => {
     cloneTask(
       { params: { path: { taskId } }, body: { data: { groupId } } },
       {
@@ -123,7 +124,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleAssign = (taskId: number, groupId: number, success?: () => void) => {
+  const handleAssign = (taskId: TaskEntity['id'], groupId: number, success?: () => void) => {
     assignTaskToGroup(
       { params: { path: { taskId, groupId } } },
       {
@@ -137,7 +138,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleAssignToInbox = (taskId: number, success?: () => void) => {
+  const handleAssignToInbox = (taskId: TaskEntity['id'], success?: () => void) => {
     assignTaskToInbox(
       { params: { path: { taskId } } },
       {
@@ -151,7 +152,10 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleRecovery = (data: { taskId: number; groupId?: number }, success?: () => void) => {
+  const handleRecovery = (
+    data: { taskId: TaskEntity['id']; groupId?: number },
+    success?: () => void,
+  ) => {
     recoveryTask(
       { params: { path: { taskId: data.taskId } }, body: { data: { groupId: data.groupId } } },
       {

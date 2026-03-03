@@ -16,7 +16,7 @@ import {
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
-import { getGroupWithTasks, getTaskView } from '@shared/__tests__/entities';
+import { getGroupWithTasks, getTask } from '@shared/__tests__/entities';
 import {
   goalsReadRepoMock,
   groupReadRepoMock,
@@ -153,7 +153,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const payload: GoalDeleteGroup.Request = buildPayload({
         data: { groupId: 82, userId: 52 },
       });
-      const taskView = getTaskView({ id: 21, userId: 52, name: 'Task in group' });
+      const taskView = getTask({ id: 21, userId: 52, name: 'Task in group' });
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
         getGroupWithTasks({ id: 82, user_id: 52, tasks: [taskView] }),
       );

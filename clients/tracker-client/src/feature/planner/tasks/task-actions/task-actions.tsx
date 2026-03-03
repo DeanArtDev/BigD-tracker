@@ -1,11 +1,11 @@
 import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
-import { TaskStatus } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskStatus } from '@/entity/planner/tasks';
 import { TaskActionsDropdown } from '@/entity/planner/tasks/ui';
-import { useTaskActionsHandlers } from './use-task-actions-handlers';
 import { useState } from 'react';
+import { useTaskActionsHandlers } from './use-task-actions-handlers';
 
 interface TaskActionsProps {
-  readonly taskId: number;
+  readonly taskId: TaskEntity['id'];
   readonly groupId?: number;
   readonly status: TaskStatus;
 

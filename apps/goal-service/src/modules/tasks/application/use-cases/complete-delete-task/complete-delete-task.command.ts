@@ -1,7 +1,7 @@
 export class CompleteDeleteTaskCommand {
   constructor(
     readonly input: {
-      readonly taskId: number;
+      readonly taskId: string;
       readonly userId: number;
     },
   ) {}

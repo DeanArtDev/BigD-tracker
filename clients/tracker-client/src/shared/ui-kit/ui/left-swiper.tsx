@@ -2,9 +2,9 @@ import { type PropsWithChildren, type ReactNode, useEffect, useState } from 'rea
 import { DndContext, PointerSensor, useSensor, useSensors, useDraggable } from '@dnd-kit/core';
 
 interface LeftSwiperProps {
-  readonly id: number;
-  readonly openId?: number;
-  readonly setOpenId?: (openId?: number) => void;
+  readonly id: string;
+  readonly openId?: string;
+  readonly setOpenId?: (openId?: string) => void;
   readonly children: (props: { reset: () => void }) => ReactNode;
   readonly content: (props: { reset: () => void }) => ReactNode;
   readonly actionsSpace?: number;

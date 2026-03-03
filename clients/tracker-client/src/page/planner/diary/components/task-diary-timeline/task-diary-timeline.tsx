@@ -1,5 +1,5 @@
 import { type TaskEntity, useTasksDiaryQuery } from '@/entity/planner/tasks';
-import { EventView } from '@/page/planner/diary/components/task-diary-timeline/event-view';
+import { EventView } from './event-view';
 import { TimeView } from '@/shared/lib/time-view';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -14,15 +14,6 @@ interface TaskDiaryTimelineProps {
 function TaskDiaryTimeline({ onEventClick }: TaskDiaryTimelineProps) {
   const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
   const { taskList } = useTasksDiaryQuery(dateSet);
-  // const { taskList } = useTasksQuery({
-  //   perPage: 10000,
-  //   sort: { startDate: 'ASC' },
-  //   filter: {
-  //     ...dateSet,
-  //     group: filterByGroup,
-  //     status: [TaskStatus.IN_PROGRESS, TaskStatus.OVERDUE, TaskStatus.COMPLETED],
-  //   },
-  // });
 
   const events = useMemo(() => {
     return taskList.map((task) => {

@@ -1,4 +1,4 @@
-import { Frequency as RecurrenceFrequency } from 'rrule';
+import { Frequency as RecurrenceFrequency, RRule } from 'rrule';
 
 enum TaskStatus {
   NOT_STARTED = 'NOT_STARTED',
@@ -29,4 +29,20 @@ enum TaskRecurrenceWeekday {
   SU = 6,
 }
 
-export { TaskStatus, TaskOverrideType, RecurrenceFrequency, TaskRecurrenceWeekday };
+const numberToWeekdayMap = {
+  0: RRule.MO,
+  1: RRule.TU,
+  2: RRule.WE,
+  3: RRule.TH,
+  4: RRule.FR,
+  5: RRule.SA,
+  6: RRule.SU,
+};
+
+export {
+  TaskStatus,
+  TaskOverrideType,
+  RecurrenceFrequency,
+  TaskRecurrenceWeekday,
+  numberToWeekdayMap,
+};
