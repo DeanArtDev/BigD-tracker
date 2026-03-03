@@ -1,5 +1,7 @@
 import {
   GetAssignableTasksQuery,
+  GetDiaryTasksHandler,
+  GetDiaryTasksQuery,
   GetTasksHandler,
   GetTasksQuery,
 } from '@/modules/tasks/application/queries';
@@ -13,7 +15,6 @@ import {
   SoftDeleteTaskCommand,
   TaskRecoveryCommand,
   UnassignTaskFromGroupCommand,
-  UpdateInboxTaskCommand,
 } from '@/modules/tasks/application/use-cases';
 import {
   GoalAssignTaskToGroup,
@@ -23,11 +24,11 @@ import {
   GoalDeleteTask,
   GoalFinishTask,
   GoalGetAssignableTasks,
+  GoalGetDiaryTasks,
   GoalGetTasks,
   GoalReplaceTask,
   GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
-  GoalUpdateInboxTask,
 } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
@@ -55,6 +56,8 @@ export class TasksRmqController {
           priority: payload.priority,
           name: payload.name,
           description: payload.description,
+          startDate: payload.startDate,
+          deadline: payload.deadline,
           recurrence: payload.recurrence,
           weight: payload.weight,
         }),
@@ -89,25 +92,9 @@ export class TasksRmqController {
           userId: payload.userId,
           weight: payload.weight,
           description: payload.description,
-          recurrence: payload.recurrence,
           priority: payload.priority,
-        }),
-      ),
-    };
-  }
-
-  @MessagePattern(GoalUpdateInboxTask.pattern)
-  async updateInboxTask(
-    @Payload() { data: payload }: GoalUpdateInboxTask.Request,
-  ): Promise<GoalUpdateInboxTask.Response> {
-    return {
-      data: await this.commandBus.execute(
-        new UpdateInboxTaskCommand({
-          id: payload.id,
-          userId: payload.userId,
-          name: payload.name,
-          description: payload.description,
-          priority: payload.priority,
+          startDate: payload.startDate,
+          deadline: payload.deadline,
           recurrence: payload.recurrence,
         }),
       ),
@@ -182,7 +169,7 @@ export class TasksRmqController {
   }
 
   @MessagePattern(GoalGetTasks.pattern)
-  async getDiaryTasks(
+  async getTasks(
     @Payload() { data: payload }: GoalGetTasks.Request,
   ): Promise<GoalGetTasks.Response> {
     const { userId, search, filter, sort, page, perPage } = payload;
@@ -201,6 +188,29 @@ export class TasksRmqController {
       data: {
         items: tasks,
         meta: { nextPage: perPage <= tasks.length },
+      },
+    };
+  }
+
+  @MessagePattern(GoalGetDiaryTasks.pattern)
+  async getDiaryTasks(
+    @Payload() { data: payload }: GoalGetDiaryTasks.Request,
+  ): Promise<GoalGetDiaryTasks.Response> {
+    const { userId, filter } = payload;
+
+    const tasks = await this.queryBus.execute<
+      GetDiaryTasksQuery,
+      ReturnHandlerType<typeof GetDiaryTasksHandler>
+    >(
+      new GetDiaryTasksQuery({
+        userId,
+        meta: { filter },
+      }),
+    );
+
+    return {
+      data: {
+        items: tasks,
       },
     };
   }

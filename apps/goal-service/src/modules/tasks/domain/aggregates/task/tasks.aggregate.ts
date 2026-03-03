@@ -1,4 +1,4 @@
-import { TaskStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { ExceptionTaskDomainInvalidInvariant } from '../../exceptions';
@@ -8,8 +8,14 @@ import {
   TaskStatusActions,
 } from '../../specifications';
 import { taskAsserts } from './tasks.invariants';
-import { TaskCreateInput, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
-import { Priority, RecurrenceVo, Weight } from './value-objects';
+import {
+  TaskCreateInput,
+  TaskRecurrence,
+  TaskReplaceInput,
+  TaskRestoreInput,
+  TaskState,
+} from './tasks.types';
+import { Priority, Weight } from './value-objects';
 
 class Task extends AggregateRoot {
   #state: TaskState;
@@ -51,6 +57,8 @@ class Task extends AggregateRoot {
       priority: input.priority,
       weight: input.weight,
       cancelReason: input.cancelReason,
+      startDate: input.startDate,
+      deadline: input.deadline,
       endDate: input.endDate,
       status: input.status,
       recurrence: input.recurrence,
@@ -58,8 +66,8 @@ class Task extends AggregateRoot {
   }
 
   static create(input: TaskCreateInput): Task {
-    const { recurrence } = input;
-    const { startDate } = recurrence?.value ?? {};
+    const startDate = input.startDate;
+    const deadline = input.deadline;
 
     return new Task({
       id: NaN,
@@ -68,28 +76,33 @@ class Task extends AggregateRoot {
       description: input.description,
       priority: input.priority,
       weight: input.weight,
-      status: Task.calculateStatusByDates({ startDate }),
+      startDate,
+      deadline,
+      status: Task.calculateStatusByDates({ startDate, deadline }),
       recurrence: input.recurrence,
     });
   }
 
   public replace(input: TaskReplaceInput): this {
     const { recurrence } = input;
-    const { startDate, deadline } = recurrence?.value ?? {};
+    const startDate = input.startDate;
+    const deadline = input.deadline;
 
     if (this.#isAllowTo('REPLACE_EVERYTHING')) {
-      if (recurrence?.value?.frequency != null) {
+      if (recurrence != null) {
         taskAsserts.neededRecurrenceFields({
-          start: startDate,
-          deadline: deadline,
+          start: recurrence?.value?.start,
+          deadline: recurrence?.value?.end,
         });
       }
 
-      this.#state.status = Task.calculateStatusByDates({ startDate });
+      this.#state.status = Task.calculateStatusByDates({ startDate, deadline });
       this.#state.name = input.name;
       this.#state.description = input.description;
       this.#state.priority = input.priority;
       this.#state.weight = input.weight;
+      this.#state.startDate = startDate;
+      this.#state.deadline = deadline;
       this.#state.recurrence = input.recurrence;
 
       return this;
@@ -152,11 +165,9 @@ class Task extends AggregateRoot {
     if (this.#isAllowTo('RECOVERY')) {
       this.#state.priority = Priority.defaultValue();
       this.#state.weight = Weight.defaultValue();
-      this.#state.recurrence = RecurrenceVo.create({
-        frequency: undefined,
-        deadline: undefined,
-        startDate: undefined,
-      });
+      this.#state.startDate = undefined;
+      this.#state.deadline = undefined;
+      this.#state.recurrence = undefined;
       return this.#setStatus(TaskStatus.NOT_STARTED);
     }
 
@@ -170,19 +181,22 @@ class Task extends AggregateRoot {
   public assignToGroup({ reset = false }: { reset?: boolean } = {}): this {
     if (this.#isAllowTo('ASSIGN')) {
       if (reset) {
-        const { deadline, startDate } = this.#state.recurrence?.value ?? {};
+        const { deadline, startDate } = this.#state;
 
         this.#state.endDate = undefined;
-        this.#state.recurrence = RecurrenceVo.create({
-          frequency: undefined,
-          deadline: undefined,
-          startDate: undefined,
-        });
+        this.#state.startDate = undefined;
+        this.#state.deadline = undefined;
 
         this.#setStatus(
-          Task.calculateStatusByDates({ startDate, deadline, endDate: this.#state.endDate }),
+          Task.calculateStatusByDates({
+            startDate,
+            deadline,
+            endDate: this.#state.endDate,
+          }),
         );
       }
+
+      this.#state.recurrence = undefined;
       return this;
     }
 
@@ -214,11 +228,9 @@ class Task extends AggregateRoot {
         description: this.#state.description,
         priority: this.#state.priority,
         weight: this.#state.weight,
-        recurrence: RecurrenceVo.create({
-          frequency: undefined,
-          deadline: undefined,
-          startDate: undefined,
-        }),
+        startDate: undefined,
+        deadline: undefined,
+        recurrence: undefined,
         status: TaskStatus.NOT_STARTED,
       });
     }
@@ -232,16 +244,11 @@ class Task extends AggregateRoot {
 
   public finish() {
     if (this.#isAllowTo('FINISH')) {
-      const { deadline, startDate, frequency } = this.#state.recurrence?.value ?? {};
+      const startDate = this.#state.startDate;
+      const deadline = this.#state.deadline;
 
       this.#state.endDate = DateVo.create(new Date());
       taskAsserts.datesIntersections({ start: startDate, end: this.#state.endDate });
-
-      this.#state.recurrence = RecurrenceVo.create({
-        frequency,
-        deadline,
-        startDate: startDate ?? DateVo.create(new Date()),
-      });
 
       this.#setStatus(
         Task.calculateStatusByDates({
@@ -286,22 +293,37 @@ class Task extends AggregateRoot {
     return this.#state.cancelReason;
   }
   get startDate() {
-    return this.#state.recurrence?.value.startDate?.value;
+    return this.#state.startDate?.value;
   }
   get endDate() {
     return this.#state.endDate?.value;
   }
   get deadline() {
-    return this.#state.recurrence?.value.deadline?.value;
+    return this.#state.deadline?.value;
   }
   get status() {
     return this.#state.status;
   }
-  get recurrence() {
-    return this.#state.recurrence;
+  get recurrence(): TaskRecurrence | undefined {
+    if (this.#state.recurrence?.value.start?.value == null) return undefined;
+    return {
+      weekdays: this.#state.recurrence?.value.weekdays,
+      frequency: this.#state.recurrence?.value.frequency,
+      start: this.#state.recurrence?.value.start.value,
+      end: this.#state.recurrence?.value.end?.value,
+    };
   }
   get isDraft(): boolean {
     return Number.isNaN(this.#state.id);
+  }
+
+  isRecurrence(): this is this & {
+    recurrence: {
+      start: string;
+      frequency: RecurrenceFrequency;
+    };
+  } {
+    return [this.recurrence?.frequency, this.recurrence?.start].every((i) => i != null);
   }
 
   #isAllowTo(action: TaskStatusActions): boolean {

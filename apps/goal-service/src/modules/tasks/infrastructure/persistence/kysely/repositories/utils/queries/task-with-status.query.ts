@@ -1,4 +1,6 @@
 import { TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
+import { TaskStatus } from '@big-d/api-contracts';
+import { sql } from 'kysely';
 
 function tasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return db
@@ -17,7 +19,7 @@ function tasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
       'tasks.end_date as end_date',
       'tasks.deadline as deadline',
       'tasks.recurrence as recurrence',
-      'task_statuses.name as status',
+      sql<TaskStatus>`task_statuses.name`.as('status'),
     ]);
 }
 

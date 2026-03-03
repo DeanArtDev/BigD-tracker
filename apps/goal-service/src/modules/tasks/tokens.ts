@@ -3,6 +3,11 @@ const TasksToken = {
   READ_REPOSITORY: Symbol.for('TASKS_READ_REPOSITORY'),
 };
 
+const TasksOverridesToken = {
+  WRITE_REPOSITORY: Symbol.for('TASKS_OVERRIDES_WRITE_REPOSITORY'),
+  READ_REPOSITORY: Symbol.for('TASKS_OVERRIDES_READ_REPOSITORY'),
+};
+
 const GroupsToken = {
   WRITE_REPOSITORY: Symbol.for('GROUPS_WRITE_REPOSITORY'),
   READ_REPOSITORY: Symbol.for('GROUPS_READ_REPOSITORY'),
@@ -16,4 +21,4 @@ const GoalsToken = {
   READ_REPOSITORY: Symbol.for('GOALS_READ_REPOSITORY'),
 };
 
-export { TasksToken, GroupsToken, GoalsToken };
+export { TasksToken, GroupsToken, GoalsToken, TasksOverridesToken };

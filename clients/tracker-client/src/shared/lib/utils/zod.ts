@@ -38,6 +38,12 @@ const formTransform = {
 
   dateToISOSFormat: (value: Date | string | null | undefined): string | undefined =>
     value == null ? undefined : new Date(value).toISOString(),
+
+  toNumber: (value: unknown): number | undefined => {
+    const v = Number(value);
+    if (Number.isFinite(v)) return v;
+    return undefined;
+  },
 };
 
 export { transformPlaceholder, formPlaceholderValues, formTransform };

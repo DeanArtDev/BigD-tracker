@@ -1,12 +1,13 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
-import { RecurrenceFrequency } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskRecurrenceWeekday } from '@big-d/api-contracts';
 import { BaseValueObject, DateVo } from '@big-d/api-utils';
 import { isEqual } from 'lodash';
 
 interface RecurrenceVoState {
-  readonly startDate?: DateVo;
-  readonly deadline?: DateVo;
+  readonly start: DateVo;
+  readonly end?: DateVo;
   readonly frequency?: RecurrenceFrequency;
+  readonly weekdays?: TaskRecurrenceWeekday[];
 }
 
 class RecurrenceVo implements BaseValueObject {
@@ -21,12 +22,12 @@ class RecurrenceVo implements BaseValueObject {
   }
 
   public static create(state: RecurrenceVoState): RecurrenceVo {
-    const { deadline, startDate } = state;
+    const { end, start } = state;
 
-    if (startDate != null && deadline != null) {
-      if (startDate.equals(deadline) || startDate.isAfter(deadline.value)) {
+    if (start != null && end != null) {
+      if (start.equals(end) || start.isAfter(end.value)) {
         throw new ExceptionTaskDomainInvalidInvariant({
-          message: `startDate:${startDate.value} must not be after or equal to deadline:${deadline.value}`,
+          message: `startDate:${start.value} must not be after or equal to deadline:${end.value}`,
           field: 'startDate',
         });
       }

@@ -13,6 +13,8 @@ function useGetUserInbox() {
           name: task.name,
           groupId: task.groupId,
           description: task.description,
+          startDate: task.startDate,
+          deadline: task.deadline,
           priority: task.priority,
           recurrence: task.recurrence,
         }));

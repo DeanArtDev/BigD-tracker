@@ -1,12 +1,12 @@
 import { TaskStatus } from '@/entity/planner/tasks';
-import { taskPrioritySchema } from '@/entity/planner/tasks/lib/validation-schemas';
+import { taskPriorityEnumSchema } from '@/entity/planner/tasks/lib/validation-schemas';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 
 const taskSchema = z.object({
   id: z.number(),
   name: z.string(),
-  priority: z.enum(taskPrioritySchema),
+  priority: z.enum(taskPriorityEnumSchema),
   description: z.string().optional().transform(transformPlaceholder.optional),
   deadline: z.string().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
   startDate: z.string().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),

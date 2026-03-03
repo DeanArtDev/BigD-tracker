@@ -1,4 +1,5 @@
 import type { TaskFormProps } from '@/entity/planner/tasks/ui/form';
+import type { TaskFieldsRulesProviderProps } from '@/entity/planner/tasks/ui/form/task-form/context';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
@@ -12,6 +13,7 @@ const TaskFormLazy = withLazy(() =>
 interface TaskFormDialogProps {
   readonly open: boolean;
   readonly loading?: boolean;
+  readonly options?: TaskFieldsRulesProviderProps['options'];
   readonly defaultValue?: TaskFormProps['defaultValue'];
   readonly task?: TaskFormProps['task'];
   readonly trigger?: ReactNode;
@@ -27,6 +29,7 @@ function TaskFormDialog({
   loading,
   defaultValue,
   trigger,
+  options,
   footerSlot,
   footerSidebarSlot,
   onSubmit,
@@ -55,6 +58,7 @@ function TaskFormDialog({
           task={task}
           isLoading={loading}
           defaultValue={defaultValue}
+          options={options}
           {...formStateEmitterProps}
           afterNameSlot={<AppDialogTrigger />}
           footerSlot={footerSlot}

@@ -56,8 +56,9 @@ export class TasksInboxController {
         userId: uid,
         priority: data.priority,
         description: data.description,
+        deadline: data.deadline,
+        startDate: data.startDate,
         name: data.name,
-        recurrence: data.recurrence,
       },
     });
   }
@@ -108,8 +109,9 @@ export class TasksInboxController {
           userId: uid,
           priority: data.priority,
           name: data.name,
+          startDate: data.startDate,
+          deadline: data.deadline,
           description: data.description,
-          recurrence: data.recurrence,
         },
       },
     );

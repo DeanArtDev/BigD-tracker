@@ -86,16 +86,7 @@ function TaskInboxUpdateController({
             updateInboxTask(
               {
                 params: { path: { taskId: inboxTask.id } },
-                body: {
-                  data: {
-                    name: formResult.name,
-                    description: formResult.description,
-                    priority: formResult.priority,
-                    recurrence: {
-                      deadline: formResult.deadline,
-                    },
-                  },
-                },
+                body: { data: formResult },
               },
               {
                 onSuccess: async () => {

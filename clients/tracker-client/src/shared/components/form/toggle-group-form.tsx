@@ -1,3 +1,4 @@
+import { formPlaceholderValues } from '@/shared/lib/utils/zod';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui-kit/ui/form';
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import { ToggleGroup } from '@/shared/ui-kit/ui/toggle-group';
@@ -39,8 +40,8 @@ function ToggleGroupForm<FormValues extends FieldValues = FieldValues>({
                 type="single"
                 {...toggleGroupProps}
                 {...field}
-                value={field.value == null ? '' : field.value}
-                defaultValue=""
+                value={field.value == null ? formPlaceholderValues.string : field.value}
+                defaultValue={formPlaceholderValues.string}
                 onValueChange={(value) => void field.onChange(value === '' ? null : value)}
               >
                 {children}

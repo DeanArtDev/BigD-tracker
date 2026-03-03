@@ -21,18 +21,26 @@ function useTaskFormValues({ task, defaultValue }: UseTaskFormValuesProps) {
         isDescriptionDirty: false,
         startDate: defaultValue?.startDate,
         deadline: defaultValue?.deadline,
+        isRecurrence: false,
+        recurrence: undefined,
       };
 
-  const { startDate, deadline } = task?.recurrence ?? {};
   const values = isEdit
     ? {
         name: task.name,
-        startDate: startDate != null ? new Date(startDate) : undefined,
-        deadline: deadline != null ? new Date(deadline) : undefined,
+        startDate: task.startDate != null ? new Date(task.startDate) : undefined,
+        deadline: task.deadline != null ? new Date(task.deadline) : undefined,
         description: task.description,
         priority: task.priority?.toString(),
         isDescriptionDirty: false,
         weight: task.weight,
+        isRecurrence: task.recurrence != null,
+        recurrence: {
+          frequency: task.recurrence?.frequency?.toString(),
+          weekdays: task.recurrence?.weekdays?.map(String),
+          start: task.recurrence?.start != null ? new Date(task.recurrence?.start) : undefined,
+          end: task.recurrence?.end != null ? new Date(task.recurrence?.end) : undefined,
+        },
       }
     : undefined;
 

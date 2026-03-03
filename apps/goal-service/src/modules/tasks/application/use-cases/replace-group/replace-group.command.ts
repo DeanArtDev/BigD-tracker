@@ -12,6 +12,8 @@ export class ReplaceGroupCommand {
         readonly name: string;
         readonly description?: string;
         readonly weight: number;
+        readonly startDate?: string;
+        readonly deadline?: string;
         readonly priority: number;
         readonly recurrence?: TaskRecurrence;
       }[];

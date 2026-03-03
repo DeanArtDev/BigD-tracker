@@ -1,3 +1,4 @@
+import dayjs from '@/shared/lib/time';
 import { formPlaceholderValues } from '@/shared/lib/utils/zod';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Calendar } from '@/shared/ui-kit/ui/calendar';
@@ -19,6 +20,7 @@ type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = Calenda
   readonly name: Path<FormValues>;
   readonly required?: boolean;
   readonly disabled?: boolean;
+  readonly endDay?: boolean;
   readonly label?: string;
   readonly isErrorMessage?: boolean;
   readonly max?: Date;
@@ -27,8 +29,8 @@ type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = Calenda
     readonly label?: string;
     readonly wrapper?: string;
     readonly input?: string;
+    readonly trigger?: string;
   };
-  readonly onBeforeValueSet?: (date: Date) => Date;
   readonly renderInput?: (props: ControllerRenderProps<Record<string, Date>, string>) => ReactNode;
   readonly onChange?: () => void;
 };
@@ -38,13 +40,13 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
   label,
   max,
   min,
+  endDay,
   isErrorMessage = true,
   required = false,
   disabled = false,
   classNames,
   onChange,
   renderInput,
-  onBeforeValueSet,
   ...props
 }: DatePickerFormProps<FormValues>) {
   return (
@@ -78,6 +80,7 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
                       className={cn(
                         'f-full pl-3 text-left font-normal',
                         !field.value && 'text-muted-foreground',
+                        classNames?.trigger,
                       )}
                     >
                       {field.value ? format(field.value, 'PPP') : <span>Выбор даты</span>}
@@ -98,13 +101,17 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
                   disabled={(date) => date > new Date(max ?? '') || date < new Date(min ?? '')}
                   onSelect={(day) => {
                     const newDay = day ?? formPlaceholderValues.date;
+                    if (newDay == null) {
+                      field.onChange(newDay);
+                      onChange?.();
+                      return;
+                    }
 
-                    const v =
-                      newDay != null && onBeforeValueSet != null
-                        ? onBeforeValueSet(newDay)
-                        : newDay;
+                    const endDayValue = endDay
+                      ? dayjs(newDay).endOf('day').set('milliseconds', 0).toDate()
+                      : newDay;
 
-                    field.onChange(v);
+                    field.onChange(endDayValue);
                     onChange?.();
                   }}
                 />

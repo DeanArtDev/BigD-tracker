@@ -68,6 +68,13 @@ const TaskBySearch = (search: string) =>
       }),
   });
 
+const TaskHasRecurrence = () =>
+  leaf({
+    key: 'tasks.hasRecurrence',
+    purpose: 'filter',
+    toExpr: (eb) => eb('tasks.recurrence', 'is not', null),
+  });
+
 export {
   TaskByUserId,
   TaskByGroupId,
@@ -77,4 +84,5 @@ export {
   TaskInGroup,
   TaskByStartDateLessOrEqual,
   TaskByDeadlineGreaterOrEqual,
+  TaskHasRecurrence,
 };

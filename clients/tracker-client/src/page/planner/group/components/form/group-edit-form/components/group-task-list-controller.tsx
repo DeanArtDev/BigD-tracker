@@ -89,10 +89,8 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
             priority: Number(formTask.priority),
             description: formTask.description,
             name: formTask.name,
-            recurrence: {
-              deadline: formTask.deadline ?? undefined,
-              startDate: formTask.startDate ?? undefined,
-            },
+            deadline: formTask.deadline ?? undefined,
+            startDate: formTask.startDate ?? undefined,
             weight: formTask.weight,
             status: formTask.status,
           })

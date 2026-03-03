@@ -9,13 +9,11 @@ import { Plus } from 'lucide-react';
 import { Fragment } from 'react';
 import { useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import { useTaskFieldsRulesContext } from '../../context';
-import { validationStrategyByStatus } from '../../validation-strategy';
+import { useValidationSchema } from '../../lib/use-validation-schema';
 
 function TaskFormDates(props: { disabled?: boolean }) {
-  const { status } = useTaskFieldsRulesContext();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const validationSchema = validationStrategyByStatus(status);
+  const validationSchema = useValidationSchema();
   type TaskFormData = z.input<typeof validationSchema>;
 
   const startDate = useWatch<{ startDate: TaskFormData['startDate'] }>({ name: 'startDate' });
@@ -81,10 +79,10 @@ function TaskFormDates(props: { disabled?: boolean }) {
         <div className="flex gap-2 items-center">
           <DatePickerForm<TaskFormData>
             name="deadline"
+            endDay
             isErrorMessage={false}
             min={dateLimits.deadline.min}
             max={dateLimits.deadline.max}
-            onBeforeValueSet={(date) => dayjs(date).endOf('day').set('milliseconds', 0).toDate()}
             renderInput={({ ref, value, disabled, onBlur }) => {
               return (
                 <Button
@@ -136,14 +134,19 @@ function getMinMaxValues(dates: {
 } {
   const { deadline, startDate } = dates;
 
+  const deadlineMin = deadline != null ? dayjs(deadline).startOf('day').toDate() : null;
+
   return {
     startDate: {
-      min: startDate != null ? dayjs(startDate).toDate() : undefined,
-      max: deadline != null ? dayjs(deadline).toDate() : undefined,
+      min: undefined,
+      max: deadline != null ? dayjs(deadline).endOf('day').toDate() : undefined,
     },
 
     deadline: {
-      min: startDate != null ? dayjs(startDate).toDate() : dayjs().subtract(1, 'day').toDate(),
+      min:
+        (deadlineMin ?? startDate != null)
+          ? dayjs(startDate).startOf('day').toDate()
+          : dayjs().startOf('day').toDate(),
       max: undefined,
     },
   };

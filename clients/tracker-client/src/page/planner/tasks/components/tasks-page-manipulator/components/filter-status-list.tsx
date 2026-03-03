@@ -1,4 +1,4 @@
-import { TasksQueryStatus } from '@/entity/planner/tasks';
+import { TaskQueryStatus } from '@/entity/planner/tasks';
 import { Button } from '@/shared/ui-kit/ui/button';
 import {
   DropdownMenu,
@@ -11,24 +11,24 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 type AvailableStatusesMap = {
-  [TasksQueryStatus.NOT_STARTED]: boolean;
-  [TasksQueryStatus.IN_PROGRESS]: boolean;
-  [TasksQueryStatus.COMPLETED]: boolean;
-  [TasksQueryStatus.OVERDUE]: boolean;
-  [TasksQueryStatus.CANCELLED]: boolean;
+  [TaskQueryStatus.NOT_STARTED]: boolean;
+  [TaskQueryStatus.IN_PROGRESS]: boolean;
+  [TaskQueryStatus.COMPLETED]: boolean;
+  [TaskQueryStatus.OVERDUE]: boolean;
+  [TaskQueryStatus.CANCELLED]: boolean;
 } & Record<string, boolean>;
 
 const humanizeStatusMap: Record<keyof AvailableStatusesMap, string> = {
-  [TasksQueryStatus.NOT_STARTED]: 'Не начатые',
-  [TasksQueryStatus.IN_PROGRESS]: 'Выполняются',
-  [TasksQueryStatus.COMPLETED]: 'Завершенные',
-  [TasksQueryStatus.OVERDUE]: 'Просроченные',
-  [TasksQueryStatus.CANCELLED]: 'Отмененные',
+  [TaskQueryStatus.NOT_STARTED]: 'Не начатые',
+  [TaskQueryStatus.IN_PROGRESS]: 'Выполняются',
+  [TaskQueryStatus.COMPLETED]: 'Завершенные',
+  [TaskQueryStatus.OVERDUE]: 'Просроченные',
+  [TaskQueryStatus.CANCELLED]: 'Отмененные',
 };
 
 interface FilterStatusListProps {
-  readonly selectedStatuses: TasksQueryStatus[];
-  readonly onFilterChange: (statuses: TasksQueryStatus[]) => void;
+  readonly selectedStatuses: TaskQueryStatus[];
+  readonly onFilterChange: (statuses: TaskQueryStatus[]) => void;
 }
 
 function FilterStatusList({ selectedStatuses, onFilterChange }: FilterStatusListProps) {
@@ -41,11 +41,11 @@ function FilterStatusList({ selectedStatuses, onFilterChange }: FilterStatusList
         return acc;
       },
       {
-        [TasksQueryStatus.NOT_STARTED]: false,
-        [TasksQueryStatus.IN_PROGRESS]: false,
-        [TasksQueryStatus.COMPLETED]: false,
-        [TasksQueryStatus.OVERDUE]: false,
-        [TasksQueryStatus.CANCELLED]: false,
+        [TaskQueryStatus.NOT_STARTED]: false,
+        [TaskQueryStatus.IN_PROGRESS]: false,
+        [TaskQueryStatus.COMPLETED]: false,
+        [TaskQueryStatus.OVERDUE]: false,
+        [TaskQueryStatus.CANCELLED]: false,
       },
     );
   }, [selectedStatuses]);
@@ -70,7 +70,7 @@ function FilterStatusList({ selectedStatuses, onFilterChange }: FilterStatusList
                 onClick={(evt) => {
                   evt.preventDefault();
                   if (!isChecked) {
-                    onFilterChange([...selectedStatuses, status as TasksQueryStatus]);
+                    onFilterChange([...selectedStatuses, status as TaskQueryStatus]);
                   } else {
                     onFilterChange(selectedStatuses.filter((i) => i !== status));
                   }

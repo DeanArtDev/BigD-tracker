@@ -15,20 +15,20 @@ describe('RecurrenceVo', () => {
   it('creates recurrence when dates are valid', () => {
     const recurrence = RecurrenceVo.create({
       frequency: RecurrenceFrequency.DAILY,
-      startDate: DateVo.create(futureDate(1)),
-      deadline: DateVo.create(futureDate(2)),
+      start: DateVo.create(futureDate(1)),
+      end: DateVo.create(futureDate(2)),
     });
 
     expect(recurrence.value.frequency).toBe(RecurrenceFrequency.DAILY);
-    expect(recurrence.value.startDate?.value).toBe(futureDate(1));
-    expect(recurrence.value.deadline?.value).toBe(futureDate(2));
+    expect(recurrence.value.start?.value).toBe(futureDate(1));
+    expect(recurrence.value.end?.value).toBe(futureDate(2));
   });
 
   it.skip('rejects past startDate', () => {
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(pastDate(1)),
-        deadline: DateVo.create(futureDate(1)),
+        start: DateVo.create(pastDate(1)),
+        end: DateVo.create(futureDate(1)),
       }),
     ).toThrow();
   });
@@ -36,8 +36,8 @@ describe('RecurrenceVo', () => {
   it('rejects past deadline', () => {
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(futureDate(1)),
-        deadline: DateVo.create(pastDate(1)),
+        start: DateVo.create(futureDate(1)),
+        end: DateVo.create(pastDate(1)),
       }),
     ).toThrow();
   });
@@ -45,8 +45,8 @@ describe('RecurrenceVo', () => {
   it('allows boundary at start of today for startDate', () => {
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(startOfToday()),
-        deadline: DateVo.create(futureDate(1)),
+        start: DateVo.create(startOfToday()),
+        end: DateVo.create(futureDate(1)),
       }),
     ).not.toThrow();
   });
@@ -54,8 +54,8 @@ describe('RecurrenceVo', () => {
   it('rejects deadline at start of today when startDate is after deadline', () => {
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(futureDate(1)),
-        deadline: DateVo.create(startOfToday()),
+        start: DateVo.create(futureDate(1)),
+        end: DateVo.create(startOfToday()),
       }),
     ).toThrow();
   });
@@ -63,15 +63,15 @@ describe('RecurrenceVo', () => {
   it.skip('rejects values before start of today boundary', () => {
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(oneMsBeforeStartOfToday()),
-        deadline: DateVo.create(futureDate(1)),
+        start: DateVo.create(oneMsBeforeStartOfToday()),
+        end: DateVo.create(futureDate(1)),
       }),
     ).toThrow();
 
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(futureDate(1)),
-        deadline: DateVo.create(oneMsBeforeStartOfToday()),
+        start: DateVo.create(futureDate(1)),
+        end: DateVo.create(oneMsBeforeStartOfToday()),
       }),
     ).toThrow();
   });
@@ -81,8 +81,8 @@ describe('RecurrenceVo', () => {
 
     expect(() =>
       RecurrenceVo.create({
-        startDate: date,
-        deadline: date,
+        start: date,
+        end: date,
       }),
     ).toThrow();
   });
@@ -90,8 +90,8 @@ describe('RecurrenceVo', () => {
   it('rejects when startDate is after deadline', () => {
     expect(() =>
       RecurrenceVo.create({
-        startDate: DateVo.create(futureDate(2)),
-        deadline: DateVo.create(futureDate(1)),
+        start: DateVo.create(futureDate(2)),
+        end: DateVo.create(futureDate(1)),
       }),
     ).toThrow();
   });
@@ -99,13 +99,13 @@ describe('RecurrenceVo', () => {
   it('supports equality by value', () => {
     const left = RecurrenceVo.create({
       frequency: RecurrenceFrequency.WEEKLY,
-      startDate: DateVo.create(futureDate(1)),
-      deadline: DateVo.create(futureDate(2)),
+      start: DateVo.create(futureDate(1)),
+      end: DateVo.create(futureDate(2)),
     });
     const right = RecurrenceVo.create({
       frequency: RecurrenceFrequency.WEEKLY,
-      startDate: DateVo.create(futureDate(1)),
-      deadline: DateVo.create(futureDate(2)),
+      start: DateVo.create(futureDate(1)),
+      end: DateVo.create(futureDate(2)),
     });
 
     expect(left.equals(right)).toBe(true);

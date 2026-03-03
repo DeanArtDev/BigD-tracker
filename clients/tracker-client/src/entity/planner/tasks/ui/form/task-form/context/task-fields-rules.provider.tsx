@@ -3,16 +3,20 @@ import { getFieldRuleTypeByStatus } from '../constants';
 import { type TaskFieldsRulesContext, taskFieldsRulesContext, type TaskFormRule } from './context';
 
 interface TaskFieldsRulesProviderProps {
+  readonly options?: {
+    readonly visibility?: TaskFieldsRulesContext['visibility'];
+  };
   readonly status: TaskFieldsRulesContext['status'];
 }
 
 function TaskFieldsRulesProvider({
   status,
+  options,
   children,
 }: PropsWithChildren<TaskFieldsRulesProviderProps>) {
   const value = useMemo<TaskFieldsRulesContext>(() => {
     if (status == null) {
-      return { status };
+      return { status, visibility: options?.visibility };
     }
 
     const rulesType = getFieldRuleTypeByStatus(status);
@@ -20,6 +24,7 @@ function TaskFieldsRulesProvider({
 
     return {
       status,
+      visibility: options?.visibility,
       rules: {
         name: createRule({ type: 'editable' }),
         description: createRule({ type: 'editable' }),
@@ -28,9 +33,10 @@ function TaskFieldsRulesProvider({
         startDate: createRule({ type: rulesType, isDisabled }),
         priority: createRule({ type: rulesType, isDisabled }),
         weight: createRule({ type: rulesType, isDisabled }),
+        recurrence: createRule({ type: rulesType, isDisabled }),
       },
     };
-  }, [status]);
+  }, [status, options?.visibility]);
 
   return (
     <taskFieldsRulesContext.Provider value={value}>{children}</taskFieldsRulesContext.Provider>

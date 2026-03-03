@@ -1,4 +1,4 @@
-import { GoalsToken, GroupsToken, TasksToken } from '@/modules/tasks/tokens';
+import { GoalsToken, GroupsToken, TasksOverridesToken, TasksToken } from '@/modules/tasks/tokens';
 import { Module } from '@nestjs/common';
 import {
   GoalsReadRepositoryKysely,
@@ -10,12 +10,15 @@ import {
   GroupInboxWriteRepositoryKysely,
   GroupWriteRepositoryKysely,
   TasksWriteRepositoryKysely,
+  TasksOverridesWriteRepositoryKysely,
 } from './persistence/kysely/repositories/write';
 
 @Module({
   exports: [
     TasksToken.WRITE_REPOSITORY,
     TasksToken.READ_REPOSITORY,
+
+    TasksOverridesToken.WRITE_REPOSITORY,
 
     GroupsToken.READ_REPOSITORY,
     GroupsToken.WRITE_REPOSITORY,
@@ -27,6 +30,11 @@ import {
   ],
   providers: [
     { provide: GoalsToken.READ_REPOSITORY, useClass: GoalsReadRepositoryKysely },
+
+    {
+      provide: TasksOverridesToken.WRITE_REPOSITORY,
+      useClass: TasksOverridesWriteRepositoryKysely,
+    },
 
     { provide: GroupsToken.INBOX_READ_REPOSITORY, useClass: GroupInboxReadRepositoryKysely },
     { provide: GroupsToken.INBOX_WRITE_REPOSITORY, useClass: GroupInboxWriteRepositoryKysely },

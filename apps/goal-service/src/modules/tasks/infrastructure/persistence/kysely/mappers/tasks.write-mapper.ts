@@ -1,5 +1,5 @@
-import { Priority, Task, Weight } from '@/modules/tasks/domain';
-import { TaskStatus } from '@big-d/api-contracts';
+import { Priority, Task, TaskOverride, Weight } from '@/modules/tasks/domain';
+import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { rawRecurrenceToVo } from './helpers';
 
@@ -19,14 +19,13 @@ interface RawTask {
   readonly recurrence: string | null;
 }
 
-class TasksWriteKyselyMapper {
-  static fromRawToAgr(raw: RawTask): Task {
-    const recurrence = rawRecurrenceToVo({
-      recurrence: raw.recurrence,
-      startDate: raw.start_date,
-      deadline: raw.deadline,
-    });
+interface RawTaskOverride extends RawTask {
+  readonly override_type: TaskOverrideType;
+  readonly task_id: number;
+}
 
+class TasksWriteKyselyMapper {
+  static fromRawToAgr = (raw: RawTask): Task => {
     return Task.restore({
       id: raw.id,
       userId: raw.user_id,
@@ -36,11 +35,21 @@ class TasksWriteKyselyMapper {
       priority: Priority.restore(raw.priority),
       weight: Weight.restore(raw.weight),
       cancelReason: raw.cancel_reason ?? undefined,
+      startDate: raw.start_date != null ? DateVo.restore(raw.start_date.toISOString()) : undefined,
+      deadline: raw.deadline != null ? DateVo.restore(raw.deadline.toISOString()) : undefined,
       endDate: raw.end_date != null ? DateVo.restore(raw.end_date.toISOString()) : undefined,
       status: raw.status as TaskStatus,
-      recurrence,
+      recurrence: rawRecurrenceToVo(raw.recurrence),
     });
-  }
+  };
+
+  static fromRawToOverrideAgr = ({ override_type, task_id, ...taskRaw }: RawTaskOverride) => {
+    return TaskOverride.restore({
+      task: TasksWriteKyselyMapper.fromRawToAgr(taskRaw),
+      type: override_type,
+      masterTaskId: task_id,
+    });
+  };
 }
 
 export { TasksWriteKyselyMapper, RawTask };

@@ -56,6 +56,20 @@ class TaskDto {
   @IsString()
   endDate?: string;
 
+  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @Expose()
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  startDate?: string;
+
+  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @Expose()
+  @IsISO8601()
+  @IsOptional()
+  @IsString()
+  deadline?: string;
+
   @ApiProperty({ example: 100, description: 'От 0 до 100' })
   @Expose()
   @Min(0)

@@ -1,36 +1,35 @@
-import { type TaskEntity, TaskStatus, useTasksQuery } from '@/entity/planner/tasks';
+import { type TaskEntity, useTasksDiaryQuery } from '@/entity/planner/tasks';
 import { EventView } from '@/page/planner/diary/components/task-diary-timeline/event-view';
-import { AllDayEventView } from './all-day-event-view';
 import { TimeView } from '@/shared/lib/time-view';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { useMemo, useState } from 'react';
+import { AllDayEventView } from './all-day-event-view';
 
 interface TaskDiaryTimelineProps {
   readonly filterByGroup?: number[];
   readonly onEventClick: (task: TaskEntity | undefined) => void;
 }
 
-function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelineProps) {
+function TaskDiaryTimeline({ onEventClick }: TaskDiaryTimelineProps) {
   const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
-  const { taskList } = useTasksQuery({
-    perPage: 10000,
-    sort: { startDate: 'ASC' },
-    filter: {
-      ...dateSet,
-      group: filterByGroup,
-      status: [TaskStatus.IN_PROGRESS, TaskStatus.OVERDUE, TaskStatus.COMPLETED],
-    },
-  });
+  const { taskList } = useTasksDiaryQuery(dateSet);
+  // const { taskList } = useTasksQuery({
+  //   perPage: 10000,
+  //   sort: { startDate: 'ASC' },
+  //   filter: {
+  //     ...dateSet,
+  //     group: filterByGroup,
+  //     status: [TaskStatus.IN_PROGRESS, TaskStatus.OVERDUE, TaskStatus.COMPLETED],
+  //   },
+  // });
 
   const events = useMemo(() => {
     return taskList.map((task) => {
-      const { startDate, deadline } = task?.recurrence ?? {};
-
       return {
         name: task.name,
-        from: startDate != null ? new Date(startDate) : 0,
-        to: deadline != null ? new Date(deadline) : 0,
+        from: task.startDate != null ? new Date(task.startDate) : 0,
+        to: task.deadline != null ? new Date(task.deadline) : 0,
         extra: task,
       };
     });

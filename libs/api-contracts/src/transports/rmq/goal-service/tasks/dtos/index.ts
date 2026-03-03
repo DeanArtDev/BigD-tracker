@@ -13,5 +13,7 @@ export * from './finish-task.dto';
 export * from './complete-delete-task.dto';
 export * from './task-recovery.dto';
 export * from './task-recurrency.dto';
+export * from './get-diary-tasks.dto';
+export * from './task-virtual.dto';
 
 export * from './task.dto';
