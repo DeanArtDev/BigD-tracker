@@ -9,13 +9,7 @@ interface ComponentsDropdownItemProps {
   readonly onMouseEnter: () => void;
 }
 
-function ComponentsDropdownItem({
-  isSelected,
-  index,
-  onMouseEnter,
-  option,
-  onClick,
-}: ComponentsDropdownItemProps) {
+function ComponentsDropdownItem({ isSelected, index, onMouseEnter, option, onClick }: ComponentsDropdownItemProps) {
   return (
     <li
       className={cn('inline-flex grow gap-2 rounded h-9 w-full cursor-pointer p-1.5', {

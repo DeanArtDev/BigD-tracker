@@ -3,11 +3,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 
 function useGroupUpdate() {
   const options = getDefaultQueryNotifications();
-  const { mutate: updateGroup, ...others } = $privetQueryClient.useMutation(
-    'put',
-    '/groups/{groupId}',
-    { onError: options.onError },
-  );
+  const { mutate: updateGroup, ...others } = $privetQueryClient.useMutation('put', '/groups/{groupId}', {
+    onError: options.onError,
+  });
 
   return {
     updateGroup,

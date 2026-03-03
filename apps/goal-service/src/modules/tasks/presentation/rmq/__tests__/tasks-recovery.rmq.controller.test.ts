@@ -100,13 +100,9 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       const taskId = 9302;
       const groupId = 777;
 
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
       tasksWriteRepoMock.replaceTask.mockImplementation((task) => task);
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: groupId, user_id: userId }),
-      );
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(getGroupWithTasks({ id: groupId, user_id: userId }));
       tasksWriteRepoMock.addTaskToGroup.mockResolvedValueOnce(undefined);
 
       const payload: GoalTaskRecovery.Request = buildPayload({
@@ -141,10 +137,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
-          GoalTaskRecovery.pattern,
-          payload,
-        );
+        await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(GoalTaskRecovery.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -175,10 +168,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
-          GoalTaskRecovery.pattern,
-          payload,
-        );
+        await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(GoalTaskRecovery.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -200,9 +190,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
       const taskId = 9305;
       const groupId = 778;
 
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
       tasksWriteRepoMock.replaceTask.mockImplementation((task) => task);
       groupWriteRepoMock.getGroupById.mockResolvedValueOnce(null);
 
@@ -212,10 +200,7 @@ describe('TasksRmqController goal.task-recovery.command (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
-          GoalTaskRecovery.pattern,
-          payload,
-        );
+        await sendMessage<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(GoalTaskRecovery.pattern, payload);
       } catch (err) {
         error = err;
       }

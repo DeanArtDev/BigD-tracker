@@ -16,11 +16,7 @@ interface CountdownStopwatchProps {
   readonly renderControls?: (renderData: RenderData) => JSX.Element;
 }
 
-function CountdownStopwatch({
-  autoStart = false,
-  targetSeconds,
-  renderControls,
-}: CountdownStopwatchProps) {
+function CountdownStopwatch({ autoStart = false, targetSeconds, renderControls }: CountdownStopwatchProps) {
   const [isExpired, setIsExpired] = useState(false);
 
   const expiryTimestamp = new Date();

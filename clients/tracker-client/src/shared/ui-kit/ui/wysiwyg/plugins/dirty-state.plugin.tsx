@@ -14,11 +14,8 @@ function stableStringifyEditorState(state: EditorState): string {
 }
 
 function DirtyTrackingPlugin({ initialStateString, onDirtyChange }: DirtyTrackingPluginProps) {
-  const baselineRef = useRef<string | typeof formPlaceholderValues.textInputs>(
-    formPlaceholderValues.textInputs,
-  );
-  const initState =
-    typeof initialStateString === 'string' ? initialStateString : formPlaceholderValues.textInputs;
+  const baselineRef = useRef<string | typeof formPlaceholderValues.textInputs>(formPlaceholderValues.textInputs);
+  const initState = typeof initialStateString === 'string' ? initialStateString : formPlaceholderValues.textInputs;
 
   const dirtyRef = useRef<boolean>(false);
   const onDirtyChangeRef = useEffectEvent((value: boolean) => onDirtyChange(value));

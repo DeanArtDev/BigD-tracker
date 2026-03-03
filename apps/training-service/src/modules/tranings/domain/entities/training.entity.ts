@@ -61,10 +61,7 @@ class TrainingEntity {
 
   updateWormUpDuration(value: number | undefined): this {
     if (this.endDate != null) {
-      validator.throwError(
-        'Cannot update wormUpDuration after training has ended',
-        'wormUpDuration',
-      );
+      validator.throwError('Cannot update wormUpDuration after training has ended', 'wormUpDuration');
     }
 
     this.data.wormUpDuration = value;
@@ -75,10 +72,7 @@ class TrainingEntity {
 
   updatePostTrainingDuration(value: number | undefined): this {
     if (this.endDate != null) {
-      validator.throwError(
-        'Cannot update postTrainingDuration after training has ended',
-        'postTrainingDuration',
-      );
+      validator.throwError('Cannot update postTrainingDuration after training has ended', 'postTrainingDuration');
     }
 
     this.data.postTrainingDuration = value;
@@ -88,10 +82,7 @@ class TrainingEntity {
 
   protected start(): this {
     if (this.inProgress || this.isCompleted) {
-      validator.throwError(
-        `Training ${this.data.id} has been already started or ended`,
-        'canStart',
-      );
+      validator.throwError(`Training ${this.data.id} has been already started or ended`, 'canStart');
     }
 
     this.data.inProgress = true;
@@ -101,17 +92,11 @@ class TrainingEntity {
 
   finish(): this {
     if (this.isCompleted) {
-      validator.throwError(
-        `Cannot finish training ${this.data.id} if it has already ended`,
-        'finish',
-      );
+      validator.throwError(`Cannot finish training ${this.data.id} if it has already ended`, 'finish');
     }
 
     if (!this.inProgress) {
-      validator.throwError(
-        `Cannot finish training ${this.data.id} if it hasn't started yet`,
-        'finish',
-      );
+      validator.throwError(`Cannot finish training ${this.data.id} if it hasn't started yet`, 'finish');
     }
 
     const endDate = new Date().toISOString();
@@ -124,17 +109,7 @@ class TrainingEntity {
   }
 
   public validate(): this {
-    const {
-      id,
-      name,
-      type,
-      userId,
-      wormUpDuration,
-      postTrainingDuration,
-      startDate,
-      description,
-      endDate,
-    } = this.data;
+    const { id, name, type, userId, wormUpDuration, postTrainingDuration, startDate, description, endDate } = this.data;
 
     if (description != null) {
       validator.isNotStringEmpty(description, 'description');

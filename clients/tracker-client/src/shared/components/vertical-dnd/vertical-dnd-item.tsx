@@ -12,15 +12,9 @@ function VerticalDndItem<T extends HasId>(props: {
 }) {
   const { item, id, renderItem, disableInteractiveElementBlocking } = props;
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),

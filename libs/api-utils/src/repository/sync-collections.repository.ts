@@ -64,9 +64,4 @@ class SyncCollectionRepository<DB, TId extends IdType = number> {
   }
 }
 
-export {
-  SyncCollectionRepository,
-  SyncCollectionParam,
-  ISyncCollectionMethods,
-  SyncCollectionRepositoryHelper,
-};
+export { SyncCollectionRepository, SyncCollectionParam, ISyncCollectionMethods, SyncCollectionRepositoryHelper };

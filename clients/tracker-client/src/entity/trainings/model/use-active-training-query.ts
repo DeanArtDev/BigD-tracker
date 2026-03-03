@@ -2,11 +2,10 @@ import { $privetQueryClient } from '@/shared/api/api-client';
 import { trainingsQueryKeys } from './query';
 
 function useActiveTrainingQuery() {
-  const { data, error, ...others } = $privetQueryClient.useQuery(
-    ...trainingsQueryKeys.getActiveTraining(),
-    undefined,
-    { gcTime: 0, retry: 1 },
-  );
+  const { data, error, ...others } = $privetQueryClient.useQuery(...trainingsQueryKeys.getActiveTraining(), undefined, {
+    gcTime: 0,
+    retry: 1,
+  });
 
   const isNotFound = isNotFoundError(error);
 

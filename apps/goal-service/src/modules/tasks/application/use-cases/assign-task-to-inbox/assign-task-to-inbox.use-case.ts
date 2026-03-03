@@ -24,10 +24,7 @@ class AssignTaskToInboxUseCase {
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
 
       if (isOrigin) {
-        const sureTask = await this.taskCheckerService.ensureTaskExists(
-          { taskId: data.id, userId },
-          { trx },
-        );
+        const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const { inboxId } = await this.inboxGroupCheckerService.ensureTaskNotInInboxGroup(
           { userId, taskId: data.id },
           { trx },

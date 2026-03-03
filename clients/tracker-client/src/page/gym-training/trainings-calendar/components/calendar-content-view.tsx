@@ -17,8 +17,7 @@ function CalendarContentView({ bgcolor, title, isDraggable, isLoading }: Calenda
         'flex flex-row justify-between gap-2 items-center text-xs p-1 rounded-md relative overflow-hidden h-[40px] md:h-full',
         bgcolor,
         {
-          'before:absolute before:inset-0 before:bg-white/70 before:opacity-70 before:z-0':
-            isLoading,
+          'before:absolute before:inset-0 before:bg-white/70 before:opacity-70 before:z-0': isLoading,
         },
       )}
     >
@@ -31,9 +30,7 @@ function CalendarContentView({ bgcolor, title, isDraggable, isLoading }: Calenda
         })}
         size={20}
       />
-      {isDraggable && (
-        <GripVertical className="relative m-auto lg:ml-auto lg:right-[-5px]" size={20} />
-      )}
+      {isDraggable && <GripVertical className="relative m-auto lg:ml-auto lg:right-[-5px]" size={20} />}
     </Card>
   );
 }

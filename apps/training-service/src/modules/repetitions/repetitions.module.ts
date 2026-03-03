@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RepetitionsMapper } from './application/repetitions.mapper';
 import { REPETITIONS_REPOSITORY } from './application/repetitions.repository';
-import {
-  CreateRepetitionsUseCase,
-  DeleteRepetitionsUseCase,
-  FinishRepetitionsUseCase,
-} from './application/use-cases';
+import { CreateRepetitionsUseCase, DeleteRepetitionsUseCase, FinishRepetitionsUseCase } from './application/use-cases';
 import { KyselyRepetitionsRepository } from './infra/kysely-repetitions.repository';
 
 @Module({

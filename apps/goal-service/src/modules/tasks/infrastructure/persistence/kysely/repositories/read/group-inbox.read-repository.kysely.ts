@@ -1,9 +1,5 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto';
-import {
-  TaskDatabase,
-  GroupInboxReadRepository,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { TaskDatabase, GroupInboxReadRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
@@ -14,18 +10,12 @@ import { BaseTasksRepository } from '../base-tasks.repository';
 import { getInboxByUserIdQuery, getTasksWithStatusQuery } from '../helpers';
 
 @Injectable()
-export class GroupInboxReadRepositoryKysely
-  extends BaseTasksRepository
-  implements GroupInboxReadRepository
-{
+export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implements GroupInboxReadRepository {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
 
-  async getInboxWithTasksByUserId(
-    input: { userId: number },
-    trx?: TaskTransaction,
-  ): Promise<GroupInboxView | null> {
+  async getInboxWithTasksByUserId(input: { userId: number }, trx?: TaskTransaction): Promise<GroupInboxView | null> {
     return await this.errorCatcher('inbox-group.get-inbox-by-user-id-with-tasks', async () => {
       const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirst();
       if (inbox == null) return null;
@@ -68,11 +58,7 @@ export class GroupInboxReadRepositoryKysely
     trx?: TaskTransaction,
   ): Promise<{ inboxId: number; success: boolean }> {
     return await this.errorCatcher('inbox-group.is-task-in-inbox', async () => {
-      const inbox = await getInboxByUserIdQuery(
-        this.db,
-        { userId: input.userId },
-        trx,
-      ).executeTakeFirst();
+      const inbox = await getInboxByUserIdQuery(this.db, { userId: input.userId }, trx).executeTakeFirst();
       if (inbox == null) return { success: false, inboxId: NaN };
 
       const tasks = await this.db

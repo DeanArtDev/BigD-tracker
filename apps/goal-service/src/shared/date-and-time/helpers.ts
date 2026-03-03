@@ -4,11 +4,7 @@ function applyTimeParts(date: TimeAndTimeValue, patch: TimeAndTimeValue): TimeAn
   const target = timeAndDate(date);
   const source = timeAndDate(patch);
 
-  return target
-    .hour(source.hour())
-    .minute(source.minute())
-    .second(source.second())
-    .millisecond(source.millisecond());
+  return target.hour(source.hour()).minute(source.minute()).second(source.second()).millisecond(source.millisecond());
 }
 
 export { applyTimeParts };

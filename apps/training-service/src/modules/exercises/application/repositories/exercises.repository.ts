@@ -5,10 +5,7 @@ import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
 
 interface ExerciseRawData {
   readonly selectable: Omit<Selectable<DB['exercises']>, 'updated_at' | 'created_at'>;
-  readonly updateable: Omit<
-    Override<Updateable<DB['exercises']>, 'id', number>,
-    'updated_at' | 'created_at'
-  >;
+  readonly updateable: Omit<Override<Updateable<DB['exercises']>, 'id', number>, 'updated_at' | 'created_at'>;
   readonly insertable: OmitCreateFields<Override<Insertable<DB['exercises']>, 'position', number>>;
 }
 
@@ -27,20 +24,11 @@ interface ExercisesRepository {
     trx?: Transaction<DB>,
   ): Promise<ExerciseEntity[]>;
 
-  findTemplatable(
-    filters: { userId?: number; onlyUser?: boolean },
-    trx?: Transaction<DB>,
-  ): Promise<ExerciseEntity[]>;
+  findTemplatable(filters: { userId?: number; onlyUser?: boolean }, trx?: Transaction<DB>): Promise<ExerciseEntity[]>;
 
-  create(
-    data: ExerciseRawData['insertable'],
-    trx?: Transaction<DB>,
-  ): Promise<ExerciseEntity | null>;
+  create(data: ExerciseRawData['insertable'], trx?: Transaction<DB>): Promise<ExerciseEntity | null>;
 
-  update: (
-    data: ExerciseRawData['updateable'],
-    options?: { replace: boolean },
-  ) => Promise<ExerciseEntity | null>;
+  update: (data: ExerciseRawData['updateable'], options?: { replace: boolean }) => Promise<ExerciseEntity | null>;
 
   upsert(
     input: ExerciseRawData['insertable'] & { id: number },

@@ -24,10 +24,7 @@ class CreateTaskInInboxUseCase {
     return this.db.runTransaction(async (trx) => {
       const { id } = await this.taskServices.createTask(input, trx);
 
-      const inboxGroup = await this.inboxReadRepo.getInboxWithTasksByUserId(
-        { userId: input.userId },
-        trx,
-      );
+      const inboxGroup = await this.inboxReadRepo.getInboxWithTasksByUserId({ userId: input.userId }, trx);
       if (inboxGroup == null) {
         throw new ExceptionInboxNotExist({});
       }

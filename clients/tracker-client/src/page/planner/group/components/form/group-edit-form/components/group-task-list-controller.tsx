@@ -1,9 +1,5 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
-import {
-  type TaskEntity,
-  useAssignTaskToGroup,
-  useUnassignTaskFromGroup,
-} from '@/entity/planner/tasks';
+import { type TaskEntity, useAssignTaskToGroup, useUnassignTaskFromGroup } from '@/entity/planner/tasks';
 import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
@@ -39,10 +35,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
         disabled={formState.disabled}
         loading={isAssignTaskToGroupPending}
         onTaskSelect={({ id }) => {
-          assignTaskToGroup(
-            { params: { path: { taskId: id, groupId } } },
-            { onSuccess: invalidate },
-          );
+          assignTaskToGroup({ params: { path: { taskId: id, groupId } } }, { onSuccess: invalidate });
         }}
       />
 
@@ -67,10 +60,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
                 viaConfirmation({
                   isNeedConfirm: () => true,
                   callback: () =>
-                    void unassignTaskFromGroup(
-                      { params: { path: { taskId, groupId } } },
-                      { onSuccess: invalidate },
-                    ),
+                    void unassignTaskFromGroup({ params: { path: { taskId, groupId } } }, { onSuccess: invalidate }),
 
                   dialog: {
                     title: 'Удалить дело из группы?',

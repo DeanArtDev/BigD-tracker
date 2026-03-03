@@ -75,15 +75,9 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(
-        GoalDeleteTask.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(GoalDeleteTask.pattern, payload);
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       const [[updatedTaskArg, trxArg]] = tasksWriteRepoMock.changeTaskStatus.mock.calls;
       expect(updatedTaskArg).toBeInstanceOf(Task);
       expect(updatedTaskArg.id).toBe(taskId);
@@ -94,9 +88,7 @@ describe('TasksRmqController (rmq e2e)', () => {
     test('should throw when task status not deleteable', async () => {
       const userId = 52;
       const taskId = 6003;
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
 
       const payload: GoalDeleteTask.Request = buildPayload({
         data: {
@@ -107,10 +99,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(
-          GoalDeleteTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(GoalDeleteTask.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -141,18 +130,12 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(
-          GoalDeleteTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalDeleteTask.Response, GoalDeleteTask.Request>(GoalDeleteTask.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       expect(tasksWriteRepoMock.changeTaskStatus).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotExist.code,

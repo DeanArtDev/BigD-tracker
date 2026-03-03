@@ -24,12 +24,8 @@ export class GroupsInboxRmqController {
   }
 
   @MessagePattern(GoalGetGroupInBox.pattern)
-  async getInboxGroup(
-    @Payload() { data: payload }: GoalGetGroupInBox.Request,
-  ): Promise<GoalGetGroupInBox.Response> {
-    const { tasks } = await this.queryBus.execute(
-      new GetInboxByUserIdQuery({ userId: payload.userId }),
-    );
+  async getInboxGroup(@Payload() { data: payload }: GoalGetGroupInBox.Request): Promise<GoalGetGroupInBox.Response> {
+    const { tasks } = await this.queryBus.execute(new GetInboxByUserIdQuery({ userId: payload.userId }));
     return {
       data: tasks,
     };

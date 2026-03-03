@@ -10,10 +10,7 @@ import {
 
 const maxLevelValidation = z
   .object({
-    name: z
-      .string({ error: '' })
-      .min(3, { error: 'Не меньше 3 символов' })
-      .max(254, { error: 'Слишком длинное имя' }),
+    name: z.string({ error: '' }).min(3, { error: 'Не меньше 3 символов' }).max(254, { error: 'Слишком длинное имя' }),
 
     priority: z.enum(taskPriorityEnumSchema).transform(formTransform.toNumber),
 
@@ -26,32 +23,16 @@ const maxLevelValidation = z
       .positive({ error: 'Только больше 0' })
       .transform(transformPlaceholder.percentNumber),
 
-    startDate: z
-      .date()
-      .optional()
-      .or(z.literal(formPlaceholderValues.date))
-      .transform(formTransform.dateToISOSFormat),
+    startDate: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
 
-    deadline: z
-      .date()
-      .optional()
-      .or(z.literal(formPlaceholderValues.date))
-      .transform(formTransform.dateToISOSFormat),
+    deadline: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
 
     isRecurrence: z.boolean(),
     recurrence: z
       .object({
-        start: z
-          .date()
-          .optional()
-          .or(z.literal(formPlaceholderValues.date))
-          .transform(formTransform.dateToISOSFormat),
+        start: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
 
-        end: z
-          .date()
-          .optional()
-          .or(z.literal(formPlaceholderValues.date))
-          .transform(formTransform.dateToISOSFormat),
+        end: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
 
         frequency: z
           .enum(taskRecurrenceFrequencyEnumSchema)

@@ -11,12 +11,7 @@ interface AssignTemplateDialogProps {
   readonly onAssignDates: (values: Date[] | undefined) => void;
 }
 
-function AssignTemplateDialog({
-  loading,
-  templateId,
-  onOpenChange,
-  onAssignDates,
-}: AssignTemplateDialogProps) {
+function AssignTemplateDialog({ loading, templateId, onOpenChange, onAssignDates }: AssignTemplateDialogProps) {
   const [date, setDate] = useState<Date[] | undefined>(undefined);
 
   useEffect(() => () => void setDate(undefined), []);

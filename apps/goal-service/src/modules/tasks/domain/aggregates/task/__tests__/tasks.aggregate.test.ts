@@ -7,11 +7,7 @@ import { Task } from '../tasks.aggregate';
 
 mockDate();
 
-const createRecurrence = (
-  startDate: string,
-  deadline: string,
-  frequency = RecurrenceFrequency.DAILY,
-) =>
+const createRecurrence = (startDate: string, deadline: string, frequency = RecurrenceFrequency.DAILY) =>
   RecurrenceVo.create({
     start: DateVo.create(startDate),
     end: DateVo.create(deadline),

@@ -24,14 +24,8 @@ class UnassignTaskFromGroupUseCase {
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
 
       if (isOrigin) {
-        const sureTask = await this.taskCheckerService.ensureTaskExists(
-          { taskId: data.id, userId },
-          { trx },
-        );
-        await this.groupCheckerService.ensureTaskInGroup(
-          { groupId, userId, taskId: data.id },
-          { trx },
-        );
+        const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
+        await this.groupCheckerService.ensureTaskInGroup({ groupId, userId, taskId: data.id }, { trx });
 
         TaskFactory.unassignFromGroup(sureTask);
         await this.tasksWriteRepo.removeTaskFromGroup({ taskId: data.id }, trx);

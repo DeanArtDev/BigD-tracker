@@ -2,10 +2,7 @@ import { BaseRpcException, BaseRpcExceptionState } from '../base-rpc-exception';
 import { RmqErrorKind } from '../types';
 
 type RpcExceptionClasses<
-  TDefinitionMap extends Record<
-    string,
-    BaseRpcExceptionState<string, string, RmqErrorKind, Record<string, unknown>>
-  >,
+  TDefinitionMap extends Record<string, BaseRpcExceptionState<string, string, RmqErrorKind, Record<string, unknown>>>,
 > = {
   [TKey in keyof TDefinitionMap as `Exception${TKey & string}`]: new (
     details: TDefinitionMap[TKey]['details'],

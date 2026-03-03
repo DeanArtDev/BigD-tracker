@@ -22,9 +22,7 @@ interface UseTrainingsTableParams {
   readonly onDelete: (trainingId: number) => void;
 }
 
-function useTrainingsTable(
-  params: UseTrainingsTableParams,
-): ColumnDef<ApiSchemas['TrainingTemplateDto']>[] {
+function useTrainingsTable(params: UseTrainingsTableParams): ColumnDef<ApiSchemas['TrainingTemplateDto']>[] {
   const { loading, onEdit, onDelete, onAssign } = params;
   const { me } = useMe();
 
@@ -34,10 +32,7 @@ function useTrainingsTable(
       header: ({ table }) => (
         <div className="flex items-center justify-center">
           <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && 'indeterminate')
-            }
+            checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Выбрать все"
           />
@@ -86,11 +81,7 @@ function useTrainingsTable(
       header: 'Разминка',
       cell: ({ row }) => {
         const value = row.original.wormUpDuration;
-        return (
-          <p className="leading-7 [&:not(:first-child)]:mt-6">
-            {value ? `${value} мин` : 'Не сегодня'}
-          </p>
-        );
+        return <p className="leading-7 [&:not(:first-child)]:mt-6">{value ? `${value} мин` : 'Не сегодня'}</p>;
       },
     },
 
@@ -100,11 +91,7 @@ function useTrainingsTable(
       header: 'Заминка',
       cell: ({ row }) => {
         const value = row.original.postTrainingDuration;
-        return (
-          <p className="leading-7 [&:not(:first-child)]:mt-6">
-            {value ? `${value} мин` : 'Не заминаюсь'}
-          </p>
-        );
+        return <p className="leading-7 [&:not(:first-child)]:mt-6">{value ? `${value} мин` : 'Не заминаюсь'}</p>;
       },
     },
 

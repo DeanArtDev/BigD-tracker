@@ -1,9 +1,4 @@
-import {
-  useRepetitionSetBreak,
-  useRepetitionSetFact,
-  useTrainingFinish,
-  useTrainingStart,
-} from '@/entity/trainings';
+import { useRepetitionSetBreak, useRepetitionSetFact, useTrainingFinish, useTrainingStart } from '@/entity/trainings';
 import type { ApiSchemas } from '@/shared/api/types';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { routes } from '@/shared/lib/routes';
@@ -21,15 +16,9 @@ import { WarmUpStep } from './warm-up-step';
 const TrainingProgressLazy = withLazy(() =>
   import('./training-progress').then((m) => ({ default: m.TrainingProgress })),
 );
-const FirstStepLazy = withLazy(() =>
-  import('./first-step').then((m) => ({ default: m.FirstStep })),
-);
-const BreakStepLazy = withLazy(() =>
-  import('./break-step').then((m) => ({ default: m.BreakStep })),
-);
-const RepetitionStepLazy = withLazy(() =>
-  import('./repetition-step').then((m) => ({ default: m.RepetitionStep })),
-);
+const FirstStepLazy = withLazy(() => import('./first-step').then((m) => ({ default: m.FirstStep })));
+const BreakStepLazy = withLazy(() => import('./break-step').then((m) => ({ default: m.BreakStep })));
+const RepetitionStepLazy = withLazy(() => import('./repetition-step').then((m) => ({ default: m.RepetitionStep })));
 
 interface ActiveTrainingProps {
   readonly training: ApiSchemas['TrainingWithExercisesDto'];
@@ -51,9 +40,7 @@ function ActiveTraining({ training }: ActiveTrainingProps) {
     <DataLoader
       blur
       blurContainerClassName="flex grow relative"
-      isLoading={
-        isFactPending || isBreakPending || isStartTrainingPending || isFinishTrainingPending
-      }
+      isLoading={isFactPending || isBreakPending || isStartTrainingPending || isFinishTrainingPending}
     >
       {trainingController.currentStep === 'warm-up' && (
         <WarmUpStep

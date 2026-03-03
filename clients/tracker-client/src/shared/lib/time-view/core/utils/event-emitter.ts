@@ -24,10 +24,7 @@ class EventEmitter<TMap extends EventMap = EventMap> {
     return this;
   }
 
-  public emit<K extends keyof TMap>(
-    event: K,
-    params?: TMap[K],
-  ): { success: boolean; error?: Error } {
+  public emit<K extends keyof TMap>(event: K, params?: TMap[K]): { success: boolean; error?: Error } {
     const set = this.#listenersMap.get(event);
     if (set == null) {
       return { success: false, error: new Error(`There is no listener set for ${String(event)}`) };

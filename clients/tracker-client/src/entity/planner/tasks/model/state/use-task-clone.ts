@@ -4,11 +4,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 function useTaskClone() {
   const options = getDefaultQueryNotifications();
 
-  const { mutate: cloneTask, ...states } = $privetQueryClient.useMutation(
-    'post',
-    '/tasks/{taskId}/clone',
-    { onError: options.onError },
-  );
+  const { mutate: cloneTask, ...states } = $privetQueryClient.useMutation('post', '/tasks/{taskId}/clone', {
+    onError: options.onError,
+  });
 
   return {
     cloneTask,

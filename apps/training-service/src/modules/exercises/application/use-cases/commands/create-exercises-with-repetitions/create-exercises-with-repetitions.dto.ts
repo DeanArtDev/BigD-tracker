@@ -1,15 +1,7 @@
 import { ExerciseType } from '@big-d/api-contracts';
 import { RepetitionFinishType } from '@modules/repetitions';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsUrl,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 class CreateRepetition {
   @IsString()

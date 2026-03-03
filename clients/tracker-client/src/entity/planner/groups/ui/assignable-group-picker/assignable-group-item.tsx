@@ -11,13 +11,7 @@ interface AssignableGroupItemProps {
   readonly onClick: () => void;
 }
 
-function AssignableGroupItem({
-  item,
-  disabled,
-  className,
-  actionSlot,
-  onClick,
-}: AssignableGroupItemProps) {
+function AssignableGroupItem({ item, disabled, className, actionSlot, onClick }: AssignableGroupItemProps) {
   return (
     <Item
       className={cn('min-w-0 w-auto', className, {
@@ -32,9 +26,7 @@ function AssignableGroupItem({
       }}
     >
       <ItemContent className="w-full min-w-0">
-        <ItemTitle
-          className={cn('flex line-clamp-1 break-all min-w-0 ', { 'text-gray-500': disabled })}
-        >
+        <ItemTitle className={cn('flex line-clamp-1 break-all min-w-0 ', { 'text-gray-500': disabled })}>
           {item.name}
         </ItemTitle>
       </ItemContent>

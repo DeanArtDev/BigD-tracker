@@ -59,15 +59,7 @@ function ExerciseAddingBlock() {
         <DndVerticalContainer
           items={fields.map((i) => ({ moveId: i.formUid, ...i }))}
           onElementsSort={({ oldIndex, newIndex }) => void move(oldIndex, newIndex)}
-          itemRender={({
-            index,
-            item: exercise,
-            attributes,
-            listeners,
-            cssTransform,
-            cssTransition,
-            setNodeRef,
-          }) => {
+          itemRender={({ index, item: exercise, attributes, listeners, cssTransform, cssTransition, setNodeRef }) => {
             return (
               <div
                 key={exercise.moveId}

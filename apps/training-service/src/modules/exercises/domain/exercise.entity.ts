@@ -66,10 +66,7 @@ class ExerciseEntity {
 
   public canStart(trainingId: number): boolean {
     if (this.data.trainingId == null || this.data.trainingId !== trainingId) {
-      validator.throwError(
-        `Exercise ${this.data.id} can't be started without any relation to a training`,
-        'canStart',
-      );
+      validator.throwError(`Exercise ${this.data.id} can't be started without any relation to a training`, 'canStart');
     }
 
     return true;
@@ -87,17 +84,7 @@ class ExerciseEntity {
   }
 
   public validate() {
-    const {
-      id,
-      name,
-      type,
-      exampleUrl,
-      position,
-      trainingTemplateId,
-      trainingId,
-      userId,
-      description,
-    } = this.data;
+    const { id, name, type, exampleUrl, position, trainingTemplateId, trainingId, userId, description } = this.data;
 
     validator.isValidInt(position, 'position');
 
@@ -146,10 +133,7 @@ class ExerciseEntity {
 
   assignToTraining(input: { trainingId: number }): this {
     if (this.data.trainingTemplateId != null) {
-      validator.throwError(
-        `You can assign exercise neither to training or to template training`,
-        'assignToTraining',
-      );
+      validator.throwError(`You can assign exercise neither to training or to template training`, 'assignToTraining');
     }
     if (this.data.trainingId != null) {
       validator.throwError(
@@ -164,10 +148,7 @@ class ExerciseEntity {
   }
 
   assignToTemplate(input: { trainingTemplateId: number }): this {
-    if (
-      this.data.trainingTemplateId != null &&
-      this.data.trainingTemplateId != input.trainingTemplateId
-    ) {
+    if (this.data.trainingTemplateId != null && this.data.trainingTemplateId != input.trainingTemplateId) {
       validator.throwError(
         `You can not assign exercise: ${this.data.id} to any training template: ${input.trainingTemplateId}
          if it has already assigned to another one: ${this.data.trainingTemplateId}`,

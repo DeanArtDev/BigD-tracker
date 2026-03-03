@@ -2,17 +2,7 @@ import { TaskRecurrencyDto } from './task-recurrency.dto';
 import { TaskDto } from './task.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsInt,
-  IsISO8601,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsInt, IsISO8601, IsNumber, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
 
 class ReplaceTaskReqData {
   @ApiProperty({ example: 'Имя дела' })

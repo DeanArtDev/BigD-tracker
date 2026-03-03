@@ -37,10 +37,7 @@ export class GetUserGroupsHandler implements IQueryHandler<GetUserGroupsQuery> {
           ]),
         ),
 
-        tasksCombinators.and(
-          TaskByUserId(input.userId),
-          TaskByStatus(tasksQuerySpec.readableStatuses),
-        ),
+        tasksCombinators.and(TaskByUserId(input.userId), TaskByStatus(tasksQuerySpec.readableStatuses)),
         { limit: meta.limit },
         trx,
       );

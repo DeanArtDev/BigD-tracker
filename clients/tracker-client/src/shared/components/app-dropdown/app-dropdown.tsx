@@ -1,8 +1,4 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/shared/ui-kit/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/shared/ui-kit/ui/dropdown-menu';
 import { cn } from '@/shared/ui-kit/utils';
 import type { PropsWithChildren, ReactNode } from 'react';
 import { DropdownItem, type DropdownItemProps } from './dropdown-item';
@@ -14,12 +10,7 @@ interface TaskActionsProps {
   readonly className?: string;
 }
 
-function AppDropdown({
-  items = [],
-  trigger,
-  children,
-  className,
-}: PropsWithChildren<TaskActionsProps>) {
+function AppDropdown({ items = [], trigger, children, className }: PropsWithChildren<TaskActionsProps>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>

@@ -5,9 +5,7 @@ import { GoalsReadRepository, GoalTransaction } from '../ports';
 
 @Injectable()
 class GoalPublicService {
-  constructor(
-    @Inject(GoalsToken.READ_REPOSITORY) private readonly goalsReadRepo: GoalsReadRepository,
-  ) {}
+  constructor(@Inject(GoalsToken.READ_REPOSITORY) private readonly goalsReadRepo: GoalsReadRepository) {}
 
   async getGoalInfoByChildGroups(
     input: { groupIds: number[]; userId: number },

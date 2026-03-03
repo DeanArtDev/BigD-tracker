@@ -1,14 +1,6 @@
 import { TaskRecurrencyDto } from '@transports/rmq/goal-service/tasks/dtos/task-recurrency.dto';
 import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsISO8601,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsInt, IsISO8601, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 import { TaskStatus } from '../types';
 
 class TaskVirtualDto {

@@ -23,10 +23,7 @@ class CreateTaskUseCase {
         );
       }
 
-      return await this.taskQueryService.getById(
-        { taskId: createdTask.id, userId: input.userId },
-        trx,
-      );
+      return await this.taskQueryService.getById({ taskId: createdTask.id, userId: input.userId }, trx);
     });
   }
 }

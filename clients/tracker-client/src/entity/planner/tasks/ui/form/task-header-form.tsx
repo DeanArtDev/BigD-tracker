@@ -9,13 +9,7 @@ interface TaskHeaderFormProps {
   readonly onCancel?: () => void;
 }
 
-function TaskHeaderForm({
-  afterNameSlot,
-  beforeNameSlot,
-  isCreate,
-  onOk,
-  onCancel,
-}: TaskHeaderFormProps) {
+function TaskHeaderForm({ afterNameSlot, beforeNameSlot, isCreate, onOk, onCancel }: TaskHeaderFormProps) {
   const [editName, setEditName] = useState(isCreate);
 
   return (

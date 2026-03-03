@@ -1,8 +1,4 @@
-import type {
-  TimeEvent,
-  TimeViewControllerOptions,
-  TimeViewDateSet,
-} from '@/shared/lib/time-view/core';
+import type { TimeEvent, TimeViewControllerOptions, TimeViewDateSet } from '@/shared/lib/time-view/core';
 import type { DeepPartial } from '@/shared/lib/type-helpers';
 import { type JSX, useEffect, useEffectEvent } from 'react';
 import { TimeViewControllerProvider } from './model';
@@ -43,13 +39,7 @@ function Component<TExtra = any>(props: TimeViewProps<TExtra>) {
 
       <div className="flex flex-col flex-1 min-h-0">
         <TimeLineList
-          eventsSlot={
-            <EventList<TExtra>
-              events={events}
-              renderEvent={renderEvent}
-              onEventClick={onEventClick}
-            />
-          }
+          eventsSlot={<EventList<TExtra> events={events} renderEvent={renderEvent} onEventClick={onEventClick} />}
         />
       </div>
     </div>

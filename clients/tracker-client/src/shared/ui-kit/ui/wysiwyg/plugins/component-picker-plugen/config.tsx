@@ -1,8 +1,4 @@
-import {
-  INSERT_CHECK_LIST_COMMAND,
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-} from '@lexical/list';
+import { INSERT_CHECK_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
 import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
 import { $setBlocksType } from '@lexical/selection';
 import {

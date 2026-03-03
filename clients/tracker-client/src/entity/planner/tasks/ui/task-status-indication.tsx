@@ -20,22 +20,20 @@ const statusToHintMap: Record<TaskStatus, string> = {
   IN_PROGRESS: 'В процессе',
 };
 
-const TaskStatusIndication = memo(
-  ({ status, className, size = 'md' }: TaskStatusIndicationProps) => {
-    const StatusIcon = taskStatusToIconMap[status];
+const TaskStatusIndication = memo(({ status, className, size = 'md' }: TaskStatusIndicationProps) => {
+  const StatusIcon = taskStatusToIconMap[status];
 
-    return (
-      <AppTooltip content={statusToHintMap[status]} wrapperClassName={className}>
-        <StatusIcon
-          className={cn({
-            'size-3 stroke-3': size === 'sm',
-            'size-4 stroke-3': size === 'md',
-            'size-4.5 stroke-3': size === 'lg',
-          })}
-        />
-      </AppTooltip>
-    );
-  },
-);
+  return (
+    <AppTooltip content={statusToHintMap[status]} wrapperClassName={className}>
+      <StatusIcon
+        className={cn({
+          'size-3 stroke-3': size === 'sm',
+          'size-4 stroke-3': size === 'md',
+          'size-4.5 stroke-3': size === 'lg',
+        })}
+      />
+    </AppTooltip>
+  );
+});
 
 export { TaskStatusIndication, type TaskStatusIndicationProps };

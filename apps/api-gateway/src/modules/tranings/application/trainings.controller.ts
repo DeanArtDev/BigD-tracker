@@ -62,13 +62,11 @@ export class TrainingsController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @ValidateRpcResponse(TrainingWithExercisesResponseSingle)
-  async getActiveTraining(
-    @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<TrainingWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingGetActiveTraining.Response,
-      TrainingGetActiveTraining.Request
-    >(TrainingGetActiveTraining.pattern, { data: { userId: uid } });
+  async getActiveTraining(@TokenPayload() { uid }: AccessTokenPayload): Promise<TrainingWithExercisesResponseSingle> {
+    return await this.trainingClient.send<TrainingGetActiveTraining.Response, TrainingGetActiveTraining.Request>(
+      TrainingGetActiveTraining.pattern,
+      { data: { userId: uid } },
+    );
   }
 
   @Get()
@@ -85,10 +83,10 @@ export class TrainingsController {
     @Query() { from, to }: GetTrainingsQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingResponse> {
-    return await this.trainingClient.send<
-      TrainingGetTrainings.Response,
-      TrainingGetTrainings.Request
-    >(TrainingGetTrainings.pattern, { data: { userId: uid, from, to } });
+    return await this.trainingClient.send<TrainingGetTrainings.Response, TrainingGetTrainings.Request>(
+      TrainingGetTrainings.pattern,
+      { data: { userId: uid, from, to } },
+    );
   }
 
   @Get('/:trainingId')
@@ -105,10 +103,10 @@ export class TrainingsController {
     @Param('trainingId', ParseIntPipe) trainingId: number,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TrainingWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingGetOneTraining.Response,
-      TrainingGetOneTraining.Request
-    >(TrainingGetOneTraining.pattern, { data: { userId: uid, id: trainingId } });
+    return await this.trainingClient.send<TrainingGetOneTraining.Response, TrainingGetOneTraining.Request>(
+      TrainingGetOneTraining.pattern,
+      { data: { userId: uid, id: trainingId } },
+    );
   }
 
   @Post()
@@ -126,10 +124,10 @@ export class TrainingsController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateTrainingWithExercisesRequest,
   ): Promise<TrainingWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingCreateTraining.Response,
-      TrainingCreateTraining.Request
-    >(TrainingCreateTraining.pattern, { data: { userId: uid, ...data } });
+    return await this.trainingClient.send<TrainingCreateTraining.Response, TrainingCreateTraining.Request>(
+      TrainingCreateTraining.pattern,
+      { data: { userId: uid, ...data } },
+    );
   }
 
   @Post('/templates')
@@ -171,10 +169,10 @@ export class TrainingsController {
     @Param('trainingId', ParseIntPipe) trainingId: number,
     @Body() { data }: UpdateTrainingWithExerciseRequest,
   ): Promise<TrainingWithExercisesResponseSingle> {
-    return await this.trainingClient.send<
-      TrainingUpdateTraining.Response,
-      TrainingUpdateTraining.Request
-    >(TrainingUpdateTraining.pattern, { data: { id: trainingId, userId: uid, ...data } });
+    return await this.trainingClient.send<TrainingUpdateTraining.Response, TrainingUpdateTraining.Request>(
+      TrainingUpdateTraining.pattern,
+      { data: { id: trainingId, userId: uid, ...data } },
+    );
   }
 
   @Post('/assign')
@@ -190,10 +188,10 @@ export class TrainingsController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: AssignTrainingRequest,
   ): Promise<void> {
-    await this.trainingClient.send<
-      TrainingAssignTrainings.Response,
-      TrainingAssignTrainings.Request
-    >(TrainingAssignTrainings.pattern, { data: { items: data, userId: uid } });
+    await this.trainingClient.send<TrainingAssignTrainings.Response, TrainingAssignTrainings.Request>(
+      TrainingAssignTrainings.pattern,
+      { data: { items: data, userId: uid } },
+    );
     return;
   }
 
@@ -252,19 +250,16 @@ export class TrainingsController {
     @Param('trainingId', ParseIntPipe) trainingId: number,
     @Body() { data }: SetRepetitionFactRequest,
   ): Promise<void> {
-    await this.trainingClient.send<TrainingSetFact.Response, TrainingSetFact.Request>(
-      TrainingSetFact.pattern,
-      {
-        data: {
-          userId: uid,
-          trainingId,
-          repetitionId,
-          factCount: data.factCount,
-          factWeight: data.factWeight,
-          finishType: data.finishType,
-        },
+    await this.trainingClient.send<TrainingSetFact.Response, TrainingSetFact.Request>(TrainingSetFact.pattern, {
+      data: {
+        userId: uid,
+        trainingId,
+        repetitionId,
+        factCount: data.factCount,
+        factWeight: data.factWeight,
+        finishType: data.finishType,
       },
-    );
+    });
     return;
   }
 

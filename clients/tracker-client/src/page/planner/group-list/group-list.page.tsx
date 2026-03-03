@@ -19,11 +19,10 @@ const GroupCard = withLazy(
 function GroupListPage() {
   const { pageQuery } = useGroupListPageUrlQuery();
 
-  const { groupList, isLoading, isEmpty, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useGroupsQuery({
-      limit: 10,
-      search: useDebounceValue(pageQuery?.search, 400)[0],
-    });
+  const { groupList, isLoading, isEmpty, isFetchingNextPage, hasNextPage, fetchNextPage } = useGroupsQuery({
+    limit: 10,
+    search: useDebounceValue(pageQuery?.search, 400)[0],
+  });
 
   const navigate = useNavigate();
   return (
@@ -41,11 +40,7 @@ function GroupListPage() {
           </div>
         }
       >
-        <InfinityScroll
-          hasNextPage={hasNextPage}
-          isLoadingNextPage={isFetchingNextPage}
-          onNextPageLoad={fetchNextPage}
-        >
+        <InfinityScroll hasNextPage={hasNextPage} isLoadingNextPage={isFetchingNextPage} onNextPageLoad={fetchNextPage}>
           <ul className="flex flex-col w-full gap-3 p-3 pb-10 md:pt-4">
             {groupList?.map((group) => (
               <GroupCard

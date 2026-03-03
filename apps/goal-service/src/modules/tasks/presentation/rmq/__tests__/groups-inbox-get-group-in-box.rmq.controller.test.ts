@@ -60,10 +60,7 @@ describe('GroupsInboxRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith(
-        { userId },
-        expectTransaction(),
-      );
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(res).toEqual({
         data: [
           {
@@ -92,18 +89,12 @@ describe('GroupsInboxRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
-          GoalGetGroupInBox.pattern,
-          payload,
-        );
+        await sendMessage<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(GoalGetGroupInBox.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith(
-        { userId },
-        expectTransaction(),
-      );
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.inboxNotExist.code,
         key: 'INBOX_NOT_EXIST',

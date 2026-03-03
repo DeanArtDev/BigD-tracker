@@ -7,21 +7,17 @@ function useGroupDelete() {
   const queryClient = useQueryClient();
 
   const options = getDefaultQueryNotifications();
-  const { mutate: deleteGroup, ...others } = $privetQueryClient.useMutation(
-    'delete',
-    '/groups/{groupId}',
-    {
-      onError: options.onError,
-      onSuccess: async (_, { params }) => {
-        queryClient.setQueriesData(
-          {
-            queryKey: groupsQueryKeys.getGroupById({ groupId: params.path.groupId }),
-          },
-          null,
-        );
-      },
+  const { mutate: deleteGroup, ...others } = $privetQueryClient.useMutation('delete', '/groups/{groupId}', {
+    onError: options.onError,
+    onSuccess: async (_, { params }) => {
+      queryClient.setQueriesData(
+        {
+          queryKey: groupsQueryKeys.getGroupById({ groupId: params.path.groupId }),
+        },
+        null,
+      );
     },
-  );
+  });
 
   return {
     deleteGroup,

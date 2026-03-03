@@ -18,9 +18,7 @@ class CursorPagination {
     return undefined;
   }
 
-  static encode<TSchema extends z.ZodObject<{ [key: string]: z.ZodType }>>(
-    payload: z.infer<TSchema>,
-  ): string {
+  static encode<TSchema extends z.ZodObject<{ [key: string]: z.ZodType }>>(payload: z.infer<TSchema>): string {
     const json = JSON.stringify(payload);
     return Buffer.from(json, 'utf8').toString('base64');
   }

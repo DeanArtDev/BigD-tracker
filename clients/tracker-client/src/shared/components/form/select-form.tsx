@@ -1,12 +1,5 @@
 import { formPlaceholderValues } from '@/shared/lib/utils/zod';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormField,
-} from '@/shared/ui-kit/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, useFormField } from '@/shared/ui-kit/ui/form';
 import { RequiredSign } from '@/shared/ui-kit/ui/require-sign';
 import { Select, SelectContent, SelectTrigger, SelectValue } from '@/shared/ui-kit/ui/select';
 import { type ComponentProps } from 'react';

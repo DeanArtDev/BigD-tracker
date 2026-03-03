@@ -49,10 +49,8 @@ function InputNumberForm<FormValues extends FieldValues = FieldValues>({
                 inputMode={inputMode}
                 {...context.register(name, {
                   disabled: inputProps.disabled,
-                  setValueAs: (v) =>
-                    v === '' || v == null ? undefined : normalizeToNumber(String(v)),
-                  onChange: (evt) =>
-                    evt.target.value.trim() === '' ? null : normalizeToNumber(evt.target.value),
+                  setValueAs: (v) => (v === '' || v == null ? undefined : normalizeToNumber(String(v))),
+                  onChange: (evt) => (evt.target.value.trim() === '' ? null : normalizeToNumber(evt.target.value)),
                 })}
                 {...inputProps}
               />

@@ -26,8 +26,7 @@ function ComponentPickerPlugin({ disabled }: { disabled: boolean }) {
 
     return [
       ...baseOptions.filter(
-        (option) =>
-          regex.test(option.title) || option.keywords.some((keyword) => regex.test(keyword)),
+        (option) => regex.test(option.title) || option.keywords.some((keyword) => regex.test(keyword)),
       ),
     ];
   }, [editor, queryString]);
@@ -57,13 +56,8 @@ function ComponentPickerPlugin({ disabled }: { disabled: boolean }) {
       options={options}
       onQueryChange={setQueryString}
       onSelectOption={onSelectOption}
-      triggerFn={(text: string, editor: LexicalEditor) =>
-        matchSlash(text, editor) ?? matchDot(text, editor)
-      }
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex, options },
-      ) => {
+      triggerFn={(text: string, editor: LexicalEditor) => matchSlash(text, editor) ?? matchDot(text, editor)}
+      menuRenderFn={(anchorElementRef, { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex, options }) => {
         return anchorElementRef.current && options.length
           ? createPortal(
               <ScrollAreaNativeVertical className="w-50 max-h-40 grow shadow-2xl bg-background rounded-md border relative">

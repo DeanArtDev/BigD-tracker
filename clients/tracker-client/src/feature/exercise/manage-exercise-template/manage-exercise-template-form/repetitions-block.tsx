@@ -44,12 +44,7 @@ function RepetitionsBlock() {
                 countName={`repetitions.${index}.targetCount`}
                 weightName={`repetitions.${index}.targetWeight`}
                 appendSlot={
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => void remove(index)}
-                  >
+                  <Button type="button" variant="ghost" size="sm" onClick={() => void remove(index)}>
                     <X />
                   </Button>
                 }

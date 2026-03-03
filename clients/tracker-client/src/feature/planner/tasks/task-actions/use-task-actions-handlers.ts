@@ -152,10 +152,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleRecovery = (
-    data: { taskId: TaskEntity['id']; groupId?: number },
-    success?: () => void,
-  ) => {
+  const handleRecovery = (data: { taskId: TaskEntity['id']; groupId?: number }, success?: () => void) => {
     recoveryTask(
       { params: { path: { taskId: data.taskId } }, body: { data: { groupId: data.groupId } } },
       {

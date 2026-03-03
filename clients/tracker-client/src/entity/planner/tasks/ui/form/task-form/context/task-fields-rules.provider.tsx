@@ -9,11 +9,7 @@ interface TaskFieldsRulesProviderProps {
   readonly status: TaskFieldsRulesContext['status'];
 }
 
-function TaskFieldsRulesProvider({
-  status,
-  options,
-  children,
-}: PropsWithChildren<TaskFieldsRulesProviderProps>) {
+function TaskFieldsRulesProvider({ status, options, children }: PropsWithChildren<TaskFieldsRulesProviderProps>) {
   const value = useMemo<TaskFieldsRulesContext>(() => {
     if (status == null) {
       return { status, visibility: options?.visibility };
@@ -38,9 +34,7 @@ function TaskFieldsRulesProvider({
     };
   }, [status, options?.visibility]);
 
-  return (
-    <taskFieldsRulesContext.Provider value={value}>{children}</taskFieldsRulesContext.Provider>
-  );
+  return <taskFieldsRulesContext.Provider value={value}>{children}</taskFieldsRulesContext.Provider>;
 }
 
 function createRule(data: TaskFormRule): TaskFormRule {

@@ -4,11 +4,7 @@ import {
   GetDetailedGroupsQuery,
   GetUserGroupsQuery,
 } from '@/modules/tasks/application/queries';
-import {
-  CreateGroupCommand,
-  DeleteGroupCommand,
-  ReplaceGroupCommand,
-} from '@/modules/tasks/application/use-cases';
+import { CreateGroupCommand, DeleteGroupCommand, ReplaceGroupCommand } from '@/modules/tasks/application/use-cases';
 import { CursorPaginationService } from '@shared/cursor-pagination';
 import { GroupViewRmqMapper } from './mappers/group-view.rmq.mapper';
 import {
@@ -34,17 +30,12 @@ export class GroupsRmqController {
   ) {}
 
   @MessagePattern(GoalGetUserGroups.pattern)
-  async getUserGroups(
-    @Payload() { data: payload }: GoalGetUserGroups.Request,
-  ): Promise<GoalGetUserGroups.Response> {
+  async getUserGroups(@Payload() { data: payload }: GoalGetUserGroups.Request): Promise<GoalGetUserGroups.Response> {
     const { userId, cursor, sort, search, filter, limit } = payload;
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
 
     const groups = await this.queryBus.execute<GetUserGroupsQuery, GroupWithTasksView[]>(
-      new GetUserGroupsQuery(
-        { userId },
-        { sort, search, filter, limit, lasiId: requestCursorPayload?.lastId },
-      ),
+      new GetUserGroupsQuery({ userId }, { sort, search, filter, limit, lasiId: requestCursorPayload?.lastId }),
     );
 
     const { nextCursor } = this.cursorPaginationService.getNextCursor(cursor, {
@@ -65,9 +56,7 @@ export class GroupsRmqController {
   }
 
   @MessagePattern(GoalCreateGroup.pattern)
-  async createGroup(
-    @Payload() { data: payload }: GoalCreateGroup.Request,
-  ): Promise<GoalCreateGroup.Response> {
+  async createGroup(@Payload() { data: payload }: GoalCreateGroup.Request): Promise<GoalCreateGroup.Response> {
     return {
       data: await this.commandBus.execute(
         new CreateGroupCommand({
@@ -80,9 +69,7 @@ export class GroupsRmqController {
   }
 
   @MessagePattern(GoalReplaceGroup.pattern)
-  async replaceGroup(
-    @Payload() { data: payload }: GoalReplaceGroup.Request,
-  ): Promise<GoalReplaceGroup.Response> {
+  async replaceGroup(@Payload() { data: payload }: GoalReplaceGroup.Request): Promise<GoalReplaceGroup.Response> {
     const groupWithTasks = await this.commandBus.execute(
       new ReplaceGroupCommand({
         id: payload.id,
@@ -128,11 +115,7 @@ export class GroupsRmqController {
   }
 
   @MessagePattern(GoalDeleteGroup.pattern)
-  async deleteGroup(
-    @Payload() { data: payload }: GoalDeleteGroup.Request,
-  ): Promise<GoalDeleteGroup.Response> {
-    return await this.commandBus.execute(
-      new DeleteGroupCommand({ groupId: payload.groupId, userId: payload.userId }),
-    );
+  async deleteGroup(@Payload() { data: payload }: GoalDeleteGroup.Request): Promise<GoalDeleteGroup.Response> {
+    return await this.commandBus.execute(new DeleteGroupCommand({ groupId: payload.groupId, userId: payload.userId }));
   }
 }

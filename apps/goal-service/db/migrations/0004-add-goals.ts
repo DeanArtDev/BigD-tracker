@@ -74,12 +74,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable('goal_to_goals')
-    .addForeignKeyConstraint(
-      'goal_to_goals_master_goal_id_fk',
-      ['master_goal_id'],
-      'goals',
-      ['id'],
-      (cb) => cb.onDelete('cascade').onUpdate('no action'),
+    .addForeignKeyConstraint('goal_to_goals_master_goal_id_fk', ['master_goal_id'], 'goals', ['id'], (cb) =>
+      cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 
@@ -92,12 +88,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable('goals')
-    .addForeignKeyConstraint(
-      'goals_goal_status_id_fk',
-      ['status_id'],
-      'goal_statuses',
-      ['id'],
-      (cb) => cb.onDelete('cascade').onUpdate('no action'),
+    .addForeignKeyConstraint('goals_goal_status_id_fk', ['status_id'], 'goal_statuses', ['id'], (cb) =>
+      cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();
 }

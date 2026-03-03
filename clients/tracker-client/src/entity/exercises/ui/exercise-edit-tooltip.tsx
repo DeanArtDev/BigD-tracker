@@ -5,10 +5,7 @@ interface ExerciseEditTooltipProps {
   readonly on?: boolean;
 }
 
-function ExerciseEditTooltip({
-  on = false,
-  children,
-}: PropsWithChildren<ExerciseEditTooltipProps>) {
+function ExerciseEditTooltip({ on = false, children }: PropsWithChildren<ExerciseEditTooltipProps>) {
   if (on) {
     return (
       <Tooltip disableHoverableContent>

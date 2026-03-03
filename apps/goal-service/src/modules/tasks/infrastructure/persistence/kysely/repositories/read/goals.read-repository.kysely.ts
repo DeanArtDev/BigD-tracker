@@ -1,8 +1,4 @@
-import {
-  GoalDatabase,
-  GoalsReadRepository,
-  GoalTransaction,
-} from '@/modules/tasks/application/ports';
+import { GoalDatabase, GoalsReadRepository, GoalTransaction } from '@/modules/tasks/application/ports';
 import { GoalStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -31,11 +27,7 @@ export class GoalsReadRepositoryKysely extends BaseTasksRepository implements Go
         .where('goals.user_id', '=', userId)
         .where('groups.user_id', '=', userId)
         .where('groups.id', 'in', groupIds)
-        .select([
-          'groups.id as groupId',
-          'goals.id as goalId',
-          sql<GoalStatus>`goal_statuses.name`.as('goalStatus'),
-        ])
+        .select(['groups.id as groupId', 'goals.id as goalId', sql<GoalStatus>`goal_statuses.name`.as('goalStatus')])
         .execute();
     });
   }

@@ -1,10 +1,5 @@
 import type { ApiSchemas } from '@/shared/api/types';
-import {
-  FormStateEmitter,
-  InputForm,
-  TextareaForm,
-  ToggleGroupForm,
-} from '@/shared/components/form';
+import { FormStateEmitter, InputForm, TextareaForm, ToggleGroupForm } from '@/shared/components/form';
 import { AppLoader } from '@/shared/ui-kit/ui/app-loader';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Form } from '@/shared/ui-kit/ui/form';
@@ -64,13 +59,7 @@ function TaskManagerForm(props: ThingManagerFormProps) {
           });
         })}
       >
-        <InputForm<ThingManagerFormData>
-          autoFocus
-          required
-          name="name"
-          label="Название"
-          placeholder="Имя"
-        />
+        <InputForm<ThingManagerFormData> autoFocus required name="name" label="Название" placeholder="Имя" />
 
         <TextareaForm<ThingManagerFormData>
           name="description"
@@ -100,21 +89,13 @@ function TaskManagerForm(props: ThingManagerFormProps) {
             </ToggleGroupItem>
           </ToggleGroupForm>
 
-          <Button
-            type="submit"
-            className="ml-auto mt-auto"
-            disabled={!form.formState.isDirty || isLoading}
-          >
+          <Button type="submit" className="ml-auto mt-auto" disabled={!form.formState.isDirty || isLoading}>
             {isLoading ? <AppLoader inverse size={20} /> : null}
             {isCreating ? 'Создать' : 'Редактировать'}
           </Button>
         </div>
 
-        <FormStateEmitter
-          isLoading={isLoading}
-          emitIsDirty={emitIsDirty}
-          emitIsLoading={emitIsLoading}
-        />
+        <FormStateEmitter isLoading={isLoading} emitIsDirty={emitIsDirty} emitIsLoading={emitIsLoading} />
       </form>
     </Form>
   );

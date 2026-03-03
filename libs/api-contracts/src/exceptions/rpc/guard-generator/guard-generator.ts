@@ -16,19 +16,15 @@ type RpcExceptionsGuardsMap<T extends readonly RpcExceptionGuardsInput[]> = {
   [K in T[number] as K[0]]: (error: unknown) => error is InstanceType<T[number][1]>;
 };
 
-function generateRpcExceptionsGuards<
-  TInput extends RpcExceptionGuardsInput[] = RpcExceptionGuardsInput[],
->(input: TInput): RpcExceptionsGuardsMap<TInput> {
+function generateRpcExceptionsGuards<TInput extends RpcExceptionGuardsInput[] = RpcExceptionGuardsInput[]>(
+  input: TInput,
+): RpcExceptionsGuardsMap<TInput> {
   const buffer = {} as RpcExceptionsGuardsMap<TInput>;
 
   for (const [name, Cls] of input) {
     buffer[name] = (error: unknown): error is InstanceType<typeof Cls> => {
       const initialClass = new Cls({} as any);
-      return (
-        isBaseRpcException(error) &&
-        error.kind === initialClass.kind &&
-        error.code === initialClass.code
-      );
+      return isBaseRpcException(error) && error.kind === initialClass.kind && error.code === initialClass.code;
     };
   }
 

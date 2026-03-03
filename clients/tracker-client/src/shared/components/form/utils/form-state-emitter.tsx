@@ -7,11 +7,7 @@ interface FormStateEmitterProps {
   readonly emitIsDirty?: (value: boolean) => void;
 }
 
-function FormStateEmitter({
-  isLoading = false,
-  emitIsDirty,
-  emitIsLoading,
-}: FormStateEmitterProps) {
+function FormStateEmitter({ isLoading = false, emitIsDirty, emitIsLoading }: FormStateEmitterProps) {
   const { isDirty, isLoading: isFormLoading } = useFormState();
 
   const emitIsDirtyRef = useEffectEvent((v: boolean) => emitIsDirty?.(v));

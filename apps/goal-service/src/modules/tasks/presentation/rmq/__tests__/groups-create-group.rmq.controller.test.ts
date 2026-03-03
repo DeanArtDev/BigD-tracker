@@ -66,9 +66,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       groupReadRepoMock.getGroup.mockResolvedValueOnce(
         GroupReadKyselyMapper.fromRawToWithTaskView({ ...groupRaw, tasks: [] }),
       );
-      groupWriteRepoMock.createGroup.mockResolvedValueOnce(
-        GroupWriteKyselyMapper.fromRawToAgr(groupRaw),
-      );
+      groupWriteRepoMock.createGroup.mockResolvedValueOnce(GroupWriteKyselyMapper.fromRawToAgr(groupRaw));
       const payload: GoalCreateGroup.Request = buildPayload({
         data: { userId: groupRaw.user_id, name: groupRaw.name, description: groupRaw.description },
       });
@@ -97,10 +95,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             )
           )"
       `);
-      expect(groupReadRepoMock.getGroup).toHaveBeenCalledWith(
-        expect.anything(),
-        expectTransaction(),
-      );
+      expect(groupReadRepoMock.getGroup).toHaveBeenCalledWith(expect.anything(), expectTransaction());
       expect(res).toEqual({
         data: {
           id: groupRaw.id,
@@ -116,9 +111,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
     test('should return not found when group view missing', async () => {
       const groupRaw = getGroupRaw({ id: 44, user_id: 2, name: 'Missing view' });
-      groupWriteRepoMock.createGroup.mockResolvedValueOnce(
-        GroupWriteKyselyMapper.fromRawToAgr(groupRaw),
-      );
+      groupWriteRepoMock.createGroup.mockResolvedValueOnce(GroupWriteKyselyMapper.fromRawToAgr(groupRaw));
       groupReadRepoMock.getGroup.mockResolvedValueOnce(null);
       const payload: GoalCreateGroup.Request = buildPayload({
         data: { userId: groupRaw.user_id, name: groupRaw.name, description: groupRaw.description },
@@ -126,10 +119,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalCreateGroup.Response, GoalCreateGroup.Request>(
-          GoalCreateGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalCreateGroup.Response, GoalCreateGroup.Request>(GoalCreateGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -145,10 +135,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             )
           )"
       `);
-      expect(groupReadRepoMock.getGroup).toHaveBeenCalledWith(
-        expect.anything(),
-        expectTransaction(),
-      );
+      expect(groupReadRepoMock.getGroup).toHaveBeenCalledWith(expect.anything(), expectTransaction());
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.groupNotFound.code,
         key: 'GROUP_NOT_FOUND',

@@ -46,8 +46,7 @@ class TaskOverrideService {
     const virtualViews: TaskView[] = [];
     for (const masterEvent of masterEvents) {
       if (masterEvent.isRecurrence()) {
-        const safeEndDate =
-          masterEvent.recurrence.end ?? timeAndDate().utc(false).add(90, 'day').toJSON();
+        const safeEndDate = masterEvent.recurrence.end ?? timeAndDate().utc(false).add(90, 'day').toJSON();
 
         const rule = new RRule({
           tzid: input.userTimezone,
@@ -83,10 +82,8 @@ class TaskOverrideService {
                 priority: override?.priority ?? masterEvent.priority,
                 weight: override?.weight ?? masterEvent.weight,
                 status: override?.status ?? TaskStatus.IN_PROGRESS,
-                startDate:
-                  startDate != null ? applyTimeParts(date, startDate).toISOString() : undefined,
-                deadline:
-                  deadline != null ? applyTimeParts(date, deadline).toISOString() : undefined,
+                startDate: startDate != null ? applyTimeParts(date, startDate).toISOString() : undefined,
+                deadline: deadline != null ? applyTimeParts(date, deadline).toISOString() : undefined,
                 endDate: override?.endDate,
               }),
             );
@@ -106,10 +103,8 @@ class TaskOverrideService {
                 weight: masterEvent.weight,
                 status: TaskStatus.IN_PROGRESS,
                 groupId: masterEvent.groupId,
-                startDate:
-                  startDate != null ? applyTimeParts(date, startDate).toISOString() : undefined,
-                deadline:
-                  deadline != null ? applyTimeParts(date, deadline).toISOString() : undefined,
+                startDate: startDate != null ? applyTimeParts(date, startDate).toISOString() : undefined,
+                deadline: deadline != null ? applyTimeParts(date, deadline).toISOString() : undefined,
               }),
             );
           }

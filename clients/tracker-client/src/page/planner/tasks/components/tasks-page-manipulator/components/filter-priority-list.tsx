@@ -17,8 +17,7 @@ interface FilterPriorityListProps {
 }
 
 function FilterPriorityList({ priority, onFilterChange }: FilterPriorityListProps) {
-  const iconColor =
-    priority != null ? `var(${taskPriorityColorMap[priority]})` : 'var(--foreground)';
+  const iconColor = priority != null ? `var(${taskPriorityColorMap[priority]})` : 'var(--foreground)';
 
   return (
     <DropdownMenu>
@@ -36,9 +35,7 @@ function FilterPriorityList({ priority, onFilterChange }: FilterPriorityListProp
             orientation="vertical"
             onValueChange={(value) => {
               const numericString = parseInt(value, 10);
-              onFilterChange(
-                isNumber(numericString) && !Number.isNaN(numericString) ? numericString : undefined,
-              );
+              onFilterChange(isNumber(numericString) && !Number.isNaN(numericString) ? numericString : undefined);
             }}
           >
             <ToggleGroupItem value={TaskPriority.DO.toString()} asChild>
@@ -50,10 +47,7 @@ function FilterPriorityList({ priority, onFilterChange }: FilterPriorityListProp
             </ToggleGroupItem>
 
             <ToggleGroupItem value={TaskPriority.DELEGATE.toString()} asChild>
-              <Circle
-                strokeWidth={3}
-                color={`var(${taskPriorityColorMap[TaskPriority.DELEGATE]})`}
-              />
+              <Circle strokeWidth={3} color={`var(${taskPriorityColorMap[TaskPriority.DELEGATE]})`} />
             </ToggleGroupItem>
 
             <ToggleGroupItem value={TaskPriority.DELETE.toString()} asChild>

@@ -28,10 +28,7 @@ class CloneTaskUseCase {
         if (groupId != null) {
           await this.taskServices.addTaskToGroup({ taskId: clonedTask.id, userId, groupId }, trx);
         }
-        return await this.taskQueryService.getById(
-          { taskId: clonedTask.id, userId: clonedTask.userId },
-          trx,
-        );
+        return await this.taskQueryService.getById({ taskId: clonedTask.id, userId: clonedTask.userId }, trx);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

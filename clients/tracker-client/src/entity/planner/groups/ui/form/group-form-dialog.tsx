@@ -5,9 +5,7 @@ import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import type { ReactNode } from 'react';
 
-const GroupFormLazy = withLazy(() =>
-  import('./group-form').then((m) => ({ default: m.GroupForm })),
-);
+const GroupFormLazy = withLazy(() => import('./group-form').then((m) => ({ default: m.GroupForm })));
 
 interface GroupFormDialogProps {
   readonly open: boolean;

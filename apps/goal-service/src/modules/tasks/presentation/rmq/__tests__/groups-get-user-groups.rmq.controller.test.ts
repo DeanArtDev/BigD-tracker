@@ -82,8 +82,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         { limit: 1 },
         expectTransaction(),
       );
-      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             groups.byUserId,
             NOT(
@@ -163,8 +162,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       );
 
       expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
-      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             groups.byUserId,
             groups.bySearch,
@@ -174,8 +172,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             )
           )"
       `);
-      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             tasks.byUserId,
             tasks.byStatus
@@ -214,10 +211,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const search = 'Group';
       const sort = ['name'];
       const filter = ['active'];
-      const cursor = Buffer.from(
-        JSON.stringify({ lastId: 30, search, sort, filter }),
-        'utf8',
-      ).toString('base64');
+      const cursor = Buffer.from(JSON.stringify({ lastId: 30, search, sort, filter }), 'utf8').toString('base64');
       const groupRaw = getGroupRaw({ id: 31, user_id: userId, name: 'Group C' });
       const groupRawTwo = getGroupRaw({ id: 32, user_id: userId, name: 'Group D' });
       groupReadRepoMock.getGroupListWithTasks.mockResolvedValueOnce([
@@ -234,8 +228,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       );
 
       expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
-      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             groups.byUserId,
             groups.bySearch,
@@ -245,8 +238,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             )
           )"
       `);
-      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             tasks.byUserId,
             tasks.byStatus
@@ -276,8 +268,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             },
           ],
           meta: {
-            cursor:
-              'eyJsYXN0SWQiOjMyLCJzb3J0IjpbIm5hbWUiXSwic2VhcmNoIjoiR3JvdXAiLCJmaWx0ZXIiOlsiYWN0aXZlIl19',
+            cursor: 'eyJsYXN0SWQiOjMyLCJzb3J0IjpbIm5hbWUiXSwic2VhcmNoIjoiR3JvdXAiLCJmaWx0ZXIiOlsiYWN0aXZlIl19',
           },
         },
       });
@@ -295,8 +286,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
       );
 
       expect(groupReadRepoMock.getGroupListWithTasks).toHaveBeenCalledTimes(1);
-      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(firstArg(groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             groups.byUserId,
             NOT(
@@ -304,8 +294,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             )
           )"
       `);
-      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks)))
-        .toMatchInlineSnapshot(`
+      expect(specToDebugString(nthArgs(1, groupReadRepoMock.getGroupListWithTasks))).toMatchInlineSnapshot(`
           "AND(
             tasks.byUserId,
             tasks.byStatus

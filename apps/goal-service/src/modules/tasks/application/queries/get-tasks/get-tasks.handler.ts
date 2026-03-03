@@ -40,12 +40,7 @@ export class GetTasksHandler implements IQueryHandler<GetTasksQuery> {
       ]);
 
       const specifications = tasksCombinators.and(TaskByUserId(userId), ...filterSpecs);
-      return await this.tasksReadRepository.getByRange(
-        specifications,
-        { page, perPage },
-        sort,
-        trx,
-      );
+      return await this.tasksReadRepository.getByRange(specifications, { page, perPage }, sort, trx);
     });
   }
 }

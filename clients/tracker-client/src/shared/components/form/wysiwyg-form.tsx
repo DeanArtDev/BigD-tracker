@@ -49,10 +49,7 @@ function WysiwygForm<FormValues extends FieldValues = FieldValues>({
                 disabled={field.disabled}
                 config={{ namespace: name, editable }}
                 afterSlot={
-                  <EditTogglePlugin
-                    className="toggle-button absolute top-2 right-2"
-                    disabled={field.disabled}
-                  />
+                  <EditTogglePlugin className="toggle-button absolute top-2 right-2" disabled={field.disabled} />
                 }
                 state={field.value}
                 placeholder={placeholder}

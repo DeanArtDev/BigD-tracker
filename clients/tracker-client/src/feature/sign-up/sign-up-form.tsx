@@ -2,14 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/u
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Link } from 'react-router-dom';
 import { routes } from '@/shared/lib/routes';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui-kit/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui-kit/ui/form';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/shared/ui-kit/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,10 +38,7 @@ function SignUpForm() {
   return (
     <Card className="w-[350px]">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 flex flex-col grow w-full"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col grow w-full">
           <CardHeader>
             <CardTitle>Регистрация</CardTitle>
           </CardHeader>

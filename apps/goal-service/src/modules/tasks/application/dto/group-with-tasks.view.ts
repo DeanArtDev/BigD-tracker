@@ -49,11 +49,7 @@ class GroupWithTasksView {
       return GroupStatus.NOT_STARTED;
     }
 
-    if (
-      this.#tasks.every((t) =>
-        [TaskStatus.COMPLETED, TaskStatus.OVERDUE, TaskStatus.CANCELLED].includes(t.status),
-      )
-    ) {
+    if (this.#tasks.every((t) => [TaskStatus.COMPLETED, TaskStatus.OVERDUE, TaskStatus.CANCELLED].includes(t.status))) {
       return GroupStatus.DONE;
     }
 

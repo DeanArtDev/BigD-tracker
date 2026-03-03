@@ -19,10 +19,9 @@ export class CreateSessionHandler implements ICommandHandler<CreateSessionComman
   ) {}
 
   async execute(input: CreateSessionCommand): Promise<void> {
-    const user = await this.queryBus.execute<
-      GetUserQuery,
-      ReturnHandlerType<typeof GetUserHandler>
-    >(new GetUserQuery({ id: input.userId }));
+    const user = await this.queryBus.execute<GetUserQuery, ReturnHandlerType<typeof GetUserHandler>>(
+      new GetUserQuery({ id: input.userId }),
+    );
     if (user == null) {
       throw new NotFoundException(`There is no user: ${input.userId}`);
     }
@@ -42,10 +41,7 @@ export class CreateSessionHandler implements ICommandHandler<CreateSessionComman
     const session = await this.authRepository.create(draftSession);
     if (session == null) {
       const { ip, userId, userAgent } = input;
-      throw new InternalServerErrorException(
-        { ip, userId, userAgent },
-        { cause: 'Failed to create session' },
-      );
+      throw new InternalServerErrorException({ ip, userId, userAgent }, { cause: 'Failed to create session' });
     }
   }
 }

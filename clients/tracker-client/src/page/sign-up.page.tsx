@@ -24,9 +24,7 @@ function SignUpPage() {
         errorElement={
           <AppEmptyPlaceholder
             message="Ваш токен истек или не валидный"
-            afterEndSlot={
-              <Typography.Muted>Внимание! Токен действует в течение 1 часа!</Typography.Muted>
-            }
+            afterEndSlot={<Typography.Muted>Внимание! Токен действует в течение 1 часа!</Typography.Muted>}
           />
         }
       >

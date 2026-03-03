@@ -5,10 +5,7 @@ import { TrainingTemplateEntity } from '../../domain/entities';
 
 interface TrainingTemplateRawData {
   readonly selectable: Omit<Selectable<DB['trainings_templates']>, 'updated_at' | 'created_at'>;
-  readonly updateable: Omit<
-    Override<Updateable<DB['trainings_templates']>, 'id', number>,
-    'updated_at' | 'created_at'
-  >;
+  readonly updateable: Omit<Override<Updateable<DB['trainings_templates']>, 'id', number>, 'updated_at' | 'created_at'>;
   readonly insertable: OmitCreateFields<Insertable<DB['trainings_templates']>>;
 }
 
@@ -23,10 +20,7 @@ interface TrainingTemplatesRepository {
     trx?: Transaction<DB>,
   ): Promise<TrainingTemplateEntity[]>;
 
-  create(
-    data: TrainingTemplateRawData['insertable'],
-    trx?: Transaction<DB>,
-  ): Promise<TrainingTemplateEntity | null>;
+  create(data: TrainingTemplateRawData['insertable'], trx?: Transaction<DB>): Promise<TrainingTemplateEntity | null>;
 
   upsert(
     input: TrainingTemplateRawData['insertable'] & { id: number },
@@ -45,9 +39,4 @@ interface TrainingTemplatesRepository {
 
 const TRAINING_TEMPLATES_REPOSITORY = Symbol('TRAINING_TEMPLATES_REPOSITORY');
 
-export {
-  TRAINING_TEMPLATES_REPOSITORY,
-  TrainingTemplateEntity,
-  TrainingTemplateRawData,
-  TrainingTemplatesRepository,
-};
+export { TRAINING_TEMPLATES_REPOSITORY, TrainingTemplateEntity, TrainingTemplateRawData, TrainingTemplatesRepository };

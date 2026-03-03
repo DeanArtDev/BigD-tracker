@@ -3,11 +3,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 
 function useTrainingStart() {
   const options = getDefaultQueryNotifications();
-  const { mutate: startTraining, ...others } = $privetQueryClient.useMutation(
-    'post',
-    '/trainings/{trainingId}/start',
-    { onError: options.onError },
-  );
+  const { mutate: startTraining, ...others } = $privetQueryClient.useMutation('post', '/trainings/{trainingId}/start', {
+    onError: options.onError,
+  });
 
   return {
     startTraining,

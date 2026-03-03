@@ -10,12 +10,7 @@ type ThingStartDateProps = ComponentProps<typeof Calendar> & {
   readonly warningIndication?: boolean;
 };
 
-function TaskStartDate({
-  startDate,
-  showDate = false,
-  warningIndication = true,
-  ...svgProps
-}: ThingStartDateProps) {
+function TaskStartDate({ startDate, showDate = false, warningIndication = true, ...svgProps }: ThingStartDateProps) {
   if (startDate == null) return null;
 
   const isWarning = isDateInTodayAndTomorrow(startDate) && warningIndication;

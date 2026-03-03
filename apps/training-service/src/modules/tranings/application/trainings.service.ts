@@ -41,23 +41,17 @@ class TrainingsService {
     return this.trainingsWithExercisesMapper.fromEntityToDTO(training);
   }
 
-  async createWithExercises(
-    input: CreateTrainingWithExercisesInput,
-  ): Promise<TrainingWithExercisesDto> {
+  async createWithExercises(input: CreateTrainingWithExercisesInput): Promise<TrainingWithExercisesDto> {
     const training = await this.createTrainingWithExercisesCommand.execute(input);
     return this.trainingsWithExercisesMapper.fromEntityToDTO(training);
   }
 
-  async updateWithExercises(
-    input: UpdateTrainingWithExercisesInput,
-  ): Promise<TrainingWithExercisesDto> {
+  async updateWithExercises(input: UpdateTrainingWithExercisesInput): Promise<TrainingWithExercisesDto> {
     const training = await this.updateTrainingWithExercisesCommand.execute(input);
     return this.trainingsWithExercisesMapper.fromEntityToDTO(training);
   }
 
-  async crateTrainingByTemplate(
-    input: CreateTrainingByTemplateInput,
-  ): Promise<TrainingWithExercisesDto[]> {
+  async crateTrainingByTemplate(input: CreateTrainingByTemplateInput): Promise<TrainingWithExercisesDto[]> {
     const trainings = await this.createTrainingByTemplateCommand.execute(input);
     return trainings.map(this.trainingsWithExercisesMapper.fromEntityToDTO);
   }

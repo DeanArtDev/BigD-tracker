@@ -1,7 +1,4 @@
-type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type> = Omit<
-  Entity,
-  Key
-> &
+type Override<Entity extends Record<string, any>, Key extends keyof Entity, Type> = Omit<Entity, Key> &
   Record<Key, Type>;
 
 type ValueOf<Type> = Type[keyof Type];
@@ -29,9 +26,7 @@ type OmitCreateFields<
 type Constructor<T = object> = new (...args: any[]) => T;
 type AbstractConstructor<T = object> = abstract new (...args: any[]) => T;
 
-type ReturnHandlerType<Handler extends new (...args: any) => any> = ReturnType<
-  InstanceType<Handler>['execute']
->;
+type ReturnHandlerType<Handler extends new (...args: any) => any> = ReturnType<InstanceType<Handler>['execute']>;
 
 type MaybePromise<T> = T | Promise<T>;
 

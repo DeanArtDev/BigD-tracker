@@ -40,10 +40,7 @@ const getClientEslintConfig = (): Linter.LegacyConfig => {
       'no-promise-executor-return': 'off',
       '@typescript-eslint/no-namespace': 'off',
       'brace-style': 'off',
-      '@typescript-eslint/no-unused-expressions': [
-        'error',
-        { allowTernary: true, allowShortCircuit: true },
-      ],
+      '@typescript-eslint/no-unused-expressions': ['error', { allowTernary: true, allowShortCircuit: true }],
     },
   };
 };

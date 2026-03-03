@@ -6,9 +6,7 @@ import { TasksWriteRepository, TaskTransaction } from '../ports';
 
 @Injectable()
 class TaskCheckerService {
-  constructor(
-    @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
-  ) {}
+  constructor(@Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository) {}
 
   async ensureTaskExists(
     input: { taskId: number; userId: number },
@@ -24,10 +22,7 @@ class TaskCheckerService {
   ): Promise<Task | null> {
     const { skipException, trx } = params ?? {};
 
-    const task = await this.tasksWriteRepo.getTaskById(
-      { taskId: input.taskId, userId: input.userId },
-      trx,
-    );
+    const task = await this.tasksWriteRepo.getTaskById({ taskId: input.taskId, userId: input.userId }, trx);
 
     if (skipException != null) {
       return task;

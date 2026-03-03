@@ -1,10 +1,7 @@
 import { ExercisesModule } from '@/modules/exercises';
 import { SyncCollectionRepository } from '@big-d/api-utils';
 import { forwardRef, Module } from '@nestjs/common';
-import {
-  TrainingTemplatesMapper,
-  TrainingTemplatesWithExercisesMapper,
-} from './application/mappers';
+import { TrainingTemplatesMapper, TrainingTemplatesWithExercisesMapper } from './application/mappers';
 import { TRAINING_TEMPLATES_REPOSITORY } from './application/repositories';
 import {
   DeleteTrainingTemplateCommand,

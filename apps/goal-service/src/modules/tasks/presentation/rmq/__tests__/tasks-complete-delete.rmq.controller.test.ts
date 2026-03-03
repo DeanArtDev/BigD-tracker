@@ -64,19 +64,17 @@ describe('TasksRmqController goal.complete-delete-task.command (rmq e2e)', () =>
       const userId = 201;
       const taskId = 8201;
 
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
       tasksWriteRepoMock.deleteTask.mockResolvedValueOnce(true);
 
       const payload: GoalCompleteDeleteTask.Request = buildPayload({
         data: { userId, taskId: TaskIdBuilder.wrapOriginId(taskId) },
       });
 
-      const res = await sendMessage<
-        GoalCompleteDeleteTask.Response,
-        GoalCompleteDeleteTask.Request
-      >(GoalCompleteDeleteTask.pattern, payload);
+      const res = await sendMessage<GoalCompleteDeleteTask.Response, GoalCompleteDeleteTask.Request>(
+        GoalCompleteDeleteTask.pattern,
+        payload,
+      );
 
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.deleteTask).toHaveBeenCalledTimes(1);
@@ -151,9 +149,7 @@ describe('TasksRmqController goal.complete-delete-task.command (rmq e2e)', () =>
       const userId = 204;
       const taskId = 8204;
 
-      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.DELETED }),
-      );
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(getTask({ id: taskId, userId, status: TaskStatus.DELETED }));
       tasksWriteRepoMock.deleteTask.mockResolvedValueOnce(false);
 
       const payload: GoalCompleteDeleteTask.Request = buildPayload({

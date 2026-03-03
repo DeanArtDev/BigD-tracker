@@ -8,9 +8,7 @@ interface TasksStatusCount {
   inProgress: number;
 }
 
-function getTasksStatusCount(
-  tasks: { status: TaskEntity['status'] }[],
-): Readonly<TasksStatusCount> {
+function getTasksStatusCount(tasks: { status: TaskEntity['status'] }[]): Readonly<TasksStatusCount> {
   return tasks.reduce<TasksStatusCount>(
     (acc, task) => {
       if (task.status === TaskStatus.COMPLETED) {

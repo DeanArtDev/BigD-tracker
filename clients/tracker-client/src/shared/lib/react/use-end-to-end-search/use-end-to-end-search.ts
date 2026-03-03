@@ -1,10 +1,5 @@
 import { useEffect, useEffectEvent, useState, useTransition } from 'react';
-import type {
-  DefaultDataType,
-  EndToEndSearchData,
-  EndToEndSearchParams,
-  SearchValues,
-} from './types';
+import type { DefaultDataType, EndToEndSearchData, EndToEndSearchParams, SearchValues } from './types';
 
 function useEndToEndSearch<T extends DefaultDataType = DefaultDataType>(
   params: EndToEndSearchParams<T>,

@@ -30,11 +30,7 @@ function InitialStatePlugin({ state, onStateSet }: InitialStatePluginProps) {
             const root = $getRoot();
             root.clear();
             const p = $createParagraphNode();
-            p.append(
-              $createTextNode(
-                'Произошла ошибка загрузки данных, любое сохранение дела перезапишет описание!',
-              ),
-            );
+            p.append($createTextNode('Произошла ошибка загрузки данных, любое сохранение дела перезапишет описание!'));
             root.append(p);
           }
         },

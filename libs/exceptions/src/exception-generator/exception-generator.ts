@@ -5,11 +5,7 @@ function createException<TDefinition extends BaseExceptionState<string, string>>
   name: string,
   definition: TDefinition,
 ) {
-  const cls = class extends BaseException<
-    TDefinition['key'],
-    TDefinition['code'],
-    TDefinition['details']
-  > {
+  const cls = class extends BaseException<TDefinition['key'], TDefinition['code'], TDefinition['details']> {
     public constructor(details: TDefinition['details']) {
       super({ key: definition.key, code: definition.code, details });
     }

@@ -1,11 +1,7 @@
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  ExceptionGroupNotExist,
-  ExceptionTaskAlreadyInGroup,
-  ExceptionTaskNotInGroup,
-} from '../exceptions';
+import { ExceptionGroupNotExist, ExceptionTaskAlreadyInGroup, ExceptionTaskNotInGroup } from '../exceptions';
 import { GroupsReadRepository, GroupsWriteRepository, TaskTransaction } from '../ports';
 
 @Injectable()

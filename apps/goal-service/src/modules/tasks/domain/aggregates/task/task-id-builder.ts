@@ -28,11 +28,7 @@ class TaskIdBuilder {
     return `${pattern.virtual}${pattern.divider}${masterTaskId}${pattern.divider}${timestamp}`;
   };
 
-  static wrapOverrideId = (input: {
-    masterTaskId: number;
-    overrideId: number;
-    timestamp: number;
-  }) => {
+  static wrapOverrideId = (input: { masterTaskId: number; overrideId: number; timestamp: number }) => {
     const { masterTaskId, overrideId, timestamp } = input;
     const pattern = TaskIdBuilder.#pattern;
     return `${pattern.override}${pattern.divider}${masterTaskId}${pattern.divider}${timestamp}${pattern.divider}${overrideId}`;
@@ -47,12 +43,7 @@ class TaskIdBuilder {
     const pattern = TaskIdBuilder.#pattern;
     const [patn, id, timestamp, overrideId] = strId.split(pattern.divider);
 
-    if (
-      pattern.override === patn &&
-      isNumeric(id) &&
-      isNumeric(timestamp) &&
-      isNumeric(overrideId)
-    ) {
+    if (pattern.override === patn && isNumeric(id) && isNumeric(timestamp) && isNumeric(overrideId)) {
       return { override: { masterTaskId: +id, timestamp: +timestamp, overrideId: +overrideId } };
     }
 

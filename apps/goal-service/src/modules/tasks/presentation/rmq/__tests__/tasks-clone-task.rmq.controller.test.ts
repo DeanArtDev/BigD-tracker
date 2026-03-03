@@ -89,24 +89,15 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
-        GoalCloneTask.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       const [[clonedTaskArg, trxArg]] = tasksWriteRepoMock.createTask.mock.calls;
       expect(clonedTaskArg).toBeInstanceOf(Task);
       expect(clonedTaskArg.id).toEqual(NaN);
       expect(clonedTaskArg.name).toBe('Original');
       expect(trxArg).toEqual(expectTransaction());
-      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith(
-        { id: clonedTask.id, userId },
-        expectTransaction(),
-      );
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith({ id: clonedTask.id, userId }, expectTransaction());
       expect(res).toEqual({
         data: toTaskResponse(taskView),
       });
@@ -124,9 +115,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
       tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: groupId, user_id: userId }),
-      );
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(getGroupWithTasks({ id: groupId, user_id: userId }));
       tasksWriteRepoMock.addTaskToGroup.mockResolvedValueOnce(undefined);
       tasksReadRepoMock.getById.mockResolvedValueOnce(taskView);
 
@@ -138,10 +127,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      const res = await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
-        GoalCloneTask.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
 
       expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
         { groupId, userId, includeInbox: true },
@@ -168,18 +154,12 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
-          GoalCloneTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
-        { taskId, userId },
-        expectTransaction(),
-      );
+      expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith({ taskId, userId }, expectTransaction());
       expect(tasksWriteRepoMock.createTask).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskNotExist.code,
@@ -211,10 +191,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
-          GoalCloneTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -254,18 +231,12 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
-          GoalCloneTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
       } catch (err) {
         error = err;
       }
 
-      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith(
-        { id: clonedTask.id, userId },
-        expectTransaction(),
-      );
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith({ id: clonedTask.id, userId }, expectTransaction());
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(2);
       expect(unwrapRpcError(error)).toMatchObject({
@@ -295,10 +266,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(
-          GoalCloneTask.pattern,
-          payload,
-        );
+        await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
       } catch (err) {
         error = err;
       }

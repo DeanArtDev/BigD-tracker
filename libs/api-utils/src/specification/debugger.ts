@@ -7,10 +7,7 @@ interface Opts {
   readonly maxDepth?: number;
 }
 
-export function specToDebugString<TTable extends TDB>(
-  spec: SpecificationObject<TTable>,
-  opts: Opts = {},
-): string {
+export function specToDebugString<TTable extends TDB>(spec: SpecificationObject<TTable>, opts: Opts = {}): string {
   const includeMeta = opts.includeMeta ?? false;
   const multiline = opts.multiline ?? true;
   const indentSize = opts.indent ?? 2;

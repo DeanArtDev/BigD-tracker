@@ -4,15 +4,9 @@ import { Insertable, Selectable, Transaction, Updateable } from 'kysely';
 import { RepetitionEntity } from '../domain/repetition.entity';
 
 interface RepetitionsRepository {
-  createMany(
-    data: RepetitionRawData['insertable'][],
-    trx?: Transaction<DB>,
-  ): Promise<RepetitionEntity[]>;
+  createMany(data: RepetitionRawData['insertable'][], trx?: Transaction<DB>): Promise<RepetitionEntity[]>;
 
-  update(
-    data: RepetitionRawData['updateable'],
-    trx?: Transaction<DB>,
-  ): Promise<RepetitionEntity | null>;
+  update(data: RepetitionRawData['updateable'], trx?: Transaction<DB>): Promise<RepetitionEntity | null>;
 
   findAllByFilters(
     filters: {
@@ -34,10 +28,7 @@ interface RepetitionsRepository {
 
 interface RepetitionRawData {
   readonly selectable: Omit<Selectable<DB['repetitions']>, 'created_at' | 'updated_at'>;
-  readonly updateable: Omit<
-    Override<Updateable<DB['repetitions']>, 'id', number>,
-    'created_at' | 'updated_at'
-  >;
+  readonly updateable: Omit<Override<Updateable<DB['repetitions']>, 'id', number>, 'created_at' | 'updated_at'>;
   readonly insertable: OmitCreateFields<Insertable<DB['repetitions']>>;
 }
 

@@ -11,12 +11,7 @@ import {
 
 const { and } = tasksCombinators;
 
-function GetTasksOverrides(input: {
-  userId: number;
-  from: Date;
-  to: Date;
-  masterEventIds: number[];
-}) {
+function GetTasksOverrides(input: { userId: number; from: Date; to: Date; masterEventIds: number[] }) {
   const spec = and(
     ...compact([
       TaskOverrideByUserId(input.userId),

@@ -63,21 +63,13 @@ function AppDialog(props: PropsWithChildren<AppDialogProps>) {
       >
         {mobileSpace && <div className="top-mobile-space w-full min-h-(--mobile-top-space)" />}
 
-        <AppDialogHeader
-          title={title}
-          description={description}
-          onClose={() => void onOpenChange?.(false)}
-        />
+        <AppDialogHeader title={title} description={description} onClose={() => void onOpenChange?.(false)} />
 
         <div className="flex min-h-0 min-w-0 w-full flex-col grow">{children}</div>
 
-        {footer && (
-          <DialogFooter className="w-full">{isFunction(footer) ? footer() : footer}</DialogFooter>
-        )}
+        {footer && <DialogFooter className="w-full">{isFunction(footer) ? footer() : footer}</DialogFooter>}
 
-        {mobileSpace && (
-          <div className="bottom-mobile-space w-full min-h-(--mobile-bottom-space)" />
-        )}
+        {mobileSpace && <div className="bottom-mobile-space w-full min-h-(--mobile-bottom-space)" />}
       </DialogContent>
     </Dialog>
   );
@@ -103,9 +95,7 @@ function AppDialogHeader(props: {
       <div className="flex flex-col w-[95%] gap-2 justify-center">
         <DialogTitle className={cn({ hidden: title == null })}>{title}</DialogTitle>
 
-        <DialogDescription className={description == null ? 'hidden' : undefined}>
-          {description}
-        </DialogDescription>
+        <DialogDescription className={description == null ? 'hidden' : undefined}>{description}</DialogDescription>
       </div>
 
       {showClose && (

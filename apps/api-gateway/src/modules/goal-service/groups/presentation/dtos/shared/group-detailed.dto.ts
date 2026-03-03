@@ -2,17 +2,7 @@ import { TaskDto } from '@/modules/goal-service/tasks';
 import { GroupStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 
 class GroupDetailedDto {
   @ApiProperty({ example: 1 })

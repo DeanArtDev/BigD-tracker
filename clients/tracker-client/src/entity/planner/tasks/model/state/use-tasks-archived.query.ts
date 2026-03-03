@@ -7,23 +7,20 @@ import { tasksQueryKeys } from './query';
 const EMPTY_PLACEHOLDER: TaskEntity[] = [];
 
 function useTasksArchivedQuery(params: TaskArchivedQueryParams) {
-  const { data, ...others } = $privetQueryClient.useInfiniteQuery(
-    ...tasksQueryKeys.getTasksArchived(params),
-    {
-      pageParamName: 'page',
-      initialPageParam: 1,
-      getNextPageParam: (lastPage, _, lastPageParam) => {
-        const lastParams = typeof lastPageParam === 'number' ? lastPageParam : 1;
-        return lastPage.data.meta.nextPage ? lastParams + 1 : undefined;
-      },
-      select: (data) => {
-        return {
-          ...data,
-          allItems: data.pages.flatMap((page) => page.data.items.map(taskDtoToEntity)),
-        };
-      },
+  const { data, ...others } = $privetQueryClient.useInfiniteQuery(...tasksQueryKeys.getTasksArchived(params), {
+    pageParamName: 'page',
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      const lastParams = typeof lastPageParam === 'number' ? lastPageParam : 1;
+      return lastPage.data.meta.nextPage ? lastParams + 1 : undefined;
     },
-  );
+    select: (data) => {
+      return {
+        ...data,
+        allItems: data.pages.flatMap((page) => page.data.items.map(taskDtoToEntity)),
+      };
+    },
+  });
 
   return {
     pages: data?.pages,

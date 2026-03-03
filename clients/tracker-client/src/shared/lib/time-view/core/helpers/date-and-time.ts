@@ -43,10 +43,7 @@ class DateAndTime {
     return d;
   }
 
-  static isDateInRange(
-    currentDate: ConfigType,
-    range: { from: number | Date; to: number | Date },
-  ): boolean {
+  static isDateInRange(currentDate: ConfigType, range: { from: number | Date; to: number | Date }): boolean {
     const { from: startCurrentDate, to: endCurrentDate } = DateAndTime.getFromAndTo(currentDate);
 
     const from = DateAndTime.createDate(range.from);

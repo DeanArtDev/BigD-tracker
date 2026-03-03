@@ -11,10 +11,7 @@ import { CalendarIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { type ControllerRenderProps, type FieldValues, type Path } from 'react-hook-form';
 
-type CalendarFormProps = Omit<
-  ComponentProps<typeof Calendar>,
-  'className' | 'classNames' | 'onSelect' | 'disabled'
->;
+type CalendarFormProps = Omit<ComponentProps<typeof Calendar>, 'className' | 'classNames' | 'onSelect' | 'disabled'>;
 
 type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = CalendarFormProps & {
   readonly name: Path<FormValues>;
@@ -107,9 +104,7 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
                       return;
                     }
 
-                    const endDayValue = endDay
-                      ? dayjs(newDay).endOf('day').set('milliseconds', 0).toDate()
-                      : newDay;
+                    const endDayValue = endDay ? dayjs(newDay).endOf('day').set('milliseconds', 0).toDate() : newDay;
 
                     field.onChange(endDayValue);
                     onChange?.();

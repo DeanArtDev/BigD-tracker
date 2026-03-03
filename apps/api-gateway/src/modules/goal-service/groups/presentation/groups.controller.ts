@@ -105,13 +105,11 @@ export class GroupsController {
   })
   @ValidateRpcResponse(GetAssignableGroupsRes)
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getAssignableGroups(
-    @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GetAssignableGroupsRes> {
-    return await this.goalClient.send<
-      GoalGetAssignableGroups.Response,
-      GoalGetAssignableGroups.Request
-    >(GoalGetAssignableGroups.pattern, { data: { userId: uid } });
+  async getAssignableGroups(@TokenPayload() { uid }: AccessTokenPayload): Promise<GetAssignableGroupsRes> {
+    return await this.goalClient.send<GoalGetAssignableGroups.Response, GoalGetAssignableGroups.Request>(
+      GoalGetAssignableGroups.pattern,
+      { data: { userId: uid } },
+    );
   }
 
   @Post()
@@ -127,10 +125,9 @@ export class GroupsController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Body() { data }: CreateGroupReq,
   ): Promise<CreateGroupRes> {
-    return await this.goalClient.send<GoalCreateGroup.Response, GoalCreateGroup.Request>(
-      GoalCreateGroup.pattern,
-      { data: { userId: uid, description: data.description, name: data.name } },
-    );
+    return await this.goalClient.send<GoalCreateGroup.Response, GoalCreateGroup.Request>(GoalCreateGroup.pattern, {
+      data: { userId: uid, description: data.description, name: data.name },
+    });
   }
 
   @Put('/:groupId')
@@ -147,18 +144,15 @@ export class GroupsController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Body() { data }: ReplaceGroupReq,
   ): Promise<ReplaceGroupRes> {
-    return await this.goalClient.send<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(
-      GoalReplaceGroup.pattern,
-      {
-        data: {
-          id: groupId,
-          userId: uid,
-          description: data.description,
-          name: data.name,
-          tasks: data.tasks,
-        },
+    return await this.goalClient.send<GoalReplaceGroup.Response, GoalReplaceGroup.Request>(GoalReplaceGroup.pattern, {
+      data: {
+        id: groupId,
+        userId: uid,
+        description: data.description,
+        name: data.name,
+        tasks: data.tasks,
       },
-    );
+    });
   }
 
   @Delete('/:groupId')
@@ -174,14 +168,11 @@ export class GroupsController {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<DeleteGroupRes> {
-    return await this.goalClient.send<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
-      GoalDeleteGroup.pattern,
-      {
-        data: {
-          groupId,
-          userId: uid,
-        },
+    return await this.goalClient.send<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(GoalDeleteGroup.pattern, {
+      data: {
+        groupId,
+        userId: uid,
       },
-    );
+    });
   }
 }

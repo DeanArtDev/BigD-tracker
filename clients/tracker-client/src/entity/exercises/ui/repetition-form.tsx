@@ -24,26 +24,17 @@ function RepetitionForm<FormValues extends FieldValues = FieldValues>({
       <div className="flex gap-2 grow items-center flex-wrap justify-end ">
         <div className="grid grid-cols-[max-content_80px] gap-2 items-center justify-center">
           <span>Вес</span>
-          <InputNumberForm<FormValues>
-            classNames={{ input: 'px-1 text-center' }}
-            name={weightName}
-          />
+          <InputNumberForm<FormValues> classNames={{ input: 'px-1 text-center' }} name={weightName} />
         </div>
 
         <div className="grid grid-cols-[max-content_60px] gap-2 items-center justify-center">
           <span>Повторения</span>
-          <InputNumberForm<FormValues>
-            classNames={{ input: 'px-1 text-center' }}
-            name={countName}
-          />
+          <InputNumberForm<FormValues> classNames={{ input: 'px-1 text-center' }} name={countName} />
         </div>
 
         <div className="grid grid-cols-[max-content_60px] gap-2 items-center justify-center">
           <span>Перерыв мин.</span>
-          <InputNumberForm<FormValues>
-            classNames={{ input: 'px-1 text-center' }}
-            name={breakName}
-          />
+          <InputNumberForm<FormValues> classNames={{ input: 'px-1 text-center' }} name={breakName} />
         </div>
       </div>
 

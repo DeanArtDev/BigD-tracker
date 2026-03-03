@@ -4,11 +4,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 function useDeleteTask() {
   const options = getDefaultQueryNotifications();
 
-  const { mutate: deleteTask, ...states } = $privetQueryClient.useMutation(
-    'delete',
-    '/tasks/{taskId}',
-    { onError: options.onError },
-  );
+  const { mutate: deleteTask, ...states } = $privetQueryClient.useMutation('delete', '/tasks/{taskId}', {
+    onError: options.onError,
+  });
 
   return {
     deleteTask,

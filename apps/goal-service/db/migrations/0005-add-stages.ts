@@ -64,12 +64,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .alterTable('stages')
-    .addForeignKeyConstraint(
-      'stages_stage_statuses_id_fk',
-      ['status_id'],
-      'stage_statuses',
-      ['id'],
-      (cb) => cb.onDelete('no action').onUpdate('no action'),
+    .addForeignKeyConstraint('stages_stage_statuses_id_fk', ['status_id'], 'stage_statuses', ['id'], (cb) =>
+      cb.onDelete('no action').onUpdate('no action'),
     )
     .execute();
 

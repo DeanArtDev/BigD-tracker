@@ -35,12 +35,7 @@ function SwitchForm<FormValues extends FieldValues = FieldValues>({
             )}
 
             <FormControl>
-              <Switch
-                {...switchProps}
-                {...field}
-                checked={Boolean(field.value)}
-                onCheckedChange={field.onChange}
-              >
+              <Switch {...switchProps} {...field} checked={Boolean(field.value)} onCheckedChange={field.onChange}>
                 {children}
               </Switch>
             </FormControl>

@@ -1,17 +1,7 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsISO8601,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsInt, IsISO8601, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
 
 class TaskDto {

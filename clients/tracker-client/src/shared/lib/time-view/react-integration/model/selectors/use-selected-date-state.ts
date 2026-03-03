@@ -16,8 +16,7 @@ function useSelectedDateState() {
     return controller.getFromAndTo(controller.state.selectedDate);
   }, [controller.state.selectedDate]);
 
-  const isToday =
-    controller.state.selectedDate.get('date') === controller.state.currentTime().get('date');
+  const isToday = controller.state.selectedDate.get('date') === controller.state.currentTime().get('date');
 
   return {
     isToday,

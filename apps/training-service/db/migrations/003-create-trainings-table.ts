@@ -11,13 +11,9 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('trainings')
     .addColumn('id', 'serial', (col) => col.primaryKey())
-    .addColumn('user_id', 'integer', (col) =>
-      col.references('users.id').onDelete('cascade').notNull(),
-    )
+    .addColumn('user_id', 'integer', (col) => col.references('users.id').onDelete('cascade').notNull())
     .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
-    .addColumn('type', 'text', (col) =>
-      col.references('trainings_types.value').onDelete('restrict').notNull(),
-    )
+    .addColumn('type', 'text', (col) => col.references('trainings_types.value').onDelete('restrict').notNull())
     .addColumn('description', 'text')
     .addColumn('start_date', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('end_date', 'timestamptz')

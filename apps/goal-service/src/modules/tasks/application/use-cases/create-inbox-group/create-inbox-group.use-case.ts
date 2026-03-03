@@ -19,10 +19,7 @@ class CreateInboxGroupUseCase {
 
   async execute(input: { userId: number }): Promise<GroupInboxView> {
     return this.db.runTransaction(async (trx) => {
-      const inboxGroup = await this.inboxReadRepo.getInboxWithTasksByUserId(
-        { userId: input.userId },
-        trx,
-      );
+      const inboxGroup = await this.inboxReadRepo.getInboxWithTasksByUserId({ userId: input.userId }, trx);
 
       if (inboxGroup != null) {
         throw new ExceptionInboxAlreadyExist({});

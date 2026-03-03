@@ -29,9 +29,4 @@ class ExerciseWithRepetitionsResSingle {
   data: ExerciseWithRepetitionsDto;
 }
 
-export {
-  ExerciseRes,
-  ExerciseResSingle,
-  ExerciseWithRepetitionsRes,
-  ExerciseWithRepetitionsResSingle,
-};
+export { ExerciseRes, ExerciseResSingle, ExerciseWithRepetitionsRes, ExerciseWithRepetitionsResSingle };

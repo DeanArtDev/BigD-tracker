@@ -75,10 +75,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith(
-        { groupId, userId },
-        expectTransaction(),
-      );
+      expect(groupWriteRepoMock.getGroupById).toHaveBeenCalledWith({ groupId, userId }, expectTransaction());
       expect(specToDebugString(firstArg(groupWriteRepoMock.delete))).toMatchInlineSnapshot(`
           "AND[groups.policy.delete-by-user](
             groups.byId,
@@ -88,10 +85,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
             )
           )"
       `);
-      expect(groupWriteRepoMock.delete).toHaveBeenCalledWith(
-        expect.anything(),
-        expectTransaction(),
-      );
+      expect(groupWriteRepoMock.delete).toHaveBeenCalledWith(expect.anything(), expectTransaction());
       expect(res).toEqual({ data: true });
     });
 
@@ -105,10 +99,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
-          GoalDeleteGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(GoalDeleteGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -132,10 +123,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
-          GoalDeleteGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(GoalDeleteGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -160,10 +148,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
 
       let error: unknown;
       try {
-        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
-          GoalDeleteGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(GoalDeleteGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
@@ -184,17 +169,12 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const payload: GoalDeleteGroup.Request = buildPayload({
         data: { groupId: 83, userId: 53 },
       });
-      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(
-        getGroupWithTasks({ id: 83, user_id: 53, tasks: [] }),
-      );
+      groupWriteRepoMock.getGroupById.mockResolvedValueOnce(getGroupWithTasks({ id: 83, user_id: 53, tasks: [] }));
       groupWriteRepoMock.delete.mockResolvedValueOnce(false);
 
       let error: unknown;
       try {
-        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
-          GoalDeleteGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(GoalDeleteGroup.pattern, payload);
       } catch (err) {
         error = err;
       }

@@ -14,17 +14,15 @@ type BaseExceptionsGuardsMap<T extends readonly BaseExceptionGuardInput[]> = {
   [K in T[number] as K[0]]: (error: unknown) => error is InstanceType<K[1]>;
 };
 
-function generateBaseExceptionsGuards<
-  TInput extends BaseExceptionGuardInput[] = BaseExceptionGuardInput[],
->(input: TInput): BaseExceptionsGuardsMap<TInput> {
+function generateBaseExceptionsGuards<TInput extends BaseExceptionGuardInput[] = BaseExceptionGuardInput[]>(
+  input: TInput,
+): BaseExceptionsGuardsMap<TInput> {
   const buffer = {} as BaseExceptionsGuardsMap<TInput>;
 
   for (const [name, Cls] of input) {
     buffer[name] = (error: unknown): error is InstanceType<typeof Cls> => {
       const initialClass = new Cls({} as any);
-      return (
-        isBaseException(error) && error.key === initialClass.key && error.code === initialClass.code
-      );
+      return isBaseException(error) && error.key === initialClass.key && error.code === initialClass.code;
     };
   }
 

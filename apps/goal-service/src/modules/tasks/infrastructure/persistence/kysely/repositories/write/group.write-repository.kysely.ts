@@ -1,8 +1,4 @@
-import {
-  GroupsWriteRepository,
-  TaskDatabase,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { GroupsWriteRepository, TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
@@ -16,10 +12,7 @@ import { getTasksWithStatusQuery } from '../helpers';
 import { groupWithStatusQuery } from '../utils';
 
 @Injectable()
-export class GroupWriteRepositoryKysely
-  extends BaseTasksRepository
-  implements GroupsWriteRepository
-{
+export class GroupWriteRepositoryKysely extends BaseTasksRepository implements GroupsWriteRepository {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
   }
@@ -127,11 +120,7 @@ export class GroupWriteRepositoryKysely
         })
         .executeTakeFirstOrThrow();
 
-      await this.db
-        .qb(trx)
-        .deleteFrom('task_to_group as ttg')
-        .where('ttg.group_id', '=', group.id)
-        .execute();
+      await this.db.qb(trx).deleteFrom('task_to_group as ttg').where('ttg.group_id', '=', group.id).execute();
 
       for (let i = 0; i < group.tasks.length; i++) {
         const task = group.tasks[i];

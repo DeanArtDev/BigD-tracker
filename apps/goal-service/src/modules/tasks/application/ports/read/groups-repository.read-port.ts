@@ -1,9 +1,4 @@
-import {
-  GroupDetailedView,
-  GroupInfoView,
-  GroupView,
-  GroupWithTasksView,
-} from '@/modules/tasks/application/dto';
+import { GroupDetailedView, GroupInfoView, GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskTransaction } from '../transaction-manager.port';
 
@@ -18,15 +13,9 @@ interface ThrowErrorOptions {
 }
 
 interface GroupsReadRepository {
-  getByName(
-    input: { name: string; userId: number },
-    trx?: TaskTransaction,
-  ): Promise<GroupView | null>;
+  getByName(input: { name: string; userId: number }, trx?: TaskTransaction): Promise<GroupView | null>;
 
-  getInfoGroups(
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<GroupInfoView[]>;
+  getInfoGroups(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupInfoView[]>;
 
   getGroup(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null>;
 
@@ -44,10 +33,7 @@ interface GroupsReadRepository {
     input: GetGroupByIdInput,
     options: { throwError: true; trx?: TaskTransaction },
   ): Promise<GroupWithTasksView>;
-  getGroupWithTasksById(
-    input: GetGroupByIdInput,
-    options?: ThrowErrorOptions,
-  ): Promise<GroupWithTasksView | null>;
+  getGroupWithTasksById(input: GetGroupByIdInput, options?: ThrowErrorOptions): Promise<GroupWithTasksView | null>;
 
   ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },

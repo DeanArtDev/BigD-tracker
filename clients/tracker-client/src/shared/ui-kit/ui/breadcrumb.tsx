@@ -5,9 +5,7 @@ import { cn } from '@/shared/ui-kit/utils';
 import { ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react';
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<'nav'>) {
-  return (
-    <nav aria-label="breadcrumb" data-slot="breadcrumb" className={cn(className)} {...props} />
-  );
+  return <nav aria-label="breadcrumb" data-slot="breadcrumb" className={cn(className)} {...props} />;
 }
 
 function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
@@ -24,13 +22,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
 }
 
 function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
-  return (
-    <li
-      data-slot="breadcrumb-item"
-      className={cn('gap-1.5 inline-flex items-center', className)}
-      {...props}
-    />
-  );
+  return <li data-slot="breadcrumb-item" className={cn('gap-1.5 inline-flex items-center', className)} {...props} />;
 }
 
 function BreadcrumbLink({
@@ -43,11 +35,7 @@ function BreadcrumbLink({
   const Comp = asChild ? Slot.Root : 'a';
 
   return (
-    <Comp
-      data-slot="breadcrumb-link"
-      className={cn('hover:text-foreground transition-colors', className)}
-      {...props}
-    />
+    <Comp data-slot="breadcrumb-link" className={cn('hover:text-foreground transition-colors', className)} {...props} />
   );
 }
 

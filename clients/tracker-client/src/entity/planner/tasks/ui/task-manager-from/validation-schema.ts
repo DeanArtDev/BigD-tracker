@@ -4,16 +4,9 @@ import { z } from 'zod';
 
 const validationSchema = z
   .object({
-    name: z
-      .string({ error: '' })
-      .min(4, { error: 'Не меньше 4 символов' })
-      .max(254, { error: 'Слишком длинное имя' }),
+    name: z.string({ error: '' }).min(4, { error: 'Не меньше 4 символов' }).max(254, { error: 'Слишком длинное имя' }),
 
-    priority: z
-      .enum(taskPriorityEnumSchema)
-      .optional()
-      .or(z.literal(null))
-      .transform(transformPlaceholder.optional),
+    priority: z.enum(taskPriorityEnumSchema).optional().or(z.literal(null)).transform(transformPlaceholder.optional),
 
     description: z.string().optional().transform(transformPlaceholder.optional),
 

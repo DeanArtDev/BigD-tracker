@@ -1,19 +1,10 @@
 import { KyselyUnitOfWork } from '@big-d/api-utils';
 import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { DB } from '@infrastructure/types';
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Transaction } from 'kysely';
 import { RepetitionEntity } from '../../domain/repetition.entity';
-import {
-  RepetitionFinishType,
-  REPETITIONS_REPOSITORY,
-  RepetitionsRepository,
-} from '../repetitions.repository';
+import { RepetitionFinishType, REPETITIONS_REPOSITORY, RepetitionsRepository } from '../repetitions.repository';
 
 interface SetFactInput {
   readonly userId: number;
@@ -50,9 +41,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
       );
 
       if (updatedRepetition == null) {
-        throw new InternalServerErrorException(
-          `Failed to update repetition with id: ${repetitionId}`,
-        );
+        throw new InternalServerErrorException(`Failed to update repetition with id: ${repetitionId}`);
       }
 
       return updatedRepetition;
@@ -72,10 +61,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity> {
     return await this.runTransaction(async (transaction) => {
-      const restoredRepetition = await this.#findRepo(
-        { userId, repetitionId: repetitionId },
-        transaction,
-      );
+      const restoredRepetition = await this.#findRepo({ userId, repetitionId: repetitionId }, transaction);
 
       restoredRepetition.setFact({
         factCount: factCount,
@@ -96,19 +82,14 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
       );
 
       if (updatedRepetition == null) {
-        throw new InternalServerErrorException(
-          `Failed to update repetition with id: ${repetitionId}`,
-        );
+        throw new InternalServerErrorException(`Failed to update repetition with id: ${repetitionId}`);
       }
 
       return updatedRepetition;
     }, trx);
   }
 
-  async #findRepo(
-    data: { userId: number; repetitionId: number },
-    trx?: Transaction<DB>,
-  ): Promise<RepetitionEntity> {
+  async #findRepo(data: { userId: number; repetitionId: number }, trx?: Transaction<DB>): Promise<RepetitionEntity> {
     const restoredRepetition = await this.repetitionsRepo.findOneById(data.repetitionId, trx);
 
     if (restoredRepetition == null) {
@@ -116,9 +97,7 @@ export class FinishRepetitionsUseCase extends KyselyUnitOfWork<DB> {
     }
 
     if (restoredRepetition.userId !== data.userId) {
-      throw new InternalServerErrorException(
-        `You cannot finish not your repetition, id:${data.repetitionId}`,
-      );
+      throw new InternalServerErrorException(`You cannot finish not your repetition, id:${data.repetitionId}`);
     }
 
     return restoredRepetition;

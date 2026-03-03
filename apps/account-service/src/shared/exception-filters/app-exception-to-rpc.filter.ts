@@ -7,14 +7,11 @@ import { Observable, throwError } from 'rxjs';
 @Catch()
 export class AccountExceptionToRpc implements ExceptionFilter {
   catch(exception: unknown): Observable<BaseRpcException> {
-    const correlationId =
-      AccountRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
+    const correlationId = AccountRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
 
     if (isBaseException(exception)) {
       if (
-        [exceptionCode.userNotFound.code, exceptionCode.sessionNotFound.code].some(
-          (code) => code === exception.code,
-        )
+        [exceptionCode.userNotFound.code, exceptionCode.sessionNotFound.code].some((code) => code === exception.code)
       ) {
         return throwError(() => RpcExceptionFactory.createNotFoundError(exception));
       }

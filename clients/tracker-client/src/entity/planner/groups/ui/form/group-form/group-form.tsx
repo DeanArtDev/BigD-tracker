@@ -1,10 +1,5 @@
 import { ButtonLoading } from '@/shared/components/button-loading';
-import {
-  FormStateEmitter,
-  type FormStateEmitterProps,
-  InputForm,
-  WysiwygForm,
-} from '@/shared/components/form';
+import { FormStateEmitter, type FormStateEmitterProps, InputForm, WysiwygForm } from '@/shared/components/form';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ReactNode, useRef } from 'react';
@@ -22,13 +17,7 @@ interface GroupFormProps extends FormStateEmitterProps {
   readonly onSubmit: (formResult: { name: string; description?: string }) => void;
 }
 
-function GroupForm({
-  isLoading = false,
-  emitIsLoading,
-  emitIsDirty,
-  closeSlot,
-  onSubmit,
-}: GroupFormProps) {
+function GroupForm({ isLoading = false, emitIsLoading, emitIsDirty, closeSlot, onSubmit }: GroupFormProps) {
   const form = useForm<GroupFormData, any, GroupSubmitFormData>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -62,13 +51,7 @@ function GroupForm({
         })}
       >
         <div className="flex gap-2">
-          <InputForm
-            classNames={{ wrapper: 'grow' }}
-            name="name"
-            autoFocus
-            required
-            placeholder="Имя"
-          />
+          <InputForm classNames={{ wrapper: 'grow' }} name="name" autoFocus required placeholder="Имя" />
 
           {closeSlot}
         </div>
@@ -83,22 +66,13 @@ function GroupForm({
         />
 
         <div className="flex gap-2 justify-end">
-          <ButtonLoading
-            size="sm"
-            type="submit"
-            isLoading={isLoading}
-            disabled={!form.formState.isDirty}
-          >
+          <ButtonLoading size="sm" type="submit" isLoading={isLoading} disabled={!form.formState.isDirty}>
             Создать
           </ButtonLoading>
         </div>
       </form>
 
-      <FormStateEmitter
-        isLoading={isLoading}
-        emitIsDirty={emitIsDirty}
-        emitIsLoading={emitIsLoading}
-      />
+      <FormStateEmitter isLoading={isLoading} emitIsDirty={emitIsDirty} emitIsLoading={emitIsLoading} />
     </Form>
   );
 }

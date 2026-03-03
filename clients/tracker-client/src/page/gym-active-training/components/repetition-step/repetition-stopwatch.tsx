@@ -12,10 +12,7 @@ function RepetitionStopwatch({ renderControls }: RepetitionStopwatchProps) {
     <Stopwatch
       renderControls={renderControls}
       renderContent={({ minutes, seconds, pause, start, isRunning }) => (
-        <button
-          className="text-[length:inherit] cursor-pointer"
-          onClick={() => void (isRunning ? pause() : start())}
-        >
+        <button className="text-[length:inherit] cursor-pointer" onClick={() => void (isRunning ? pause() : start())}>
           {isRunning ? (
             <span>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}

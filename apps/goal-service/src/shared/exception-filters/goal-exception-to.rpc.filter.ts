@@ -9,8 +9,7 @@ import { Observable, throwError } from 'rxjs';
 @Catch()
 export class GoalExceptionToRpc implements ExceptionFilter {
   catch(exception: unknown): Observable<BaseRpcException> {
-    const correlationId =
-      GoalServiceRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
+    const correlationId = GoalServiceRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
 
     if (exception instanceof ExceptionTaskDomainInvalidInvariant) {
       return throwError(() => RpcExceptionFactory.createDomainInvariantViolation(exception));

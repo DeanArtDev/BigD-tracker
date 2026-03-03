@@ -3,11 +3,9 @@ import { getDefaultQueryNotifications } from '@/shared/lib/react/default-notific
 
 function useExerciseDelete() {
   const options = getDefaultQueryNotifications();
-  const { mutate: deleteTrigger, ...others } = $privetQueryClient.useMutation(
-    'delete',
-    '/exercises/{exerciseId}',
-    { onError: options.onError },
-  );
+  const { mutate: deleteTrigger, ...others } = $privetQueryClient.useMutation('delete', '/exercises/{exerciseId}', {
+    onError: options.onError,
+  });
 
   return {
     deleteTrigger,

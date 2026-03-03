@@ -20,14 +20,7 @@ class GroupView {
   ) {}
 
   static restore(input: GroupViewState): GroupView {
-    return new GroupView(
-      input.id,
-      input.userId,
-      input.progress,
-      input.name,
-      input.status,
-      input.description,
-    );
+    return new GroupView(input.id, input.userId, input.progress, input.name, input.status, input.description);
   }
 }
 

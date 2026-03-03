@@ -6,9 +6,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('user_id', 'integer', (col) => col.references('users.id').onDelete('cascade'))
     .addColumn('name', 'text', (col) => col.notNull().check(sql`char_length(name) <= 256`))
-    .addColumn('type', 'text', (col) =>
-      col.references('trainings_types.value').onDelete('restrict').notNull(),
-    )
+    .addColumn('type', 'text', (col) => col.references('trainings_types.value').onDelete('restrict').notNull())
     .addColumn('description', 'text')
     .addColumn('worm_up_duration', 'integer', (col) =>
       col.check(sql`post_training_duration >= 0 AND post_training_duration <= 60`),

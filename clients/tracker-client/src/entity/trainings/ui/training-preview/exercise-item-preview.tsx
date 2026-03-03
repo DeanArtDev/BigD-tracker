@@ -1,18 +1,7 @@
 import { Badge } from '@/shared/ui-kit/ui/badge';
 import { ButtonChevron } from '@/shared/ui-kit/ui/button-chevron';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/shared/ui-kit/ui/collapsible';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shared/ui-kit/ui/table';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui-kit/ui/collapsible';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui-kit/ui/table';
 import { useState } from 'react';
 
 interface ExerciseItemPreviewProps {
@@ -44,11 +33,7 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
         </Badge>
 
         <CollapsibleTrigger asChild>
-          <ButtonChevron
-            open={isOpen}
-            className="ml-auto sm:ml-0"
-            onClick={() => void setIsOpen((prev) => !prev)}
-          />
+          <ButtonChevron open={isOpen} className="ml-auto sm:ml-0" onClick={() => void setIsOpen((prev) => !prev)} />
         </CollapsibleTrigger>
       </div>
 
@@ -65,8 +50,7 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
 
           <TableBody>
             {repetitions.map((rep, idx) => {
-              const { targetWeight, targetCount, targetBreak, factCount, factWeight, factBreak } =
-                rep;
+              const { targetWeight, targetCount, targetBreak, factCount, factWeight, factBreak } = rep;
 
               const fact =
                 factCount != null && factWeight != null && factBreak != null
@@ -80,10 +64,7 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
               return (
                 <>
                   <TableRow>
-                    <TableCell
-                      className="font-bold text-left align-text-top pl-4 sm:pl-7"
-                      rowSpan={fact ? 2 : 1}
-                    >
+                    <TableCell className="font-bold text-left align-text-top pl-4 sm:pl-7" rowSpan={fact ? 2 : 1}>
                       <div className="flex flex-col">
                         {idx + 1}.{fact && <span className="ml-auto mt-4">Факт:</span>}
                       </div>
@@ -105,11 +86,7 @@ function ExerciseItemPreview({ type, name, repetitions, index }: ExerciseItemPre
   );
 }
 
-function DataView(props: {
-  readonly count: number;
-  readonly break: number;
-  readonly weight: string;
-}) {
+function DataView(props: { readonly count: number; readonly break: number; readonly weight: string }) {
   const w = +props.weight;
 
   return (

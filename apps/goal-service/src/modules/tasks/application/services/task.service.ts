@@ -48,10 +48,7 @@ class TaskService {
   async createTask(input: CreateTaskInput, trx?: TaskTransaction): Promise<Task> {
     const draftTask = TaskFactory.create(input);
     const createdTask = await this.tasksWriteRepo.createTask(draftTask, trx);
-    const newTask = await this.tasksWriteRepo.getTaskById(
-      { taskId: createdTask.id, userId: createdTask.userId },
-      trx,
-    );
+    const newTask = await this.tasksWriteRepo.getTaskById({ taskId: createdTask.id, userId: createdTask.userId }, trx);
 
     if (newTask == null) {
       throw new ExceptionTaskCreationFailed({
@@ -69,10 +66,7 @@ class TaskService {
     const clonedTask = TaskFactory.clone(task);
 
     const createdTask = await this.tasksWriteRepo.createTask(clonedTask, trx);
-    const newTask = await this.tasksWriteRepo.getTaskById(
-      { taskId: createdTask.id, userId: createdTask.userId },
-      trx,
-    );
+    const newTask = await this.tasksWriteRepo.getTaskById({ taskId: createdTask.id, userId: createdTask.userId }, trx);
 
     if (newTask == null) {
       throw new ExceptionTaskCreationFailed({
@@ -95,10 +89,7 @@ class TaskService {
   }
 
   async replaceTask(input: ReplaceTaskInput, trx?: TaskTransaction): Promise<Task> {
-    const task = await this.taskCheckerService.ensureTaskExists(
-      { taskId: input.id, userId: input.userId },
-      { trx },
-    );
+    const task = await this.taskCheckerService.ensureTaskExists({ taskId: input.id, userId: input.userId }, { trx });
 
     const replacedTask = TaskFactory.replace(task, input);
 
@@ -107,10 +98,7 @@ class TaskService {
 
   async addTaskToGroup(input: AddTaskToGroupInput, trx?: TaskTransaction): Promise<void> {
     const { taskId, userId, groupId } = input;
-    await this.groupCheckerService.ensureGroupExists(
-      { groupId, userId },
-      { trx, includeInbox: true },
-    );
+    await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
     await this.tasksWriteRepo.addTaskToGroup({ taskId, groupId }, trx);
   }
 }

@@ -1,11 +1,7 @@
 import { DB } from '@infrastructure/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { Transaction } from 'kysely';
-import {
-  RepetitionRawData,
-  REPETITIONS_REPOSITORY,
-  RepetitionsRepository,
-} from '../repetitions.repository';
+import { RepetitionRawData, REPETITIONS_REPOSITORY, RepetitionsRepository } from '../repetitions.repository';
 import { RepetitionEntity } from '../../domain/repetition.entity';
 
 interface CreateRepetitionInput {
@@ -24,11 +20,7 @@ export class CreateRepetitionsUseCase {
     private readonly repetitionsRepo: RepetitionsRepository,
   ) {}
 
-  async execute(
-    dto: CreateRepetitionInput[],
-    userId?: number,
-    trx?: Transaction<DB>,
-  ): Promise<RepetitionEntity[]> {
+  async execute(dto: CreateRepetitionInput[], userId?: number, trx?: Transaction<DB>): Promise<RepetitionEntity[]> {
     const repetitionsDraft = dto.map(RepetitionEntity.create);
 
     return await this.repetitionsRepo.createMany(

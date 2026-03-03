@@ -28,10 +28,9 @@ export class LoginUseCase {
 
   async execute(input: LoginUseCaseInput): Promise<{ sessionToken: string; accessToken: string }> {
     const email = Email.create(input.login).value;
-    const user = await this.queryBus.execute<
-      GetUserQuery,
-      ReturnHandlerType<typeof GetUserHandler>
-    >(new GetUserQuery({ email }));
+    const user = await this.queryBus.execute<GetUserQuery, ReturnHandlerType<typeof GetUserHandler>>(
+      new GetUserQuery({ email }),
+    );
     if (user == null) {
       throw new ExceptionWrongLoginOrPassword({ message: 'Invalid credentials' });
     }
@@ -40,15 +39,13 @@ export class LoginUseCase {
       throw new ExceptionWrongLoginOrPassword({ message: 'Invalid credentials' });
     }
 
-    await this.commandBus.execute<
-      CreateSessionCommand,
-      ReturnHandlerType<typeof CreateSessionHandler>
-    >(new CreateSessionCommand(user.id, input.ip, input.userAgent));
+    await this.commandBus.execute<CreateSessionCommand, ReturnHandlerType<typeof CreateSessionHandler>>(
+      new CreateSessionCommand(user.id, input.ip, input.userAgent),
+    );
 
-    const session = await this.queryBus.execute<
-      GetSessionQuery,
-      ReturnHandlerType<typeof GetSessionHandler>
-    >(new GetSessionQuery({ userId: user.id, userAgent: input.userAgent }));
+    const session = await this.queryBus.execute<GetSessionQuery, ReturnHandlerType<typeof GetSessionHandler>>(
+      new GetSessionQuery({ userId: user.id, userAgent: input.userAgent }),
+    );
     if (session == null) {
       throw new InternalServerErrorException(`Failed to create session for user: ${user.id}`);
     }

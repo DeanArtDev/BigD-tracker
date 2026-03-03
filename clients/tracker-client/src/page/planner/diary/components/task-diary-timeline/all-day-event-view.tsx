@@ -13,13 +13,7 @@ function AllDayEventView({ event, onClick }: AllDayEventViewProps) {
   const Icon = taskStatusToIconMap[event.extra!.status];
 
   return (
-    <article
-      className={cn(
-        'flex px-2',
-        'cursor-pointer',
-        'bg-gray-100 rounded-sm border border-gray-400 shadow-sm',
-      )}
-    >
+    <article className={cn('flex px-2', 'cursor-pointer', 'bg-gray-100 rounded-sm border border-gray-400 shadow-sm')}>
       <li
         className="h-[20px] grid grid-cols-[1fr_min-content] grow items-center gap-1"
         onClick={() => void onClick(event)}

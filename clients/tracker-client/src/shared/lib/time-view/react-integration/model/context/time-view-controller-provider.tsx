@@ -20,11 +20,7 @@ function TimeViewControllerProvider<TExtra = any>({
     return controller.destroy;
   }, []);
 
-  return (
-    <timeViewControllerContext.Provider value={controller}>
-      {children}
-    </timeViewControllerContext.Provider>
-  );
+  return <timeViewControllerContext.Provider value={controller}>{children}</timeViewControllerContext.Provider>;
 }
 
 export { TimeViewControllerProvider, type TimeViewControllerProviderProps };

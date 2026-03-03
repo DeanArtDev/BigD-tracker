@@ -43,12 +43,7 @@ class BaseRpcException<
   }
 
   public toResponse(): BaseRpcExceptionState<TKey, TCode, TKind, TDetails> {
-    const { key, code, kind, details } = this.getError() as BaseRpcExceptionState<
-      TKey,
-      TCode,
-      TKind,
-      TDetails
-    >;
+    const { key, code, kind, details } = this.getError() as BaseRpcExceptionState<TKey, TCode, TKind, TDetails>;
 
     return {
       key,
@@ -60,13 +55,7 @@ class BaseRpcException<
 }
 
 function isBaseRpcException(error: unknown): error is BaseRpcException {
-  return (
-    typeof error === 'object' &&
-    error != null &&
-    'key' in error &&
-    'code' in error &&
-    'kind' in error
-  );
+  return typeof error === 'object' && error != null && 'key' in error && 'code' in error && 'kind' in error;
 }
 
 export { BaseRpcException, isBaseRpcException, BaseRpcExceptionState };

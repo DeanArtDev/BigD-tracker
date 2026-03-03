@@ -13,8 +13,4 @@ const taskTaskRecurrenceWeekdayEnumSchema = Object.values(TaskRecurrenceWeekday)
   .filter((v) => typeof v === 'number')
   .map(String);
 
-export {
-  taskPriorityEnumSchema,
-  taskRecurrenceFrequencyEnumSchema,
-  taskTaskRecurrenceWeekdayEnumSchema,
-};
+export { taskPriorityEnumSchema, taskRecurrenceFrequencyEnumSchema, taskTaskRecurrenceWeekdayEnumSchema };

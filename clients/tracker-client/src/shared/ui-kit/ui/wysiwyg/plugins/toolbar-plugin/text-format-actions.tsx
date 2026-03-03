@@ -1,11 +1,6 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
-import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  SELECTION_CHANGE_COMMAND,
-} from 'lexical';
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from 'lexical';
 import { Bold, Italic, Strikethrough, Underline } from 'lucide-react';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { useWysiwygContext } from '../../context';
@@ -35,9 +30,7 @@ function TextFormatActions({ disabled }: { disabled: boolean }) {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(
-        ({ editorState }) => void editorState.read($updateToolbar, { editor }),
-      ),
+      editor.registerUpdateListener(({ editorState }) => void editorState.read($updateToolbar, { editor })),
 
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,

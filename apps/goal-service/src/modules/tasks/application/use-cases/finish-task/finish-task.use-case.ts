@@ -24,10 +24,7 @@ class FinishTaskUseCase {
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
 
       if (isOrigin) {
-        const task = await this.taskCheckerService.ensureTaskExists(
-          { taskId: data.id, userId },
-          { trx },
-        );
+        const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const finishedTask = TaskFactory.finish(task);
 
         await this.tasksWriteRepo.replaceTask(finishedTask, trx);

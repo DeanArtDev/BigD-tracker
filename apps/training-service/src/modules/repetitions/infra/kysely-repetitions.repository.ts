@@ -3,31 +3,17 @@ import { Database, DATABASE_CONNECTION } from '@big-d/database';
 import { DB } from '@infrastructure/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ExpressionBuilder, Transaction } from 'kysely';
-import {
-  RepetitionFinishType,
-  RepetitionRawData,
-  RepetitionsRepository,
-} from '../application/repetitions.repository';
+import { RepetitionFinishType, RepetitionRawData, RepetitionsRepository } from '../application/repetitions.repository';
 import { RepetitionEntity } from '../domain/repetition.entity';
 
 @Injectable()
-export class KyselyRepetitionsRepository
-  extends BaseRepository<DB>
-  implements RepetitionsRepository
-{
+export class KyselyRepetitionsRepository extends BaseRepository<DB> implements RepetitionsRepository {
   constructor(@Inject(DATABASE_CONNECTION) readonly database: Database<DB>) {
     super(database);
   }
 
-  async createMany(
-    data: RepetitionRawData['insertable'][],
-    trx?: Transaction<DB>,
-  ): Promise<RepetitionEntity[]> {
-    const result = await this.db(trx)
-      .insertInto('repetitions')
-      .values(data)
-      .returningAll()
-      .execute();
+  async createMany(data: RepetitionRawData['insertable'][], trx?: Transaction<DB>): Promise<RepetitionEntity[]> {
+    const result = await this.db(trx).insertInto('repetitions').values(data).returningAll().execute();
     return result.map(this.#map);
   }
 
@@ -47,11 +33,7 @@ export class KyselyRepetitionsRepository
   }
 
   async findOneById(id: number, trx?: Transaction<DB>): Promise<RepetitionEntity | null> {
-    const result = await this.db(trx)
-      .selectFrom('repetitions')
-      .selectAll()
-      .where('id', '=', id)
-      .executeTakeFirst();
+    const result = await this.db(trx).selectFrom('repetitions').selectAll().where('id', '=', id).executeTakeFirst();
 
     if (result == null) return null;
 
@@ -67,10 +49,7 @@ export class KyselyRepetitionsRepository
     trx?: Transaction<DB>,
   ): Promise<RepetitionEntity[]> {
     const { userId, exerciseId, positionOrder = 'asc' } = filters;
-    let query = this.db(trx)
-      .selectFrom('repetitions')
-      .orderBy('position', positionOrder)
-      .selectAll();
+    let query = this.db(trx).selectFrom('repetitions').orderBy('position', positionOrder).selectAll();
 
     query = query.where((eb) => {
       const conditions: ReturnType<ExpressionBuilder<DB, 'repetitions'>>[] = [];
@@ -93,29 +72,19 @@ export class KyselyRepetitionsRepository
   }
 
   async findTemplatables(trx?: Transaction<DB>): Promise<RepetitionEntity[]> {
-    const result = await this.db(trx)
-      .selectFrom('repetitions')
-      .where('user_id', 'is', null)
-      .selectAll()
-      .execute();
+    const result = await this.db(trx).selectFrom('repetitions').where('user_id', 'is', null).selectAll().execute();
 
     return result.map(this.#map);
   }
 
   async deleteMany(ids: number[], trx?: Transaction<DB>): Promise<number> {
     if (ids.length === 0) return 0;
-    const result = await this.db(trx)
-      .deleteFrom('repetitions')
-      .where('id', 'in', ids)
-      .executeTakeFirst();
+    const result = await this.db(trx).deleteFrom('repetitions').where('id', 'in', ids).executeTakeFirst();
     return Number(result.numDeletedRows ?? 0);
   }
 
   async deleteByExerciseIds(ids: number[], trx?: Transaction<DB>): Promise<number> {
-    const result = await this.db(trx)
-      .deleteFrom('repetitions')
-      .where('exercise_id', 'in', ids)
-      .executeTakeFirst();
+    const result = await this.db(trx).deleteFrom('repetitions').where('exercise_id', 'in', ids).executeTakeFirst();
 
     return Number(result.numDeletedRows ?? 0);
   }

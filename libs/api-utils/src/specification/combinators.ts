@@ -1,8 +1,6 @@
 import { LeafSpecParams, SpecificationObject, SpecMeta, SpecPurpose, TDB } from './types';
 
-function leafSpec<TTable extends TDB>(
-  params: LeafSpecParams<TTable>,
-): SpecificationObject<TTable, 'leaf'> {
+function leafSpec<TTable extends TDB>(params: LeafSpecParams<TTable>): SpecificationObject<TTable, 'leaf'> {
   return {
     tableName: params.tableName,
     key: params.key,

@@ -5,10 +5,7 @@ import { IsArray, ValidateNested } from 'class-validator';
 import { CreateExerciseRequestData } from '../dtos/create-exercise.dto';
 
 class CreateRepetition extends OmitType(CreateRepetitionDto, ['exerciseId'] as const) {}
-class CreateExercise extends OmitType(CreateExerciseRequestData, [
-  'trainingId',
-  'templateId',
-] as const) {}
+class CreateExercise extends OmitType(CreateExerciseRequestData, ['trainingId', 'templateId'] as const) {}
 
 class CreateExerciseWithRepetitionsData extends CreateExercise {
   @ApiProperty({

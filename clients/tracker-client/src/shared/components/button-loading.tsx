@@ -7,13 +7,7 @@ interface ButtonLoadingProps extends ComponentProps<typeof Button> {
   readonly isLoading?: boolean;
 }
 
-function ButtonLoading({
-  isLoading,
-  hideContent = false,
-  children,
-  disabled,
-  ...buttonProps
-}: ButtonLoadingProps) {
+function ButtonLoading({ isLoading, hideContent = false, children, disabled, ...buttonProps }: ButtonLoadingProps) {
   return (
     <Button {...buttonProps} disabled={isLoading || disabled}>
       {isLoading && <AppLoader inverse size={20} />}

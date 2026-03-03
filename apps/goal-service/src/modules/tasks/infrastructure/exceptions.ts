@@ -13,9 +13,7 @@ const InfrastructureExceptionStateList = {
   }),
 };
 
-export const { ExceptionTaskInfrastructure } = generateExceptionClasses(
-  InfrastructureExceptionStateList,
-);
+export const { ExceptionTaskInfrastructure } = generateExceptionClasses(InfrastructureExceptionStateList);
 
 export const { isExceptionTaskInfrastructure } = generateBaseExceptionsGuards([
   ['isExceptionTaskInfrastructure', ExceptionTaskInfrastructure],

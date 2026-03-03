@@ -14,11 +14,7 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView, getTask, getTaskView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
-import {
-  inboxReadRepoMock,
-  tasksReadRepoMock,
-  tasksWriteRepoMock,
-} from '@shared/__tests__/repository-mocks';
+import { inboxReadRepoMock, tasksReadRepoMock, tasksWriteRepoMock } from '@shared/__tests__/repository-mocks';
 
 initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
@@ -96,18 +92,12 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
       expect(createdTaskArg.userId).toBe(userId);
       expect(createdTaskArg.name).toBe('Inbox Task');
       expect(trxArg).toEqual(expectTransaction());
-      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith(
-        { userId },
-        expectTransaction(),
-      );
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(tasksWriteRepoMock.addTaskToGroup).toHaveBeenCalledWith(
         { taskId: createdTask.id, groupId: inboxGroup.id },
         expectTransaction(),
       );
-      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith(
-        { id: createdTask.id, userId },
-        expectTransaction(),
-      );
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith({ id: createdTask.id, userId }, expectTransaction());
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledWith(
         { taskId: createdTask.id, userId },
         expectTransaction(),
@@ -179,10 +169,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith(
-        { userId },
-        expectTransaction(),
-      );
+      expect(inboxReadRepoMock.getInboxWithTasksByUserId).toHaveBeenCalledWith({ userId }, expectTransaction());
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.addTaskToGroup).not.toHaveBeenCalled();
@@ -225,10 +212,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
         error = err;
       }
 
-      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith(
-        { id: createdTask.id, userId },
-        expectTransaction(),
-      );
+      expect(tasksReadRepoMock.getById).toHaveBeenCalledWith({ id: createdTask.id, userId }, expectTransaction());
       expect(tasksWriteRepoMock.createTask).toHaveBeenCalledTimes(1);
       expect(tasksWriteRepoMock.getTaskById).toHaveBeenCalledTimes(1);
       expect(unwrapRpcError(error)).toMatchObject({

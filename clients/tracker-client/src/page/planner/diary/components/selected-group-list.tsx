@@ -1,10 +1,7 @@
 import { type GroupInfoEntity, useGroupsAssignableQuery } from '@/entity/planner/groups';
 import { AssignableGroupItem } from '@/entity/planner/groups/ui';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
-import {
-  isStringIncludesSearch,
-  useEndToEndSearch,
-} from '@/shared/lib/react/use-end-to-end-search';
+import { isStringIncludesSearch, useEndToEndSearch } from '@/shared/lib/react/use-end-to-end-search';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui-kit/ui/input-group';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';

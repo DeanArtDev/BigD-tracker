@@ -1,11 +1,6 @@
 import { GroupView } from '@/modules/tasks/application/dto';
 import { ExceptionGroupNotFound } from '@/modules/tasks/application/exceptions';
-import {
-  GroupById,
-  GroupByUserId,
-  GroupInbox,
-  groupsCombinators,
-} from '@/modules/tasks/application/specifications';
+import { GroupById, GroupByUserId, GroupInbox, groupsCombinators } from '@/modules/tasks/application/specifications';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';

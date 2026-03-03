@@ -1,13 +1,6 @@
 import { isEmpty, isFunction } from 'lodash-es';
 import qs from 'qs';
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { type SetURLSearchParams, useLocation, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -54,11 +47,7 @@ function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes
     return successData as TValue<TSchema>;
   }, [currentQuery, schema]);
 
-  const searchQueryWithDefaultUntilFirstSet = useDefaultResponse<TSchema>(
-    searchQuery,
-    setSearchParams,
-    defaultInit,
-  );
+  const searchQueryWithDefaultUntilFirstSet = useDefaultResponse<TSchema>(searchQuery, setSearchParams, defaultInit);
 
   return [searchQueryWithDefaultUntilFirstSet, setSearchQuery];
 }

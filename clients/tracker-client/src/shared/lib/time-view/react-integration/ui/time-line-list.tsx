@@ -39,11 +39,7 @@ function TimeLineList({ eventsSlot }: TimeLineListProps) {
         <div className="time-line relative min-h-0 grid-rows-[1fr]">
           {timeLinePeriods.map((_, index) => {
             return (
-              <div
-                key={index}
-                style={{ minHeight: HEIGHT }}
-                className="first:border-t border-b border-gray-300"
-              />
+              <div key={index} style={{ minHeight: HEIGHT }} className="first:border-t border-b border-gray-300" />
             );
           })}
 

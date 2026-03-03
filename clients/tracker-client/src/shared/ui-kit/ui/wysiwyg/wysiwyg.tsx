@@ -68,10 +68,7 @@ function Component({
         <HistoryPlugin key={historyKey} />
         <ToolbarPlugin disabled={disabled} />
 
-        <InitialStatePlugin
-          state={state}
-          onStateSet={() => void setHistoryKey((prev) => prev + 1)}
-        />
+        <InitialStatePlugin state={state} onStateSet={() => void setHistoryKey((prev) => prev + 1)} />
         <DirtyTrackingPlugin initialStateString={state} onDirtyChange={onDirtyChange} />
         <ComponentPickerPlugin disabled={disabled} />
 

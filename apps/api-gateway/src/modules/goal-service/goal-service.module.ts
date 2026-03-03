@@ -10,10 +10,7 @@ import { TasksController, TasksInboxController } from './tasks';
     GoalServiceClientModule,
     RpcResponseValidationModule.forFeature({
       useValue: ({ issues }) =>
-        BaseHttpException.createFromBase(
-          new ExceptionWrongRpcResponse({ issues }),
-          HttpStatus.BAD_GATEWAY,
-        ),
+        BaseHttpException.createFromBase(new ExceptionWrongRpcResponse({ issues }), HttpStatus.BAD_GATEWAY),
     }),
   ],
   controllers: [GroupsController, TasksController, TasksInboxController],

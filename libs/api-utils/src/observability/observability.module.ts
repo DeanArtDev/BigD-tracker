@@ -1,12 +1,6 @@
 import { isBaseRpcException } from '@big-d/api-contracts';
 import { isBaseException } from '@big-d/exceptions';
-import {
-  DynamicModule,
-  InjectionToken,
-  Module,
-  ModuleMetadata,
-  OptionalFactoryDependency,
-} from '@nestjs/common';
+import { DynamicModule, InjectionToken, Module, ModuleMetadata, OptionalFactoryDependency } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { AsyncLocalStorage } from 'node:async_hooks';

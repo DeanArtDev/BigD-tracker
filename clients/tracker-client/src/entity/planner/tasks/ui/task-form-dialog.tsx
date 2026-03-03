@@ -6,9 +6,7 @@ import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 import { AppDialog, AppDialogTrigger } from '@/shared/ui-kit/ui/app-dialog';
 import { type ReactNode } from 'react';
 
-const TaskFormLazy = withLazy(() =>
-  import('./form/task-form').then((m) => ({ default: m.TaskForm })),
-);
+const TaskFormLazy = withLazy(() => import('./form/task-form').then((m) => ({ default: m.TaskForm })));
 
 interface TaskFormDialogProps {
   readonly open: boolean;

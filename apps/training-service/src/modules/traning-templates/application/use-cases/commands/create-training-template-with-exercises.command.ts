@@ -46,9 +46,7 @@ class CreateTrainingTemplateWithExercisesCommand extends KyselyUnitOfWork<DB> {
     super(database);
   }
 
-  async execute(
-    input: CreateTrainingTemplateWithExercisesInput,
-  ): Promise<TrainingTemplateWithExercisesEntity> {
+  async execute(input: CreateTrainingTemplateWithExercisesInput): Promise<TrainingTemplateWithExercisesEntity> {
     const { exercises, ...training } = input;
 
     return await this.runTransaction(async (transaction) => {

@@ -19,10 +19,7 @@ interface ManageExerciseTemplateFormProps {
   readonly onSuccess?: (action: 'create' | 'update') => void;
 }
 
-function ManageExerciseTemplateForm({
-  exerciseTemplate,
-  onSuccess,
-}: ManageExerciseTemplateFormProps) {
+function ManageExerciseTemplateForm({ exerciseTemplate, onSuccess }: ManageExerciseTemplateFormProps) {
   const isCreating = exerciseTemplate == null;
 
   const { create, isPending: isCreatePending } = useExerciseCreate();
@@ -118,21 +115,13 @@ function ManageExerciseTemplateForm({
           classNames={{ textarea: 'h-[120px] max-h-[350px]' }}
         />
 
-        <InputForm
-          name="url"
-          label="Youtube ссылка"
-          placeholder="https://www.youtube.com?v=some-video-id"
-        />
+        <InputForm name="url" label="Youtube ссылка" placeholder="https://www.youtube.com?v=some-video-id" />
 
         <ErrorMessageForm<ManageExerciseTemplateFormData> name="repetitions" />
 
         <RepetitionsBlock />
 
-        <Button
-          className="ml-auto mt-auto"
-          type="submit"
-          disabled={isLoading || !form.formState.isDirty}
-        >
+        <Button className="ml-auto mt-auto" type="submit" disabled={isLoading || !form.formState.isDirty}>
           {isLoading ? <AppLoader inverse size={20} /> : null}
           {isCreating ? 'Создать' : 'Редактировать'}
         </Button>

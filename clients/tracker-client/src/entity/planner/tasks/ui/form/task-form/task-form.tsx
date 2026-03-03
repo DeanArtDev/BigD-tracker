@@ -1,9 +1,5 @@
 import { ButtonLoading } from '@/shared/components/button-loading';
-import {
-  FormStateEmitter,
-  type FormStateEmitterProps,
-  WysiwygForm,
-} from '@/shared/components/form';
+import { FormStateEmitter, type FormStateEmitterProps, WysiwygForm } from '@/shared/components/form';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
@@ -120,10 +116,7 @@ function Component(props: TaskFormProps) {
           })(evt);
         }}
       >
-        <SidebarProvider
-          defaultOpen={defaultSidebarOpen}
-          className="flex min-h-0 h-full min-w-0 flex-col"
-        >
+        <SidebarProvider defaultOpen={defaultSidebarOpen} className="flex min-h-0 h-full min-w-0 flex-col">
           <div className="grid grow grid-rows-[min-content_1fr_min-content] min-h-0 h-full">
             <TaskHeaderForm
               isCreate={!isEdit}
@@ -143,9 +136,7 @@ function Component(props: TaskFormProps) {
                 }}
               />
 
-              <TaskFormSidebar
-                footerSidebarSlot={footerSidebarSlot?.({ disabled: form.formState.disabled })}
-              />
+              <TaskFormSidebar footerSidebarSlot={footerSidebarSlot?.({ disabled: form.formState.disabled })} />
             </div>
 
             <div className="border-t p-4 flex items-center justify-end">
@@ -164,11 +155,7 @@ function Component(props: TaskFormProps) {
 
           <SidebarErrorCatcher />
 
-          <FormStateEmitter
-            isLoading={isLoading}
-            emitIsDirty={emitIsDirty}
-            emitIsLoading={emitIsLoading}
-          />
+          <FormStateEmitter isLoading={isLoading} emitIsDirty={emitIsDirty} emitIsLoading={emitIsLoading} />
         </SidebarProvider>
       </form>
     </Form>

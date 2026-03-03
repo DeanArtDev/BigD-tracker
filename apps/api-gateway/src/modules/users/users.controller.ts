@@ -26,12 +26,9 @@ export class UsersController {
   @ValidateRpcResponse(MeRes)
   async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AccountGetMe.Response> {
     try {
-      return await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(
-        AccountGetMe.pattern,
-        {
-          data: { id: uid },
-        },
-      );
+      return await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(AccountGetMe.pattern, {
+        data: { id: uid },
+      });
     } catch {
       throw new ExceptionUnauthorized({ message: 'Пользователь не авторизован' });
     }

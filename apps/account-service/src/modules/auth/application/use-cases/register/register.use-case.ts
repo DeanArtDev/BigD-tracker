@@ -30,9 +30,7 @@ export class RegisterUseCase {
     private readonly queryBus: QueryBus,
   ) {}
 
-  async execute(
-    input: RegisterUseCaseInput,
-  ): Promise<{ sessionToken: string; accessToken: string }> {
+  async execute(input: RegisterUseCaseInput): Promise<{ sessionToken: string; accessToken: string }> {
     const { userId } = await this.commandBus.execute<
       CreateUserCommand,
       ReturnType<InstanceType<typeof CreateUserHandler>['execute']>
@@ -44,10 +42,9 @@ export class RegisterUseCase {
       ),
     );
 
-    const session = await this.queryBus.execute<
-      GetSessionQuery,
-      ReturnHandlerType<typeof GetSessionHandler>
-    >(new GetSessionQuery({ userId, userAgent: input.userAgent }));
+    const session = await this.queryBus.execute<GetSessionQuery, ReturnHandlerType<typeof GetSessionHandler>>(
+      new GetSessionQuery({ userId, userAgent: input.userAgent }),
+    );
     if (session == null) {
       throw new InternalServerErrorException(`Failed to create session for user: ${userId}`);
     }
@@ -64,10 +61,9 @@ export class RegisterUseCase {
     try {
       await cb();
     } catch (error) {
-      await this.commandBus.execute<
-        DeleteUserCommand,
-        ReturnType<InstanceType<typeof DeleteUserHandler>['execute']>
-      >(new DeleteUserCommand(userId));
+      await this.commandBus.execute<DeleteUserCommand, ReturnType<InstanceType<typeof DeleteUserHandler>['execute']>>(
+        new DeleteUserCommand(userId),
+      );
       throw error;
     }
   }

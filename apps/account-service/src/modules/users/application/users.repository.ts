@@ -12,10 +12,7 @@ const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 interface UsersRepository {
   findUserById(input: { id: number }, trx?: Transaction<DB>): Promise<UserEntity | null>;
   findUserByEmail(input: { email: string }, trx?: Transaction<DB>): Promise<UserEntity | null>;
-  findUserByScreeName(
-    input: { screenName: string },
-    trx?: Transaction<DB>,
-  ): Promise<UserEntity | null>;
+  findUserByScreeName(input: { screenName: string }, trx?: Transaction<DB>): Promise<UserEntity | null>;
   create(input: UserEntity, trx?: Transaction<DB>): Promise<UserEntity | null>;
   delete(id: number): Promise<boolean>;
 }

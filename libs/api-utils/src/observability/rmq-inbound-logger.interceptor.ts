@@ -59,16 +59,10 @@ export class RmqInboundLoggingInterceptor implements NestInterceptor {
       this.logger.log(getContent(), 'rmq.request');
 
       return next.handle().pipe(
-        tap(
-          () =>
-            void this.logger.log({ ...getContent(), durationMs: Date.now() - started }, 'rmq.done'),
-        ),
+        tap(() => void this.logger.log({ ...getContent(), durationMs: Date.now() - started }, 'rmq.done')),
 
         catchError((err: any) => {
-          this.logger.error(
-            { ...getContent(), durationMs: Date.now() - started, err },
-            'rmq.error',
-          );
+          this.logger.error({ ...getContent(), durationMs: Date.now() - started, err }, 'rmq.error');
           return throwError(() => err);
         }),
       );

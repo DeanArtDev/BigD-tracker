@@ -46,23 +46,18 @@ function TaskFrame({
       >
         {isPriorityValid && (
           <div
-            className={cn(
-              'absolute top-0 left-0 bottom-0 w-[3px] h-full rounded-tl-md rounded-bl-md',
-              {
-                [`bg-(--priority-1)`]: prior === 1,
-                [`bg-(--priority-2)`]: prior === 2,
-                [`bg-(--priority-3)`]: prior === 3,
-              },
-            )}
+            className={cn('absolute top-0 left-0 bottom-0 w-[3px] h-full rounded-tl-md rounded-bl-md', {
+              [`bg-(--priority-1)`]: prior === 1,
+              [`bg-(--priority-2)`]: prior === 2,
+              [`bg-(--priority-3)`]: prior === 3,
+            })}
           />
         )}
 
         <div className="flex grow w-full items-center mb-auto">
           {beforeNameSlot}
 
-          <Typography.H4 className="text-sm font-normal line-clamp-1 pr-2 mb-auto">
-            {name}
-          </Typography.H4>
+          <Typography.H4 className="text-sm font-normal line-clamp-1 pr-2 mb-auto">{name}</Typography.H4>
         </div>
         <div className="flex flex-wrap gap-1.5 mr-auto">{footerSlot}</div>
       </div>

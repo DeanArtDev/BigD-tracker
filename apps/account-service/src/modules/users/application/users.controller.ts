@@ -17,10 +17,9 @@ export class UsersController {
 
   @MessagePattern(AccountGetMe.pattern)
   async me(@Payload() { data }: AccountGetMe.Request): Promise<AccountGetMe.Response> {
-    const user = await this.queryBus.execute<
-      GetUserQuery,
-      ReturnHandlerType<typeof GetUserHandler>
-    >(new GetUserQuery({ id: data.id }));
+    const user = await this.queryBus.execute<GetUserQuery, ReturnHandlerType<typeof GetUserHandler>>(
+      new GetUserQuery({ id: data.id }),
+    );
 
     if (user == null) {
       throw new NotFoundException(`User: ${data.id} not found`);
@@ -32,13 +31,10 @@ export class UsersController {
   }
 
   @MessagePattern(AccountDeleteUser.pattern)
-  async deleteUser(
-    @Payload() { data }: AccountDeleteUser.Request,
-  ): Promise<AccountDeleteUser.Response> {
-    const { id } = await this.commandBus.execute<
-      DeleteUserCommand,
-      ReturnHandlerType<typeof DeleteUserHandler>
-    >(new DeleteUserCommand(data.id));
+  async deleteUser(@Payload() { data }: AccountDeleteUser.Request): Promise<AccountDeleteUser.Response> {
+    const { id } = await this.commandBus.execute<DeleteUserCommand, ReturnHandlerType<typeof DeleteUserHandler>>(
+      new DeleteUserCommand(data.id),
+    );
 
     return {
       data: { id },

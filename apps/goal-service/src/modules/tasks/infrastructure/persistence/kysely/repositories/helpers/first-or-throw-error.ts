@@ -5,9 +5,7 @@ async function firstOrThrowError<T>(
   },
   { throwError }: { throwError?: boolean },
 ): Promise<T | null> {
-  return throwError
-    ? await query.executeTakeFirstOrThrow()
-    : ((await query.executeTakeFirst()) ?? null);
+  return throwError ? await query.executeTakeFirstOrThrow() : ((await query.executeTakeFirst()) ?? null);
 }
 
 export { firstOrThrowError };

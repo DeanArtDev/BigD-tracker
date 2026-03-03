@@ -62,9 +62,7 @@ function TasksPageManipulator() {
           className: cn({ 'opacity-0': searchOpen }),
           element: (
             <TaskCreation
-              trigger={
-                <ButtonAdd variant="outline" size="icon-lg" iconProps={{ className: 'size-7' }} />
-              }
+              trigger={<ButtonAdd variant="outline" size="icon-lg" iconProps={{ className: 'size-7' }} />}
             />
           ),
         },
