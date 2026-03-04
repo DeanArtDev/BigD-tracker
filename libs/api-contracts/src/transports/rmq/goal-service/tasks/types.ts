@@ -39,4 +39,21 @@ const numberToWeekdayMap = {
   6: RRule.SU,
 };
 
-export { TaskStatus, TaskOverrideType, RecurrenceFrequency, TaskRecurrenceWeekday, numberToWeekdayMap };
+const taskStatusToOverrideTypeMap: Record<TaskStatus, TaskOverrideType> = {
+  [TaskStatus.NOT_STARTED]: TaskOverrideType.OVERRIDE,
+  [TaskStatus.IN_PROGRESS]: TaskOverrideType.OVERRIDE,
+  [TaskStatus.COMPLETED]: TaskOverrideType.OVERRIDE,
+  [TaskStatus.OVERDUE]: TaskOverrideType.OVERRIDE,
+  [TaskStatus.CANCELLED]: TaskOverrideType.CANCELED,
+  [TaskStatus.ARCHIVED]: TaskOverrideType.ARCHIVED,
+  [TaskStatus.DELETED]: TaskOverrideType.DELETED,
+};
+
+export {
+  TaskStatus,
+  TaskOverrideType,
+  RecurrenceFrequency,
+  TaskRecurrenceWeekday,
+  numberToWeekdayMap,
+  taskStatusToOverrideTypeMap,
+};

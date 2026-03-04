@@ -121,6 +121,7 @@ export interface TasksRecurrenceOverrides {
   end_date: Timestamp | null;
   id: Generated<number>;
   name: string;
+  occurrence_start: Timestamp;
   override_type_id: number;
   priority: Generated<number>;
   start_date: Timestamp;

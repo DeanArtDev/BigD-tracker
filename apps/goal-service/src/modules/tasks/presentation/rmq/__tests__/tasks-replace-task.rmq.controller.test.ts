@@ -1,6 +1,6 @@
 import { initTestEnvironment } from '@/../jest.setup';
 import { Task, TaskIdBuilder } from '@/modules/tasks/domain';
-import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
+import { GroupsToken, TasksOverridesToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalReplaceTask, RmqErrorKind, TaskStatus } from '@big-d/api-contracts';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
@@ -19,6 +19,7 @@ import {
   groupReadRepoMock,
   groupWriteRepoMock,
   inboxReadRepoMock,
+  tasksOverridesWriteRepoMock,
   tasksReadRepoMock,
   tasksWriteRepoMock,
 } from '@shared/__tests__/repository-mocks';
@@ -36,6 +37,8 @@ describe('TasksRmqController (rmq e2e)', () => {
       .useValue(tasksWriteRepoMock)
       .overrideProvider(TasksToken.READ_REPOSITORY)
       .useValue(tasksReadRepoMock)
+      .overrideProvider(TasksOverridesToken.WRITE_REPOSITORY)
+      .useValue(tasksOverridesWriteRepoMock)
       .overrideProvider(GroupsToken.WRITE_REPOSITORY)
       .useValue(groupWriteRepoMock)
       .overrideProvider(GroupsToken.READ_REPOSITORY)
@@ -204,6 +207,39 @@ describe('TasksRmqController (rmq e2e)', () => {
         key: 'TASK_NOT_EXIST',
         kind: RmqErrorKind.NOT_FOUND,
         details: { taskId },
+      });
+    });
+
+    test('should throw unprocessable when task id is invalid', async () => {
+      const userId = 37;
+      const invalidTaskId = 'bad-id';
+
+      const payload: GoalReplaceTask.Request = buildPayload({
+        data: {
+          id: invalidTaskId,
+          userId,
+          name: 'Updated',
+          priority: 2,
+          weight: 3,
+        },
+      });
+
+      let error: unknown;
+      try {
+        await sendMessage<GoalReplaceTask.Response, GoalReplaceTask.Request>(GoalReplaceTask.pattern, payload);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(tasksWriteRepoMock.getTaskById).not.toHaveBeenCalled();
+      expect(tasksWriteRepoMock.replaceTask).not.toHaveBeenCalled();
+      expect(tasksOverridesWriteRepoMock.getOneMasterEvent).not.toHaveBeenCalled();
+      expect(tasksOverridesWriteRepoMock.upsertOverride).not.toHaveBeenCalled();
+      expect(unwrapRpcError(error)).toMatchObject({
+        code: exceptionCode.taskUnprocessable.code,
+        key: 'TASK_UNPROCESSABLE',
+        kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
+        details: { taskId: invalidTaskId, message: 'Не валидный id' },
       });
     });
   });

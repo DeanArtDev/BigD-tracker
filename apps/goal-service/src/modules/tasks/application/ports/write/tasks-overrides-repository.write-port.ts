@@ -5,7 +5,11 @@ import { TaskTransaction } from '../transaction-manager.port';
 interface TasksOverridesRepositoryWritePort {
   getManyMasterEvents(specifications: TasksSpecification, trx?: TaskTransaction): Promise<Task[]>;
 
+  getOneMasterEvent(specifications: TasksSpecification, trx?: TaskTransaction): Promise<Task | null>;
+
   getManyOverrides(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride[]>;
+
+  upsertOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride>;
 }
 
 export { TasksOverridesRepositoryWritePort };

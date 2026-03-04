@@ -2,18 +2,18 @@ import { tasksCombinators } from './init';
 
 const { leaf } = tasksCombinators;
 
-const TaskOverrideByStartDateLessOrEqual = (date: Date) =>
+const TaskOverrideByOccurrenceStartLessOrEqual = (date: Date) =>
   leaf({
-    key: 'tasks.overridesByStartDateLessOrEqual',
+    key: 'tasks.overrideByOccurrenceStartLessOrEqual',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrence_overrides.start_date', '<=', date),
+    toExpr: (eb) => eb('tasks_recurrence_overrides.occurrence_start', '<=', date),
   });
 
-const TaskOverrideByDeadlineGreaterOrEqual = (date: Date) =>
+const TaskOverrideByOccurrenceStartGreaterOrEqual = (date: Date) =>
   leaf({
-    key: 'tasks.overridesByDeadlineGreaterOrEqual',
+    key: 'tasks.overrideByOccurrenceStartGreaterOrEqual',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrence_overrides.deadline', '>=', date),
+    toExpr: (eb) => eb('tasks_recurrence_overrides.occurrence_start', '>=', date),
   });
 
 const TaskOverrideByMasterIds = (taskIds: number[]) =>
@@ -33,6 +33,6 @@ const TaskOverrideByUserId = (userId: number) =>
 export {
   TaskOverrideByMasterIds,
   TaskOverrideByUserId,
-  TaskOverrideByStartDateLessOrEqual,
-  TaskOverrideByDeadlineGreaterOrEqual,
+  TaskOverrideByOccurrenceStartGreaterOrEqual,
+  TaskOverrideByOccurrenceStartLessOrEqual,
 };
