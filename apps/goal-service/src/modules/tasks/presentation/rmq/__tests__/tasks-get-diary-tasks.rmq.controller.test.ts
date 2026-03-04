@@ -150,8 +150,8 @@ describe('TasksRmqController (rmq e2e)', () => {
         "AND[tasks.policy.get-tasks-overrides](
           tasks.overrideByUserId,
           tasks.overridesByMasterIds,
-          tasks.overridesByStartDateLessOrEqual,
-          tasks.overridesByDeadlineGreaterOrEqual
+          tasks.overrideByOccurrenceStartLessOrEqual,
+          tasks.overrideByOccurrenceStartGreaterOrEqual
         )"
       `);
       expect(specToDebugString(firstArg(tasksReadRepoMock.getByRange))).toMatchInlineSnapshot(`
@@ -201,48 +201,83 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
     });
 
-    test('should return override virtual task when there is one override', async () => {
+    test('should apply each override to the correct virtual task when masters share same time', async () => {
       const userId = 502;
       const filter = {
         from: '2026-03-02T00:00:00.000Z',
-        to: '2026-03-03T23:59:59.000Z',
+        to: '2026-03-02T23:59:59.000Z',
       };
 
-      const masterEvent = getTask({
+      const masterEventA = getTask({
         id: 9202,
         userId,
-        name: 'Recurring task',
-        description: 'repeat',
+        name: 'Recurring task A',
+        description: 'repeat A',
         priority: 2,
         weight: 4,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
         recurrence: {
           start: '2026-03-02T10:15:00.000Z',
-          end: '2026-03-03T10:15:00.000Z',
+          end: '2026-03-02T23:59:59.000Z',
           frequency: RecurrenceFrequency.DAILY,
         },
       });
 
-      const overrideTask = getTask({
-        id: 9302,
+      const masterEventB = getTask({
+        id: 9203,
         userId,
-        name: 'Override task',
-        description: 'override',
-        priority: 5,
-        weight: 9,
-        startDate: '2026-03-03T10:15:00.000Z',
-        deadline: '2026-03-03T13:00:00.000Z',
+        name: 'Recurring task B',
+        description: 'repeat B',
+        priority: 3,
+        weight: 5,
+        startDate: '2026-03-02T10:15:00.000Z',
+        deadline: '2026-03-02T12:00:00.000Z',
+        recurrence: {
+          start: '2026-03-02T10:15:00.000Z',
+          end: '2026-03-02T23:59:59.000Z',
+          frequency: RecurrenceFrequency.DAILY,
+        },
       });
 
-      const override = TaskOverride.restore({
-        task: overrideTask,
-        masterTaskId: masterEvent.id,
+      const occurrenceStart = '2026-03-02T10:15:00.000Z';
+
+      const overrideForA = TaskOverride.restore({
+        task: getTask({
+          id: 9302,
+          userId,
+          name: 'Override for A',
+          description: 'override A',
+          priority: 1,
+          weight: 7,
+          startDate: '2026-03-02T08:45:00.000Z',
+          deadline: '2026-03-02T11:30:00.000Z',
+          status: TaskStatus.IN_PROGRESS,
+        }),
+        masterTaskId: masterEventA.id,
+        occurrenceStart,
         type: TaskOverrideType.OVERRIDE,
       });
 
-      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([masterEvent]);
-      tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([override]);
+      const overrideForB = TaskOverride.restore({
+        task: getTask({
+          id: 9303,
+          userId,
+          name: 'Override for B',
+          description: 'override B',
+          priority: 4,
+          weight: 9,
+          startDate: '2026-03-02T16:20:00.000Z',
+          deadline: '2026-03-02T17:00:00.000Z',
+          status: TaskStatus.IN_PROGRESS,
+        }),
+        masterTaskId: masterEventB.id,
+        occurrenceStart,
+        type: TaskOverrideType.OVERRIDE,
+      });
+
+      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([masterEventA, masterEventB]);
+      tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([overrideForB, overrideForA]);
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
 
       const payload: GoalGetDiaryTasks.Request = buildPayload({
@@ -259,29 +294,30 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       expect(res.data.items).toHaveLength(2);
       expect(res.data.items[0]).toMatchObject({
-        id: TaskIdBuilder.wrapVirtualId({
-          masterTaskId: masterEvent.id,
-          timestamp: new Date('2026-03-02T10:15:00.000Z').getTime(),
+        id: TaskIdBuilder.wrapOverrideId({
+          masterTaskId: masterEventA.id,
+          overrideId: overrideForA.id,
+          timestamp: new Date(occurrenceStart).getTime(),
         }),
-        name: 'Recurring task',
-        description: 'repeat',
-        priority: 2,
-        weight: 4,
-        startDate: '2026-03-02T10:15:00.000Z',
-        deadline: '2026-03-02T12:00:00.000Z',
+        userId,
+        name: 'Override for A',
+        description: 'override A',
+        priority: 1,
+        weight: 7,
+        startDate: '2026-03-02T08:45:00.000Z',
       });
       expect(res.data.items[1]).toMatchObject({
         id: TaskIdBuilder.wrapOverrideId({
-          masterTaskId: masterEvent.id,
-          overrideId: override.id,
-          timestamp: new Date('2026-03-03T10:15:00.000Z').getTime(),
+          masterTaskId: masterEventB.id,
+          overrideId: overrideForB.id,
+          timestamp: new Date(occurrenceStart).getTime(),
         }),
-        name: 'Override task',
-        description: 'override',
-        priority: 5,
+        userId,
+        name: 'Override for B',
+        description: 'override B',
+        priority: 4,
         weight: 9,
-        startDate: '2026-03-03T10:15:00.000Z',
-        deadline: '2026-03-03T13:00:00.000Z',
+        startDate: '2026-03-02T16:20:00.000Z',
       });
     });
 

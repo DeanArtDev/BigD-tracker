@@ -26,6 +26,13 @@ const TaskByUserId = (userId: number) =>
     toExpr: (eb) => eb('tasks.user_id', '=', userId),
   });
 
+const TaskById = (taskId: number) =>
+  leaf({
+    key: 'tasks.byId',
+    purpose: 'filter',
+    toExpr: (eb) => eb('tasks.id', '=', taskId),
+  });
+
 const TaskByGroupId = (groupIds: number[]) =>
   leaf({
     key: 'tasks.byGroupId',
@@ -76,6 +83,7 @@ const TaskHasRecurrence = () =>
   });
 
 export {
+  TaskById,
   TaskByUserId,
   TaskByGroupId,
   TaskByPriority,

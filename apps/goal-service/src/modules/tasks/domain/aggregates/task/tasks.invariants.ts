@@ -2,6 +2,7 @@ import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exce
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { Priority, RecurrenceVo, Weight } from './value-objects';
+import { Task } from './tasks.aggregate';
 
 interface PartlyFields {
   readonly id: number;
@@ -97,6 +98,16 @@ const taskAsserts = {
       });
     }
   },
+
+  notDraft(input: Task) {
+    if (input.isDraft) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: `Оверрайд не может быть применен к черновому делу`,
+        field: 'startDate',
+        taskId: input.id,
+      });
+    }
+  },
 };
 
 function assertHasCancelReason(input: { status: TaskStatus; reason?: string }): void {
@@ -119,4 +130,16 @@ function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): voi
   }
 }
 
-export { taskAsserts, assertHasCancelReason, assertTaskReplace };
+type StartOptional = { taskId: number; startDate?: string | null };
+type StartRequired = { taskId: number; startDate: string };
+function assertStartDateIsRequired(input: StartOptional): asserts input is StartRequired {
+  if (input.startDate == null) {
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Оверрайд не может быть применен к делу: ${input.taskId} с пустой датой начала`,
+      field: 'startDate',
+      taskId: input.taskId,
+    });
+  }
+}
+
+export { taskAsserts, assertHasCancelReason, assertTaskReplace, assertStartDateIsRequired };

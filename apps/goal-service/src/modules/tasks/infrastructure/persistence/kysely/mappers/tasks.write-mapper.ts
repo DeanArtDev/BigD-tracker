@@ -19,8 +19,9 @@ interface RawTask {
   readonly recurrence: string | null;
 }
 
-interface RawTaskOverride extends RawTask {
+interface RawTaskOverride extends Omit<RawTask, 'recurrence'> {
   readonly override_type: TaskOverrideType;
+  readonly occurrence_start: Date;
   readonly task_id: number;
 }
 
@@ -43,11 +44,12 @@ class TasksWriteKyselyMapper {
     });
   };
 
-  static fromRawToOverrideAgr = ({ override_type, task_id, ...taskRaw }: RawTaskOverride) => {
+  static fromRawToOverrideAgr = ({ override_type, task_id, occurrence_start, ...taskRaw }: RawTaskOverride) => {
     return TaskOverride.restore({
-      task: TasksWriteKyselyMapper.fromRawToAgr(taskRaw),
+      task: TasksWriteKyselyMapper.fromRawToAgr({ ...taskRaw, recurrence: null }),
       type: override_type,
       masterTaskId: task_id,
+      occurrenceStart: DateVo.restore(occurrence_start.toISOString()).value,
     });
   };
 }

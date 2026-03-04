@@ -1,4 +1,4 @@
-import { Task, TaskIdBuilder } from '@/modules/tasks/domain';
+import { Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { TaskView } from './task.view';
 
@@ -50,6 +50,23 @@ class TasksViewMapper {
       deadline: plain.deadline,
       endDate: plain.endDate,
       status: plain.status,
+    });
+  };
+
+  static fromOverrideToView = (override: TaskOverride): TaskView => {
+    return TaskView.restore({
+      id: TaskIdBuilder.wrapOriginId(override.id),
+      userId: override.userId,
+      groupId: override.groupId,
+      name: override.name,
+      description: override.description,
+      priority: override.priority,
+      weight: override.weight,
+      cancelReason: override.cancelReason,
+      startDate: override.startDate,
+      deadline: override.deadline,
+      endDate: override.endDate,
+      status: override.status,
     });
   };
 }

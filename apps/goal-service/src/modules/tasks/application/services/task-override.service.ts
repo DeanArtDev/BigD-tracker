@@ -1,4 +1,4 @@
-import { TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
+import { Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
 import { TasksOverridesToken } from '@/modules/tasks/tokens';
 import { numberToWeekdayMap, TaskStatus } from '@big-d/api-contracts';
 import { Inject, Injectable } from '@nestjs/common';
@@ -6,8 +6,11 @@ import { applyTimeParts, timeAndDate } from '@shared/date-and-time';
 import { keyBy } from 'lodash';
 import { RRule } from 'rrule';
 import { TasksViewMapper, TaskView } from '../dto';
-import { GetMasterEvents, GetTasksOverrides } from '../policies';
+import { GetMasterEventsByRange, GetTasksOverrides } from '../policies';
 import { TasksOverridesRepositoryWritePort, TaskTransaction } from '../ports';
+import { TaskById, TaskByUserId, TaskHasRecurrence, tasksCombinators } from '../specifications';
+
+const { and } = tasksCombinators;
 
 @Injectable()
 class TaskOverrideService {
@@ -16,13 +19,24 @@ class TaskOverrideService {
     private readonly tasksOverridesRepository: TasksOverridesRepositoryWritePort,
   ) {}
 
+  async getMasterEvent(input: { userId: number; masterEventId: number }, trx?: TaskTransaction): Promise<Task | null> {
+    return await this.tasksOverridesRepository.getOneMasterEvent(
+      and(TaskByUserId(input.userId), TaskById(input.masterEventId), TaskHasRecurrence()),
+      trx,
+    );
+  }
+
+  async upsertOverride(input: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
+    return await this.tasksOverridesRepository.upsertOverride(input, trx);
+  }
+
   async getVirtualViews(
     input: { userId: number; from: Date; to: Date; userTimezone?: string },
     trx?: TaskTransaction,
   ): Promise<TaskView[]> {
     const { to, from, userId } = input;
     const masterEvents = await this.tasksOverridesRepository.getManyMasterEvents(
-      GetMasterEvents({ userId, to, from }),
+      GetMasterEventsByRange({ userId, to, from }),
       trx,
     );
 
@@ -36,17 +50,18 @@ class TaskOverrideService {
       trx,
     );
 
-    const overridesMap = keyBy(overrides, ({ masterTaskId, startDate }) =>
+    const overridesMap = keyBy(overrides, ({ masterTaskId, occurrenceStart }) =>
       TaskIdBuilder.wrapVirtualId({
         masterTaskId: masterTaskId,
-        timestamp: startDate != null ? new Date(startDate).getTime() : 0,
+        timestamp: new Date(occurrenceStart).getTime(),
       }),
     );
 
     const virtualViews: TaskView[] = [];
+
     for (const masterEvent of masterEvents) {
       if (masterEvent.isRecurrence()) {
-        const safeEndDate = masterEvent.recurrence.end ?? timeAndDate().utc(false).add(90, 'day').toJSON();
+        const safeEndDate = masterEvent.recurrence.end ?? timeAndDate().utc(false).add(40, 'day').toJSON();
 
         const rule = new RRule({
           tzid: input.userTimezone,
@@ -70,9 +85,9 @@ class TaskOverrideService {
             virtualViews.push(
               TasksViewMapper.fromPlainToView({
                 id: TaskIdBuilder.wrapOverrideId({
-                  masterTaskId: masterEvent.id,
-                  overrideId: override.id,
                   timestamp,
+                  overrideId: override.id,
+                  masterTaskId: masterEvent.id,
                 }),
                 userId: masterEvent.userId,
                 groupId: masterEvent.groupId,
@@ -84,7 +99,7 @@ class TaskOverrideService {
                 status: override?.status ?? TaskStatus.IN_PROGRESS,
                 startDate: startDate != null ? applyTimeParts(date, startDate).toISOString() : undefined,
                 deadline: deadline != null ? applyTimeParts(date, deadline).toISOString() : undefined,
-                endDate: override?.endDate,
+                endDate: override?.endDate ?? masterEvent?.endDate,
               }),
             );
           } else {

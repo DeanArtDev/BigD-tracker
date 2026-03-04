@@ -2,9 +2,9 @@ import { tagSpec } from '@big-d/api-utils';
 import { compact } from 'lodash';
 import { TasksDB } from '../ports';
 import {
-  TaskOverrideByDeadlineGreaterOrEqual,
   TaskOverrideByMasterIds,
-  TaskOverrideByStartDateLessOrEqual,
+  TaskOverrideByOccurrenceStartGreaterOrEqual,
+  TaskOverrideByOccurrenceStartLessOrEqual,
   TaskOverrideByUserId,
   tasksCombinators,
 } from '../specifications';
@@ -16,8 +16,8 @@ function GetTasksOverrides(input: { userId: number; from: Date; to: Date; master
     ...compact([
       TaskOverrideByUserId(input.userId),
       input.masterEventIds.length > 0 && TaskOverrideByMasterIds(input.masterEventIds),
-      TaskOverrideByStartDateLessOrEqual(input.to),
-      TaskOverrideByDeadlineGreaterOrEqual(input.from),
+      TaskOverrideByOccurrenceStartLessOrEqual(input.to),
+      TaskOverrideByOccurrenceStartGreaterOrEqual(input.from),
     ]),
   );
 
