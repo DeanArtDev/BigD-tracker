@@ -28,7 +28,7 @@ import {
   tasksOverridesWriteRepoMock,
   tasksReadRepoMock,
   tasksWriteRepoMock,
-} from '@shared/__tests__/repository-mocks';
+} from '@shared/__tests__';
 
 initTestEnvironment();
 

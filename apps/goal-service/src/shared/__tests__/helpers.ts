@@ -1,6 +1,6 @@
 import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
-import { TEST_TRANSACTION_ID } from '@shared/__tests__/create-testing-module';
+import { TEST_TRANSACTION_ID } from './create-testing-module';
 import { CORRELATION_HEADER_KEY } from '@shared/request-context';
 import { randomUUID } from 'crypto';
 import { firstValueFrom, timeout } from 'rxjs';

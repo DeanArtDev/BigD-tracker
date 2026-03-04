@@ -22,4 +22,4 @@ type GoalDatabase = IKyselyPostgresDB<GoalsDB>;
 type TaskTransaction = Transaction<TasksDB>;
 type GoalTransaction = Transaction<GoalsDB>;
 
-export { TaskDatabase, TasksDB, TaskTransaction, GoalDatabase, GoalTransaction };
+export { TaskDatabase, TasksDB, TaskTransaction, GoalsDB, GoalDatabase, GoalTransaction };

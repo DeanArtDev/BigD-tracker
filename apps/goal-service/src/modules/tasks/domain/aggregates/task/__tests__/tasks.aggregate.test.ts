@@ -1,7 +1,7 @@
 import { TaskStatus, RecurrenceFrequency } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { mockDate } from '@shared/__tests__';
-import { futureDate, startOfToday } from '@shared/__tests__/time/helpers';
+import { futureDate, startOfToday } from '@shared/__tests__';
 import { Priority, RecurrenceVo, Weight } from '../value-objects';
 import { Task } from '../tasks.aggregate';
 

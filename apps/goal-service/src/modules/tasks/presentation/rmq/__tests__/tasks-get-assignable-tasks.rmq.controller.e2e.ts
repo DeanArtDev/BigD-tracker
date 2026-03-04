@@ -18,7 +18,7 @@ import {
   inboxReadRepoMock,
   tasksReadRepoMock,
   tasksWriteRepoMock,
-} from '@shared/__tests__/repository-mocks';
+} from '@shared/__tests__';
 
 initTestEnvironment();
 const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
