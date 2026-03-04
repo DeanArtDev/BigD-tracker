@@ -148,6 +148,8 @@ test:
       if [ -n "$CLIENT_TESTING_ENV" ]; then
         cat "$CLIENT_TESTING_ENV" > clients/tracker-client/.env.test
       fi
+
+      cat "$GOAL_SERVICE_TEST_ENV" > apps/goal-service/.env.test
     - pnpm run test:all
 
 # ======================== BUILD ===============================

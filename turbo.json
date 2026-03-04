@@ -41,6 +41,10 @@
       "cache": false
     },
 
+    "test:e2e": {
+      "cache": false
+    },
+
     "format": {},
 
     "format:fix": {},

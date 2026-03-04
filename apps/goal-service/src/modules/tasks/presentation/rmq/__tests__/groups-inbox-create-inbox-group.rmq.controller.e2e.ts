@@ -13,7 +13,7 @@ import {
 } from '@shared/__tests__';
 import { getGroupInboxView } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
-import { inboxReadRepoMock, inboxWriteRepoMock } from '@shared/__tests__/repository-mocks';
+import { inboxReadRepoMock, inboxWriteRepoMock } from '@shared/__tests__';
 
 initTestEnvironment();
 describe('GroupsInboxRmqController (rmq e2e)', () => {

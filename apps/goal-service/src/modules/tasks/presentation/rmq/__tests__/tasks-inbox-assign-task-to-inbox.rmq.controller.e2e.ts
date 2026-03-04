@@ -15,7 +15,7 @@ import {
 } from '@shared/__tests__';
 import { getTask } from '@shared/__tests__/entities';
 import { initTestEnvironment } from '@/../jest.setup';
-import { inboxReadRepoMock, tasksReadRepoMock, tasksWriteRepoMock } from '@shared/__tests__/repository-mocks';
+import { inboxReadRepoMock, tasksReadRepoMock, tasksWriteRepoMock } from '@shared/__tests__';
 
 initTestEnvironment();
 

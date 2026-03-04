@@ -1,7 +1,7 @@
 import { RecurrenceFrequency } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { mockDate } from '@shared/__tests__';
-import { futureDate, pastDate, startOfToday } from '@shared/__tests__/time/helpers';
+import { futureDate, pastDate, startOfToday } from '@shared/__tests__';
 import { RecurrenceVo } from '../recurrence.vo';
 
 mockDate();

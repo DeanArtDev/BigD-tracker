@@ -15,12 +15,7 @@ import {
   unwrapRpcError,
 } from '@shared/__tests__';
 import { getGroupDetailedView, getTaskView } from '@shared/__tests__/entities';
-import {
-  goalsReadRepoMock,
-  groupReadRepoMock,
-  groupWriteRepoMock,
-  tasksWriteRepoMock,
-} from '@shared/__tests__/repository-mocks';
+import { goalsReadRepoMock, groupReadRepoMock, groupWriteRepoMock, tasksWriteRepoMock } from '@shared/__tests__';
 
 initTestEnvironment();
 mockDate();
