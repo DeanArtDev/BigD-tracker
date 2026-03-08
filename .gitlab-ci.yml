@@ -135,8 +135,8 @@ lint:
   tags: [docker]
   extends: .install_environment
   script:
-    - pnpm run format:all
-    - pnpm run lint:all
+    - pnpm run format:all --concurrency=1
+    - pnpm run lint:all --concurrency=1
 
 test:
   interruptible: true
@@ -150,7 +150,7 @@ test:
       fi
 
       cat "$GOAL_SERVICE_TEST_ENV" > apps/goal-service/.env.test
-    - pnpm run test:all
+    - pnpm run test:all --concurrency=1
 
 # ======================== BUILD ===============================
 
