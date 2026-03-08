@@ -15,7 +15,6 @@ function taskFullSelect<O>(qb: TasksBaseQB<O>) {
     'tasks.start_date as start_date',
     'tasks.end_date as end_date',
     'tasks.deadline as deadline',
-    'tasks.recurrence as recurrence',
   ]);
 }
 

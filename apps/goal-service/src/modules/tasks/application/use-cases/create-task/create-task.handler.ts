@@ -7,7 +7,7 @@ import { CreateTaskUseCase } from './create-task.use-case';
 export class CreateTaskHandler implements ICommandHandler<CreateTaskCommand> {
   constructor(private createTaskUseCase: CreateTaskUseCase) {}
 
-  async execute({ input }: CreateTaskCommand): Promise<TaskView> {
-    return await this.createTaskUseCase.execute(input);
+  async execute(command: CreateTaskCommand): Promise<TaskView> {
+    return await this.createTaskUseCase.execute(command);
   }
 }

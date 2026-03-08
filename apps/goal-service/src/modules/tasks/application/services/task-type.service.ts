@@ -6,7 +6,7 @@ type GetTaskTypeRes =
       readonly isVirtual: true;
       readonly isOrigin: false;
       readonly isOverride: false;
-      readonly data: { masterTaskId: number; timestamp: number };
+      readonly data: { recurrenceId: number; date: string };
     }
   | {
       readonly isOrigin: true;
@@ -18,7 +18,7 @@ type GetTaskTypeRes =
       readonly isOverride: true;
       readonly isOrigin: false;
       readonly isVirtual: false;
-      readonly data: { masterTaskId: number; overrideId: number; timestamp: number };
+      readonly data: { recurrenceId: number; overrideId: number; date: string };
     }
   | {
       readonly isOverride: false;

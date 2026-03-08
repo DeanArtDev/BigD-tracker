@@ -1,95 +1,96 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
 import {
-  TaskById,
-  TaskByStatus,
-  TaskByUserId,
-  TaskOverrideByOccurrenceStartGreaterOrEqual,
-  TaskOverrideByOccurrenceStartLessOrEqual,
+  TaskOverrideByStartGreaterOrEqual,
+  TaskOverrideByStartLessOrEqual,
   TaskOverrideByUserId,
+  TaskRecurrenceById,
+  TaskRecurrenceByTaskId,
+  TaskRecurrenceByUserId,
   tasksCombinators,
 } from '@/modules/tasks/application/specifications';
-import { TaskOverrideFactory } from '@/modules/tasks/domain';
-import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
+import { TaskOverrideFactory, TaskRecurrenceFactory } from '@/modules/tasks/domain';
+import { RecurrenceFrequency, TaskOverrideType, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { getTask } from '@shared/__tests__/entities';
 import { TasksOverridesWriteRepositoryKysely } from '../tasks-overrides.write-repository.kysely';
 
 describe('TasksOverridesWriteRepositoryKysely', () => {
-  test('getManyMasterEvents returns expected sql and params', async () => {
+  test('getManyRecurrences returns expected sql and params', async () => {
     await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
       (db) => new TasksOverridesWriteRepositoryKysely(db),
       async ({ repository, recorder }) => {
-        const specification = tasksCombinators.and(
-          TaskByUserId(77),
-          TaskByStatus([TaskStatus.NOT_STARTED]),
-          TaskById(11),
-        );
+        const specification = tasksCombinators.and(TaskRecurrenceByUserId(77), TaskRecurrenceByTaskId(11));
 
-        await repository.getManyMasterEvents(specification);
+        await repository.getManyRecurrences(specification);
 
         expect(recorder.queries).toHaveLength(1);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
-            "tasks"."id" as "id",
-            "tasks"."user_id" as "user_id",
-            "tasks"."name" as "name",
-            "tasks"."description" as "description",
-            "tasks"."priority" as "priority",
-            "tasks"."weight" as "weight",
-            "tasks"."cancel_reason" as "cancel_reason",
-            "tasks"."start_date" as "start_date",
-            "tasks"."end_date" as "end_date",
-            "tasks"."deadline" as "deadline",
-            "tasks"."recurrence" as "recurrence",
-            task_statuses.name as "status"
-          from "tasks"
-          inner join "task_statuses"
-            on "tasks"."status_id" = "task_statuses"."id"
+            "tasks_recurrences"."id" as "id",
+            "tasks_recurrences"."user_id" as "user_id",
+            "tasks_recurrences"."task_id" as "task_id",
+            "tasks_recurrences"."start_date" as "start_date",
+            "tasks_recurrences"."until_date" as "until_date",
+            "tasks_recurrences"."interval" as "interval",
+            "tasks_recurrences"."weekdays" as "weekdays",
+            "tasks_recurrences"."weekstart" as "weekstart",
+            "tasks_recurrences"."monthdays" as "monthdays",
+            "tasks_recurrences"."yearmonths" as "yearmonths",
+            "tasks_recurrences"."timezone" as "timezone",
+            "tasks_recurrences"."pattern" as "pattern",
+            recurrences_frequencies.name as "recurrence_frequency",
+            tasks_recurrences.weekstart as "weekstart",
+            tasks_recurrences.weekdays as "weekdays"
+          from "tasks_recurrences"
+          inner join "recurrences_frequencies"
+            on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
           where
             (
-              "tasks"."user_id" = $1
-              and "task_statuses"."name" in ($2)
-              and "tasks"."id" = $3
+              "tasks_recurrences"."user_id" = $1
+              and "tasks_recurrences"."task_id" = $2
             )
         `,
-          parameters: [77, TaskStatus.NOT_STARTED, 11],
+          parameters: [77, 11],
         });
       },
     );
   });
 
-  test('getOneMasterEvent returns expected sql and params', async () => {
+  test('getOneRecurrence returns expected sql and params', async () => {
     await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
       (db) => new TasksOverridesWriteRepositoryKysely(db),
       async ({ repository, recorder }) => {
-        const specification = tasksCombinators.and(TaskByUserId(77), TaskById(11));
+        const specification = tasksCombinators.and(TaskRecurrenceByUserId(77), TaskRecurrenceById(11));
 
-        await repository.getOneMasterEvent(specification);
+        await repository.getOneRecurrence(specification);
 
         expect(recorder.queries).toHaveLength(1);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
-            "tasks"."id" as "id",
-            "tasks"."user_id" as "user_id",
-            "tasks"."name" as "name",
-            "tasks"."description" as "description",
-            "tasks"."priority" as "priority",
-            "tasks"."weight" as "weight",
-            "tasks"."cancel_reason" as "cancel_reason",
-            "tasks"."start_date" as "start_date",
-            "tasks"."end_date" as "end_date",
-            "tasks"."deadline" as "deadline",
-            "tasks"."recurrence" as "recurrence",
-            task_statuses.name as "status"
-          from "tasks"
-          inner join "task_statuses"
-            on "tasks"."status_id" = "task_statuses"."id"
+            "tasks_recurrences"."id" as "id",
+            "tasks_recurrences"."user_id" as "user_id",
+            "tasks_recurrences"."task_id" as "task_id",
+            "tasks_recurrences"."start_date" as "start_date",
+            "tasks_recurrences"."until_date" as "until_date",
+            "tasks_recurrences"."interval" as "interval",
+            "tasks_recurrences"."weekdays" as "weekdays",
+            "tasks_recurrences"."weekstart" as "weekstart",
+            "tasks_recurrences"."monthdays" as "monthdays",
+            "tasks_recurrences"."yearmonths" as "yearmonths",
+            "tasks_recurrences"."timezone" as "timezone",
+            "tasks_recurrences"."pattern" as "pattern",
+            recurrences_frequencies.name as "recurrence_frequency",
+            tasks_recurrences.weekstart as "weekstart",
+            tasks_recurrences.weekdays as "weekdays"
+          from "tasks_recurrences"
+          inner join "recurrences_frequencies"
+            on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
           where
             (
-              "tasks"."user_id" = $1
-              and "tasks"."id" = $2
+              "tasks_recurrences"."user_id" = $1
+              and "tasks_recurrences"."id" = $2
             )
         `,
           parameters: [77, 11],
@@ -106,8 +107,8 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
         const to = new Date('2026-01-31T23:59:59.000Z');
         const specification = tasksCombinators.and(
           TaskOverrideByUserId(77),
-          TaskOverrideByOccurrenceStartGreaterOrEqual(from),
-          TaskOverrideByOccurrenceStartLessOrEqual(to),
+          TaskOverrideByStartGreaterOrEqual(from),
+          TaskOverrideByStartLessOrEqual(to),
         );
 
         await repository.getManyOverrides(specification);
@@ -116,33 +117,123 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
-            "tasks_recurrence_overrides"."id" as "id",
-            "tasks_recurrence_overrides"."user_id" as "user_id",
-            "tasks_recurrence_overrides"."name" as "name",
-            "tasks_recurrence_overrides"."description" as "description",
-            "tasks_recurrence_overrides"."priority" as "priority",
-            "tasks_recurrence_overrides"."weight" as "weight",
-            "tasks_recurrence_overrides"."cancel_reason" as "cancel_reason",
-            "tasks_recurrence_overrides"."start_date" as "start_date",
-            "tasks_recurrence_overrides"."end_date" as "end_date",
-            "tasks_recurrence_overrides"."deadline" as "deadline",
-            "tasks_recurrence_overrides"."task_id" as "task_id",
-            "tasks_recurrence_overrides"."occurrence_start" as "occurrence_start",
+            "tasks_recurrences_overrides"."id" as "id",
+            "tasks_recurrences_overrides"."recurrence_id" as "recurrence_id",
+            "tasks_recurrences_overrides"."user_id" as "user_id",
+            "tasks_recurrences_overrides"."name" as "name",
+            "tasks_recurrences_overrides"."description" as "description",
+            "tasks_recurrences_overrides"."priority" as "priority",
+            "tasks_recurrences_overrides"."weight" as "weight",
+            "tasks_recurrences_overrides"."cancel_reason" as "cancel_reason",
+            "tasks_recurrences_overrides"."start_date" as "start_date",
+            "tasks_recurrences_overrides"."end_date" as "end_date",
+            "tasks_recurrences_overrides"."deadline" as "deadline",
+            "tasks_recurrences_overrides"."recurrence_start" as "recurrence_start",
             task_statuses.name as "status",
-            tasks_recurrence_override_types.name as "override_type"
-          from "tasks_recurrence_overrides"
+            tasks_recurrences_override_types.name as "override_type"
+          from "tasks_recurrences_overrides"
           inner join "task_statuses"
-            on "tasks_recurrence_overrides"."status_id" = "task_statuses"."id"
-          inner join "tasks_recurrence_override_types"
-            on "tasks_recurrence_override_types"."id" = "tasks_recurrence_overrides"."override_type_id"
+            on "tasks_recurrences_overrides"."status_id" = "task_statuses"."id"
+          inner join "tasks_recurrences_override_types"
+            on "tasks_recurrences_override_types"."id" = "tasks_recurrences_overrides"."override_type_id"
           where
             (
-              "tasks_recurrence_overrides"."user_id" = $1
-              and "tasks_recurrence_overrides"."occurrence_start" >= $2
-              and "tasks_recurrence_overrides"."occurrence_start" <= $3
+              "tasks_recurrences_overrides"."user_id" = $1
+              and "tasks_recurrences_overrides"."recurrence_start" >= $2
+              and "tasks_recurrences_overrides"."recurrence_start" <= $3
             )
         `,
           parameters: [77, from, to],
+        });
+      },
+    );
+  });
+
+  test('upsertRecurrence returns expected sql and params', async () => {
+    await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
+      (db) => new TasksOverridesWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({
+          rows: [{ id: 1, name: 'DAILY' }],
+        });
+        recorder.enqueueResult({
+          rows: [
+            {
+              id: 25,
+              user_id: 77,
+              task_id: 11,
+              timezone: 'UTC',
+              start_date: new Date('2026-01-10T10:00:00.000Z'),
+              until_date: null,
+              interval: null,
+              weekdays: null,
+              weekstart: TaskRecurrenceWeekday.MO,
+              monthdays: null,
+              yearmonths: null,
+              pattern: 'FREQ=DAILY;INTERVAL=1',
+              recurrence_frequencies_id: 1,
+            },
+          ],
+        });
+
+        const recurrence = TaskRecurrenceFactory.create({
+          userId: 77,
+          taskId: 11,
+          timezone: 'UTC',
+          startDate: '2026-01-10T10:00:00.000Z',
+          pattern: 'FREQ=DAILY;INTERVAL=1',
+          frequency: RecurrenceFrequency.DAILY,
+          weekstart: TaskRecurrenceWeekday.MO,
+        });
+
+        await repository.upsertRecurrence(recurrence);
+
+        expect(recorder.queries).toHaveLength(2);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          select
+            "id",
+            recurrences_frequencies.name as "name"
+          from "recurrences_frequencies"
+          where "recurrences_frequencies"."name" in ($1)
+        `,
+          parameters: ['DAILY'],
+        });
+        expectSqlQuery(recorder.queries[1], {
+          sql: `
+          insert into "tasks_recurrences"
+            (
+              "user_id",
+              "task_id",
+              "pattern",
+              "start_date",
+              "timezone",
+              "weekstart",
+              "recurrence_frequencies_id"
+            )
+          values
+            ($1, $2, $3, $4, $5, $6, $7)
+          on conflict ("id")
+          do update set
+            "pattern" = $8,
+            "start_date" = $9,
+            "weekstart" = $10,
+            "recurrence_frequencies_id" = $11
+          returning *
+        `,
+          parameters: [
+            77,
+            11,
+            'FREQ=DAILY;INTERVAL=1',
+            '2026-01-10T10:00:00.000Z',
+            'UTC',
+            TaskRecurrenceWeekday.MO,
+            1,
+            'FREQ=DAILY;INTERVAL=1',
+            '2026-01-10T10:00:00.000Z',
+            TaskRecurrenceWeekday.MO,
+            1,
+          ],
         });
       },
     );
@@ -163,7 +254,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             {
               id: 15,
               weight: 1,
-              task_id: 11,
+              recurrence_id: 21,
               cancel_reason: null,
               name: 'Task name',
               deadline: null,
@@ -173,7 +264,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
               user_id: 77,
               priority: 2,
               override_type_id: 1,
-              occurrence_start: new Date('2026-01-10T10:00:00.000Z'),
+              recurrence_start: new Date('2026-01-10T10:00:00.000Z'),
             },
           ],
         });
@@ -186,7 +277,8 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             startDate: '2026-01-10T10:00:00.000Z',
           }),
           type: TaskOverrideType.OVERRIDE,
-          occurrenceStart: '2026-01-10T10:00:00.000Z',
+          recurrenceId: 21,
+          recurrenceStart: '2026-01-10T10:00:00.000Z',
         });
 
         await repository.upsertOverride(override);
@@ -206,17 +298,17 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           sql: `
           select
             "id",
-            tasks_recurrence_override_types.name as "name"
-          from "tasks_recurrence_override_types"
-          where "tasks_recurrence_override_types"."name" in ($1)
+            tasks_recurrences_override_types.name as "name"
+          from "tasks_recurrences_override_types"
+          where "tasks_recurrences_override_types"."name" in ($1)
         `,
           parameters: [TaskOverrideType.OVERRIDE],
         });
         expectSqlQuery(recorder.queries[2], {
           sql: `
-          insert into "tasks_recurrence_overrides"
+          insert into "tasks_recurrences_overrides"
             (
-              "task_id",
+              "recurrence_id",
               "name",
               "start_date",
               "user_id",
@@ -224,22 +316,23 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
               "status_id",
               "weight",
               "override_type_id",
-              "occurrence_start"
+              "recurrence_start"
             )
           values
             ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-          on conflict ("task_id", "occurrence_start")
+          on conflict ("recurrence_id", "recurrence_start")
           do update set
             "name" = $10,
             "start_date" = $11,
             "priority" = $12,
             "status_id" = $13,
             "weight" = $14,
-            "override_type_id" = $15
+            "override_type_id" = $15,
+            "recurrence_start" = $16
           returning
             "id",
             "weight",
-            "task_id",
+            "recurrence_id",
             "cancel_reason",
             "name",
             "deadline",
@@ -249,10 +342,10 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             "user_id",
             "priority",
             "override_type_id",
-            "occurrence_start"
+            "recurrence_start"
         `,
           parameters: [
-            11,
+            21,
             'Task name',
             '2026-01-10T10:00:00.000Z',
             77,
@@ -267,6 +360,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             1,
             1,
             1,
+            '2026-01-10T10:00:00.000Z',
           ],
         });
       },

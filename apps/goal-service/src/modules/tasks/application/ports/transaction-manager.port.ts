@@ -10,8 +10,10 @@ type TasksDB = Pick<
   | 'task_statuses'
   | 'tag_to_tasks'
   | 'task_to_group'
-  | 'tasks_recurrence_overrides'
-  | 'tasks_recurrence_override_types'
+  | 'tasks_recurrences'
+  | 'recurrences_frequencies'
+  | 'tasks_recurrences_overrides'
+  | 'tasks_recurrences_override_types'
 >;
 
 type GoalsDB = Pick<DB, 'goals' | 'goal_statuses' | 'goal_to_goals' | 'groups' | 'group_statuses' | 'group_to_goals'>;

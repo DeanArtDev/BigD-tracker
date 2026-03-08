@@ -1,16 +1,16 @@
 import { TasksDB } from '../ports';
-import { TaskByStartDateLessOrEqual, TaskByUserId, TaskHasRecurrence, tasksCombinators } from '../specifications';
+import { TaskRecurrenceByStartDateLessOrEqual, TaskRecurrenceByUserId, tasksCombinators } from '../specifications';
 import { tagSpec } from '@big-d/api-utils';
 
 const { and } = tasksCombinators;
 
-function GetMasterEventsByRange(input: { userId: number; to: Date; from: Date }) {
-  const spec = and(TaskByStartDateLessOrEqual(input.to), TaskByUserId(input.userId), TaskHasRecurrence());
+function GetRecurrencesByRange(input: { userId: number; to: Date; from: Date }) {
+  const spec = and(TaskRecurrenceByStartDateLessOrEqual(input.to), TaskRecurrenceByUserId(input.userId));
 
   return tagSpec<TasksDB>(spec, {
-    key: 'tasks.policy.get-master-events',
+    key: 'tasks.policy.get-recurrences-by-range',
     purpose: 'policy',
   });
 }
 
-export { GetMasterEventsByRange };
+export { GetRecurrencesByRange };

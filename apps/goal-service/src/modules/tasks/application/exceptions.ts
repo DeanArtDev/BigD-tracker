@@ -66,6 +66,12 @@ const ApplicationExceptionStateList = {
     code: exceptionCode.taskUnprocessable.code,
     details: exceptionCode.taskUnprocessable.details,
   }),
+
+  RecurrenceNotExist: defineExceptionState({
+    key: 'RECURRENCE_NOT_EXIST',
+    code: exceptionCode.taskRecurrenceNotExist.code,
+    details: exceptionCode.taskRecurrenceNotExist.details,
+  }),
 };
 
 export const {
@@ -80,4 +86,5 @@ export const {
   ExceptionInboxAlreadyExist,
   ExceptionInboxNotExist,
   ExceptionTaskUnprocessable,
+  ExceptionRecurrenceNotExist,
 } = generateExceptionClasses(ApplicationExceptionStateList);

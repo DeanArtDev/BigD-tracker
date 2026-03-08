@@ -21,27 +21,45 @@ describe('TasksReadRepositoryKysely', () => {
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
-            "t"."id" as "id",
-            "t"."user_id" as "user_id",
-            "t"."name" as "name",
-            "t"."description" as "description",
-            "t"."priority" as "priority",
-            "t"."weight" as "weight",
-            "t"."cancel_reason" as "cancel_reason",
-            "t"."start_date" as "start_date",
-            "t"."end_date" as "end_date",
-            "t"."deadline" as "deadline",
-            "t"."recurrence" as "recurrence",
-            "ts"."name" as "status",
-            "task_to_group"."group_id" as "group_id"
-          from "tasks" as "t"
-          inner join "task_statuses" as "ts"
-            on "t"."status_id" = "ts"."id"
+            "tasks"."id" as "id",
+            "tasks"."user_id" as "user_id",
+            "tasks"."name" as "name",
+            "tasks"."description" as "description",
+            "tasks"."priority" as "priority",
+            "tasks"."weight" as "weight",
+            "tasks"."cancel_reason" as "cancel_reason",
+            "tasks"."start_date" as "start_date",
+            "tasks"."end_date" as "end_date",
+            "tasks"."deadline" as "deadline",
+            task_statuses.name as "status",
+            "task_to_group"."group_id" as "group_id",
+            "task_to_group"."task_id" as "group_task_id",
+            "task_to_group"."position" as "position",
+            "tasks_recurrences"."id" as "recurrence_id",
+            "tasks_recurrences"."user_id" as "recurrence_user_id",
+            "tasks_recurrences"."task_id" as "recurrence_task_id",
+            "tasks_recurrences"."start_date" as "recurrence_start_date",
+            "tasks_recurrences"."until_date" as "recurrence_until_date",
+            "tasks_recurrences"."interval" as "recurrence_interval",
+            "tasks_recurrences"."monthdays" as "recurrence_monthdays",
+            "tasks_recurrences"."yearmonths" as "recurrence_yearmonths",
+            "tasks_recurrences"."timezone" as "recurrence_timezone",
+            "tasks_recurrences"."pattern" as "recurrence_pattern",
+            recurrences_frequencies.name as "recurrence_frequency",
+            tasks_recurrences.weekstart as "recurrence_weekstart",
+            tasks_recurrences.weekdays as "recurrence_weekdays"
+          from "tasks"
+          inner join "task_statuses"
+            on "tasks"."status_id" = "task_statuses"."id"
           left join "task_to_group"
-            on "task_to_group"."task_id" = "t"."id"
+            on "task_to_group"."task_id" = "tasks"."id"
+          left join "tasks_recurrences"
+            on "tasks_recurrences"."task_id" = "tasks"."id"
+          left join "recurrences_frequencies"
+            on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
           where
-            "t"."id" = $1
-            and "t"."user_id" = $2
+            "tasks"."id" = $1
+            and "tasks"."user_id" = $2
         `,
           parameters: [111, 9],
         });
@@ -99,14 +117,32 @@ describe('TasksReadRepositoryKysely', () => {
             "tasks"."start_date" as "start_date",
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
-            "tasks"."recurrence" as "recurrence",
             task_statuses.name as "status",
-            "task_to_group"."group_id" as "group_id"
+            "task_to_group"."group_id" as "group_id",
+            "task_to_group"."task_id" as "group_task_id",
+            "task_to_group"."position" as "position",
+            "tasks_recurrences"."id" as "recurrence_id",
+            "tasks_recurrences"."user_id" as "recurrence_user_id",
+            "tasks_recurrences"."task_id" as "recurrence_task_id",
+            "tasks_recurrences"."start_date" as "recurrence_start_date",
+            "tasks_recurrences"."until_date" as "recurrence_until_date",
+            "tasks_recurrences"."interval" as "recurrence_interval",
+            "tasks_recurrences"."monthdays" as "recurrence_monthdays",
+            "tasks_recurrences"."yearmonths" as "recurrence_yearmonths",
+            "tasks_recurrences"."timezone" as "recurrence_timezone",
+            "tasks_recurrences"."pattern" as "recurrence_pattern",
+            recurrences_frequencies.name as "recurrence_frequency",
+            tasks_recurrences.weekstart as "recurrence_weekstart",
+            tasks_recurrences.weekdays as "recurrence_weekdays"
           from "tasks"
           inner join "task_statuses"
             on "tasks"."status_id" = "task_statuses"."id"
           left join "task_to_group"
             on "task_to_group"."task_id" = "tasks"."id"
+          left join "tasks_recurrences"
+            on "tasks_recurrences"."task_id" = "tasks"."id"
+          left join "recurrences_frequencies"
+            on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
           where
             (
               "tasks"."user_id" = $1
@@ -145,7 +181,6 @@ describe('TasksReadRepositoryKysely', () => {
             "tasks"."start_date" as "start_date",
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
-            "tasks"."recurrence" as "recurrence",
             task_statuses.name as "status",
             "task_to_group"."group_id" as "group_id",
             "tasks"."id" as "id",
@@ -158,12 +193,28 @@ describe('TasksReadRepositoryKysely', () => {
             "tasks"."start_date" as "start_date",
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
-            "tasks"."recurrence" as "recurrence"
+            "tasks_recurrences"."id" as "recurrence_id",
+            "tasks_recurrences"."user_id" as "recurrence_user_id",
+            "tasks_recurrences"."task_id" as "recurrence_task_id",
+            "tasks_recurrences"."start_date" as "recurrence_start_date",
+            "tasks_recurrences"."until_date" as "recurrence_until_date",
+            "tasks_recurrences"."interval" as "recurrence_interval",
+            "tasks_recurrences"."monthdays" as "recurrence_monthdays",
+            "tasks_recurrences"."yearmonths" as "recurrence_yearmonths",
+            "tasks_recurrences"."timezone" as "recurrence_timezone",
+            "tasks_recurrences"."pattern" as "recurrence_pattern",
+            recurrences_frequencies.name as "recurrence_frequency",
+            tasks_recurrences.weekstart as "recurrence_weekstart",
+            tasks_recurrences.weekdays as "recurrence_weekdays"
           from "tasks"
           inner join "task_statuses"
             on "tasks"."status_id" = "task_statuses"."id"
           left join "task_to_group"
             on "task_to_group"."task_id" = "tasks"."id"
+          left join "tasks_recurrences"
+            on "tasks_recurrences"."task_id" = "tasks"."id"
+          left join "recurrences_frequencies"
+            on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
           where
             ("tasks"."user_id" = $1 and "task_statuses"."name" in ($2))
           order by "id" asc

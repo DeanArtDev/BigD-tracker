@@ -1,40 +1,33 @@
-import { TaskStatus, RecurrenceFrequency } from '@big-d/api-contracts';
+import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
-import { mockDate } from '@shared/__tests__';
-import { futureDate, startOfToday } from '@shared/__tests__';
-import { Priority, RecurrenceVo, Weight } from '../value-objects';
+import { mockDate, pastDate } from '@shared/__tests__';
+import { futureDate } from '@shared/__tests__';
+import { Priority, Weight } from '../value-objects';
 import { Task } from '../tasks.aggregate';
 
 mockDate();
 
-const createRecurrence = (startDate: string, deadline: string, frequency = RecurrenceFrequency.DAILY) =>
-  RecurrenceVo.create({
-    start: DateVo.create(startDate),
-    end: DateVo.create(deadline),
-    frequency,
-  });
-
-const createTask = (params?: { recurrence?: RecurrenceVo }) =>
+const createTask = (params?: { startDate?: string; deadline?: string }) =>
   Task.create({
     userId: 1,
     name: Name.create('Task'),
     description: 'desc',
     priority: Priority.create(2),
     weight: Weight.create(10),
-    recurrence: params?.recurrence,
+    startDate: params?.startDate != null ? DateVo.create(params.startDate) : undefined,
+    deadline: params?.deadline != null ? DateVo.create(params.deadline) : undefined,
   });
 
 describe('Task aggregate', () => {
-  it('creates NOT_STARTED task without recurrence', () => {
+  it('creates NOT_STARTED task without dates', () => {
     const task = createTask();
 
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
-    expect(task.recurrence?.start).toBeUndefined();
-    expect(task.recurrence?.end).toBeUndefined();
-    expect(task.recurrence?.frequency).toBeUndefined();
+    expect(task.startDate).toBeUndefined();
+    expect(task.deadline).toBeUndefined();
   });
 
-  it('restores task with recurrence', () => {
+  it('restores task with dates', () => {
     const task = Task.restore({
       id: 10,
       userId: 1,
@@ -43,15 +36,16 @@ describe('Task aggregate', () => {
       priority: Priority.create(2),
       weight: Weight.create(10),
       status: TaskStatus.NOT_STARTED,
-      recurrence: createRecurrence(futureDate(2), futureDate(3), RecurrenceFrequency.WEEKLY),
+      startDate: DateVo.create(futureDate(2)),
+      deadline: DateVo.create(futureDate(3)),
     });
 
     expect(task.isDraft).toBe(false);
-    expect(task.recurrence?.frequency).toBe(RecurrenceFrequency.WEEKLY);
+    expect(task.startDate).toBe(futureDate(2));
+    expect(task.deadline).toBe(futureDate(3));
   });
 
   it('allows partial replace for COMPLETED when immutable fields are unchanged', () => {
-    const recurrence = createRecurrence(futureDate(1), futureDate(2));
     const task = Task.restore({
       id: 11,
       userId: 1,
@@ -60,7 +54,8 @@ describe('Task aggregate', () => {
       priority: Priority.create(2),
       weight: Weight.create(10),
       status: TaskStatus.COMPLETED,
-      recurrence,
+      startDate: DateVo.create(futureDate(1)),
+      deadline: DateVo.create(futureDate(2)),
     });
 
     expect(() =>
@@ -69,7 +64,8 @@ describe('Task aggregate', () => {
         description: 'updated',
         priority: Priority.create(2),
         weight: Weight.create(10),
-        recurrence: undefined,
+        startDate: undefined,
+        deadline: undefined,
       }),
     ).not.toThrow();
   });
@@ -83,7 +79,8 @@ describe('Task aggregate', () => {
       priority: Priority.create(2),
       weight: Weight.create(10),
       status: TaskStatus.COMPLETED,
-      recurrence: createRecurrence(futureDate(1), futureDate(2)),
+      startDate: DateVo.create(futureDate(1)),
+      deadline: DateVo.create(futureDate(2)),
     });
 
     expect(() =>
@@ -92,7 +89,8 @@ describe('Task aggregate', () => {
         description: 'updated',
         priority: Priority.create(1),
         weight: Weight.create(10),
-        recurrence: createRecurrence(futureDate(1), futureDate(2)),
+        startDate: DateVo.create(futureDate(1)),
+        deadline: DateVo.create(futureDate(2)),
       }),
     ).toThrow();
   });
@@ -105,7 +103,8 @@ describe('Task aggregate', () => {
       priority: Priority.create(2),
       weight: Weight.create(10),
       status: TaskStatus.IN_PROGRESS,
-      recurrence: createRecurrence(startOfToday(), futureDate(1)),
+      startDate: DateVo.create(pastDate(2)),
+      deadline: DateVo.create(futureDate(1)),
     });
 
     task.finish();

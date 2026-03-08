@@ -8,6 +8,6 @@
     "types": ["jest", "node"],
     "strict": true
   },
-  "include": ["src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.e2e.ts"],
   "exclude": ["node_modules", "dist"]
 }

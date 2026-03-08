@@ -1,10 +1,10 @@
-import { RecurrenceFrequency, TaskStatus } from '@big-d/api-contracts';
+import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { ExceptionTaskDomainInvalidInvariant } from '../../exceptions';
 import { allowedTaskStatusByAction, allowTaskStatusTransitions, TaskStatusActions } from '../../specifications';
 import { taskAsserts } from './tasks.invariants';
-import { TaskCreateInput, TaskRecurrence, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
+import { TaskCreateInput, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
 import { Priority, Weight } from './value-objects';
 
 class Task extends AggregateRoot {
@@ -51,7 +51,6 @@ class Task extends AggregateRoot {
       deadline: input.deadline,
       endDate: input.endDate,
       status: input.status,
-      recurrence: input.recurrence,
     });
   }
 
@@ -69,23 +68,14 @@ class Task extends AggregateRoot {
       startDate,
       deadline,
       status: Task.calculateStatusByDates({ startDate, deadline }),
-      recurrence: input.recurrence,
     });
   }
 
   public replace(input: TaskReplaceInput): this {
-    const { recurrence } = input;
     const startDate = input.startDate;
     const deadline = input.deadline;
 
     if (this.#isAllowTo('REPLACE_EVERYTHING')) {
-      if (recurrence != null) {
-        taskAsserts.neededRecurrenceFields({
-          start: recurrence?.value?.start,
-          deadline: recurrence?.value?.end,
-        });
-      }
-
       this.#state.status = Task.calculateStatusByDates({ startDate, deadline });
       this.#state.name = input.name;
       this.#state.description = input.description;
@@ -93,7 +83,6 @@ class Task extends AggregateRoot {
       this.#state.weight = input.weight;
       this.#state.startDate = startDate;
       this.#state.deadline = deadline;
-      this.#state.recurrence = input.recurrence;
 
       return this;
     }
@@ -108,12 +97,10 @@ class Task extends AggregateRoot {
           status: this.#state.status,
           priority: this.#state.priority,
           weight: this.#state.weight,
-          recurrence: this.#state.recurrence,
         },
         {
           priority: input.priority,
           weight: input.weight,
-          recurrence: input.recurrence,
         },
       );
 
@@ -157,7 +144,6 @@ class Task extends AggregateRoot {
       this.#state.weight = Weight.defaultValue();
       this.#state.startDate = undefined;
       this.#state.deadline = undefined;
-      this.#state.recurrence = undefined;
       return this.#setStatus(TaskStatus.NOT_STARTED);
     }
 
@@ -186,7 +172,6 @@ class Task extends AggregateRoot {
         );
       }
 
-      this.#state.recurrence = undefined;
       return this;
     }
 
@@ -220,7 +205,6 @@ class Task extends AggregateRoot {
         weight: this.#state.weight,
         startDate: undefined,
         deadline: undefined,
-        recurrence: undefined,
         status: TaskStatus.NOT_STARTED,
       });
     }
@@ -294,26 +278,9 @@ class Task extends AggregateRoot {
   get status() {
     return this.#state.status;
   }
-  get recurrence(): TaskRecurrence | undefined {
-    if (this.#state.recurrence?.value.start?.value == null) return undefined;
-    return {
-      weekdays: this.#state.recurrence?.value.weekdays,
-      frequency: this.#state.recurrence?.value.frequency,
-      start: this.#state.recurrence?.value.start.value,
-      end: this.#state.recurrence?.value.end?.value,
-    };
-  }
+
   get isDraft(): boolean {
     return Number.isNaN(this.#state.id);
-  }
-
-  isRecurrence(): this is this & {
-    recurrence: {
-      start: string;
-      frequency: RecurrenceFrequency;
-    };
-  } {
-    return [this.recurrence?.frequency, this.recurrence?.start].every((i) => i != null);
   }
 
   #isAllowTo(action: TaskStatusActions): boolean {

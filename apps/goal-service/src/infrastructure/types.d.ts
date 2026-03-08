@@ -64,6 +64,11 @@ export interface GroupToGoals {
   position: Generated<number>;
 }
 
+export interface RecurrencesFrequencies {
+  id: Generated<number>;
+  name: string;
+}
+
 export interface Stages {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -105,7 +110,6 @@ export interface Tasks {
   id: Generated<number>;
   name: string;
   priority: Generated<number>;
-  recurrence: string | null;
   start_date: Timestamp | null;
   status_id: number;
   updated_at: Generated<Timestamp>;
@@ -113,7 +117,25 @@ export interface Tasks {
   weight: Generated<number>;
 }
 
-export interface TasksRecurrenceOverrides {
+export interface TasksRecurrences {
+  created_at: Generated<Timestamp>;
+  id: Generated<number>;
+  interval: number | null;
+  monthdays: number[] | null;
+  pattern: string;
+  recurrence_frequencies_id: number;
+  start_date: Timestamp;
+  task_id: number;
+  timezone: string;
+  until_date: Timestamp | null;
+  updated_at: Generated<Timestamp>;
+  user_id: number;
+  weekdays: number[] | null;
+  weekstart: number;
+  yearmonths: number[] | null;
+}
+
+export interface TasksRecurrencesOverrides {
   cancel_reason: string | null;
   created_at: Generated<Timestamp>;
   deadline: Timestamp | null;
@@ -121,18 +143,18 @@ export interface TasksRecurrenceOverrides {
   end_date: Timestamp | null;
   id: Generated<number>;
   name: string;
-  occurrence_start: Timestamp;
   override_type_id: number;
   priority: Generated<number>;
+  recurrence_id: number;
+  recurrence_start: Timestamp;
   start_date: Timestamp;
   status_id: number;
-  task_id: number;
   updated_at: Generated<Timestamp>;
   user_id: number;
   weight: Generated<number>;
 }
 
-export interface TasksRecurrenceOverrideTypes {
+export interface TasksRecurrencesOverrideTypes {
   id: Generated<number>;
   name: string;
 }
@@ -156,6 +178,7 @@ export interface DB {
   group_statuses: GroupStatuses;
   group_to_goals: GroupToGoals;
   groups: Groups;
+  recurrences_frequencies: RecurrencesFrequencies;
   stage_statuses: StageStatuses;
   stage_types: StageTypes;
   stages: Stages;
@@ -164,6 +187,7 @@ export interface DB {
   task_statuses: TaskStatuses;
   task_to_group: TaskToGroup;
   tasks: Tasks;
-  tasks_recurrence_override_types: TasksRecurrenceOverrideTypes;
-  tasks_recurrence_overrides: TasksRecurrenceOverrides;
+  tasks_recurrences: TasksRecurrences;
+  tasks_recurrences_override_types: TasksRecurrencesOverrideTypes;
+  tasks_recurrences_overrides: TasksRecurrencesOverrides;
 }

@@ -1,15 +1,17 @@
-import { Task, TaskOverride } from '@/modules/tasks/domain';
+import { TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksSpecification } from '../../specifications';
 import { TaskTransaction } from '../transaction-manager.port';
 
 interface TasksOverridesRepositoryWritePort {
-  getManyMasterEvents(specifications: TasksSpecification, trx?: TaskTransaction): Promise<Task[]>;
+  getManyRecurrences(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskRecurrence[]>;
 
-  getOneMasterEvent(specifications: TasksSpecification, trx?: TaskTransaction): Promise<Task | null>;
+  getOneRecurrence(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskRecurrence | null>;
 
   getManyOverrides(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride[]>;
 
   upsertOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride>;
+
+  upsertRecurrence(override: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence>;
 }
 
 export { TasksOverridesRepositoryWritePort };

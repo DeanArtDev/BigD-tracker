@@ -29,7 +29,7 @@ async function migrate(options: { migrationFolder: string; method: keyof typeof 
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
-      console.info(`✅ Миграция ${it.migrationName} выполнена`);
+      console.info(`✅ Миграция ${it.migrationName}:${key} выполнена`);
     } else if (it.status === 'Error') {
       console.error(`❌ Ошибка в миграции ${it.migrationName}`);
     }

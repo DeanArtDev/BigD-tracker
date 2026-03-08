@@ -2,37 +2,37 @@ import { tasksCombinators } from './init';
 
 const { leaf } = tasksCombinators;
 
-const TaskOverrideByOccurrenceStartLessOrEqual = (date: Date) =>
+const TaskOverrideByStartLessOrEqual = (date: Date) =>
   leaf({
-    key: 'tasks.overrideByOccurrenceStartLessOrEqual',
+    key: 'tasks.overrideByStartLessOrEqual',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrence_overrides.occurrence_start', '<=', date),
+    toExpr: (eb) => eb('tasks_recurrences_overrides.recurrence_start', '<=', date),
   });
 
-const TaskOverrideByOccurrenceStartGreaterOrEqual = (date: Date) =>
+const TaskOverrideByStartGreaterOrEqual = (date: Date) =>
   leaf({
-    key: 'tasks.overrideByOccurrenceStartGreaterOrEqual',
+    key: 'tasks.overrideByStartGreaterOrEqual',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrence_overrides.occurrence_start', '>=', date),
+    toExpr: (eb) => eb('tasks_recurrences_overrides.recurrence_start', '>=', date),
   });
 
-const TaskOverrideByMasterIds = (taskIds: number[]) =>
+const TaskOverrideByRecurrencesIds = (ids: number[]) =>
   leaf({
     key: 'tasks.overridesByMasterIds',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrence_overrides.task_id', 'in', taskIds),
+    toExpr: (eb) => eb('tasks_recurrences_overrides.recurrence_id', 'in', ids),
   });
 
 const TaskOverrideByUserId = (userId: number) =>
   leaf({
     key: 'tasks.overrideByUserId',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrence_overrides.user_id', '=', userId),
+    toExpr: (eb) => eb('tasks_recurrences_overrides.user_id', '=', userId),
   });
 
 export {
-  TaskOverrideByMasterIds,
+  TaskOverrideByRecurrencesIds,
   TaskOverrideByUserId,
-  TaskOverrideByOccurrenceStartGreaterOrEqual,
-  TaskOverrideByOccurrenceStartLessOrEqual,
+  TaskOverrideByStartGreaterOrEqual,
+  TaskOverrideByStartLessOrEqual,
 };

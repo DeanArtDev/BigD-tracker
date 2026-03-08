@@ -1,4 +1,4 @@
-import { TaskRecurrence } from '@/modules/tasks/domain';
+import { TaskRecurrenceValues } from '../../types';
 
 export class CreateTaskCommand {
   constructor(
@@ -11,7 +11,7 @@ export class CreateTaskCommand {
       readonly weight?: number;
       readonly startDate?: string;
       readonly deadline?: string;
-      readonly recurrence?: TaskRecurrence;
+      readonly recurrence?: TaskRecurrenceValues;
     },
   ) {}
 }

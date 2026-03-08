@@ -1,24 +1,37 @@
-import { IsArray, IsEnum, IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
 import { RecurrenceFrequency, TaskRecurrenceWeekday } from '../types';
 
 class TaskRecurrencyDto {
-  @IsOptional()
   @IsEnum(RecurrenceFrequency)
-  frequency?: RecurrenceFrequency;
+  frequency: RecurrenceFrequency;
 
   @IsOptional()
   @IsEnum(TaskRecurrenceWeekday, { each: true })
   @IsArray()
   weekdays?: TaskRecurrenceWeekday[];
 
+  @IsOptional()
+  @IsInt()
+  interval?: number;
+
   @IsISO8601()
   @IsString()
-  start: string;
+  startDate: string;
 
   @IsISO8601()
   @IsOptional()
   @IsString()
-  end?: string;
+  untilDate?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  monthdays?: number[];
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  yearmonths?: number[];
 }
 
 export { TaskRecurrencyDto };

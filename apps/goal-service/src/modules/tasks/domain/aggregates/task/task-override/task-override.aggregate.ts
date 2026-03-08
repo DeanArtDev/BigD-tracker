@@ -1,6 +1,11 @@
 import { TaskOverrideType } from '@big-d/api-contracts';
-import { TaskOverrideCreateInput, TaskOverrideRestoreInput, TaskOverrodeState } from './task-override.types';
-import { assertStartDateIsRequired, taskAsserts } from './tasks.invariants';
+import {
+  TaskOverrideCreateInput,
+  TaskOverrideReplaceInput,
+  TaskOverrideRestoreInput,
+  TaskOverrodeState,
+} from './task-override.types';
+import { assertStartDateIsRequired, taskAsserts } from '../tasks.invariants';
 
 class TaskOverride {
   #state: TaskOverrodeState;
@@ -10,62 +15,83 @@ class TaskOverride {
   }
 
   static create(input: TaskOverrideCreateInput): TaskOverride {
+    const { task, type, recurrenceStart, recurrenceId } = input;
+
+    const assertInput = { taskId: task.id, startDate: task.startDate };
+    assertStartDateIsRequired(assertInput);
+    taskAsserts.notDraft(task);
+
+    return new TaskOverride({
+      id: NaN,
+      recurrenceId,
+      userId: task.userId,
+      groupId: task.groupId,
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      weight: task.weight,
+      cancelReason: task.cancelReason,
+      startDate: assertInput.startDate,
+      endDate: task.endDate,
+      deadline: task.deadline,
+      status: task.status,
+      type,
+      recurrenceStart,
+    });
+  }
+
+  static restore(input: TaskOverrideRestoreInput): TaskOverride {
+    const { task, type, recurrenceStart, recurrenceId } = input;
+
+    const assertInput = { taskId: task.id, startDate: task.startDate };
+    assertStartDateIsRequired(assertInput);
+    taskAsserts.notDraft(task);
+
+    return new TaskOverride({
+      recurrenceStart,
+      recurrenceId,
+      id: task.id,
+      userId: task.userId,
+      groupId: task.groupId,
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      weight: task.weight,
+      cancelReason: task.cancelReason,
+      startDate: assertInput.startDate,
+      endDate: task.endDate,
+      deadline: task.deadline,
+      status: task.status,
+      type,
+    });
+  }
+
+  public replace(input: TaskOverrideReplaceInput): TaskOverride {
     const { task, type } = input;
 
     const assertInput = { taskId: task.id, startDate: task.startDate };
     assertStartDateIsRequired(assertInput);
     taskAsserts.notDraft(task);
 
-    return new TaskOverride({
-      masterTaskId: task.id,
-      occurrenceStart: input.occurrenceStart.value,
-      id: NaN,
-      userId: task.userId,
-      groupId: task.groupId,
-      name: task.name,
-      description: task.description,
-      priority: task.priority,
-      weight: task.weight,
-      cancelReason: task.cancelReason,
-      startDate: assertInput.startDate,
-      endDate: task.endDate,
-      deadline: task.deadline,
-      status: task.status,
-      type,
-    });
-  }
+    this.#state.type = type;
+    this.#state.name = task.name;
+    this.#state.description = task.description;
+    this.#state.priority = task.priority;
+    this.#state.weight = task.weight;
+    this.#state.cancelReason = task.cancelReason;
+    this.#state.startDate = assertInput.startDate;
+    this.#state.endDate = task.endDate;
+    this.#state.deadline = task.deadline;
+    this.#state.status = task.status;
 
-  static restore(input: TaskOverrideRestoreInput): TaskOverride {
-    const { task, masterTaskId, type } = input;
-
-    const assertInput = { taskId: task.id, startDate: task.startDate };
-    assertStartDateIsRequired(assertInput);
-    taskAsserts.notDraft(task);
-
-    return new TaskOverride({
-      id: task.id,
-      occurrenceStart: input.occurrenceStart,
-      userId: task.userId,
-      groupId: task.groupId,
-      name: task.name,
-      description: task.description,
-      priority: task.priority,
-      weight: task.weight,
-      cancelReason: task.cancelReason,
-      startDate: assertInput.startDate,
-      endDate: task.endDate,
-      deadline: task.deadline,
-      status: task.status,
-      masterTaskId,
-      type,
-    });
+    return this;
   }
 
   get id() {
     return this.#state.id;
   }
-  get masterTaskId() {
-    return this.#state.masterTaskId;
+  get recurrenceId() {
+    return this.#state.recurrenceId;
   }
   get type() {
     return this.#state.type;
@@ -103,27 +129,27 @@ class TaskOverride {
   get status() {
     return this.#state.status;
   }
-  get occurrenceStart() {
-    return this.#state.occurrenceStart;
+  get recurrenceStart() {
+    return this.#state.recurrenceStart.value;
   }
 
   get isOverride() {
-    return this.#state.type === TaskOverrideType.OVERRIDE;
+    return this.type === TaskOverrideType.OVERRIDE;
   }
   get isArchived() {
-    return this.#state.type === TaskOverrideType.ARCHIVED;
+    return this.type === TaskOverrideType.ARCHIVED;
   }
   get isCancelled() {
-    return this.#state.type === TaskOverrideType.CANCELED;
+    return this.type === TaskOverrideType.CANCELED;
   }
   get isDeleted() {
-    return this.#state.type === TaskOverrideType.DELETED;
+    return this.type === TaskOverrideType.DELETED;
   }
   get isMoved() {
-    return this.#state.type === TaskOverrideType.MOVED;
+    return this.type === TaskOverrideType.MOVED;
   }
   get isDraft() {
-    return Number.isNaN(this.#state.masterTaskId) || Number.isNaN(this.#state.id);
+    return Number.isNaN(this.#state.id);
   }
 }
 

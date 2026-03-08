@@ -3,8 +3,10 @@ import { Task, TaskFactory, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteRepository, TaskTransaction } from '../ports';
+import { TaskRecurrenceValues } from '../types';
 import { GroupCheckerService } from './group-checker.service';
 import { TaskCheckerService } from './task-checker.service';
+import { TaskOverrideService } from './task-override.service';
 
 interface DeleteTaskInput {
   readonly taskId: number;
@@ -18,7 +20,7 @@ interface CreateTaskInput {
   readonly description?: string;
   readonly priority?: number;
   readonly weight?: number;
-  readonly recurrence?: TaskRecurrence;
+  readonly recurrence?: TaskRecurrenceValues;
 }
 
 interface ReplaceTaskInput {
@@ -28,7 +30,7 @@ interface ReplaceTaskInput {
   readonly description?: string;
   readonly priority: number;
   readonly weight: number;
-  readonly recurrence?: TaskRecurrence;
+  readonly recurrence?: TaskRecurrenceValues;
 }
 
 interface AddTaskToGroupInput {
@@ -42,21 +44,19 @@ class TaskService {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
     private readonly groupCheckerService: GroupCheckerService,
+    private readonly taskOverrideService: TaskOverrideService,
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
   async createTask(input: CreateTaskInput, trx?: TaskTransaction): Promise<Task> {
     const draftTask = TaskFactory.create(input);
     const createdTask = await this.tasksWriteRepo.createTask(draftTask, trx);
-    const newTask = await this.tasksWriteRepo.getTaskById({ taskId: createdTask.id, userId: createdTask.userId }, trx);
 
-    if (newTask == null) {
-      throw new ExceptionTaskCreationFailed({
-        taskId: createdTask.id,
-      });
+    if (createdTask == null) {
+      throw new ExceptionTaskCreationFailed({});
     }
 
-    return newTask;
+    return createdTask;
   }
 
   async cloneTask(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<Task> {
@@ -88,12 +88,25 @@ class TaskService {
     return { id: draftTask.id };
   }
 
-  async replaceTask(input: ReplaceTaskInput, trx?: TaskTransaction): Promise<Task> {
+  async replaceTask(
+    input: ReplaceTaskInput,
+    trx?: TaskTransaction,
+  ): Promise<{ task: Task; recurrence?: TaskRecurrence }> {
+    const { recurrence, ...taskPatch } = input;
     const task = await this.taskCheckerService.ensureTaskExists({ taskId: input.id, userId: input.userId }, { trx });
+    let recurr: TaskRecurrence | undefined = undefined;
 
-    const replacedTask = TaskFactory.replace(task, input);
+    if (recurrence != null) {
+      recurr = await this.taskOverrideService.upsertRecurrence(
+        { ...recurrence, userId: input.userId, taskId: task.id },
+        trx,
+      );
+    }
 
-    return await this.tasksWriteRepo.replaceTask(replacedTask, trx);
+    return {
+      task: await this.tasksWriteRepo.replaceTask(TaskFactory.replace(task, taskPatch), trx),
+      recurrence: recurr,
+    };
   }
 
   async addTaskToGroup(input: AddTaskToGroupInput, trx?: TaskTransaction): Promise<void> {

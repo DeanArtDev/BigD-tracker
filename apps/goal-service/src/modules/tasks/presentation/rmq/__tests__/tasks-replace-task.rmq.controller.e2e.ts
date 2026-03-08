@@ -233,7 +233,7 @@ describe('TasksRmqController (rmq e2e)', () => {
 
       expect(tasksWriteRepoMock.getTaskById).not.toHaveBeenCalled();
       expect(tasksWriteRepoMock.replaceTask).not.toHaveBeenCalled();
-      expect(tasksOverridesWriteRepoMock.getOneMasterEvent).not.toHaveBeenCalled();
+      expect(tasksOverridesWriteRepoMock.getOneRecurrence).not.toHaveBeenCalled();
       expect(tasksOverridesWriteRepoMock.upsertOverride).not.toHaveBeenCalled();
       expect(unwrapRpcError(error)).toMatchObject({
         code: exceptionCode.taskUnprocessable.code,

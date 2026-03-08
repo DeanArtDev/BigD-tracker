@@ -1,4 +1,4 @@
-import { Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
+import { Task, TaskIdBuilder, TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
 import { TaskView } from './task.view';
 
@@ -18,7 +18,8 @@ interface TackPlain {
 }
 
 class TasksViewMapper {
-  static fromAggregateToView = (agr: Task): TaskView => {
+  static fromAggregateToView = (agr: Task, recurrence: TaskRecurrence | null): TaskView => {
+    const hasRecurrence = recurrence != null;
     return TaskView.restore({
       id: TaskIdBuilder.wrapOriginId(agr.id),
       userId: agr.userId,
@@ -32,7 +33,18 @@ class TasksViewMapper {
       deadline: agr.deadline,
       endDate: agr.endDate,
       status: agr.status,
-      recurrence: agr.recurrence,
+      recurrence: hasRecurrence
+        ? {
+            startDate: recurrence.startDate,
+            untilDate: recurrence.untilDate,
+            frequency: recurrence.frequency.value,
+            interval: recurrence.interval,
+            monthdays: recurrence.monthdays,
+            yearmonths: recurrence.yearmonths,
+            weekstart: recurrence.weekstart,
+            weekdays: recurrence.weekdays,
+          }
+        : undefined,
     });
   };
 
@@ -67,6 +79,7 @@ class TasksViewMapper {
       deadline: override.deadline,
       endDate: override.endDate,
       status: override.status,
+      recurrence: undefined,
     });
   };
 }

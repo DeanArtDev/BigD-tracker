@@ -1,8 +1,8 @@
-import { Priority, RecurrenceVo, TaskRecurrence, TaskReplaceInput, Weight } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
-import { TaskCreateInput } from './tasks.types';
+import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
+import { Priority, Weight } from './value-objects';
 
 interface TaskFactoryCreateInput {
   readonly userId: number;
@@ -13,7 +13,7 @@ interface TaskFactoryCreateInput {
   readonly weight?: number;
   readonly startDate?: string;
   readonly deadline?: string;
-  readonly recurrence?: TaskRecurrence;
+  readonly recurrenceId?: number;
 }
 
 interface TaskFactoryReplaceInput {
@@ -23,7 +23,7 @@ interface TaskFactoryReplaceInput {
   readonly weight: number;
   readonly startDate?: string;
   readonly deadline?: string;
-  readonly recurrence?: TaskRecurrence;
+  readonly recurrenceId?: number;
 }
 
 interface TaskFactoryUpdateInboxInput {
@@ -36,9 +36,6 @@ interface TaskFactoryUpdateInboxInput {
 
 class TaskFactory {
   static create(input: TaskFactoryCreateInput): Task {
-    const { start, end, weekdays, frequency } = input.recurrence ?? {};
-    const hasRecurrence = start != null;
-
     const state: TaskCreateInput = {
       userId: input.userId,
       groupId: input.groupId,
@@ -48,14 +45,7 @@ class TaskFactory {
       weight: input.weight != null ? Weight.create(input.weight) : Weight.defaultValue(),
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
-      recurrence: hasRecurrence
-        ? RecurrenceVo.create({
-            frequency,
-            weekdays,
-            start: DateVo.create(start),
-            end: end != null ? DateVo.create(end) : undefined,
-          })
-        : undefined,
+      recurrenceId: input.recurrenceId,
     };
 
     return Task.create(state);
@@ -75,9 +65,6 @@ class TaskFactory {
   }
 
   static replace(task: Task, input: TaskFactoryReplaceInput): Task {
-    const { start, end, frequency, weekdays } = input.recurrence ?? {};
-    const hasRecurrence = start != null;
-
     const state: TaskReplaceInput = {
       name: Name.create(input.name),
       description: input.description,
@@ -85,14 +72,7 @@ class TaskFactory {
       weight: Weight.create(input.weight),
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
-      recurrence: hasRecurrence
-        ? RecurrenceVo.create({
-            frequency,
-            weekdays,
-            start: DateVo.create(start),
-            end: end != null ? DateVo.create(end) : undefined,
-          })
-        : undefined,
+      recurrenceId: input.recurrenceId,
     };
 
     return task.replace(state);

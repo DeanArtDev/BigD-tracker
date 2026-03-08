@@ -11,12 +11,12 @@ const overrideTypes = [
 
 export default {
   key: 'task_recurrence_override_types',
-  target: 'tasks_recurrence_override_types',
+  target: 'tasks_recurrences_override_types',
   seed: async (db: Kysely<DB>) => {
     await db.transaction().execute(async (trx) => {
       for (const type of overrideTypes) {
         await trx
-          .insertInto('tasks_recurrence_override_types')
+          .insertInto('tasks_recurrences_override_types')
           .values({ name: type.name })
           .onConflict((oc) => oc.column('name').doNothing())
           .executeTakeFirstOrThrow();

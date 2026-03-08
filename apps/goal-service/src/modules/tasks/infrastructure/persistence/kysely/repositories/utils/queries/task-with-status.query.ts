@@ -18,7 +18,6 @@ function tasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
       'tasks.start_date as start_date',
       'tasks.end_date as end_date',
       'tasks.deadline as deadline',
-      'tasks.recurrence as recurrence',
       sql<TaskStatus>`task_statuses.name`.as('status'),
     ]);
 }

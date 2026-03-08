@@ -21,7 +21,7 @@ describe('GroupWriteRepositoryKysely', () => {
             "groups"."description" as "description",
             "groups"."name" as "name",
             "groups"."progress" as "progress",
-            "group_statuses"."name" as "status"
+            group_statuses.name as "status"
           from "groups"
           inner join "group_statuses"
             on "groups"."status_id" = "group_statuses"."id"
@@ -51,7 +51,7 @@ describe('GroupWriteRepositoryKysely', () => {
             "groups"."description" as "description",
             "groups"."name" as "name",
             "groups"."progress" as "progress",
-            "group_statuses"."name" as "status"
+            group_statuses.name as "status"
           from "groups"
           inner join "group_statuses"
             on "groups"."status_id" = "group_statuses"."id"
