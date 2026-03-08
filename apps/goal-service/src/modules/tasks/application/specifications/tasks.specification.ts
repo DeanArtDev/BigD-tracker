@@ -26,11 +26,11 @@ const TaskByUserId = (userId: number) =>
     toExpr: (eb) => eb('tasks.user_id', '=', userId),
   });
 
-const TaskById = (taskId: number) =>
+const TaskByIds = (taskIds: number[]) =>
   leaf({
-    key: 'tasks.byId',
+    key: 'tasks.byIds',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks.id', '=', taskId),
+    toExpr: (eb) => eb('tasks.id', 'in', taskIds),
   });
 
 const TaskByGroupId = (groupIds: number[]) =>
@@ -75,15 +75,8 @@ const TaskBySearch = (search: string) =>
       }),
   });
 
-const TaskHasRecurrence = () =>
-  leaf({
-    key: 'tasks.hasRecurrence',
-    purpose: 'filter',
-    toExpr: (eb) => eb('tasks.recurrence', 'is not', null),
-  });
-
 export {
-  TaskById,
+  TaskByIds,
   TaskByUserId,
   TaskByGroupId,
   TaskByPriority,
@@ -92,5 +85,4 @@ export {
   TaskInGroup,
   TaskByStartDateLessOrEqual,
   TaskByDeadlineGreaterOrEqual,
-  TaskHasRecurrence,
 };

@@ -25,8 +25,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('deadline', 'timestamptz')
     // Статус дела
     .addColumn('status_id', 'smallint', (col) => col.notNull())
-    // Паттерн повторяемых задач, стандарт iCalendar https://icalendar.org/
-    .addColumn('recurrence', 'text')
 
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))

@@ -1,8 +1,9 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { TaskDatabase } from '@/modules/tasks/application/ports';
+import { CreateTaskCommand } from '@/modules/tasks/application/use-cases';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateTaskInput, TaskQueryService, TaskService } from '../../services';
+import { TaskQueryService, TaskService } from '../../services';
 
 @Injectable()
 class CreateTaskUseCase {
@@ -12,7 +13,7 @@ class CreateTaskUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute(input: CreateTaskInput): Promise<TaskView> {
+  async execute({ input }: CreateTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const createdTask = await this.taskServices.createTask(input, trx);
 

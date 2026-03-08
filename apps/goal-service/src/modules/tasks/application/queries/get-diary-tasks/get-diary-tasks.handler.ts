@@ -2,15 +2,15 @@ import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GoalServiceRequestContext } from '@shared/request-context';
+import { compact } from 'lodash';
 import { TaskView } from '../../dto';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
 import { TaskOverrideService } from '../../services';
 import {
   TaskByDeadlineGreaterOrEqual,
+  TaskByIds,
   TaskByStartDateLessOrEqual,
   TaskByUserId,
-  TaskHasRecurrence,
   tasksCombinators,
 } from '../../specifications';
 import { GetDiaryTasksQuery } from './get-diary-tasks.query';
@@ -32,6 +32,7 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
    * [] инвариант проверка что окно 90 дней иначе исключение!
    * [] инвариант для еженедельных должны быть weekdays не пустые
    * [] инвариант startDate === recurrence.start
+   * [] инвариант timezone
    * [] инвариант startDate обязательна если дело recurrence
    * [] продумать работу recurrence в методах агрегата assign, create
    * [] инвариант если дело recurrence то startDate \ deadline в рамках одного дня ?? может на пару дней ??
@@ -55,21 +56,24 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
     return this.db.runTransaction(async (trx) => {
       const { userId, meta } = input;
       const { filter } = meta;
-      const toDate = new Date(filter.to);
-      const fromDate = new Date(filter.from);
 
-      const request = GoalServiceRequestContext.getStore()?.state;
-      const virtualViews = await this.taskOverrideService.getVirtualViews(
-        { userId, from: fromDate, to: toDate, userTimezone: request?.userTimezone },
+      const { virtualViews, recurrences } = await this.taskOverrideService.calculateTasks(
+        {
+          userId,
+          from: filter.from,
+          to: filter.to,
+        },
         trx,
       );
 
       const tasks = await this.tasksReadRepository.getByRange(
         and(
-          TaskByUserId(userId),
-          TaskByStartDateLessOrEqual(new Date(filter.to)),
-          TaskByDeadlineGreaterOrEqual(new Date(filter.from)),
-          not(TaskHasRecurrence()),
+          ...compact([
+            TaskByUserId(userId),
+            TaskByStartDateLessOrEqual(new Date(filter.to)),
+            TaskByDeadlineGreaterOrEqual(new Date(filter.from)),
+            recurrences.length > 0 && not(TaskByIds(recurrences.map((r) => r.taskId))),
+          ]),
         ),
         { page: 1, perPage: 1000000 },
         undefined,

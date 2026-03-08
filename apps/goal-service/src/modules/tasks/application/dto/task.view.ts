@@ -1,5 +1,5 @@
-import { TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
+import { TaskRecurrenceValues } from '../types';
 
 interface TaskViewState {
   readonly id: string;
@@ -14,7 +14,7 @@ interface TaskViewState {
   readonly deadline?: string;
   readonly endDate?: string;
   readonly status: TaskStatus;
-  readonly recurrence?: TaskRecurrence;
+  readonly recurrence?: TaskRecurrenceValues;
 }
 
 class TaskView {
@@ -31,7 +31,7 @@ class TaskView {
     public readonly startDate?: string,
     public readonly deadline?: string,
     public readonly endDate?: string,
-    public readonly recurrence?: TaskRecurrence,
+    public readonly recurrence?: TaskRecurrenceValues,
   ) {}
 
   static restore(input: TaskViewState): TaskView {

@@ -49,11 +49,22 @@ const taskStatusToOverrideTypeMap: Record<TaskStatus, TaskOverrideType> = {
   [TaskStatus.DELETED]: TaskOverrideType.DELETED,
 };
 
+const recurrenceFrequencyToKeyMap: Record<RecurrenceFrequency, keyof typeof RecurrenceFrequency> = {
+  0: 'YEARLY',
+  1: 'MONTHLY',
+  2: 'WEEKLY',
+  3: 'DAILY',
+  4: 'HOURLY',
+  5: 'MINUTELY',
+  6: 'SECONDLY',
+};
+
 export {
   TaskStatus,
   TaskOverrideType,
   RecurrenceFrequency,
   TaskRecurrenceWeekday,
   numberToWeekdayMap,
+  recurrenceFrequencyToKeyMap,
   taskStatusToOverrideTypeMap,
 };

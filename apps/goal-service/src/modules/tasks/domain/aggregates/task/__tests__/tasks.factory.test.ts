@@ -1,5 +1,5 @@
-import { RecurrenceFrequency, TaskStatus } from '@big-d/api-contracts';
-import { Name } from '@big-d/api-utils';
+import { TaskStatus } from '@big-d/api-contracts';
+import { DateVo, Name } from '@big-d/api-utils';
 import { futureDate } from '@shared/__tests__';
 import { TaskFactory } from '../tasks.factory';
 import { Task } from '../tasks.aggregate';
@@ -18,21 +18,17 @@ describe('TaskFactory', () => {
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
   });
 
-  it('creates IN_PROGRESS task when recurrence and start/deadline are provided', () => {
+  it('creates IN_PROGRESS task when startDate and deadline are provided', () => {
     const task = TaskFactory.create({
       userId: 22,
       name: 'Task with recurrence',
       startDate: futureDate(1),
       deadline: futureDate(2),
-      recurrence: {
-        frequency: RecurrenceFrequency.DAILY,
-        start: futureDate(1),
-        end: futureDate(2),
-      },
     });
 
     expect(task.status).toBe(TaskStatus.IN_PROGRESS);
-    expect(task.recurrence?.frequency).toBe(RecurrenceFrequency.DAILY);
+    expect(task.startDate).toBe(DateVo.create(futureDate(1)).value);
+    expect(task.deadline).toBe(DateVo.create(futureDate(2)).value);
   });
 
   it('clones task into a draft', () => {
@@ -47,15 +43,12 @@ describe('TaskFactory', () => {
     expect(clone.status).toBe(TaskStatus.NOT_STARTED);
   });
 
-  it('replaces task fields through factory when recurrence is valid', () => {
+  it('replaces task fields through factory', () => {
     const task = TaskFactory.create({
       userId: 24,
       name: 'Update me',
-      recurrence: {
-        frequency: RecurrenceFrequency.DAILY,
-        start: futureDate(1),
-        end: futureDate(2),
-      },
+      startDate: futureDate(1),
+      deadline: futureDate(2),
     });
 
     TaskFactory.replace(task, {
@@ -63,18 +56,16 @@ describe('TaskFactory', () => {
       description: 'After update',
       priority: 2,
       weight: 70,
-      recurrence: {
-        frequency: RecurrenceFrequency.WEEKLY,
-        start: futureDate(3),
-        end: futureDate(4),
-      },
+      startDate: futureDate(3),
+      deadline: futureDate(4),
     });
 
     expect(task.name).toBe('Updated');
     expect(task.description).toBe('After update');
     expect(task.priority).toBe(2);
     expect(task.weight).toBe(70);
-    expect(task.recurrence?.frequency).toBe(RecurrenceFrequency.WEEKLY);
+    expect(task.startDate).toBe(DateVo.create(futureDate(3)).value);
+    expect(task.deadline).toBe(DateVo.create(futureDate(4)).value);
   });
 
   it('updates inbox task for partially replaceable status', () => {
@@ -86,7 +77,6 @@ describe('TaskFactory', () => {
       priority: Priority.create(3),
       weight: Weight.create(80),
       status: TaskStatus.COMPLETED,
-      recurrence: undefined,
     });
 
     const updated = TaskFactory.updateInbox(task, {

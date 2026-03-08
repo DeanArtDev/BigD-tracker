@@ -1,4 +1,6 @@
 import { TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
+import { GroupStatus } from '@big-d/api-contracts';
+import { sql } from 'kysely';
 
 function groupWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return db
@@ -11,7 +13,7 @@ function groupWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
       'groups.description as description',
       'groups.name as name',
       'groups.progress as progress',
-      'group_statuses.name as status',
+      sql<GroupStatus>`group_statuses.name`.as('status'),
     ]);
 }
 

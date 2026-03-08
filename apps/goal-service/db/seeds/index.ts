@@ -4,11 +4,13 @@ import groupStatuses from './group-statuses';
 import stageStatuses from './stage-statuses';
 import stageTypes from './stage-types';
 import tags from './tags-(temp)';
-import taskRecurrenceOverrideTypes from './tasks-recurrence-override-types';
+import taskRecurrenceOverrideTypes from './tasks-recurrences-override-types';
+import recurrencesFrequencies from './tasks-recurrences-frequencies';
 
 export default [
   taskStatuses,
   taskRecurrenceOverrideTypes,
+  recurrencesFrequencies,
   groupStatuses,
   goalStatuses,
   stageStatuses,

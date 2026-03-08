@@ -16,7 +16,6 @@ function getTasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
       't.start_date as start_date',
       't.end_date as end_date',
       't.deadline as deadline',
-      't.recurrence as recurrence',
       'ts.name as status',
     ]);
 }

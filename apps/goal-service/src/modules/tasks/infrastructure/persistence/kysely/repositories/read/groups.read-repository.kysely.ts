@@ -21,7 +21,13 @@ import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { firstOrThrowError, getAvailableGroupQuery } from '../helpers';
-import { groupWithStatusQuery, innerJoinGroupLinks, taskFullSelect, tasksWithStatusQuery } from '../utils';
+import {
+  groupWithStatusQuery,
+  innerJoinGroupLinks,
+  leftJoinTaskRecurrences,
+  taskFullSelect,
+  tasksWithStatusQuery,
+} from '../utils';
 
 @Injectable()
 export class GroupsReadRepositoryKysely extends BaseTasksRepository implements GroupsReadRepository {
@@ -76,7 +82,7 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
         description: group.description,
         user_id: group.user_id,
         progress: group.progress,
-        status: group.status as GroupStatus,
+        status: group.status,
       });
     });
   }
@@ -92,12 +98,11 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirst();
       if (group == null) return null;
 
-      const tasks = await tasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
-        .where('task_to_group.group_id', '=', group.id)
-        .$if(taskSpecifications != null, (eb) => eb.where((eb) => taskSpecifications!.toExpr(eb)))
+      const query = innerJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
         .orderBy('task_to_group.position', 'asc')
-        .execute();
+        .where('task_to_group.group_id', '=', group.id)
+        .$if(taskSpecifications != null, (eb) => eb.where((eb) => taskSpecifications!.toExpr(eb)));
+      const tasks = await leftJoinTaskRecurrences(query).execute();
 
       return GroupReadKyselyMapper.fromRawToDetailedView({
         id: group.id,
@@ -105,7 +110,7 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
         description: group.description,
         user_id: group.user_id,
         progress: group.progress,
-        status: group.status as GroupStatus,
+        status: group.status,
         tasks: tasks.map((task) =>
           TasksReadKyselyMapper.fromRawToView({
             id: task.id,
@@ -119,8 +124,17 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
             start_date: task.start_date,
             end_date: task.end_date,
             deadline: task.deadline,
-            recurrence: task.recurrence,
             status: task.status,
+            recurrence: {
+              timezone: task.recurrence_timezone,
+              recurrence_frequency: task.recurrence_frequency,
+              start_date: task.start_date,
+              interval: task.recurrence_interval,
+              weekdays: task.recurrence_weekdays,
+              monthdays: task.recurrence_monthdays,
+              yearmonths: task.recurrence_yearmonths,
+              until_date: task.recurrence_until_date,
+            },
           }),
         ),
       });
@@ -175,7 +189,6 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
             start_date: task.start_date,
             end_date: task.end_date,
             deadline: task.deadline,
-            recurrence: task.recurrence,
             status: task.status,
           }),
         ),
@@ -247,7 +260,6 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
           start_date: task.start_date,
           end_date: task.end_date,
           deadline: task.deadline,
-          recurrence: task.recurrence,
           status: task.status,
         });
 
@@ -264,7 +276,7 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
             description: group.description,
             user_id: group.user_id,
             progress: group.progress,
-            status: group.status as GroupStatus,
+            status: group.status,
             tasks: tasksByGroupIdMap.get(group.id) ?? [],
           }),
         );

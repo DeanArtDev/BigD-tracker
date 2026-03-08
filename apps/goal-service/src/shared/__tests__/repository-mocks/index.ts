@@ -27,10 +27,11 @@ const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
 };
 
 const tasksOverridesWriteRepoMock: Record<keyof TasksOverridesRepositoryWritePort, jest.Mock> = {
-  getManyMasterEvents: jest.fn(),
+  getManyRecurrences: jest.fn(),
   getManyOverrides: jest.fn(),
-  getOneMasterEvent: jest.fn(),
+  getOneRecurrence: jest.fn(),
   upsertOverride: jest.fn(),
+  upsertRecurrence: jest.fn(),
 };
 
 const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {

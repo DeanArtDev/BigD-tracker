@@ -2,14 +2,13 @@ import { GroupsWriteRepository, TaskDatabase, TaskTransaction } from '@/modules/
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
-import { TasksWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/tasks.write-mapper';
-import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
+import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
+import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getTasksWithStatusQuery } from '../helpers';
-import { groupWithStatusQuery } from '../utils';
+import { groupWithStatusQuery, innerJoinGroupLinks, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupWriteRepositoryKysely extends BaseTasksRepository implements GroupsWriteRepository {
@@ -36,12 +35,10 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirst();
       if (group == null) return null;
 
-      const tasks = await getTasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group', 'task_to_group.task_id', 't.id')
-        .select(['task_to_group.group_id as group_id'])
+      const taskQuery = innerJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
         .where('task_to_group.group_id', '=', input.groupId)
-        .orderBy('task_to_group.position', 'asc')
-        .execute();
+        .orderBy('task_to_group.position', 'asc');
+      const tasks = await leftJoinTaskRecurrences(taskQuery).execute();
 
       return GroupWriteKyselyMapper.fromRawToAgrWithTasks({
         id: group.id,
@@ -49,7 +46,7 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
         description: group.description,
         user_id: group.user_id,
         progress: group.progress,
-        status: group.status as GroupStatus,
+        status: group.status,
         tasks: tasks.map((task) =>
           TasksWriteKyselyMapper.fromRawToAgr({
             id: task.id,
@@ -63,8 +60,8 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
             start_date: task.start_date,
             end_date: task.end_date,
             deadline: task.deadline,
-            recurrence: task.recurrence,
-            status: task.status as TaskStatus,
+            status: task.status,
+            recurrence_id: task.recurrence_id,
           }),
         ),
       });

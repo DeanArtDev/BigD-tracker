@@ -38,7 +38,7 @@ class UpdateInboxTaskUseCase {
           });
         }
 
-        return TasksViewMapper.fromAggregateToView(newTask);
+        return TasksViewMapper.fromAggregateToView(newTask, null);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId: id, message: 'Не валидный id' });

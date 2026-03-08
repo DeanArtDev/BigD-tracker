@@ -1,7 +1,6 @@
 import { TaskView } from '@/modules/tasks/application/dto';
 import { TaskIdBuilder } from '@/modules/tasks/domain';
-import { rawRecurrenceToVo } from './helpers';
-import { TaskStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
 
 interface RawTask {
   readonly id: number;
@@ -16,12 +15,24 @@ interface RawTask {
   readonly end_date: Date | null;
   readonly deadline: Date | null;
   readonly status: TaskStatus;
-  readonly recurrence: string | null;
+  readonly recurrence?: {
+    readonly timezone?: string | null;
+    readonly recurrence_frequency?: keyof typeof RecurrenceFrequency | null;
+    readonly start_date?: Date | null;
+    readonly interval?: number | null;
+    readonly weekdays?: TaskRecurrenceWeekday[] | null;
+    readonly monthdays?: number[] | null;
+    readonly yearmonths?: number[] | null;
+    readonly until_date?: Date | null;
+  };
 }
 
 class TasksReadKyselyMapper {
   static fromRawToView = (raw: RawTask): TaskView => {
-    const recurrence = rawRecurrenceToVo(raw.recurrence);
+    const { interval, monthdays, yearmonths, weekdays, until_date, start_date, recurrence_frequency } =
+      raw.recurrence ?? {};
+
+    const hasRecurrence = recurrence_frequency != null && start_date != null;
 
     return TaskView.restore({
       id: TaskIdBuilder.wrapOriginId(raw.id),
@@ -36,15 +47,17 @@ class TasksReadKyselyMapper {
       deadline: raw.deadline != null ? new Date(raw.deadline).toISOString() : undefined,
       endDate: raw.end_date != null ? new Date(raw.end_date).toISOString() : undefined,
       status: raw.status,
-      recurrence:
-        recurrence != null
-          ? {
-              frequency: recurrence?.value.frequency,
-              weekdays: recurrence?.value.weekdays,
-              end: recurrence?.value.end?.value,
-              start: recurrence?.value.start?.value,
-            }
-          : undefined,
+      recurrence: hasRecurrence
+        ? {
+            startDate: new Date(start_date).toISOString(),
+            frequency: RecurrenceFrequency[recurrence_frequency],
+            interval: interval ?? undefined,
+            weekdays: weekdays ?? undefined,
+            monthdays: monthdays ?? undefined,
+            yearmonths: yearmonths ?? undefined,
+            untilDate: until_date != null ? new Date(until_date).toISOString() : undefined,
+          }
+        : undefined,
     });
   };
 }

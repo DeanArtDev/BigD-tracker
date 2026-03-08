@@ -21,18 +21,18 @@ export class RmqLogger implements ILoggerService {
     const isDev = this.configService.get('NODE_ENV', 'production') === 'development';
 
     this.logger = pino({
-      redact: {
-        paths: [
-          'data.refreshToken',
-          'data.sessionToken',
-          'data.session',
-          'data.token',
-          'token',
-          'err.stack',
-          'error.stack',
-        ],
-        remove: true,
-      },
+      // redact: {
+      //   paths: [
+      //     'data.refreshToken',
+      //     'data.sessionToken',
+      //     'data.session',
+      //     'data.token',
+      //     'token',
+      //     'err.stack',
+      //     'error.stack',
+      //   ],
+      //   remove: true,
+      // },
 
       serializers: {
         err: (err) => {
@@ -55,7 +55,12 @@ export class RmqLogger implements ILoggerService {
 
           return {
             message: 'Unknown error!!!!!',
-            err,
+            err: {
+              message: err.message,
+              name: err.name,
+              stack: err.stack,
+              cause: err.cause,
+            },
           };
         },
       },

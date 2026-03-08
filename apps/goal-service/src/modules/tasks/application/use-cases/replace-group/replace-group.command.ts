@@ -1,4 +1,4 @@
-import { TaskRecurrence } from '@/modules/tasks/domain';
+import { TaskRecurrenceValues } from '../../types';
 
 export class ReplaceGroupCommand {
   constructor(
@@ -15,7 +15,7 @@ export class ReplaceGroupCommand {
         readonly startDate?: string;
         readonly deadline?: string;
         readonly priority: number;
-        readonly recurrence?: TaskRecurrence;
+        readonly recurrence?: TaskRecurrenceValues;
       }[];
     },
   ) {}

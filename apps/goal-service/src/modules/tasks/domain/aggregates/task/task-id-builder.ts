@@ -9,29 +9,29 @@ type UnwrapIdRes =
   | {
       readonly origin?: never;
       readonly override?: never;
-      readonly virtual: { masterTaskId: number; timestamp: number };
+      readonly virtual: { recurrenceId: number; date: string };
     }
   | {
       readonly origin?: never;
       readonly virtual?: never;
-      readonly override: { masterTaskId: number; overrideId: number; timestamp: number };
+      readonly override: { recurrenceId: number; overrideId: number; date: string };
     };
 
 class TaskIdBuilder {
-  static #pattern = { virtual: 'v', origin: 'o', override: 'ov', divider: ':' };
+  static #pattern = { virtual: 'v', origin: 'o', override: 'ov', divider: '::' };
 
   constructor() {}
 
-  static wrapVirtualId = (input: { masterTaskId: number; timestamp: number }) => {
-    const { masterTaskId, timestamp } = input;
+  static wrapVirtualId = (input: { recurrenceId: number; date: string }) => {
+    const { recurrenceId, date } = input;
     const pattern = TaskIdBuilder.#pattern;
-    return `${pattern.virtual}${pattern.divider}${masterTaskId}${pattern.divider}${timestamp}`;
+    return `${pattern.virtual}${pattern.divider}${recurrenceId}${pattern.divider}${date}`;
   };
 
-  static wrapOverrideId = (input: { masterTaskId: number; overrideId: number; timestamp: number }) => {
-    const { masterTaskId, overrideId, timestamp } = input;
+  static wrapOverrideId = (input: { recurrenceId: number; overrideId: number; date: string }) => {
+    const { recurrenceId, overrideId, date } = input;
     const pattern = TaskIdBuilder.#pattern;
-    return `${pattern.override}${pattern.divider}${masterTaskId}${pattern.divider}${timestamp}${pattern.divider}${overrideId}`;
+    return `${pattern.override}${pattern.divider}${recurrenceId}${pattern.divider}${date}${pattern.divider}${overrideId}`;
   };
 
   static wrapOriginId = (id: number) => {
@@ -41,14 +41,14 @@ class TaskIdBuilder {
 
   static unwrapId = (strId: string): UnwrapIdRes | undefined => {
     const pattern = TaskIdBuilder.#pattern;
-    const [patn, id, timestamp, overrideId] = strId.split(pattern.divider);
+    const [patn, id, date, overrideId] = strId.split(pattern.divider);
 
-    if (pattern.override === patn && isNumeric(id) && isNumeric(timestamp) && isNumeric(overrideId)) {
-      return { override: { masterTaskId: +id, timestamp: +timestamp, overrideId: +overrideId } };
+    if (pattern.override === patn && isNumeric(id) && isNumeric(overrideId) && date != null) {
+      return { override: { recurrenceId: +id, date, overrideId: +overrideId } };
     }
 
-    if (pattern.virtual === patn && isNumeric(id) && isNumeric(timestamp)) {
-      return { virtual: { masterTaskId: +id, timestamp: +timestamp } };
+    if (pattern.virtual === patn && isNumeric(id) && date != null) {
+      return { virtual: { recurrenceId: +id, date } };
     }
 
     if (pattern.origin === patn && isNumeric(id)) {

@@ -19,8 +19,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(minMax);
 
-type TimeAndTimeValue = ConfigType;
-type TimeAndTime = Dayjs;
+type TimeAndDateValue = ConfigType;
+type TimeAndDate = Dayjs;
 
 export const timeAndDate = dayjs;
-export { TimeAndTimeValue, TimeAndTime };
+export { TimeAndDateValue, TimeAndDate };

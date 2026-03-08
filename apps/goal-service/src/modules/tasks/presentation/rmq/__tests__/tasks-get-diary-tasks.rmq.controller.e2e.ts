@@ -4,11 +4,12 @@ import { GroupsToken, TasksOverridesToken, TasksToken } from '@/modules/tasks/to
 import {
   GoalGetDiaryTasks,
   RecurrenceFrequency,
-  TaskRecurrenceWeekday,
   TaskOverrideType,
+  TaskRecurrenceWeekday,
   TaskStatus,
 } from '@big-d/api-contracts';
 import { CORRELATION_HEADER_KEY, specToDebugString, USER_TIME_ZONE_HEADER_KEY } from '@big-d/api-utils';
+import { DateVo } from '@big-d/api-utils';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import {
@@ -20,7 +21,7 @@ import {
   nthArgs,
   sendMessageBuilder,
 } from '@shared/__tests__';
-import { getTask, getTaskView } from '@shared/__tests__/entities';
+import { getTask, getTaskRecurrence, getTaskView } from '@shared/__tests__/entities';
 import {
   groupReadRepoMock,
   groupWriteRepoMock,
@@ -91,7 +92,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         to: '2026-03-03T23:59:59.000Z',
       };
 
-      const masterEvent = getTask({
+      const sourceTask = getTask({
         id: 9201,
         userId,
         name: 'Recurring task',
@@ -100,11 +101,17 @@ describe('TasksRmqController (rmq e2e)', () => {
         weight: 4,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
-        recurrence: {
-          start: '2026-03-02T10:15:00.000Z',
-          end: '2026-03-03T10:15:00.000Z',
-          frequency: RecurrenceFrequency.DAILY,
-        },
+      });
+      const recurrence = getTaskRecurrence({
+        id: 9201,
+        userId,
+        taskId: sourceTask.id,
+        timezone: 'UTC',
+        startDate: '2026-03-02T10:15:00.000Z',
+        untilDate: '2026-03-03T23:59:59.000Z',
+        frequency: RecurrenceFrequency.DAILY,
+        pattern: 'FREQ=DAILY;INTERVAL=1',
+        weekstart: TaskRecurrenceWeekday.MO,
       });
 
       const regularTask = getTaskView({
@@ -119,8 +126,9 @@ describe('TasksRmqController (rmq e2e)', () => {
         deadline: '2026-03-02T11:00:00.000Z',
       });
 
-      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([masterEvent]);
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([recurrence]);
       tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([]);
+      tasksWriteRepoMock.getTaskById.mockResolvedValue(sourceTask);
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([regularTask]);
 
       const payload: GoalGetDiaryTasks.Request = buildPayload({
@@ -135,37 +143,29 @@ describe('TasksRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(tasksOverridesWriteRepoMock.getManyMasterEvents).toHaveBeenCalledTimes(1);
+      expect(tasksOverridesWriteRepoMock.getManyRecurrences).toHaveBeenCalledTimes(1);
       expect(tasksOverridesWriteRepoMock.getManyOverrides).toHaveBeenCalledTimes(1);
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
 
-      expect(specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyMasterEvents))).toMatchInlineSnapshot(`
-        "AND[tasks.policy.get-master-events](
-          tasks.byStartDateLessOrEqual,
-          tasks.byUserId,
-          tasks.hasRecurrence
-        )"
-      `);
-      expect(specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyOverrides))).toMatchInlineSnapshot(`
-        "AND[tasks.policy.get-tasks-overrides](
-          tasks.overrideByUserId,
-          tasks.overridesByMasterIds,
-          tasks.overrideByOccurrenceStartLessOrEqual,
-          tasks.overrideByOccurrenceStartGreaterOrEqual
-        )"
-      `);
-      expect(specToDebugString(firstArg(tasksReadRepoMock.getByRange))).toMatchInlineSnapshot(`
-        "AND(
-          tasks.byUserId,
-          tasks.byStartDateLessOrEqual,
-          tasks.byDeadlineGreaterOrEqual,
-          NOT(
-            tasks.hasRecurrence
-          )
-        )"
-      `);
+      const recurrencesSpec = specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyRecurrences));
+      expect(recurrencesSpec).toContain('tasks.policy.get-recurrences-by-range');
+      expect(recurrencesSpec).toContain('tasks-recurrences.byStartDateLessOrEqual');
+      expect(recurrencesSpec).toContain('tasks-recurrences.byUserId');
 
-      expect(nthArgs(1, tasksOverridesWriteRepoMock.getManyMasterEvents)).toEqual(expectTransaction());
+      const overridesSpec = specToDebugString(firstArg(tasksOverridesWriteRepoMock.getManyOverrides));
+      expect(overridesSpec).toContain('tasks.policy.get-tasks-overrides');
+      expect(overridesSpec).toContain('tasks.overrideByUserId');
+      expect(overridesSpec).toContain('tasks.overridesByMasterIds');
+      expect(overridesSpec).toContain('tasks.overrideByStartLessOrEqual');
+      expect(overridesSpec).toContain('tasks.overrideByStartGreaterOrEqual');
+
+      const tasksSpec = specToDebugString(firstArg(tasksReadRepoMock.getByRange));
+      expect(tasksSpec).toContain('tasks.byUserId');
+      expect(tasksSpec).toContain('tasks.byStartDateLessOrEqual');
+      expect(tasksSpec).toContain('tasks.byDeadlineGreaterOrEqual');
+      expect(tasksSpec).toContain('tasks.byIds');
+
+      expect(nthArgs(1, tasksOverridesWriteRepoMock.getManyRecurrences)).toEqual(expectTransaction());
       expect(nthArgs(1, tasksOverridesWriteRepoMock.getManyOverrides)).toEqual(expectTransaction());
       expect(nthArgs(3, tasksReadRepoMock.getByRange)).toEqual(expectTransaction());
 
@@ -173,8 +173,8 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(res.data.items[0]).toEqual(toDiaryTaskResponse(regularTask));
       expect(res.data.items[1]).toMatchObject({
         id: TaskIdBuilder.wrapVirtualId({
-          masterTaskId: masterEvent.id,
-          timestamp: new Date('2026-03-02T10:15:00.000Z').getTime(),
+          recurrenceId: recurrence.id,
+          date: '2026-03-02T10:15:00.000Z',
         }),
         userId,
         name: 'Recurring task',
@@ -187,8 +187,8 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
       expect(res.data.items[2]).toMatchObject({
         id: TaskIdBuilder.wrapVirtualId({
-          masterTaskId: masterEvent.id,
-          timestamp: new Date('2026-03-03T10:15:00.000Z').getTime(),
+          recurrenceId: recurrence.id,
+          date: '2026-03-03T10:15:00.000Z',
         }),
         userId,
         name: 'Recurring task',
@@ -201,14 +201,14 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
     });
 
-    test('should apply each override to the correct virtual task when masters share same time', async () => {
+    test('should apply each override to the correct virtual task when recurrences share same time', async () => {
       const userId = 502;
       const filter = {
         from: '2026-03-02T00:00:00.000Z',
         to: '2026-03-02T23:59:59.000Z',
       };
 
-      const masterEventA = getTask({
+      const sourceTaskA = getTask({
         id: 9202,
         userId,
         name: 'Recurring task A',
@@ -217,14 +217,8 @@ describe('TasksRmqController (rmq e2e)', () => {
         weight: 4,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
-        recurrence: {
-          start: '2026-03-02T10:15:00.000Z',
-          end: '2026-03-02T23:59:59.000Z',
-          frequency: RecurrenceFrequency.DAILY,
-        },
       });
-
-      const masterEventB = getTask({
+      const sourceTaskB = getTask({
         id: 9203,
         userId,
         name: 'Recurring task B',
@@ -233,14 +227,31 @@ describe('TasksRmqController (rmq e2e)', () => {
         weight: 5,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
-        recurrence: {
-          start: '2026-03-02T10:15:00.000Z',
-          end: '2026-03-02T23:59:59.000Z',
-          frequency: RecurrenceFrequency.DAILY,
-        },
+      });
+      const recurrenceA = getTaskRecurrence({
+        id: 9202,
+        userId,
+        taskId: sourceTaskA.id,
+        timezone: 'UTC',
+        startDate: '2026-03-02T10:15:00.000Z',
+        untilDate: '2026-03-02T23:59:59.000Z',
+        frequency: RecurrenceFrequency.DAILY,
+        pattern: 'FREQ=DAILY;INTERVAL=1',
+        weekstart: TaskRecurrenceWeekday.MO,
+      });
+      const recurrenceB = getTaskRecurrence({
+        id: 9203,
+        userId,
+        taskId: sourceTaskB.id,
+        timezone: 'UTC',
+        startDate: '2026-03-02T10:15:00.000Z',
+        untilDate: '2026-03-02T23:59:59.000Z',
+        frequency: RecurrenceFrequency.DAILY,
+        pattern: 'FREQ=DAILY;INTERVAL=1',
+        weekstart: TaskRecurrenceWeekday.MO,
       });
 
-      const occurrenceStart = '2026-03-02T10:15:00.000Z';
+      const recurrenceStart = '2026-03-02T10:15:00.000Z';
 
       const overrideForA = TaskOverride.restore({
         task: getTask({
@@ -254,8 +265,8 @@ describe('TasksRmqController (rmq e2e)', () => {
           deadline: '2026-03-02T11:30:00.000Z',
           status: TaskStatus.IN_PROGRESS,
         }),
-        masterTaskId: masterEventA.id,
-        occurrenceStart,
+        recurrenceId: recurrenceA.id,
+        recurrenceStart: DateVo.restore(recurrenceStart),
         type: TaskOverrideType.OVERRIDE,
       });
 
@@ -271,13 +282,16 @@ describe('TasksRmqController (rmq e2e)', () => {
           deadline: '2026-03-02T17:00:00.000Z',
           status: TaskStatus.IN_PROGRESS,
         }),
-        masterTaskId: masterEventB.id,
-        occurrenceStart,
+        recurrenceId: recurrenceB.id,
+        recurrenceStart: DateVo.restore(recurrenceStart),
         type: TaskOverrideType.OVERRIDE,
       });
 
-      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([masterEventA, masterEventB]);
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([recurrenceA, recurrenceB]);
       tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([overrideForB, overrideForA]);
+      tasksWriteRepoMock.getTaskById.mockImplementation(({ taskId }) => {
+        return taskId === sourceTaskA.id ? sourceTaskA : sourceTaskB;
+      });
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
 
       const payload: GoalGetDiaryTasks.Request = buildPayload({
@@ -295,9 +309,9 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(res.data.items).toHaveLength(2);
       expect(res.data.items[0]).toMatchObject({
         id: TaskIdBuilder.wrapOverrideId({
-          masterTaskId: masterEventA.id,
+          recurrenceId: recurrenceA.id,
           overrideId: overrideForA.id,
-          timestamp: new Date(occurrenceStart).getTime(),
+          date: recurrenceStart,
         }),
         userId,
         name: 'Override for A',
@@ -308,9 +322,9 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
       expect(res.data.items[1]).toMatchObject({
         id: TaskIdBuilder.wrapOverrideId({
-          masterTaskId: masterEventB.id,
+          recurrenceId: recurrenceB.id,
           overrideId: overrideForB.id,
-          timestamp: new Date(occurrenceStart).getTime(),
+          date: recurrenceStart,
         }),
         userId,
         name: 'Override for B',
@@ -332,7 +346,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         },
       });
 
-      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([]);
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([]);
       tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([]);
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
 
@@ -341,7 +355,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         payload,
       );
 
-      expect(tasksOverridesWriteRepoMock.getManyMasterEvents).toHaveBeenCalledTimes(1);
+      expect(tasksOverridesWriteRepoMock.getManyRecurrences).toHaveBeenCalledTimes(1);
       expect(tasksOverridesWriteRepoMock.getManyOverrides).toHaveBeenCalledTimes(1);
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
       expect(res).toEqual({
@@ -353,21 +367,28 @@ describe('TasksRmqController (rmq e2e)', () => {
 
     test('should return weekly virtual tasks only for Wednesday, Friday and Saturday', async () => {
       const userId = 888;
-
-      const masterEvent = getTask({
+      const sourceTask = getTask({
         id: 9401,
         userId,
         startDate: '2026-03-01T10:00:00.000Z',
-        recurrence: {
-          start: '2026-03-01T10:00:00.000Z',
-          end: '2026-03-31T10:00:00.000Z',
-          frequency: RecurrenceFrequency.WEEKLY,
-          weekdays: [TaskRecurrenceWeekday.WE, TaskRecurrenceWeekday.FR, TaskRecurrenceWeekday.SA],
-        },
+        deadline: '2026-03-01T12:00:00.000Z',
+      });
+      const recurrence = getTaskRecurrence({
+        id: 9401,
+        userId,
+        taskId: sourceTask.id,
+        timezone: 'UTC',
+        startDate: '2026-03-01T10:00:00.000Z',
+        untilDate: '2026-03-31T10:00:00.000Z',
+        frequency: RecurrenceFrequency.WEEKLY,
+        pattern: 'FREQ=WEEKLY;INTERVAL=1',
+        weekstart: TaskRecurrenceWeekday.MO,
+        weekdays: [TaskRecurrenceWeekday.WE, TaskRecurrenceWeekday.FR, TaskRecurrenceWeekday.SA],
       });
 
-      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([masterEvent]);
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([recurrence]);
       tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([]);
+      tasksWriteRepoMock.getTaskById.mockResolvedValue(sourceTask);
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
 
       const payload: GoalGetDiaryTasks.Request = buildPayload({
@@ -394,21 +415,28 @@ describe('TasksRmqController (rmq e2e)', () => {
 
     test('should respect Asia/Novosibirsk timezone for weekly weekdays', async () => {
       const userId = 889;
-
-      const masterEvent = getTask({
+      const sourceTask = getTask({
         id: 9402,
         userId,
         startDate: '2026-03-01T03:00:00.000Z',
-        recurrence: {
-          start: '2026-03-01T03:00:00.000Z',
-          end: '2026-03-31T03:00:00.000Z',
-          frequency: RecurrenceFrequency.WEEKLY,
-          weekdays: [TaskRecurrenceWeekday.WE, TaskRecurrenceWeekday.FR, TaskRecurrenceWeekday.SA],
-        },
+        deadline: '2026-03-01T05:00:00.000Z',
+      });
+      const recurrence = getTaskRecurrence({
+        id: 9402,
+        userId,
+        taskId: sourceTask.id,
+        timezone: 'Asia/Novosibirsk',
+        startDate: '2026-03-01T03:00:00.000Z',
+        untilDate: '2026-03-31T03:00:00.000Z',
+        frequency: RecurrenceFrequency.WEEKLY,
+        pattern: 'FREQ=WEEKLY;INTERVAL=1',
+        weekstart: TaskRecurrenceWeekday.MO,
+        weekdays: [TaskRecurrenceWeekday.WE, TaskRecurrenceWeekday.FR, TaskRecurrenceWeekday.SA],
       });
 
-      tasksOverridesWriteRepoMock.getManyMasterEvents.mockResolvedValueOnce([masterEvent]);
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([recurrence]);
       tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([]);
+      tasksWriteRepoMock.getTaskById.mockResolvedValue(sourceTask);
       tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
 
       const payload: GoalGetDiaryTasks.Request = new RmqRecordBuilder({

@@ -2,11 +2,9 @@ import { TaskDatabase, TasksWriteRepository, TaskTransaction } from '@/modules/t
 import { Task } from '@/modules/tasks/domain';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { recurrenceVoToString } from '../../mappers/helpers';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getTasksWithStatusQuery } from '../helpers';
-import { statusByNameQuery } from '../utils';
+import { leftJoinGroupLinks, leftJoinTaskRecurrences, statusByNameQuery, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksWriteRepositoryKysely extends BaseTasksRepository implements TasksWriteRepository {
@@ -18,12 +16,10 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
 
   async getTaskById(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
-      const task = await getTasksWithStatusQuery(this.db, trx)
-        .leftJoin('task_to_group', 'task_to_group.task_id', 't.id')
-        .select(['task_to_group.group_id as group_id'])
-        .where('t.id', '=', input.taskId)
-        .where('t.user_id', '=', input.userId)
-        .executeTakeFirst();
+      const query = leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
+        .where('tasks.id', '=', input.taskId)
+        .where('tasks.user_id', '=', input.userId);
+      const task = await leftJoinTaskRecurrences(query).executeTakeFirst();
       if (task == null) return null;
 
       return TasksWriteKyselyMapper.fromRawToAgr(task);
@@ -50,7 +46,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           description: task.description,
           user_id: task.userId,
           priority: task.priority,
-          recurrence: this.#recurrenceToString(task),
           status_id,
         })
         .returning([
@@ -64,7 +59,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           'start_date',
           'end_date',
           'deadline',
-          'recurrence',
         ])
         .executeTakeFirstOrThrow();
 
@@ -89,7 +83,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           start_date: task.startDate ?? null,
           end_date: task.endDate,
           deadline: task.deadline ?? null,
-          recurrence: this.#recurrenceToString(task),
           status_id,
         })
         .returning([
@@ -103,11 +96,17 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           'start_date',
           'end_date',
           'deadline',
-          'recurrence',
         ])
         .executeTakeFirstOrThrow();
 
-      return TasksWriteKyselyMapper.fromRawToAgr({ ...result, status: task.status });
+      const recurrence = await this.db
+        .qb(trx)
+        .selectFrom('tasks_recurrences')
+        .where('tasks_recurrences.task_id', '=', result.id)
+        .select(['tasks_recurrences.id'])
+        .executeTakeFirst();
+
+      return TasksWriteKyselyMapper.fromRawToAgr({ ...result, status: task.status, recurrence_id: recurrence?.id });
     });
   }
 
@@ -181,16 +180,5 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
 
       return result.numDeletedRows > 0;
     });
-  }
-
-  #recurrenceToString(task: Task): string | null {
-    return task.isRecurrence()
-      ? recurrenceVoToString({
-          weekdays: task.recurrence.weekdays,
-          start: task.recurrence.start,
-          frequency: task.recurrence.frequency,
-          end: task.recurrence.end,
-        })
-      : null;
   }
 }

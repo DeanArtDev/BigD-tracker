@@ -152,7 +152,6 @@ describe('task invariants', () => {
         {
           priority: Priority.create(3),
           weight: Weight.create(10),
-          recurrence: undefined,
         },
       ),
     ).toThrow();

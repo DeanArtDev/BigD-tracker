@@ -5,9 +5,9 @@ import { sql } from 'kysely';
 function overrideTypeByNameQuery(names: TaskOverrideType[], db: TaskDatabase, trx?: TaskTransaction) {
   return db
     .qb(trx)
-    .selectFrom('tasks_recurrence_override_types')
-    .where('tasks_recurrence_override_types.name', 'in', names)
-    .select(['id', sql<TaskOverrideType>`tasks_recurrence_override_types.name`.as('name')]);
+    .selectFrom('tasks_recurrences_override_types')
+    .where('tasks_recurrences_override_types.name', 'in', names)
+    .select(['id', sql<TaskOverrideType>`tasks_recurrences_override_types.name`.as('name')]);
 }
 
 export { overrideTypeByNameQuery };

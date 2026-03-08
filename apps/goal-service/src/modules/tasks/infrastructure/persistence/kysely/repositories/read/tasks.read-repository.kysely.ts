@@ -7,14 +7,13 @@ import {
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { SortDirection, TaskStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, SortDirection, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { toLower } from 'lodash';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getTasksWithStatusQuery } from '../helpers';
-import { leftJoinGroupLinks, taskFullSelect, tasksWithStatusQuery } from '../utils';
+import { leftJoinGroupLinks, leftJoinTaskRecurrences, taskFullSelect, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -26,15 +25,26 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return await this.errorCatcher('tasks.get-by-id', async () => {
       const { id, userId } = input;
 
-      const result = await getTasksWithStatusQuery(this.db, trx)
-        .leftJoin('task_to_group', 'task_to_group.task_id', 't.id')
-        .select(['task_to_group.group_id as group_id'])
-        .where('t.id', '=', id)
-        .where('t.user_id', '=', userId)
+      const task = await leftJoinTaskRecurrences(leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx)))
+        .where('tasks.id', '=', id)
+        .where('tasks.user_id', '=', userId)
         .executeTakeFirst();
-      if (result == null) return null;
 
-      return this.#map(result);
+      if (task == null) return null;
+
+      return this.#map({
+        ...task,
+        recurrence: {
+          timezone: task.recurrence_timezone,
+          recurrence_frequency: task.recurrence_frequency,
+          start_date: task.start_date,
+          interval: task.recurrence_interval,
+          weekdays: task.recurrence_weekdays,
+          monthdays: task.recurrence_monthdays,
+          yearmonths: task.recurrence_yearmonths,
+          until_date: task.recurrence_until_date,
+        },
+      });
     });
   }
 
@@ -60,7 +70,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
       const { page, perPage } = params;
 
-      const tasks = await leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
+      const tasks = await leftJoinTaskRecurrences(leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx)))
         .distinct()
         .where((eb) => specifications.toExpr(eb))
         .$if(sort == null, (qb) => qb.orderBy('tasks.id', 'asc'))
@@ -95,7 +105,21 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .$if(page > 1, (qb) => qb.offset((page - 1) * perPage))
         .execute();
 
-      return tasks.map(this.#map);
+      return tasks.map((task) => {
+        return this.#map({
+          ...task,
+          recurrence: {
+            timezone: task.recurrence_timezone,
+            recurrence_frequency: task.recurrence_frequency,
+            start_date: task.start_date,
+            interval: task.recurrence_interval,
+            weekdays: task.recurrence_weekdays,
+            monthdays: task.recurrence_monthdays,
+            yearmonths: task.recurrence_yearmonths,
+            until_date: task.recurrence_until_date,
+          },
+        });
+      });
     });
   }
 
@@ -123,29 +147,52 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         apply != null && (query = apply);
       }
 
-      const tasks = await taskFullSelect(query)
+      const tasks = await leftJoinTaskRecurrences(taskFullSelect(query))
         .where((eb) => specifications.toExpr(eb))
         .orderBy('id', 'asc')
         .execute();
 
-      return tasks.map(this.#map);
+      return tasks.map((task) => {
+        return this.#map({
+          ...task,
+          recurrence: {
+            timezone: task.recurrence_timezone,
+            recurrence_frequency: task.recurrence_frequency,
+            start_date: task.start_date,
+            interval: task.recurrence_interval,
+            weekdays: task.recurrence_weekdays,
+            monthdays: task.recurrence_monthdays,
+            yearmonths: task.recurrence_yearmonths,
+            until_date: task.recurrence_until_date,
+          },
+        });
+      });
     });
   }
 
   #map = (raw: {
-    status: string;
-    id: number;
-    user_id: number;
-    group_id?: number | null;
-    name: string;
-    description: string | null;
-    priority: number;
-    weight: number;
-    cancel_reason: string | null;
-    start_date: Date | null;
-    end_date: Date | null;
-    deadline: Date | null;
-    recurrence: string | null;
+    readonly status: string;
+    readonly id: number;
+    readonly user_id: number;
+    readonly group_id?: number | null;
+    readonly name: string;
+    readonly description: string | null;
+    readonly priority: number;
+    readonly weight: number;
+    readonly cancel_reason: string | null;
+    readonly start_date: Date | null;
+    readonly end_date: Date | null;
+    readonly deadline: Date | null;
+    readonly recurrence: {
+      readonly timezone?: string | null;
+      readonly recurrence_frequency?: keyof typeof RecurrenceFrequency | null;
+      readonly start_date?: Date | null;
+      readonly interval?: number | null;
+      readonly weekdays?: TaskRecurrenceWeekday[] | null;
+      readonly monthdays?: number[] | null;
+      readonly yearmonths?: number[] | null;
+      readonly until_date?: Date | null;
+    };
   }): TaskView => {
     return TasksReadKyselyMapper.fromRawToView({
       id: raw.id,
@@ -159,8 +206,8 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
       start_date: raw.start_date,
       end_date: raw.end_date,
       deadline: raw.deadline,
-      recurrence: raw.recurrence,
       status: raw.status as TaskStatus,
+      recurrence: raw.recurrence,
     });
   };
 }

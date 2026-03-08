@@ -1,11 +1,12 @@
 import { TaskView } from '@/modules/tasks/application/dto/task.view';
 import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
-import { TaskDatabase, GroupInboxReadRepository } from '@/modules/tasks/application/ports';
+import { GroupInboxReadRepository, TaskDatabase } from '@/modules/tasks/application/ports';
+import { CreateTaskInInboxCommand } from '@/modules/tasks/application/use-cases';
 import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteRepository } from '../../ports';
-import { CreateTaskInput, TaskQueryService, TaskService } from '../../services';
+import { TaskQueryService, TaskService } from '../../services';
 
 @Injectable()
 class CreateTaskInInboxUseCase {
@@ -20,7 +21,7 @@ class CreateTaskInInboxUseCase {
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
-  async execute(input: CreateTaskInput): Promise<TaskView> {
+  async execute({ input }: CreateTaskInInboxCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { id } = await this.taskServices.createTask(input, trx);
 

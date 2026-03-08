@@ -1,15 +1,14 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
-import { Priority, RecurrenceVo, Weight } from './value-objects';
 import { Task } from './tasks.aggregate';
+import { Priority, Weight } from './value-objects';
 
 interface PartlyFields {
   readonly id: number;
   readonly status: TaskStatus;
   readonly priority: Priority;
   readonly weight: Weight;
-  readonly recurrence?: RecurrenceVo;
 }
 
 const startOfToday = () => DateVo.create(new Date(new Date().setHours(0, 0, 0, 0)));
@@ -76,14 +75,6 @@ const taskAsserts = {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Field can't be updated at this status: ${currentState.status}`,
         field: 'weight',
-        taskId: currentState.id,
-      });
-    }
-
-    if (patch.recurrence != null && !currentState.recurrence?.equals(patch.recurrence)) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Field can't be updated at this status: ${currentState.status}`,
-        field: 'recurrence',
         taskId: currentState.id,
       });
     }

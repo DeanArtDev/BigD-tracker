@@ -1,13 +1,13 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import { TaskDatabase, GroupInboxReadRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
-import { TaskStatus } from '@big-d/api-contracts';
+import { leftJoinGroupLinks, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { getInboxByUserIdQuery, getTasksWithStatusQuery } from '../helpers';
+import { getInboxByUserIdQuery } from '../helpers';
 
 @Injectable()
 export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implements GroupInboxReadRepository {
@@ -20,13 +20,10 @@ export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implemen
       const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirst();
       if (inbox == null) return null;
 
-      const tasks = await getTasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group as ttg', 't.id', 'ttg.task_id')
-        .select(['ttg.group_id as group_id'])
-        .where('ttg.group_id', '=', inbox.id)
-        .where('ts.name', 'in', tasksAreInInboxSpec.default)
-        .orderBy('t.id', 'asc')
-        .execute();
+      const query = leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
+        .where('group_id', '=', inbox.id)
+        .where('task_statuses.name', 'in', tasksAreInInboxSpec.default);
+      const tasks = await leftJoinTaskRecurrences(query).orderBy('tasks.id', 'asc').execute();
 
       return GroupReadKyselyMapper.fromRawToInboxView({
         id: inbox.id,
@@ -45,8 +42,17 @@ export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implemen
             start_date: task.start_date,
             end_date: task.end_date,
             deadline: task.deadline,
-            recurrence: task.recurrence,
-            status: task.status as TaskStatus,
+            status: task.status,
+            recurrence: {
+              timezone: task.recurrence_timezone,
+              recurrence_frequency: task.recurrence_frequency,
+              start_date: task.start_date,
+              interval: task.recurrence_interval,
+              weekdays: task.recurrence_weekdays,
+              monthdays: task.recurrence_monthdays,
+              yearmonths: task.recurrence_yearmonths,
+              until_date: task.recurrence_until_date,
+            },
           }),
         ),
       });
