@@ -1,8 +1,7 @@
-import { isBaseRpcException } from '@big-d/api-contracts';
-import { isBaseException } from '@big-d/exceptions';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger, pino } from 'pino';
+import { serializeErrorForLog } from './error-serializer';
 
 interface ILoggerService {
   log: Logger['info'];
@@ -21,48 +20,13 @@ export class RmqLogger implements ILoggerService {
     const isDev = this.configService.get('NODE_ENV', 'production') === 'development';
 
     this.logger = pino({
-      // redact: {
-      //   paths: [
-      //     'data.refreshToken',
-      //     'data.sessionToken',
-      //     'data.session',
-      //     'data.token',
-      //     'token',
-      //     'err.stack',
-      //     'error.stack',
-      //   ],
-      //   remove: true,
-      // },
+      redact: {
+        paths: ['data.refreshToken', 'data.sessionToken', 'data.session', 'data.token', 'token'],
+        remove: true,
+      },
 
       serializers: {
-        err: (err) => {
-          if (isBaseRpcException(err)) {
-            return {
-              key: err.key,
-              code: err.code,
-              kind: err.kind,
-              details: err.details,
-            };
-          }
-
-          if (isBaseException(err)) {
-            return {
-              key: err.key,
-              code: err.code,
-              details: err.details,
-            };
-          }
-
-          return {
-            message: 'Unknown error!!!!!',
-            err: {
-              message: err.message,
-              name: err.name,
-              stack: err.stack,
-              cause: err.cause,
-            },
-          };
-        },
+        err: serializeErrorForLog,
       },
 
       ...(isDev

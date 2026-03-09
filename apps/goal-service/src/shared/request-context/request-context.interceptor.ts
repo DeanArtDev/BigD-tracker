@@ -22,22 +22,21 @@ export class RequestContextInterceptor implements NestInterceptor {
       headers[CORRELATION_HEADER_KEY.toUpperCase()] ??
       msg?.properties?.correlationId;
 
-    const userTimezone =
+    const rawUserTimezone =
       headers[USER_TIME_ZONE_HEADER_KEY] ??
       headers[USER_TIME_ZONE_HEADER_KEY.toUpperCase()] ??
       msg?.properties?.[USER_TIME_ZONE_HEADER_KEY];
 
+    const userTimezone = typeof rawUserTimezone === 'string' ? rawUserTimezone : undefined;
     const utz = resolveSafeTimezone(userTimezone);
+    const requestContext = new RequestContext({
+      correlationId,
+      source: 'rmq',
+      userTimezone: utz,
+    });
 
-    return GoalServiceRequestContext.run(
-      new RequestContext({
-        correlationId,
-        source: 'rmq',
-        userTimezone: utz,
-      }),
-      () => {
-        return next.handle();
-      },
+    return new Observable((subscriber) =>
+      GoalServiceRequestContext.run(requestContext, () => next.handle().subscribe(subscriber)),
     );
   }
 }
