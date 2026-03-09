@@ -8,14 +8,7 @@ class HttpExceptionFactory {
     TCode extends string = string,
     TDetails extends Record<string, any> = Record<string, any>,
   >(exception: BaseException<TKey, TCode, TDetails>) {
-    return new BaseHttpException(
-      {
-        key: exception.key,
-        code: exception.code,
-        details: exception.details,
-      },
-      HttpStatus.BAD_REQUEST,
-    );
+    return BaseHttpException.createFromBase(exception, HttpStatus.BAD_REQUEST);
   }
 }
 

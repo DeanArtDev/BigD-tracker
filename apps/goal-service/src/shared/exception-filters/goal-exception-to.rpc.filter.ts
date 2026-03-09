@@ -1,6 +1,6 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
-import { BaseRpcException, RpcExceptionFactory } from '@big-d/api-contracts';
+import { BaseRpcException, RmqErrorKind } from '@big-d/api-contracts';
 import { BaseException, exceptionCode, isBaseException } from '@big-d/exceptions';
 import { Catch, ExceptionFilter } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
@@ -12,11 +12,21 @@ export class GoalExceptionToRpc implements ExceptionFilter {
     const correlationId = GoalServiceRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
 
     if (exception instanceof ExceptionTaskDomainInvalidInvariant) {
-      return throwError(() => RpcExceptionFactory.createDomainInvariantViolation(exception));
+      return throwError(() => this.#toRpcException(exception, RmqErrorKind.DOMAIN_INVARIANT_VIOLATION, correlationId));
     }
 
     if (exception instanceof ExceptionTaskInfrastructure) {
-      return throwError(() => RpcExceptionFactory.createInternalError(exception));
+      return throwError(() =>
+        this.#toRpcException(
+          new BaseException({
+            key: exception.key,
+            code: exception.code,
+            details: this.#toPublicInfrastructureDetails(exception),
+          }),
+          RmqErrorKind.INTERNAL,
+          correlationId,
+        ),
+      );
     }
 
     if (isBaseException(exception)) {
@@ -30,11 +40,13 @@ export class GoalExceptionToRpc implements ExceptionFilter {
           exceptionCode.inboxNotExist.code,
         ].some((code) => code === exception.code)
       ) {
-        return throwError(() => RpcExceptionFactory.createNotFoundError(exception));
+        return throwError(() => this.#toRpcException(exception, RmqErrorKind.NOT_FOUND, correlationId));
       }
 
       if ([exceptionCode.taskUnprocessable.code].some((code) => code === exception.code)) {
-        return throwError(() => RpcExceptionFactory.createDomainInvariantViolation(exception));
+        return throwError(() =>
+          this.#toRpcException(exception, RmqErrorKind.DOMAIN_INVARIANT_VIOLATION, correlationId),
+        );
       }
 
       if (
@@ -42,7 +54,7 @@ export class GoalExceptionToRpc implements ExceptionFilter {
           (code) => code === exception.code,
         )
       ) {
-        return throwError(() => RpcExceptionFactory.createAlreadyExistError(exception));
+        return throwError(() => this.#toRpcException(exception, RmqErrorKind.ALREADY_EXISTS, correlationId));
       }
 
       if (
@@ -53,28 +65,55 @@ export class GoalExceptionToRpc implements ExceptionFilter {
           exceptionCode.requestDateValidation.code,
         ].some((code) => code === exception.code)
       ) {
-        return throwError(() => RpcExceptionFactory.createInternalError(exception));
+        return throwError(() => this.#toRpcException(exception, RmqErrorKind.INTERNAL, correlationId));
       }
 
       if ([exceptionCode.requestDateValidation.code].some((code) => code === exception.code)) {
-        return throwError(() => RpcExceptionFactory.createInvalidArgument(exception));
+        return throwError(() => this.#toRpcException(exception, RmqErrorKind.INVALID_ARGUMENT, correlationId));
       }
 
-      return throwError(() => RpcExceptionFactory.createInternalError(exception));
+      return throwError(() => this.#toRpcException(exception, RmqErrorKind.INTERNAL, correlationId));
     }
 
     return throwError(() =>
-      RpcExceptionFactory.createInternalError(
+      this.#toRpcException(
         new BaseException({
           code: 'UNEXPECTED',
           key: 'UNEXPECTED',
           details: {
-            correlationId,
             name: exception instanceof Error ? exception.name : 'UnexpectedError',
             message: exception instanceof Error ? exception.message : String(exception),
           },
         }),
+        RmqErrorKind.INTERNAL,
+        correlationId,
       ),
     );
+  }
+
+  #toPublicInfrastructureDetails(exception: InstanceType<typeof ExceptionTaskInfrastructure>): Record<string, unknown> {
+    const details: Record<string, unknown> = {
+      message: 'Task infrastructure error',
+    };
+
+    if (typeof exception.details?.operation === 'string') {
+      details.operation = exception.details.operation;
+    }
+
+    return details;
+  }
+
+  #toRpcException(exception: BaseException, kind: RmqErrorKind, correlationId: string): BaseRpcException {
+    const { key, code, details } = exception.toResponse();
+
+    return new BaseRpcException({
+      key,
+      code,
+      kind,
+      details: {
+        correlationId,
+        ...details,
+      },
+    });
   }
 }
