@@ -79,15 +79,6 @@ const maxLevelValidation = z
       });
     }
 
-    if (end == null) {
-      ctx.issues.push({
-        path: ['recurrence.end'],
-        input: end,
-        code: 'custom',
-        message: 'Обязательное к заполнению поле',
-      });
-    }
-
     if (frequency == null) {
       ctx.issues.push({
         path: ['recurrence.frequency'],

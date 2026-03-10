@@ -37,6 +37,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
 
+    .addUniqueConstraint('tasks_recurrences_override_r_id_r_start_unique', ['recurrence_id', 'recurrence_start'])
+
     .addCheckConstraint('tro_priority_check', sql`priority in (1, 2, 3, 4)`)
     .addCheckConstraint('tro_weight_check', sql`weight between 0 and 100`)
     .addCheckConstraint('tro_end_after_start', sql`end_date is null or end_date > start_date`)
@@ -52,7 +54,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // ID повторяющегося дела (мастер событие, родитель)
 
     .addColumn('task_id', 'integer', (col) =>
-      col.references('tasks.id').onDelete('cascade').onUpdate('no action').unique().notNull(),
+      col.references('tasks.id').onDelete('cascade').onUpdate('no action').notNull(),
     )
 
     // Нет связи с сервисом account
@@ -62,6 +64,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 
     // Частота повторения, например ежедневно, еженедельно, ежемесячно, ежегодно
     .addColumn('recurrence_frequencies_id', 'smallint', (col) => col.notNull())
+
+    // Частота повторения, например ежедневно, еженедельно, ежемесячно, ежегодно
+    .addColumn('recurrence_status_id', 'smallint', (col) => col.notNull())
 
     // Интервал повторения, например каждые 2 недели, каждые 3 месяца, для еженедельного повторения может быть 1 (каждую неделю),
     // 2 (через неделю), 3 (через две недели) и так далее
@@ -88,6 +93,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 
     .addColumn('created_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
     .addColumn('updated_at', 'timestamptz', (col) => col.notNull().defaultTo(sql`now()`))
+
+    // Условие на уникальность для предотвращения создания двух паттернов повторения для одной и той же задачи, начинающихся в один и тот же день
+    .addUniqueConstraint('tasks_recurrences_task_id_start_date_unique', ['task_id', 'start_date'])
 
     .addCheckConstraint('tasks_recurrences_until_after_start', sql`until_date is null or until_date >= start_date`)
     .addCheckConstraint('tasks_recurrences_weekstart', sql`weekstart is null or weekstart between 0 and 6`)
@@ -125,11 +133,17 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('tasks_recurrences_override_types')
     .addColumn('id', 'smallint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
-    .addColumn('name', 'varchar(150)', (col) => col.notNull().unique())
+    .addColumn('name', 'varchar(50)', (col) => col.notNull().unique())
     .execute();
 
   await db.schema
     .createTable('recurrences_frequencies')
+    .addColumn('id', 'smallint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
+    .addColumn('name', 'varchar(50)', (col) => col.notNull().unique())
+    .execute();
+
+  await db.schema
+    .createTable('recurrence_statuses')
     .addColumn('id', 'smallint', (col) => col.primaryKey().generatedByDefaultAsIdentity())
     .addColumn('name', 'varchar(50)', (col) => col.notNull().unique())
     .execute();
@@ -149,7 +163,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .execute();
 
-  // Связь с частотой повторений
   await db.schema
     .alterTable('tasks_recurrences')
     .addForeignKeyConstraint(
@@ -169,6 +182,13 @@ export async function up(db: Kysely<any>): Promise<void> {
       'tasks_recurrences_override_types',
       ['id'],
       (cb) => cb.onDelete('no action').onUpdate('no action'),
+    )
+    .execute();
+
+  await db.schema
+    .alterTable('tasks_recurrences')
+    .addForeignKeyConstraint('tr_status_fk', ['recurrence_status_id'], 'recurrence_statuses', ['id'], (cb) =>
+      cb.onDelete('no action').onUpdate('no action'),
     )
     .execute();
 }

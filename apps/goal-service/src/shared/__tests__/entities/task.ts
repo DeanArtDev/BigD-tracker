@@ -2,7 +2,7 @@ import { TaskView } from '@/modules/tasks/application/dto';
 import { TaskRecurrenceValues } from '@/modules/tasks/application/types';
 import { Task, TaskIdBuilder, TaskRecurrence } from '@/modules/tasks/domain';
 import { Priority, Weight } from '@/modules/tasks/domain';
-import { RecurrenceFrequency, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 
 type TestTaskRecurrenceInput = Omit<Partial<TaskRecurrenceValues>, 'frequency'> & {
@@ -110,6 +110,7 @@ const getTaskRecurrence = (
     id: number;
     userId: number;
     taskId: number;
+    status: TaskRecurrenceStatus;
     timezone: string;
     startDate: string;
     untilDate?: string;
@@ -126,6 +127,7 @@ const getTaskRecurrence = (
     id: data.id ?? 1,
     userId: data.userId ?? 1,
     taskId: data.taskId ?? 1,
+    status: data.status ?? TaskRecurrenceStatus.ACTIVE,
     timezone: data.timezone ?? 'UTC',
     startDate: DateVo.restore(data.startDate ?? '2026-01-01T10:00:00.000Z'),
     untilDate: data.untilDate != null ? DateVo.restore(data.untilDate) : undefined,

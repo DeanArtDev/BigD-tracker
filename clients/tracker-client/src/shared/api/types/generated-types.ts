@@ -1332,7 +1332,7 @@ export interface components {
              * @example 3
              * @enum {number}
              */
-            frequency?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+            frequency: 0 | 1 | 2 | 3 | 4 | 5 | 6;
             /**
              * @description Дни недели
              * @example [
@@ -1345,12 +1345,33 @@ export interface components {
              * @description День начала повторения
              * @example 2025-06-24T13:01:02.471Z
              */
-            start: string;
+            startDate: string;
             /**
              * @description День окончания повторения
              * @example 2026-05-24T13:01:02.471Z
              */
-            end?: string;
+            untilDate?: string;
+            /**
+             * @description Дни месяца
+             * @example [
+             *       1,
+             *       15
+             *     ]
+             */
+            monthdays?: string[];
+            /**
+             * @description Месяцы года
+             * @example [
+             *       1,
+             *       4
+             *     ]
+             */
+            yearmonths?: string[];
+            /**
+             * @description Интервал повторения (каждые n дней/недель/месяцев/лет)
+             * @example 3
+             */
+            interval?: number;
         };
         TaskDto: {
             /** @example o:1 */
@@ -1618,13 +1639,13 @@ export interface components {
         };
         GetDiaryTasksFilterDto: {
             /**
-             * @description Начало диапазона (ISO 8601). Должно приходить вместе с filter.to
-             * @example 2026-01-01T00:00:00.000Z
+             * @description Без времени, только день
+             * @example 2026-01-01
              */
             from: string;
             /**
-             * @description Конец диапазона (ISO 8601). Должно приходить вместе с filter.from
-             * @example 2026-02-01T00:00:00.000Z
+             * @description Без времени, только день
+             * @example 2026-01-01
              */
             to: string;
         };

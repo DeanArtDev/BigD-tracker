@@ -2,6 +2,7 @@ import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useInvalidateAllTasks, useUpdateTask } from '@/entity/planner/tasks';
 import { TaskFormDialog, type TaskFormDialogProps } from '@/entity/planner/tasks/ui';
 import { SidebarActions } from './components/sidebar-actions';
+import dayjs from '@/shared/lib/time';
 
 interface TaskEditProps {
   readonly task: TaskFormDialogProps['task'] | null;
@@ -47,10 +48,26 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
       onSubmit={(formData) => {
         if (task == null) return;
 
+        const { recurrence } = formData;
+        const hasRecurrence = recurrence != null && recurrence.frequency != null && recurrence.start != null;
+
         updateTask(
           {
             params: { path: { taskId: task.id } },
-            body: { data: formData },
+            body: {
+              data: {
+                ...formData,
+                recurrence: hasRecurrence
+                  ? {
+                      frequency: recurrence.frequency,
+                      startDate: dayjs(recurrence.start).utc(true).format('YYYY-MM-DD'),
+                      untilDate:
+                        recurrence.end != null ? dayjs(recurrence.end).utc(true).format('YYYY-MM-DD') : undefined,
+                      weekdays: recurrence?.weekdays,
+                    }
+                  : undefined,
+              },
+            },
           },
           { onSuccess: invalidate },
         );

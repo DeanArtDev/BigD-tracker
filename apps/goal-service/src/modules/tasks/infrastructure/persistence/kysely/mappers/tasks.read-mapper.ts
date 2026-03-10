@@ -1,6 +1,6 @@
 import { TaskView } from '@/modules/tasks/application/dto';
 import { TaskIdBuilder } from '@/modules/tasks/domain';
-import { RecurrenceFrequency, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
 
 interface RawTask {
   readonly id: number;
@@ -17,6 +17,7 @@ interface RawTask {
   readonly status: TaskStatus;
   readonly recurrence?: {
     readonly timezone?: string | null;
+    readonly recurrence_status?: TaskRecurrenceStatus | null;
     readonly recurrence_frequency?: keyof typeof RecurrenceFrequency | null;
     readonly start_date?: Date | null;
     readonly interval?: number | null;
@@ -29,8 +30,16 @@ interface RawTask {
 
 class TasksReadKyselyMapper {
   static fromRawToView = (raw: RawTask): TaskView => {
-    const { interval, monthdays, yearmonths, weekdays, until_date, start_date, recurrence_frequency } =
-      raw.recurrence ?? {};
+    const {
+      interval,
+      monthdays,
+      yearmonths,
+      recurrence_status,
+      weekdays,
+      until_date,
+      start_date,
+      recurrence_frequency,
+    } = raw.recurrence ?? {};
 
     const hasRecurrence = recurrence_frequency != null && start_date != null;
 
@@ -54,6 +63,7 @@ class TasksReadKyselyMapper {
             interval: interval ?? undefined,
             weekdays: weekdays ?? undefined,
             monthdays: monthdays ?? undefined,
+            status: recurrence_status ?? undefined,
             yearmonths: yearmonths ?? undefined,
             untilDate: until_date != null ? new Date(until_date).toISOString() : undefined,
           }

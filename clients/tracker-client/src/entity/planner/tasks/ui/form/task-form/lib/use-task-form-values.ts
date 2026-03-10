@@ -38,8 +38,8 @@ function useTaskFormValues({ task, defaultValue }: UseTaskFormValuesProps) {
         recurrence: {
           frequency: task.recurrence?.frequency?.toString(),
           weekdays: task.recurrence?.weekdays?.map(String),
-          start: task.recurrence?.start != null ? new Date(task.recurrence?.start) : undefined,
-          end: task.recurrence?.end != null ? new Date(task.recurrence?.end) : undefined,
+          start: task.recurrence?.startDate != null ? new Date(task.recurrence?.startDate) : undefined,
+          end: task.recurrence?.untilDate != null ? new Date(task.recurrence?.untilDate) : undefined,
         },
       }
     : undefined;

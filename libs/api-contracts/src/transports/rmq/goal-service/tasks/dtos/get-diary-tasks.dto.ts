@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsISO8601, ValidateNested } from 'class-validator';
-import { TaskVirtualDto } from './task-virtual.dto';
+import { TaskDto } from './task.dto';
 
 class GetDiaryTasksFilterDto {
   @IsISO8601()
@@ -26,10 +26,10 @@ class GetDiaryTasksReq {
 }
 
 class GetDiaryTasksResData {
-  @Type(() => TaskVirtualDto)
+  @Type(() => TaskDto)
   @ValidateNested({ each: true })
   @IsArray()
-  items: TaskVirtualDto[];
+  items: TaskDto[];
 }
 
 class GetDiaryTasksRes {

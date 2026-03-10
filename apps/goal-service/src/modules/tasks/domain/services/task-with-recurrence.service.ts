@@ -1,7 +1,8 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
+import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { timeAndDate } from '@shared/date-and-time';
-import { Task, TaskFactory, TaskFactoryReplaceInput, TaskRecurrence } from '../aggregates/task';
+import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
 
 interface TaskWithRecurrenceInput {
   readonly startDate: string;
@@ -18,6 +19,7 @@ interface TaskWithRecurrenceInput {
 
 interface TaskWithRecurrenceCreateInput {
   readonly task: Task;
+  readonly taskPatch: TaskFactoryReplaceInput;
   readonly recurrence: TaskWithRecurrenceInput;
 }
 
@@ -40,111 +42,198 @@ interface TaskWithRecurrenceCancelInput {
 interface TaskWithRecurrenceReplaceInput {
   readonly task: Task;
   readonly taskPatch: TaskFactoryReplaceInput;
-  readonly currentRecurrence?: TaskRecurrence | null;
-  readonly recurrencePatch?: TaskWithRecurrenceInput;
-  readonly cancelDate?: string;
-  readonly cancelPattern?: string;
-  readonly now?: string;
+  readonly currentRecurrence: TaskRecurrence | null | undefined;
+  readonly currentOverrides?: TaskOverride[];
+  readonly recurrencePatch: Omit<TaskWithRecurrenceInput, 'pattern'> | undefined;
+  readonly now: string;
+  readonly patternShaper: (data: Omit<TaskWithRecurrenceInput, 'pattern'>) => string;
 }
 
-interface TaskWithRecurrenceReplaceResult {
+type TaskWithRecurrenceCreateResult = {
+  readonly task: Task;
+  readonly recurrence: TaskRecurrence;
+  readonly isCreate: true;
+  readonly isUpdate?: never;
+  readonly isCancel?: never;
+  readonly shouldDeleteRecurrence: false;
+  readonly shouldDeleteOverrides: false;
+};
+
+type TaskWithRecurrenceUpdateResult = {
+  readonly task: Task;
+  readonly recurrence: TaskRecurrence;
+  readonly isUpdate: true;
+  readonly isCreate?: never;
+  readonly isCancel?: never;
+  readonly shouldDeleteRecurrence: false;
+  readonly shouldDeleteOverrides: false;
+};
+
+type TaskWithRecurrenceCancelDeleteResult = {
+  readonly task: Task;
+  readonly recurrence: null;
+  readonly isCancel: true;
+  readonly isCreate?: never;
+  readonly isUpdate?: never;
+  readonly shouldDeleteRecurrence: true;
+  readonly shouldDeleteOverrides: true;
+};
+
+type TaskWithRecurrenceCancelKeepResult = {
   readonly task: Task;
   readonly recurrence: TaskRecurrence | null;
-  readonly isCreate: boolean;
-  readonly isUpdate: boolean;
-  readonly isCancel: boolean;
-}
+  readonly isCancel: true;
+  readonly isCreate?: never;
+  readonly isUpdate?: never;
+  readonly shouldDeleteRecurrence: false;
+  readonly shouldDeleteOverrides: false;
+};
+
+type TaskWithRecurrenceNoopResult = {
+  readonly task: Task;
+  readonly recurrence: null;
+  readonly isCreate?: never;
+  readonly isUpdate?: never;
+  readonly isCancel?: never;
+  readonly shouldDeleteRecurrence: false;
+  readonly shouldDeleteOverrides: false;
+};
+
+type TaskWithRecurrenceReplaceResult =
+  | TaskWithRecurrenceCreateResult
+  | TaskWithRecurrenceUpdateResult
+  | TaskWithRecurrenceCancelDeleteResult
+  | TaskWithRecurrenceCancelKeepResult
+  | TaskWithRecurrenceNoopResult;
 
 class TaskWithRecurrenceService {
+  ensureNotRepeatable(input: { type: 'virtual' | 'override'; recurrence?: unknown; taskId?: string | number }): void {
+    if (input.recurrence == null) {
+      return;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `${input.type} task cannot have recurrence`,
+      field: 'recurrence',
+      taskId: typeof input.taskId === 'number' ? input.taskId : undefined,
+    });
+  }
+
   replace(input: TaskWithRecurrenceReplaceInput): TaskWithRecurrenceReplaceResult {
-    const { task, taskPatch, currentRecurrence, recurrencePatch, cancelDate, cancelPattern, now } = input;
-    const isCreate = currentRecurrence == null && recurrencePatch != null;
+    const { task, taskPatch, currentRecurrence, currentOverrides = [], recurrencePatch, now, patternShaper } = input;
+
+    this.assertOverridesBelongToRecurrence({
+      taskId: task.id,
+      currentRecurrence,
+      currentOverrides,
+    });
+
+    const isCreate = (currentRecurrence == null || currentRecurrence.isCanceled) && recurrencePatch != null;
     const isUpdate = currentRecurrence != null && recurrencePatch != null;
     const isCancel = currentRecurrence != null && recurrencePatch == null;
 
     if (isCreate) {
-      const next = this.update({
+      const pattern = patternShaper(recurrencePatch);
+      const next = this.create({
         task,
         taskPatch,
-        currentRecurrence,
-        recurrencePatch,
+        recurrence: { ...recurrencePatch, pattern },
       });
 
       return {
         ...next,
         isCreate: true,
-        isUpdate: false,
-        isCancel: false,
+        shouldDeleteRecurrence: false,
+        shouldDeleteOverrides: false,
       };
     }
 
     if (isUpdate) {
+      const pattern = patternShaper(recurrencePatch);
       const next = this.update({
         task,
         taskPatch,
         currentRecurrence,
-        recurrencePatch,
+        recurrencePatch: { ...recurrencePatch, pattern },
       });
 
       return {
         ...next,
-        isCreate: false,
         isUpdate: true,
-        isCancel: false,
+        shouldDeleteRecurrence: false,
+        shouldDeleteOverrides: false,
       };
     }
 
     if (isCancel) {
-      if (cancelPattern == null) {
-        throw new ExceptionTaskDomainInvalidInvariant({
-          message: 'Невозможно отменить recurrence без cancel pattern',
-          field: 'recurrence',
-          taskId: task.id,
-        });
+      if (this.canDeleteRecurrence(currentOverrides)) {
+        return {
+          task: TaskFactory.replace(task, taskPatch),
+          recurrence: null,
+          isCancel: true,
+          shouldDeleteRecurrence: true,
+          shouldDeleteOverrides: true,
+        };
       }
+
+      const untilDate = timeAndDate(now).tz(currentRecurrence.timezone).startOf('day').utc().toISOString();
+
+      const cancelPattern = patternShaper({
+        frequency: currentRecurrence.frequency.value,
+        weekstart: currentRecurrence.weekstart,
+        untilDate,
+        interval: currentRecurrence.interval,
+        weekdays: currentRecurrence.weekdays,
+        monthdays: currentRecurrence.monthdays,
+        yearmonths: currentRecurrence.yearmonths,
+        startDate: taskPatch.startDate ?? task.startDate ?? now,
+        timezone: currentRecurrence.timezone,
+      });
 
       const next = this.cancel({
         task,
         taskPatch,
         currentRecurrence,
-        cancelDate,
+        cancelDate: taskPatch.startDate,
         pattern: cancelPattern,
         now,
       });
 
       return {
         ...next,
-        isCreate: false,
-        isUpdate: false,
         isCancel: true,
+        shouldDeleteRecurrence: false,
+        shouldDeleteOverrides: false,
       };
     }
 
     return {
       task: TaskFactory.replace(task, taskPatch),
       recurrence: null,
-      isCreate: false,
-      isUpdate: false,
-      isCancel: false,
+      shouldDeleteRecurrence: false,
+      shouldDeleteOverrides: false,
     };
   }
 
   create(input: TaskWithRecurrenceCreateInput): { task: Task; recurrence: TaskRecurrence } {
-    const { task, recurrence } = input;
+    const { task, taskPatch, recurrence } = input;
 
-    this.assertTaskPersisted(task);
+    const updatedTask = TaskFactory.replace(task, taskPatch);
+
+    this.assertTaskPersisted(updatedTask);
     this.assertRecurrenceInvariants({
-      taskId: task.id,
-      taskStartDate: task.startDate,
+      taskId: updatedTask.id,
+      taskStartDate: taskPatch.startDate,
       recurrenceStartDate: recurrence.startDate,
       timezone: recurrence.timezone,
     });
 
     return {
-      task,
+      task: updatedTask,
       recurrence: TaskRecurrence.create({
-        userId: task.userId,
-        taskId: task.id,
+        userId: updatedTask.userId,
+        taskId: updatedTask.id,
+        status: TaskRecurrenceStatus.ACTIVE,
         pattern: recurrence.pattern,
         timezone: recurrence.timezone,
         startDate: DateVo.create(recurrence.startDate),
@@ -178,6 +267,7 @@ class TaskWithRecurrenceService {
           ? TaskRecurrence.create({
               userId: updatedTask.userId,
               taskId: updatedTask.id,
+              status: TaskRecurrenceStatus.ACTIVE,
               pattern: recurrencePatch.pattern,
               timezone,
               startDate: DateVo.create(recurrencePatch.startDate),
@@ -234,6 +324,43 @@ class TaskWithRecurrenceService {
         field: 'taskId',
       });
     }
+  }
+
+  private canDeleteRecurrence(overrides: TaskOverride[]): boolean {
+    return overrides.every((override) =>
+      [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS, TaskStatus.ARCHIVED].includes(override.status),
+    );
+  }
+
+  private assertOverridesBelongToRecurrence(input: {
+    taskId: number;
+    currentRecurrence: TaskRecurrence | null | undefined;
+    currentOverrides: TaskOverride[];
+  }): void {
+    const { taskId, currentRecurrence, currentOverrides } = input;
+
+    if (currentOverrides.length === 0) {
+      return;
+    }
+
+    if (currentRecurrence == null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Невозможно передать currentOverrides без currentRecurrence',
+        field: 'currentOverrides',
+        taskId,
+      });
+    }
+
+    const hasForeignOverride = currentOverrides.some((override) => override.recurrenceId !== currentRecurrence.id);
+    if (!hasForeignOverride) {
+      return;
+    }
+
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: 'Все currentOverrides должны принадлежать currentRecurrence',
+      field: 'currentOverrides',
+      taskId,
+    });
   }
 
   private assertRecurrenceInvariants(input: {
