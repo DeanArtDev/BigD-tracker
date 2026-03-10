@@ -16,6 +16,8 @@ interface TasksOverridesRepositoryWritePort {
   upsertRecurrence(override: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence>;
 
   deleteRecurrence(input: { id: number }, trx?: TaskTransaction): Promise<boolean>;
+
+  deleteManyOverride(specifications: TasksSpecification, trx?: TaskTransaction): Promise<number>;
 }
 
 export { TasksOverridesRepositoryWritePort };

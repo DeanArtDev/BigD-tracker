@@ -8,6 +8,7 @@ import { BaseTasksRepository } from '../base-tasks.repository';
 import {
   overrideTypeByNameQuery,
   overrideWithStatusAndTypeQuery,
+  recurrenceStatusByNameQuery,
   statusByNameQuery,
   taskFrequencyByNameQuery,
   taskRecurrencesQuery,
@@ -76,6 +77,18 @@ export class TasksOverridesWriteRepositoryKysely
     });
   }
 
+  async deleteManyOverride(specifications: TasksSpecification, trx?: TaskTransaction): Promise<number> {
+    return await this.errorCatcher('tasks.delete-many-overrides', async () => {
+      const result = await this.db
+        .qb(trx)
+        .deleteFrom('tasks_recurrences_overrides')
+        .where((eb) => specifications.toExpr(eb))
+        .executeTakeFirst();
+
+      return Number(result.numDeletedRows);
+    });
+  }
+
   async upsertRecurrence(recurrence: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence> {
     return await this.errorCatcher('tasks.upsert-recurrence', async () => {
       const { id: frequency_id, name: frequency_name } = await taskFrequencyByNameQuery(
@@ -84,6 +97,25 @@ export class TasksOverridesWriteRepositoryKysely
         trx,
       ).executeTakeFirstOrThrow();
 
+      const { id: recurrence_status_id, name: recurrence_status } = await recurrenceStatusByNameQuery(
+        [recurrence.status],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
+
+      const upsertData = {
+        pattern: recurrence.pattern,
+        start_date: recurrence.startDate,
+        until_date: recurrence.untilDate ?? null,
+        yearmonths: recurrence.yearmonths ?? null,
+        monthdays: recurrence.monthdays ?? null,
+        weekdays: recurrence.weekdays ?? null,
+        interval: recurrence.interval ?? null,
+        weekstart: recurrence.weekstart,
+        recurrence_status_id,
+        recurrence_frequencies_id: frequency_id,
+      };
+
       const rawRecurrence = await this.db
         .qb(trx)
         .insertInto('tasks_recurrences')
@@ -91,34 +123,18 @@ export class TasksOverridesWriteRepositoryKysely
           id: recurrence.isDraft ? undefined : recurrence.id,
           user_id: recurrence.userId,
           task_id: recurrence.taskId,
-          pattern: recurrence.pattern,
-          start_date: recurrence.startDate,
-          until_date: recurrence.untilDate ?? null,
-          yearmonths: recurrence.yearmonths ?? null,
-          monthdays: recurrence.monthdays ?? null,
-          weekdays: recurrence.weekdays ?? null,
-          interval: recurrence.interval ?? null,
           timezone: recurrence.timezone,
-          weekstart: recurrence.weekstart,
-          recurrence_frequencies_id: frequency_id,
+          ...upsertData,
         })
-        .onConflict((oc) =>
-          oc.columns(['id']).doUpdateSet({
-            pattern: recurrence.pattern,
-            start_date: recurrence.startDate,
-            until_date: recurrence.untilDate ?? null,
-            yearmonths: recurrence.yearmonths ?? null,
-            monthdays: recurrence.monthdays ?? null,
-            weekdays: recurrence.weekdays ?? null,
-            interval: recurrence.interval ?? null,
-            weekstart: recurrence.weekstart,
-            recurrence_frequencies_id: frequency_id,
-          }),
-        )
+        .onConflict((oc) => oc.columns(['task_id', 'start_date']).doUpdateSet(upsertData))
         .returningAll()
         .executeTakeFirstOrThrow();
 
-      return TasksWriteKyselyMapper.fromRawToRecurrence({ ...rawRecurrence, recurrence_frequency: frequency_name });
+      return TasksWriteKyselyMapper.fromRawToRecurrence({
+        ...rawRecurrence,
+        recurrence_frequency: frequency_name,
+        recurrence_status,
+      });
     });
   }
 

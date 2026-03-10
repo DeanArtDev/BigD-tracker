@@ -1,4 +1,4 @@
-import { recurrenceFrequencyToKeyMap } from '@big-d/api-contracts';
+import { recurrenceFrequencyToKeyMap, TaskRecurrenceStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import {
   TaskRecurrenceCreateInput,
@@ -16,18 +16,13 @@ class TaskRecurrence {
   }
 
   static create(input: TaskRecurrenceCreateInput): TaskRecurrence {
-    // инвариант timezone
-    // инвариант duration
-    // инвариант pattern
-    // инвариант motnhdays
-    // инвариант yearmonths
-
     taskAsserts.datesIntersections({ end: input.untilDate, start: input.startDate });
 
     return new TaskRecurrence({
       id: NaN,
       userId: input.userId,
       taskId: input.taskId,
+      status: input.status,
       timezone: input.timezone,
       startDate: input.startDate,
       pattern: input.pattern,
@@ -46,6 +41,7 @@ class TaskRecurrence {
       id: input.id,
       userId: input.userId,
       taskId: input.taskId,
+      status: input.status,
       timezone: input.timezone,
       startDate: input.startDate,
       pattern: input.pattern,
@@ -68,6 +64,7 @@ class TaskRecurrence {
     this.#state.pattern = input.pattern;
     this.#state.startDate = input.startDate;
     this.#state.untilDate = input.untilDate;
+    this.#state.status = input.status ?? this.#state.status;
     this.#state.frequency = { key: recurrenceFrequencyToKeyMap[input.frequency], value: input.frequency };
     this.#state.interval = input.interval;
     this.#state.weekstart = input.weekstart;
@@ -80,6 +77,7 @@ class TaskRecurrence {
 
   public cancel(input: { cancelDate: DateVo; pattern: string }): TaskRecurrence {
     this.#state.pattern = input.pattern;
+    this.#state.status = TaskRecurrenceStatus.CANCELED;
     if (input.cancelDate.isBefore(this.#state.startDate.value)) {
       this.#state.untilDate = this.#state.startDate;
       return this;
@@ -101,6 +99,9 @@ class TaskRecurrence {
   }
   get timezone() {
     return this.#state.timezone;
+  }
+  get status() {
+    return this.#state.status;
   }
   get startDate() {
     return this.#state.startDate.value;
@@ -132,6 +133,10 @@ class TaskRecurrence {
 
   get isDraft() {
     return Number.isNaN(this.#state.id);
+  }
+
+  get isCanceled() {
+    return this.#state.status === TaskRecurrenceStatus.CANCELED;
   }
 
   get isEmpty() {

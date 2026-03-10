@@ -41,7 +41,7 @@ interface TaskFormProps extends FormStateEmitterProps {
     recurrence?: {
       frequency: TaskRecurrenceFrequency;
       start: string;
-      end: string;
+      end?: string;
       weekdays?: TaskRecurrenceWeekday[];
     };
   }) => void;
@@ -100,7 +100,7 @@ function Component(props: TaskFormProps) {
 
             const { start, end, frequency, weekdays } = formData.recurrence ?? {};
             const recurrence =
-              start != null && end != null && frequency != null
+              start != null && frequency != null
                 ? { start, end, frequency, weekdays: weekdays?.map(Number) }
                 : undefined;
 

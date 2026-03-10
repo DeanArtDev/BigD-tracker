@@ -51,6 +51,30 @@ class TaskRecurrenceQueryService {
     const virtualViews: TaskView[] = [];
 
     for (const recurrence of recurrences) {
+      const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, recurrence.timezone);
+      const overrides = await this.tasksOverridesRepository.getManyOverrides(
+        GetTasksOverrides({ userId, from, to, recurrenceIds: [recurrence.id] }),
+        trx,
+      );
+      const overridesMap = new Map(
+        overrides.map((o) => [
+          TaskIdBuilder.wrapVirtualId({ recurrenceId: o.recurrenceId, date: o.recurrenceStart }),
+          o,
+        ]),
+      );
+
+      if (recurrence.isCanceled) {
+        for (const [, override] of overridesMap.entries()) {
+          if (this.#isOverrideSkipped(override)) continue;
+          if (this.#isOverrideRender(override)) {
+            virtualViews.push(this.#shapeOverride(override, recurrence.timezone));
+          }
+        }
+
+        overridesMap.clear();
+        continue;
+      }
+
       const rule = this.createRule({
         frequency: recurrence.frequency.value,
         weekstart: recurrence.weekstart,
@@ -65,18 +89,6 @@ class TaskRecurrenceQueryService {
 
       const sourceTask = await this.taskCheckerService.ensureTaskExists({ taskId: recurrence.taskId, userId });
 
-      const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, recurrence.timezone);
-      const overrides = await this.tasksOverridesRepository.getManyOverrides(
-        GetTasksOverrides({ userId, from, to, recurrenceIds: [recurrence.id] }),
-        trx,
-      );
-      const overridesMap = new Map(
-        overrides.map((o) => [
-          TaskIdBuilder.wrapVirtualId({ recurrenceId: o.recurrenceId, date: o.recurrenceStart }),
-          o,
-        ]),
-      );
-
       for (const occurrence of rule.between(from, to, true)) {
         const occurrenceStart = this.createTimePoint(occurrence, recurrence.timezone, sourceTask.startDate);
 
@@ -86,9 +98,8 @@ class TaskRecurrenceQueryService {
         });
         const override = overridesMap.get(hashKey);
 
-        if (override?.isCancelled || override?.isDeleted || override?.isArchived || override?.isMoved) continue;
-
-        if (override?.isOverride) {
+        if (this.#isOverrideSkipped(override)) continue;
+        if (override != null && this.#isOverrideRender(override)) {
           virtualViews.push(this.#shapeOverride(override, recurrence.timezone));
           overridesMap.delete(hashKey);
         } else {
@@ -162,6 +173,15 @@ class TaskRecurrenceQueryService {
       deadline,
       endDate: override?.endDate,
     });
+  }
+
+  #isOverrideSkipped(override?: TaskOverride): boolean {
+    if (override == null) return false;
+    return override.isCancelled || override.isDeleted || override.isArchived || override.isMoved;
+  }
+
+  #isOverrideRender(override: TaskOverride): boolean {
+    return override.isOverride;
   }
 
   #datesToTZUtc(dates: { from: string; to: string }, timezone: string) {

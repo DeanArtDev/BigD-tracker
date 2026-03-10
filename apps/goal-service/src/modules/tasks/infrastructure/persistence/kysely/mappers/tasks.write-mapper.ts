@@ -1,5 +1,11 @@
 import { Priority, Task, TaskOverride, TaskRecurrence, Weight } from '@/modules/tasks/domain';
-import { RecurrenceFrequency, TaskOverrideType, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import {
+  RecurrenceFrequency,
+  TaskOverrideType,
+  TaskRecurrenceStatus,
+  TaskRecurrenceWeekday,
+  TaskStatus,
+} from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 
 interface RawTask {
@@ -23,6 +29,7 @@ interface RawTaskRecurrence {
   readonly task_id: number;
   readonly user_id: number;
   readonly timezone: string;
+  readonly recurrence_status: TaskRecurrenceStatus;
   readonly recurrence_frequency: keyof typeof RecurrenceFrequency;
   readonly start_date: Date;
   readonly pattern: string;
@@ -64,6 +71,7 @@ class TasksWriteKyselyMapper {
       id: raw.id,
       userId: raw.user_id,
       taskId: raw.task_id,
+      status: raw.recurrence_status,
       timezone: raw.timezone,
       frequency: RecurrenceFrequency[raw.recurrence_frequency],
       startDate: DateVo.restore(raw.start_date.toISOString()),

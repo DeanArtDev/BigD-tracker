@@ -1,5 +1,6 @@
 import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
 import { TaskFactory, TaskOverrideFactory } from '@/modules/tasks/domain';
+import { TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
 import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -16,6 +17,8 @@ import { ReplaceTaskCommand } from './replace-task.command';
 
 @Injectable()
 class ReplaceTaskUseCase {
+  private readonly taskWithRecurrenceService = new TaskWithRecurrenceService();
+
   constructor(
     private readonly taskServices: TaskService,
     private readonly taskCheckerService: TaskCheckerService,
@@ -26,13 +29,6 @@ class ReplaceTaskUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  /*TODO:
-   *  [] если task имеет recurrence нельзя давать ему менять startDate
-   *  [] если таска уже имеет повторения ???
-   *  [x] если отключить повторения у исходной таски то удалить все recurrences и overrides связанные с ней
-   *  [] добавить ограничение изменения дат только в рамках occurrenceStart
-   *  [] добавить ограничение occurrenceStart и startDate в рамках одного дня
-   * */
   async execute({ input }: ReplaceTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { id, ...patch } = input;
@@ -44,6 +40,12 @@ class ReplaceTaskUseCase {
       }
 
       if (isVirtual) {
+        this.taskWithRecurrenceService.ensureNotRepeatable({
+          type: 'virtual',
+          recurrence: input.recurrence,
+          taskId: id,
+        });
+
         const { userId } = input;
         const { recurrenceId, date } = data;
 
@@ -66,6 +68,12 @@ class ReplaceTaskUseCase {
       }
 
       if (isOverride) {
+        this.taskWithRecurrenceService.ensureNotRepeatable({
+          type: 'override',
+          recurrence: input.recurrence,
+          taskId: id,
+        });
+
         const { userId } = input;
         const { recurrenceId, overrideId } = data;
 

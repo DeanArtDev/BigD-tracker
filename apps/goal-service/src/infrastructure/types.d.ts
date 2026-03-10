@@ -69,6 +69,11 @@ export interface RecurrencesFrequencies {
   name: string;
 }
 
+export interface RecurrenceStatuses {
+  id: Generated<number>;
+  name: string;
+}
+
 export interface Stages {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -124,6 +129,7 @@ export interface TasksRecurrences {
   monthdays: number[] | null;
   pattern: string;
   recurrence_frequencies_id: number;
+  recurrence_status_id: number;
   start_date: Timestamp;
   task_id: number;
   timezone: string;
@@ -178,6 +184,7 @@ export interface DB {
   group_statuses: GroupStatuses;
   group_to_goals: GroupToGoals;
   groups: Groups;
+  recurrence_statuses: RecurrenceStatuses;
   recurrences_frequencies: RecurrencesFrequencies;
   stage_statuses: StageStatuses;
   stage_types: StageTypes;

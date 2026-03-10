@@ -19,8 +19,8 @@ function TaskDiaryTimeline({ onEventClick }: TaskDiaryTimelineProps) {
     return taskList.map((task) => {
       return {
         name: task.name,
-        from: task.startDate != null ? new Date(task.startDate) : 0,
-        to: task.deadline != null ? new Date(task.deadline) : 0,
+        from: task.startDate != null ? new Date(task.startDate).getTime() : 0,
+        to: task.deadline != null ? new Date(task.deadline).getTime() : 0,
         extra: task,
       };
     });
@@ -34,7 +34,12 @@ function TaskDiaryTimeline({ onEventClick }: TaskDiaryTimelineProps) {
         renderALlDayEvent={({ event }) => (
           <AllDayEventView event={event} onClick={(event) => void onEventClick(event.extra)} />
         )}
-        onDateChange={(dateSet) => void setDateSet({ from: dateSet.from.toISOString(), to: dateSet.to.toISOString() })}
+        onDateChange={(dateSet) => {
+          setDateSet({
+            from: dateSet.from.utc(true).format('YYYY-MM-DD'),
+            to: dateSet.to.utc(true).format('YYYY-MM-DD'),
+          });
+        }}
       />
     </DataLoader>
   );

@@ -1,10 +1,11 @@
-import { RecurrenceFrequency, TaskRecurrenceWeekday } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 
 interface TaskRecurrenceState {
   readonly id: number;
   readonly userId: number;
   readonly taskId: number;
+  status: TaskRecurrenceStatus;
   timezone: string;
   startDate: DateVo;
   pattern: string;
@@ -23,6 +24,7 @@ interface TaskRecurrenceState {
 interface TaskRecurrenceCreateInput {
   readonly userId: number;
   readonly taskId: number;
+  readonly status: TaskRecurrenceStatus;
   readonly timezone: string;
   readonly startDate: DateVo;
   readonly pattern: string;
@@ -37,6 +39,7 @@ interface TaskRecurrenceCreateInput {
 
 interface TaskRecurrenceReplaceInput {
   readonly startDate: DateVo;
+  readonly status?: TaskRecurrenceStatus;
   readonly pattern: string;
   readonly frequency: RecurrenceFrequency;
   readonly weekstart: TaskRecurrenceWeekday;
@@ -51,6 +54,7 @@ interface TaskRecurrenceRestoreInput {
   readonly id: number;
   readonly userId: number;
   readonly taskId: number;
+  readonly status: TaskRecurrenceStatus;
   readonly timezone: string;
   readonly startDate: DateVo;
   readonly pattern: string;

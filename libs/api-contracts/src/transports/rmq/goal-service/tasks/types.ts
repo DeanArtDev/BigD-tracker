@@ -10,6 +10,11 @@ enum TaskStatus {
   DELETED = 'DELETED',
 }
 
+enum TaskRecurrenceStatus {
+  ACTIVE = 'ACTIVE',
+  CANCELED = 'CANCELED',
+}
+
 // отличия от мастер-дела
 enum TaskOverrideType {
   OVERRIDE = 'OVERRIDE',
@@ -62,6 +67,7 @@ const recurrenceFrequencyToKeyMap: Record<RecurrenceFrequency, keyof typeof Recu
 export {
   TaskStatus,
   TaskOverrideType,
+  TaskRecurrenceStatus,
   RecurrenceFrequency,
   TaskRecurrenceWeekday,
   numberToWeekdayMap,

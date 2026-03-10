@@ -12,6 +12,7 @@ type TasksDB = Pick<
   | 'task_to_group'
   | 'tasks_recurrences'
   | 'recurrences_frequencies'
+  | 'recurrence_statuses'
   | 'tasks_recurrences_overrides'
   | 'tasks_recurrences_override_types'
 >;

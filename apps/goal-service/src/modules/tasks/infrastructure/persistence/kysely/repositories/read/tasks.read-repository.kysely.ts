@@ -7,7 +7,13 @@ import {
   TaskTransaction,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { RecurrenceFrequency, SortDirection, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import {
+  RecurrenceFrequency,
+  SortDirection,
+  TaskRecurrenceStatus,
+  TaskRecurrenceWeekday,
+  TaskStatus,
+} from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { toLower } from 'lodash';
@@ -36,6 +42,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         ...task,
         recurrence: {
           timezone: task.recurrence_timezone,
+          recurrence_status: task.recurrence_status,
           recurrence_frequency: task.recurrence_frequency,
           start_date: task.start_date,
           interval: task.recurrence_interval,
@@ -110,8 +117,9 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
           ...task,
           recurrence: {
             timezone: task.recurrence_timezone,
+            recurrence_status: task.recurrence_status,
             recurrence_frequency: task.recurrence_frequency,
-            start_date: task.start_date,
+            start_date: task.recurrence_start_date,
             interval: task.recurrence_interval,
             weekdays: task.recurrence_weekdays,
             monthdays: task.recurrence_monthdays,
@@ -157,6 +165,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
           ...task,
           recurrence: {
             timezone: task.recurrence_timezone,
+            recurrence_status: task.recurrence_status,
             recurrence_frequency: task.recurrence_frequency,
             start_date: task.start_date,
             interval: task.recurrence_interval,
@@ -185,6 +194,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     readonly deadline: Date | null;
     readonly recurrence: {
       readonly timezone?: string | null;
+      readonly recurrence_status?: TaskRecurrenceStatus | null;
       readonly recurrence_frequency?: keyof typeof RecurrenceFrequency | null;
       readonly start_date?: Date | null;
       readonly interval?: number | null;

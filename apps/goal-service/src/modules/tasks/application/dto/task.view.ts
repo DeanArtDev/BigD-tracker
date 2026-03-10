@@ -1,5 +1,9 @@
-import { TaskStatus } from '@big-d/api-contracts';
+import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
 import { TaskRecurrenceValues } from '../types';
+
+interface TaskViewRecurrenceState extends TaskRecurrenceValues {
+  readonly status?: TaskRecurrenceStatus;
+}
 
 interface TaskViewState {
   readonly id: string;
@@ -14,7 +18,7 @@ interface TaskViewState {
   readonly deadline?: string;
   readonly endDate?: string;
   readonly status: TaskStatus;
-  readonly recurrence?: TaskRecurrenceValues;
+  readonly recurrence?: TaskViewRecurrenceState;
 }
 
 class TaskView {
@@ -35,6 +39,20 @@ class TaskView {
   ) {}
 
   static restore(input: TaskViewState): TaskView {
+    const recurrence =
+      input.recurrence?.status === TaskRecurrenceStatus.ACTIVE
+        ? {
+            startDate: input.recurrence.startDate,
+            frequency: input.recurrence.frequency,
+            untilDate: input.recurrence.untilDate,
+            interval: input.recurrence.interval,
+            weekstart: input.recurrence.weekstart,
+            weekdays: input.recurrence.weekdays,
+            monthdays: input.recurrence.monthdays,
+            yearmonths: input.recurrence.yearmonths,
+          }
+        : undefined;
+
     return new TaskView(
       input.id,
       input.userId,
@@ -48,9 +66,9 @@ class TaskView {
       input.startDate,
       input.deadline,
       input.endDate,
-      input.recurrence,
+      recurrence,
     );
   }
 }
 
-export { TaskView, TaskViewState };
+export { TaskView, TaskViewState, TaskViewRecurrenceState };

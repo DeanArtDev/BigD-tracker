@@ -8,10 +8,16 @@ import {
   TaskRecurrenceByUserId,
   tasksCombinators,
 } from '@/modules/tasks/application/specifications';
-import { TaskOverrideFactory, TaskRecurrenceFactory } from '@/modules/tasks/domain';
-import { RecurrenceFrequency, TaskOverrideType, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import { TaskOverrideFactory } from '@/modules/tasks/domain';
+import {
+  RecurrenceFrequency,
+  TaskOverrideType,
+  TaskRecurrenceStatus,
+  TaskRecurrenceWeekday,
+  TaskStatus,
+} from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
-import { getTask } from '@shared/__tests__/entities';
+import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
 import { TasksOverridesWriteRepositoryKysely } from '../tasks-overrides.write-repository.kysely';
 
 describe('TasksOverridesWriteRepositoryKysely', () => {
@@ -39,12 +45,15 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             "tasks_recurrences"."yearmonths" as "yearmonths",
             "tasks_recurrences"."timezone" as "timezone",
             "tasks_recurrences"."pattern" as "pattern",
+            recurrence_statuses.name as "recurrence_status",
             recurrences_frequencies.name as "recurrence_frequency",
             tasks_recurrences.weekstart as "weekstart",
             tasks_recurrences.weekdays as "weekdays"
           from "tasks_recurrences"
           inner join "recurrences_frequencies"
             on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
+          inner join "recurrence_statuses"
+            on "tasks_recurrences"."recurrence_status_id" = "recurrence_statuses"."id"
           where
             (
               "tasks_recurrences"."user_id" = $1
@@ -81,12 +90,15 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             "tasks_recurrences"."yearmonths" as "yearmonths",
             "tasks_recurrences"."timezone" as "timezone",
             "tasks_recurrences"."pattern" as "pattern",
+            recurrence_statuses.name as "recurrence_status",
             recurrences_frequencies.name as "recurrence_frequency",
             tasks_recurrences.weekstart as "weekstart",
             tasks_recurrences.weekdays as "weekdays"
           from "tasks_recurrences"
           inner join "recurrences_frequencies"
             on "tasks_recurrences"."recurrence_frequencies_id" = "recurrences_frequencies"."id"
+          inner join "recurrence_statuses"
+            on "tasks_recurrences"."recurrence_status_id" = "recurrence_statuses"."id"
           where
             (
               "tasks_recurrences"."user_id" = $1
@@ -157,6 +169,9 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           rows: [{ id: 1, name: 'DAILY' }],
         });
         recorder.enqueueResult({
+          rows: [{ id: 2, name: 'ACTIVE' }],
+        });
+        recorder.enqueueResult({
           rows: [
             {
               id: 25,
@@ -176,19 +191,20 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           ],
         });
 
-        const recurrence = TaskRecurrenceFactory.create({
+        const recurrence = getTaskRecurrence({
           userId: 77,
           taskId: 11,
           timezone: 'UTC',
           startDate: '2026-01-10T10:00:00.000Z',
           pattern: 'FREQ=DAILY;INTERVAL=1',
           frequency: RecurrenceFrequency.DAILY,
+          status: TaskRecurrenceStatus.ACTIVE,
           weekstart: TaskRecurrenceWeekday.MO,
         });
 
         await repository.upsertRecurrence(recurrence);
 
-        expect(recorder.queries).toHaveLength(2);
+        expect(recorder.queries).toHaveLength(3);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
@@ -201,10 +217,22 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
         });
         expectSqlQuery(recorder.queries[1], {
           sql: `
+          select
+            "id",
+            recurrence_statuses.name as "name"
+          from "recurrence_statuses"
+          where "recurrence_statuses"."name" in ($1)
+        `,
+          parameters: [TaskRecurrenceStatus.ACTIVE],
+        });
+        expectSqlQuery(recorder.queries[2], {
+          sql: `
           insert into "tasks_recurrences"
             (
+              "id",
               "user_id",
               "task_id",
+              "timezone",
               "pattern",
               "start_date",
               "until_date",
@@ -212,28 +240,31 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
               "monthdays",
               "weekdays",
               "interval",
-              "timezone",
               "weekstart",
+              "recurrence_status_id",
               "recurrence_frequencies_id"
             )
           values
-            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-          on conflict ("id")
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          on conflict ("task_id", "start_date")
           do update set
-            "pattern" = $13,
-            "start_date" = $14,
-            "until_date" = $15,
-            "yearmonths" = $16,
-            "monthdays" = $17,
-            "weekdays" = $18,
-            "interval" = $19,
-            "weekstart" = $20,
-            "recurrence_frequencies_id" = $21
+            "pattern" = $15,
+            "start_date" = $16,
+            "until_date" = $17,
+            "yearmonths" = $18,
+            "monthdays" = $19,
+            "weekdays" = $20,
+            "interval" = $21,
+            "weekstart" = $22,
+            "recurrence_status_id" = $23,
+            "recurrence_frequencies_id" = $24
           returning *
         `,
           parameters: [
+            1,
             77,
             11,
+            'UTC',
             'FREQ=DAILY;INTERVAL=1',
             '2026-01-10T10:00:00.000Z',
             null,
@@ -241,8 +272,8 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             null,
             null,
             null,
-            'UTC',
             TaskRecurrenceWeekday.MO,
+            2,
             1,
             'FREQ=DAILY;INTERVAL=1',
             '2026-01-10T10:00:00.000Z',
@@ -252,6 +283,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             null,
             null,
             TaskRecurrenceWeekday.MO,
+            2,
             1,
           ],
         });

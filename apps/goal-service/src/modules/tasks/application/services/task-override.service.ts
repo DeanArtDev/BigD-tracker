@@ -4,7 +4,12 @@ import { TasksOverridesToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
 import { compact } from 'lodash';
 import { TasksOverridesRepositoryWritePort, TaskTransaction } from '../ports';
-import { TaskOverrideById, TaskOverrideByUserId, tasksCombinators } from '../specifications';
+import {
+  TaskOverrideById,
+  TaskOverrideByRecurrencesIds,
+  TaskOverrideByUserId,
+  tasksCombinators,
+} from '../specifications';
 
 const { and } = tasksCombinators;
 
@@ -26,6 +31,26 @@ class TaskOverrideService {
     }
 
     return override;
+  }
+
+  async getOverridesByRecurrenceId(
+    input: { userId: number; recurrenceId: number },
+    trx?: TaskTransaction,
+  ): Promise<TaskOverride[]> {
+    return await this.tasksOverridesRepository.getManyOverrides(
+      and(TaskOverrideByUserId(input.userId), TaskOverrideByRecurrencesIds([input.recurrenceId])),
+      trx,
+    );
+  }
+
+  async deleteOverridesByRecurrenceId(
+    input: { userId: number; recurrenceId: number },
+    trx?: TaskTransaction,
+  ): Promise<number> {
+    return await this.tasksOverridesRepository.deleteManyOverride(
+      and(TaskOverrideByUserId(input.userId), TaskOverrideByRecurrencesIds([input.recurrenceId])),
+      trx,
+    );
   }
 
   async upsertOverride(input: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
