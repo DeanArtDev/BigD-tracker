@@ -9,13 +9,6 @@ const TaskRecurrenceByStartDateLessOrEqual = (date: Date) =>
     toExpr: (eb) => eb('tasks_recurrences.start_date', '<=', date),
   });
 
-const TaskRecurrenceByUntilDateGreaterOrEqual = (date: Date) =>
-  leaf({
-    key: 'tasks-recurrences.byDeadlineGreaterOrEqual',
-    purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrences.until_date', '>=', date),
-  });
-
 const TaskRecurrenceByUserId = (userId: number) =>
   leaf({
     key: 'tasks-recurrences.byUserId',
@@ -37,10 +30,4 @@ const TaskRecurrenceByTaskId = (taskId: number) =>
     toExpr: (eb) => eb('tasks_recurrences.task_id', '=', taskId),
   });
 
-export {
-  TaskRecurrenceById,
-  TaskRecurrenceByUserId,
-  TaskRecurrenceByTaskId,
-  TaskRecurrenceByStartDateLessOrEqual,
-  TaskRecurrenceByUntilDateGreaterOrEqual,
-};
+export { TaskRecurrenceById, TaskRecurrenceByUserId, TaskRecurrenceByTaskId, TaskRecurrenceByStartDateLessOrEqual };

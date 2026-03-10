@@ -2,6 +2,8 @@ export * from './task.service';
 export * from './task-checker.service';
 export * from './task-query.service';
 
+export * from './task-recurrence-query.service';
+export * from './task-recurrence.service';
 export * from './task-override.service';
 export * from './task-type.service';
 

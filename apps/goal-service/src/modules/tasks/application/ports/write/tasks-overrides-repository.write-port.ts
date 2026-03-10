@@ -9,9 +9,13 @@ interface TasksOverridesRepositoryWritePort {
 
   getManyOverrides(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride[]>;
 
+  getOneOverride(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride | null>;
+
   upsertOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride>;
 
   upsertRecurrence(override: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence>;
+
+  deleteRecurrence(input: { id: number }, trx?: TaskTransaction): Promise<boolean>;
 }
 
 export { TasksOverridesRepositoryWritePort };

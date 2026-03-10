@@ -59,6 +59,10 @@ const tasks = {
     code: 'GT-A-0006',
     details: Details.Define<{ taskId?: string | number; recurrenceId?: number }>(),
   },
+  taskOverrideNotExist: {
+    code: 'GT-A-0007',
+    details: Details.Define<{ taskId?: string | number; overrideId?: number }>(),
+  },
 
   // Domain
   taskInvariantFailed: {

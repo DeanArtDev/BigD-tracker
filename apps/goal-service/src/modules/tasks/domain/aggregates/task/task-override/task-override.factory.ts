@@ -14,10 +14,7 @@ class TaskOverrideFactory {
     return TaskOverride.create({ task, type, recurrenceId, recurrenceStart: DateVo.create(input.recurrenceStart) });
   }
 
-  static update(
-    override: TaskOverride,
-    patch: { task: Task; type: TaskOverrideType; occurrenceStart: string },
-  ): TaskOverride {
+  static replace(override: TaskOverride, patch: { task: Task; type: TaskOverrideType }): TaskOverride {
     const { task, type } = patch;
     return override.replace({ task, type });
   }

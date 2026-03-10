@@ -62,6 +62,13 @@ class TaskRecurrenceFactory {
       yearmonths: patch.yearmonths,
     });
   }
+
+  static cancel(recurrence: TaskRecurrence, patch: { cancelDate: string; pattern: string }): TaskRecurrence {
+    return recurrence.cancel({
+      cancelDate: DateVo.create(patch.cancelDate),
+      pattern: patch.pattern,
+    });
+  }
 }
 
 export { TaskRecurrenceFactory };

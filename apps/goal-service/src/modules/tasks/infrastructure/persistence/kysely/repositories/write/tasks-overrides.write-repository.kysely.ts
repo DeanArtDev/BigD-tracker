@@ -1,13 +1,17 @@
 import { TaskDatabase, TasksOverridesRepositoryWritePort, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
-import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { sql } from 'kysely';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { overrideTypeByNameQuery, statusByNameQuery, taskFrequencyByNameQuery, taskRecurrencesQuery } from '../utils';
+import {
+  overrideTypeByNameQuery,
+  overrideWithStatusAndTypeQuery,
+  statusByNameQuery,
+  taskFrequencyByNameQuery,
+  taskRecurrencesQuery,
+} from '../utils';
 
 @Injectable()
 export class TasksOverridesWriteRepositoryKysely
@@ -41,35 +45,34 @@ export class TasksOverridesWriteRepositoryKysely
 
   async getManyOverrides(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride[]> {
     return await this.errorCatcher('tasks.get-many-overrides', async () => {
-      const overrides = await this.db
-        .qb(trx)
-        .selectFrom('tasks_recurrences_overrides')
-        .innerJoin('task_statuses', 'tasks_recurrences_overrides.status_id', 'task_statuses.id')
-        .innerJoin(
-          'tasks_recurrences_override_types',
-          'tasks_recurrences_override_types.id',
-          'tasks_recurrences_overrides.override_type_id',
-        )
-        .select([
-          'tasks_recurrences_overrides.id as id',
-          'tasks_recurrences_overrides.recurrence_id as recurrence_id',
-          'tasks_recurrences_overrides.user_id as user_id',
-          'tasks_recurrences_overrides.name as name',
-          'tasks_recurrences_overrides.description as description',
-          'tasks_recurrences_overrides.priority as priority',
-          'tasks_recurrences_overrides.weight as weight',
-          'tasks_recurrences_overrides.cancel_reason as cancel_reason',
-          'tasks_recurrences_overrides.start_date as start_date',
-          'tasks_recurrences_overrides.end_date as end_date',
-          'tasks_recurrences_overrides.deadline as deadline',
-          'tasks_recurrences_overrides.recurrence_start as recurrence_start',
-          sql<TaskStatus>`task_statuses.name`.as('status'),
-          sql<TaskOverrideType>`tasks_recurrences_override_types.name`.as('override_type'),
-        ])
+      const overrides = await overrideWithStatusAndTypeQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
         .execute();
 
       return overrides.map(TasksWriteKyselyMapper.fromRawToOverrideAgr);
+    });
+  }
+
+  async getOneOverride(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride | null> {
+    return await this.errorCatcher('tasks.get-one-override', async () => {
+      const override = await overrideWithStatusAndTypeQuery(this.db, trx)
+        .where((eb) => specifications.toExpr(eb))
+        .executeTakeFirst();
+      if (override == null) return null;
+
+      return TasksWriteKyselyMapper.fromRawToOverrideAgr(override);
+    });
+  }
+
+  async deleteRecurrence(input: { id: number }, trx?: TaskTransaction): Promise<boolean> {
+    return await this.errorCatcher('tasks.delete-recurrence', async () => {
+      const result = await this.db
+        .qb(trx)
+        .deleteFrom('tasks_recurrences')
+        .where('id', '=', input.id)
+        .executeTakeFirst();
+
+      return result.numDeletedRows > 0;
     });
   }
 
@@ -90,11 +93,11 @@ export class TasksOverridesWriteRepositoryKysely
           task_id: recurrence.taskId,
           pattern: recurrence.pattern,
           start_date: recurrence.startDate,
-          until_date: recurrence.untilDate,
-          yearmonths: recurrence.yearmonths,
-          monthdays: recurrence.monthdays,
-          weekdays: recurrence.weekdays,
-          interval: recurrence.interval,
+          until_date: recurrence.untilDate ?? null,
+          yearmonths: recurrence.yearmonths ?? null,
+          monthdays: recurrence.monthdays ?? null,
+          weekdays: recurrence.weekdays ?? null,
+          interval: recurrence.interval ?? null,
           timezone: recurrence.timezone,
           weekstart: recurrence.weekstart,
           recurrence_frequencies_id: frequency_id,
@@ -103,11 +106,11 @@ export class TasksOverridesWriteRepositoryKysely
           oc.columns(['id']).doUpdateSet({
             pattern: recurrence.pattern,
             start_date: recurrence.startDate,
-            until_date: recurrence.untilDate,
-            yearmonths: recurrence.yearmonths,
-            monthdays: recurrence.monthdays,
-            weekdays: recurrence.weekdays,
-            interval: recurrence.interval,
+            until_date: recurrence.untilDate ?? null,
+            yearmonths: recurrence.yearmonths ?? null,
+            monthdays: recurrence.monthdays ?? null,
+            weekdays: recurrence.weekdays ?? null,
+            interval: recurrence.interval ?? null,
             weekstart: recurrence.weekstart,
             recurrence_frequencies_id: frequency_id,
           }),

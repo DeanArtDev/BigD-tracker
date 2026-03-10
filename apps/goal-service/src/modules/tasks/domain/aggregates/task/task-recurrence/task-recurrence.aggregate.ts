@@ -1,4 +1,5 @@
 import { recurrenceFrequencyToKeyMap } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
 import {
   TaskRecurrenceCreateInput,
   TaskRecurrenceReplaceInput,
@@ -77,6 +78,18 @@ class TaskRecurrence {
     return this;
   }
 
+  public cancel(input: { cancelDate: DateVo; pattern: string }): TaskRecurrence {
+    this.#state.pattern = input.pattern;
+    if (input.cancelDate.isBefore(this.#state.startDate.value)) {
+      this.#state.untilDate = this.#state.startDate;
+      return this;
+    }
+
+    taskAsserts.datesIntersections({ start: this.#state.startDate, end: input.cancelDate });
+    this.#state.untilDate = input.cancelDate;
+    return this;
+  }
+
   get id() {
     return this.#state.id;
   }
@@ -121,8 +134,8 @@ class TaskRecurrence {
     return Number.isNaN(this.#state.id);
   }
 
-  public toJSON() {
-    return JSON.stringify(this.#state, null, 2);
+  get isEmpty() {
+    return this.#state.untilDate?.equals(this.#state.startDate);
   }
 }
 

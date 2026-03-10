@@ -24,6 +24,8 @@ import {
   TaskOverrideService,
   GoalPublicService,
   TaskTypeService,
+  TaskRecurrenceService,
+  TaskRecurrenceQueryService,
 } from './services';
 import { Module } from '@nestjs/common';
 import { TasksInfrastructureModule } from '../infrastructure/tasks-infrastructure.module';
@@ -160,6 +162,8 @@ const useCases = [
     TaskQueryService,
     GoalPublicService,
     TaskOverrideService,
+    TaskRecurrenceService,
+    TaskRecurrenceQueryService,
     TaskTypeService,
     ...commands,
     ...queries,

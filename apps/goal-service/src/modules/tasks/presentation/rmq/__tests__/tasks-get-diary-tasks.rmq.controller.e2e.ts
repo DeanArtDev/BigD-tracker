@@ -156,8 +156,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(overridesSpec).toContain('tasks.policy.get-tasks-overrides');
       expect(overridesSpec).toContain('tasks.overrideByUserId');
       expect(overridesSpec).toContain('tasks.overridesByMasterIds');
-      expect(overridesSpec).toContain('tasks.overrideByStartLessOrEqual');
-      expect(overridesSpec).toContain('tasks.overrideByStartGreaterOrEqual');
+      expect(overridesSpec).toContain('tasks.overrideByStartDateInRange');
 
       const tasksSpec = specToDebugString(firstArg(tasksReadRepoMock.getByRange));
       expect(tasksSpec).toContain('tasks.byUserId');
@@ -288,7 +287,9 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
 
       tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([recurrenceA, recurrenceB]);
-      tasksOverridesWriteRepoMock.getManyOverrides.mockResolvedValueOnce([overrideForB, overrideForA]);
+      tasksOverridesWriteRepoMock.getManyOverrides
+        .mockResolvedValueOnce([overrideForA])
+        .mockResolvedValueOnce([overrideForB]);
       tasksWriteRepoMock.getTaskById.mockImplementation(({ taskId }) => {
         return taskId === sourceTaskA.id ? sourceTaskA : sourceTaskB;
       });
@@ -307,6 +308,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       );
 
       expect(res.data.items).toHaveLength(2);
+      expect(tasksOverridesWriteRepoMock.getManyOverrides).toHaveBeenCalledTimes(2);
       expect(res.data.items[0]).toMatchObject({
         id: TaskIdBuilder.wrapOverrideId({
           recurrenceId: recurrenceA.id,
@@ -356,7 +358,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       );
 
       expect(tasksOverridesWriteRepoMock.getManyRecurrences).toHaveBeenCalledTimes(1);
-      expect(tasksOverridesWriteRepoMock.getManyOverrides).toHaveBeenCalledTimes(1);
+      expect(tasksOverridesWriteRepoMock.getManyOverrides).toHaveBeenCalledTimes(0);
       expect(tasksReadRepoMock.getByRange).toHaveBeenCalledTimes(1);
       expect(res).toEqual({
         data: {
