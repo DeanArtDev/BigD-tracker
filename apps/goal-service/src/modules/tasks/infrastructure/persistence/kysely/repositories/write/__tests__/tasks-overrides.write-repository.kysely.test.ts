@@ -207,18 +207,28 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
               "task_id",
               "pattern",
               "start_date",
+              "until_date",
+              "yearmonths",
+              "monthdays",
+              "weekdays",
+              "interval",
               "timezone",
               "weekstart",
               "recurrence_frequencies_id"
             )
           values
-            ($1, $2, $3, $4, $5, $6, $7)
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
           on conflict ("id")
           do update set
-            "pattern" = $8,
-            "start_date" = $9,
-            "weekstart" = $10,
-            "recurrence_frequencies_id" = $11
+            "pattern" = $13,
+            "start_date" = $14,
+            "until_date" = $15,
+            "yearmonths" = $16,
+            "monthdays" = $17,
+            "weekdays" = $18,
+            "interval" = $19,
+            "weekstart" = $20,
+            "recurrence_frequencies_id" = $21
           returning *
         `,
           parameters: [
@@ -226,11 +236,21 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             11,
             'FREQ=DAILY;INTERVAL=1',
             '2026-01-10T10:00:00.000Z',
+            null,
+            null,
+            null,
+            null,
+            null,
             'UTC',
             TaskRecurrenceWeekday.MO,
             1,
             'FREQ=DAILY;INTERVAL=1',
             '2026-01-10T10:00:00.000Z',
+            null,
+            null,
+            null,
+            null,
+            null,
             TaskRecurrenceWeekday.MO,
             1,
           ],

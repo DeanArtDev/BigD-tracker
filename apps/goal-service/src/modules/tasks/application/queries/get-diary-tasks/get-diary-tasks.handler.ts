@@ -5,7 +5,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { compact } from 'lodash';
 import { TaskView } from '../../dto';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
-import { TaskOverrideService } from '../../services';
+import { TaskRecurrenceQueryService } from '../../services';
 import {
   TaskByDeadlineGreaterOrEqual,
   TaskByIds,
@@ -22,7 +22,7 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
   constructor(
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
     @Inject(TasksToken.READ_REPOSITORY) private readonly tasksReadRepository: TasksReadRepository,
-    private readonly taskOverrideService: TaskOverrideService,
+    private readonly taskRecurrenceQueryService: TaskRecurrenceQueryService,
   ) {}
 
   /**
@@ -57,7 +57,7 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
       const { userId, meta } = input;
       const { filter } = meta;
 
-      const { virtualViews, recurrences } = await this.taskOverrideService.calculateTasks(
+      const { virtualViews, recurrences } = await this.taskRecurrenceQueryService.calculateTasks(
         {
           userId,
           from: filter.from,

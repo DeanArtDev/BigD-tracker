@@ -1,24 +1,27 @@
 import { tagSpec } from '@big-d/api-utils';
 import { compact } from 'lodash';
 import { TasksDB } from '../ports';
-import {
-  TaskOverrideByRecurrencesIds,
-  TaskOverrideByStartGreaterOrEqual,
-  TaskOverrideByStartLessOrEqual,
-  TaskOverrideByUserId,
-  tasksCombinators,
-} from '../specifications';
+import { TaskOverrideByRecurrencesIds, TaskOverrideByUserId, tasksCombinators } from '../specifications';
 
-const { and } = tasksCombinators;
+const { and, leaf } = tasksCombinators;
 
 function GetTasksOverrides(input: { userId: number; from: Date; to: Date; recurrenceIds: number[] }) {
   const spec = and(
-    ...compact([
-      TaskOverrideByUserId(input.userId),
-      input.recurrenceIds.length > 0 && TaskOverrideByRecurrencesIds(input.recurrenceIds),
-      TaskOverrideByStartLessOrEqual(input.to),
-      TaskOverrideByStartGreaterOrEqual(input.from),
-    ]),
+    and(
+      ...compact([
+        TaskOverrideByUserId(input.userId),
+        input.recurrenceIds.length > 0 && TaskOverrideByRecurrencesIds(input.recurrenceIds),
+        leaf({
+          key: 'tasks.overrideByStartDateInRange',
+          purpose: 'filter',
+          toExpr: (eb) =>
+            eb.and([
+              eb('tasks_recurrences_overrides.start_date', '<=', input.to),
+              eb('tasks_recurrences_overrides.deadline', '>=', input.from),
+            ]),
+        }),
+      ]),
+    ),
   );
 
   return tagSpec<TasksDB>(spec, {
