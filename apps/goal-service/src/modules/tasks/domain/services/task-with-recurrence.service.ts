@@ -34,9 +34,8 @@ interface TaskWithRecurrenceCancelInput {
   readonly task: Task;
   readonly taskPatch: TaskFactoryReplaceInput;
   readonly currentRecurrence: TaskRecurrence;
-  readonly cancelDate?: string;
-  readonly pattern: string;
-  readonly now?: string;
+  readonly currentOverrides: TaskOverride[];
+  readonly patternShaper: (data: Omit<TaskWithRecurrenceInput, 'pattern'>) => string;
 }
 
 interface TaskWithRecurrenceReplaceInput {
@@ -45,7 +44,6 @@ interface TaskWithRecurrenceReplaceInput {
   readonly currentRecurrence: TaskRecurrence | null | undefined;
   readonly currentOverrides?: TaskOverride[];
   readonly recurrencePatch: Omit<TaskWithRecurrenceInput, 'pattern'> | undefined;
-  readonly now: string;
   readonly patternShaper: (data: Omit<TaskWithRecurrenceInput, 'pattern'>) => string;
 }
 
@@ -55,8 +53,8 @@ type TaskWithRecurrenceCreateResult = {
   readonly isCreate: true;
   readonly isUpdate?: never;
   readonly isCancel?: never;
-  readonly shouldDeleteRecurrence: false;
-  readonly shouldDeleteOverrides: false;
+  readonly shouldDeleteRecurrence?: never;
+  readonly overridesToDelete?: never;
 };
 
 type TaskWithRecurrenceUpdateResult = {
@@ -65,28 +63,18 @@ type TaskWithRecurrenceUpdateResult = {
   readonly isUpdate: true;
   readonly isCreate?: never;
   readonly isCancel?: never;
-  readonly shouldDeleteRecurrence: false;
-  readonly shouldDeleteOverrides: false;
+  readonly shouldDeleteRecurrence?: never;
+  readonly overridesToDelete?: never;
 };
 
 type TaskWithRecurrenceCancelDeleteResult = {
   readonly task: Task;
-  readonly recurrence: null;
+  readonly recurrence: TaskRecurrence;
   readonly isCancel: true;
   readonly isCreate?: never;
   readonly isUpdate?: never;
-  readonly shouldDeleteRecurrence: true;
-  readonly shouldDeleteOverrides: true;
-};
-
-type TaskWithRecurrenceCancelKeepResult = {
-  readonly task: Task;
-  readonly recurrence: TaskRecurrence | null;
-  readonly isCancel: true;
-  readonly isCreate?: never;
-  readonly isUpdate?: never;
-  readonly shouldDeleteRecurrence: false;
-  readonly shouldDeleteOverrides: false;
+  readonly shouldDeleteRecurrence: boolean;
+  readonly overridesToDelete: TaskOverride[];
 };
 
 type TaskWithRecurrenceNoopResult = {
@@ -95,15 +83,14 @@ type TaskWithRecurrenceNoopResult = {
   readonly isCreate?: never;
   readonly isUpdate?: never;
   readonly isCancel?: never;
-  readonly shouldDeleteRecurrence: false;
-  readonly shouldDeleteOverrides: false;
+  readonly shouldDeleteRecurrence?: never;
+  readonly overridesToDelete?: never;
 };
 
 type TaskWithRecurrenceReplaceResult =
   | TaskWithRecurrenceCreateResult
   | TaskWithRecurrenceUpdateResult
   | TaskWithRecurrenceCancelDeleteResult
-  | TaskWithRecurrenceCancelKeepResult
   | TaskWithRecurrenceNoopResult;
 
 class TaskWithRecurrenceService {
@@ -120,7 +107,7 @@ class TaskWithRecurrenceService {
   }
 
   replace(input: TaskWithRecurrenceReplaceInput): TaskWithRecurrenceReplaceResult {
-    const { task, taskPatch, currentRecurrence, currentOverrides = [], recurrencePatch, now, patternShaper } = input;
+    const { task, taskPatch, currentRecurrence, currentOverrides = [], recurrencePatch, patternShaper } = input;
 
     this.assertOverridesBelongToRecurrence({
       taskId: task.id,
@@ -143,8 +130,6 @@ class TaskWithRecurrenceService {
       return {
         ...next,
         isCreate: true,
-        shouldDeleteRecurrence: false,
-        shouldDeleteOverrides: false,
       };
     }
 
@@ -160,58 +145,27 @@ class TaskWithRecurrenceService {
       return {
         ...next,
         isUpdate: true,
-        shouldDeleteRecurrence: false,
-        shouldDeleteOverrides: false,
       };
     }
 
     if (isCancel) {
-      if (this.canDeleteRecurrence(currentOverrides)) {
-        return {
-          task: TaskFactory.replace(task, taskPatch),
-          recurrence: null,
-          isCancel: true,
-          shouldDeleteRecurrence: true,
-          shouldDeleteOverrides: true,
-        };
-      }
-
-      const untilDate = timeAndDate(now).tz(currentRecurrence.timezone).startOf('day').utc().toISOString();
-
-      const cancelPattern = patternShaper({
-        frequency: currentRecurrence.frequency.value,
-        weekstart: currentRecurrence.weekstart,
-        untilDate,
-        interval: currentRecurrence.interval,
-        weekdays: currentRecurrence.weekdays,
-        monthdays: currentRecurrence.monthdays,
-        yearmonths: currentRecurrence.yearmonths,
-        startDate: taskPatch.startDate ?? task.startDate ?? now,
-        timezone: currentRecurrence.timezone,
-      });
-
       const next = this.cancel({
         task,
         taskPatch,
         currentRecurrence,
-        cancelDate: taskPatch.startDate,
-        pattern: cancelPattern,
-        now,
+        currentOverrides,
+        patternShaper,
       });
 
       return {
         ...next,
         isCancel: true,
-        shouldDeleteRecurrence: false,
-        shouldDeleteOverrides: false,
       };
     }
 
     return {
       task: TaskFactory.replace(task, taskPatch),
       recurrence: null,
-      shouldDeleteRecurrence: false,
-      shouldDeleteOverrides: false,
     };
   }
 
@@ -293,27 +247,54 @@ class TaskWithRecurrenceService {
     };
   }
 
-  cancel(input: TaskWithRecurrenceCancelInput): { task: Task; recurrence: TaskRecurrence | null } {
-    const { task, taskPatch, currentRecurrence, cancelDate, pattern, now } = input;
-    const updatedTask = TaskFactory.replace(task, taskPatch);
+  cancel(input: TaskWithRecurrenceCancelInput): {
+    task: Task;
+    recurrence: TaskRecurrence;
+    shouldDeleteRecurrence: boolean;
+    overridesToDelete: TaskOverride[];
+  } {
+    const { task, taskPatch, currentRecurrence, currentOverrides, patternShaper } = input;
 
-    if (cancelDate == null) {
+    const updatedTask = TaskFactory.replace(task, taskPatch);
+    if (this.canDeleteRecurrence(currentOverrides)) {
+      return {
+        task: updatedTask,
+        recurrence: currentRecurrence,
+        shouldDeleteRecurrence: true,
+        overridesToDelete: [],
+      };
+    }
+
+    const closestOverrideDate = Math.max(...currentOverrides.map((o) => timeAndDate(o.deadline).valueOf()));
+    const cancelDate = timeAndDate(closestOverrideDate).toISOString();
+
+    if (!isFinite(closestOverrideDate)) {
       throw new ExceptionTaskDomainInvalidInvariant({
-        message: 'Невозможно отменить recurrence без даты начала Task',
-        field: 'startDate',
+        message: 'Дата отмены не должна быть infinite',
+        field: 'untilDate',
         taskId: updatedTask.id,
       });
     }
 
-    const untilDate = timeAndDate(now).tz(currentRecurrence.timezone).startOf('day').utc().toISOString();
-    const cancelledRecurrence = currentRecurrence.cancel({
-      cancelDate: DateVo.create(untilDate),
-      pattern,
+    const pattern = patternShaper({
+      frequency: currentRecurrence.frequency.value,
+      weekstart: currentRecurrence.weekstart,
+      untilDate: cancelDate,
+      interval: currentRecurrence.interval,
+      weekdays: currentRecurrence.weekdays,
+      monthdays: currentRecurrence.monthdays,
+      yearmonths: currentRecurrence.yearmonths,
+      startDate: currentRecurrence.startDate,
+      timezone: currentRecurrence.timezone,
     });
+
+    const cancelledRecurrence = currentRecurrence.cancel({ cancelDate: DateVo.create(cancelDate), pattern });
 
     return {
       task: updatedTask,
-      recurrence: cancelledRecurrence.isEmpty ? null : cancelledRecurrence,
+      recurrence: cancelledRecurrence ?? null,
+      shouldDeleteRecurrence: false,
+      overridesToDelete: this.overridesToDeleteFilter(currentOverrides),
     };
   }
 
@@ -327,8 +308,27 @@ class TaskWithRecurrenceService {
   }
 
   private canDeleteRecurrence(overrides: TaskOverride[]): boolean {
+    if (overrides.length <= 0) return true;
     return overrides.every((override) =>
-      [TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS, TaskStatus.ARCHIVED].includes(override.status),
+      [
+        TaskStatus.NOT_STARTED,
+        TaskStatus.IN_PROGRESS,
+        TaskStatus.CANCELLED,
+        TaskStatus.ARCHIVED,
+        TaskStatus.DELETED,
+      ].includes(override.status),
+    );
+  }
+
+  private overridesToDeleteFilter(overrides: TaskOverride[]): TaskOverride[] {
+    return overrides.filter((override) =>
+      [
+        TaskStatus.NOT_STARTED,
+        TaskStatus.IN_PROGRESS,
+        TaskStatus.CANCELLED,
+        TaskStatus.ARCHIVED,
+        TaskStatus.DELETED,
+      ].includes(override.status),
     );
   }
 

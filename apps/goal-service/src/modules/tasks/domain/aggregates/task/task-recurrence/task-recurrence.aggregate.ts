@@ -76,15 +76,12 @@ class TaskRecurrence {
   }
 
   public cancel(input: { cancelDate: DateVo; pattern: string }): TaskRecurrence {
-    this.#state.pattern = input.pattern;
-    this.#state.status = TaskRecurrenceStatus.CANCELED;
-    if (input.cancelDate.isBefore(this.#state.startDate.value)) {
-      this.#state.untilDate = this.#state.startDate;
-      return this;
-    }
-
     taskAsserts.datesIntersections({ start: this.#state.startDate, end: input.cancelDate });
+
+    this.#state.status = TaskRecurrenceStatus.CANCELED;
+    this.#state.pattern = input.pattern;
     this.#state.untilDate = input.cancelDate;
+
     return this;
   }
 
@@ -137,10 +134,6 @@ class TaskRecurrence {
 
   get isCanceled() {
     return this.#state.status === TaskRecurrenceStatus.CANCELED;
-  }
-
-  get isEmpty() {
-    return this.#state.untilDate?.equals(this.#state.startDate);
   }
 }
 

@@ -30,11 +30,11 @@ const TaskOverrideByUserId = (userId: number) =>
     toExpr: (eb) => eb('tasks_recurrences_overrides.user_id', '=', userId),
   });
 
-const TaskOverrideById = (id: number) =>
+const TaskOverrideByIds = (ids: number[]) =>
   leaf({
     key: 'tasks.overrideById',
     purpose: 'filter',
-    toExpr: (eb) => eb('tasks_recurrences_overrides.id', '=', id),
+    toExpr: (eb) => eb('tasks_recurrences_overrides.id', 'in', ids),
   });
 
 export {
@@ -42,5 +42,5 @@ export {
   TaskOverrideByUserId,
   TaskOverrideByStartGreaterOrEqual,
   TaskOverrideByStartLessOrEqual,
-  TaskOverrideById,
+  TaskOverrideByIds,
 };
