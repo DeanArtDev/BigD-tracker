@@ -1,5 +1,6 @@
 import { isEmail } from 'validator';
 import { BaseValueObject } from './base-value-object';
+import { ExceptionInvalidInvariant } from './exceptions';
 
 class Email implements BaseValueObject {
   #value: string;
@@ -14,11 +15,17 @@ class Email implements BaseValueObject {
 
   public static create(email: string): Email {
     if (!email) {
-      throw new Error('Email is required');
+      throw new ExceptionInvalidInvariant({
+        message: 'Email is required',
+        field: 'email',
+      });
     }
     const normalized = email.trim().toLowerCase();
     if (!isEmail(normalized)) {
-      throw new Error(`Invalid email format: "${email}"`);
+      throw new ExceptionInvalidInvariant({
+        message: `Invalid email format: "${email}"`,
+        field: 'email',
+      });
     }
     return new Email(normalized);
   }

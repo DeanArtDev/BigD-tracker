@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { DateVo } from '../date-vo';
+import { ExceptionInvalidInvariant } from '../exceptions';
+
+type InvalidInvariantError = InstanceType<typeof ExceptionInvalidInvariant>;
 
 describe('DateVo', () => {
   it('creates from ISO string and normalizes milliseconds', () => {
@@ -16,7 +19,14 @@ describe('DateVo', () => {
   });
 
   it('throws for non-ISO input', () => {
-    expect(() => DateVo.create('not-a-date')).toThrowError('Date: not-a-date has invalid format');
+    try {
+      DateVo.create('not-a-date');
+      throw new Error('Expected DateVo.create to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
+      expect((error as InvalidInvariantError).details.message).toBe('Date: not-a-date has invalid format');
+      expect((error as InvalidInvariantError).details.field).toBe('date');
+    }
   });
 
   it('compares equality', () => {

@@ -117,6 +117,11 @@ const system = {
     code: 'S-GW-0005',
     details: Details.Define<{ subjectId: number; message?: string }>(),
   },
+
+  invariantFailed: {
+    code: 'S-GW-0006',
+    details: Details.Define<{ message: string; field: string; subjectId?: number | string }>(),
+  },
 } as const satisfies ExceptionConfig;
 
 const exceptionCode = {

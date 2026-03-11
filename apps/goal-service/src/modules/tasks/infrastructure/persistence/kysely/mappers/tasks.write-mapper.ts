@@ -6,7 +6,7 @@ import {
   TaskRecurrenceWeekday,
   TaskStatus,
 } from '@big-d/api-contracts';
-import { DateVo, Name } from '@big-d/api-utils';
+import { DateVo, MonthdaysVo, Name, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 
 interface RawTask {
   readonly id: number;
@@ -72,15 +72,15 @@ class TasksWriteKyselyMapper {
       userId: raw.user_id,
       taskId: raw.task_id,
       status: raw.recurrence_status,
-      timezone: raw.timezone,
+      timezone: TimezoneVo.create(raw.timezone),
       frequency: RecurrenceFrequency[raw.recurrence_frequency],
       startDate: DateVo.restore(raw.start_date.toISOString()),
       pattern: raw.pattern,
       weekstart: raw.weekstart,
       interval: raw.interval ?? undefined,
       weekdays: raw.weekdays ?? undefined,
-      monthdays: raw.monthdays ?? undefined,
-      yearmonths: raw.yearmonths ?? undefined,
+      monthdays: raw.monthdays != null ? MonthdaysVo.create(raw.monthdays) : undefined,
+      yearmonths: raw.yearmonths != null ? YearmonthsVo.create(raw.yearmonths) : undefined,
       untilDate: raw.until_date != null ? DateVo.restore(raw.until_date.toISOString()) : undefined,
     });
   };

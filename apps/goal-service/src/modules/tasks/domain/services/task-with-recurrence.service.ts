@@ -1,6 +1,6 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
-import { DateVo } from '@big-d/api-utils';
+import { DateVo, MonthdaysVo, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 import { timeAndDate } from '@shared/date-and-time';
 import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
 
@@ -189,15 +189,15 @@ class TaskWithRecurrenceService {
         taskId: updatedTask.id,
         status: TaskRecurrenceStatus.ACTIVE,
         pattern: recurrence.pattern,
-        timezone: recurrence.timezone,
+        timezone: TimezoneVo.create(recurrence.timezone),
         startDate: DateVo.create(recurrence.startDate),
         frequency: recurrence.frequency,
         weekstart: recurrence.weekstart ?? 0,
         untilDate: recurrence.untilDate != null ? DateVo.create(recurrence.untilDate) : undefined,
         interval: recurrence.interval,
         weekdays: recurrence.weekdays,
-        monthdays: recurrence.monthdays,
-        yearmonths: recurrence.yearmonths,
+        monthdays: recurrence.monthdays != null ? MonthdaysVo.create(recurrence.monthdays) : undefined,
+        yearmonths: recurrence.yearmonths != null ? YearmonthsVo.create(recurrence.yearmonths) : undefined,
       }),
     };
   }
@@ -223,15 +223,16 @@ class TaskWithRecurrenceService {
               taskId: updatedTask.id,
               status: TaskRecurrenceStatus.ACTIVE,
               pattern: recurrencePatch.pattern,
-              timezone,
+              timezone: TimezoneVo.create(timezone),
               startDate: DateVo.create(recurrencePatch.startDate),
               frequency: recurrencePatch.frequency,
               weekstart: recurrencePatch.weekstart ?? 0,
               untilDate: recurrencePatch.untilDate != null ? DateVo.create(recurrencePatch.untilDate) : undefined,
               interval: recurrencePatch.interval,
               weekdays: recurrencePatch.weekdays,
-              monthdays: recurrencePatch.monthdays,
-              yearmonths: recurrencePatch.yearmonths,
+              monthdays: recurrencePatch.monthdays != null ? MonthdaysVo.create(recurrencePatch.monthdays) : undefined,
+              yearmonths:
+                recurrencePatch.yearmonths != null ? YearmonthsVo.create(recurrencePatch.yearmonths) : undefined,
             })
           : currentRecurrence.replace({
               startDate: DateVo.create(recurrencePatch.startDate),
@@ -241,8 +242,9 @@ class TaskWithRecurrenceService {
               untilDate: recurrencePatch.untilDate != null ? DateVo.create(recurrencePatch.untilDate) : undefined,
               interval: recurrencePatch.interval,
               weekdays: recurrencePatch.weekdays,
-              monthdays: recurrencePatch.monthdays,
-              yearmonths: recurrencePatch.yearmonths,
+              monthdays: recurrencePatch.monthdays != null ? MonthdaysVo.create(recurrencePatch.monthdays) : undefined,
+              yearmonths:
+                recurrencePatch.yearmonths != null ? YearmonthsVo.create(recurrencePatch.yearmonths) : undefined,
             }),
     };
   }

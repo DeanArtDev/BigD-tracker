@@ -3,7 +3,7 @@ import { TaskRecurrenceValues } from '@/modules/tasks/application/types';
 import { Task, TaskIdBuilder, TaskRecurrence } from '@/modules/tasks/domain';
 import { Priority, Weight } from '@/modules/tasks/domain';
 import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
-import { DateVo, Name } from '@big-d/api-utils';
+import { DateVo, MonthdaysVo, Name, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 
 type TestTaskRecurrenceInput = Omit<Partial<TaskRecurrenceValues>, 'frequency'> & {
   start?: string;
@@ -128,7 +128,7 @@ const getTaskRecurrence = (
     userId: data.userId ?? 1,
     taskId: data.taskId ?? 1,
     status: data.status ?? TaskRecurrenceStatus.ACTIVE,
-    timezone: data.timezone ?? 'UTC',
+    timezone: TimezoneVo.create(data.timezone ?? 'UTC'),
     startDate: DateVo.restore(data.startDate ?? '2026-01-01T10:00:00.000Z'),
     untilDate: data.untilDate != null ? DateVo.restore(data.untilDate) : undefined,
     pattern: data.pattern ?? 'FREQ=DAILY;INTERVAL=1',
@@ -136,8 +136,8 @@ const getTaskRecurrence = (
     weekstart: data.weekstart ?? TaskRecurrenceWeekday.MO,
     interval: data.interval,
     weekdays: data.weekdays,
-    monthdays: data.monthdays,
-    yearmonths: data.yearmonths,
+    monthdays: data.monthdays != null ? MonthdaysVo.create(data.monthdays) : undefined,
+    yearmonths: data.yearmonths != null ? YearmonthsVo.create(data.yearmonths) : undefined,
   });
 };
 

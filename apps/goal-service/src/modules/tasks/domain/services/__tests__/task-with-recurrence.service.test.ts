@@ -5,7 +5,7 @@ import {
   TaskRecurrenceWeekday,
   TaskStatus,
 } from '@big-d/api-contracts';
-import { DateVo, Name } from '@big-d/api-utils';
+import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { Task, TaskOverride, TaskRecurrence } from '../../aggregates/task';
 import { Priority, Weight } from '../../aggregates/task/value-objects';
 import { TaskWithRecurrenceService } from '../task-with-recurrence.service';
@@ -52,7 +52,7 @@ function buildStoredRecurrence(input: { startDate: string; timezone?: string }):
     userId: 77,
     taskId: 11,
     status: TaskRecurrenceStatus.ACTIVE,
-    timezone: input.timezone ?? 'Asia/Novosibirsk',
+    timezone: TimezoneVo.create(input.timezone ?? 'Asia/Novosibirsk'),
     startDate: DateVo.create(input.startDate),
     pattern: 'RRULE:FREQ=DAILY',
     frequency: RecurrenceFrequency.DAILY,
@@ -174,6 +174,7 @@ describe('TaskWithRecurrenceService', () => {
         }),
         pattern: 'RRULE:FREQ=WEEKLY',
         frequency: RecurrenceFrequency.WEEKLY,
+        weekdays: [TaskRecurrenceWeekday.MO],
       },
     });
 
@@ -243,6 +244,7 @@ describe('TaskWithRecurrenceService', () => {
         timezone: 'UTC',
         frequency: RecurrenceFrequency.WEEKLY,
         weekstart: TaskRecurrenceWeekday.MO,
+        weekdays: [TaskRecurrenceWeekday.MO],
       },
       patternShaper: buildPatternShaper('RRULE:FREQ=WEEKLY'),
     });

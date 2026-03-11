@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { Email } from '../email';
+import { ExceptionInvalidInvariant } from '../exceptions';
+
+type InvalidInvariantError = InstanceType<typeof ExceptionInvalidInvariant>;
 
 describe('Email', () => {
   it('normalizes email addresses', () => {
@@ -9,11 +12,25 @@ describe('Email', () => {
   });
 
   it('throws when empty', () => {
-    expect(() => Email.create('')).toThrowError('Email is required');
+    try {
+      Email.create('');
+      throw new Error('Expected Email.create to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
+      expect((error as InvalidInvariantError).details.message).toBe('Email is required');
+      expect((error as InvalidInvariantError).details.field).toBe('email');
+    }
   });
 
   it('throws for invalid format', () => {
-    expect(() => Email.create('not-an-email')).toThrowError('Invalid email format');
+    try {
+      Email.create('not-an-email');
+      throw new Error('Expected Email.create to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
+      expect((error as InvalidInvariantError).details.message).toBe('Invalid email format: "not-an-email"');
+      expect((error as InvalidInvariantError).details.field).toBe('email');
+    }
   });
 
   it('provides the domain portion', () => {

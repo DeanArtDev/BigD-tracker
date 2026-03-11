@@ -25,33 +25,6 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
     private readonly taskRecurrenceQueryService: TaskRecurrenceQueryService,
   ) {}
 
-  /**
-   * TODO:
-   * [x] учесть оверрайды
-   * -------------- на update, create -------------------
-   * [] инвариант проверка что окно 90 дней иначе исключение!
-   * [] инвариант для еженедельных должны быть weekdays не пустые
-   * [] инвариант startDate === recurrence.start
-   * [] инвариант timezone
-   * [] инвариант startDate обязательна если дело recurrence
-   * [] продумать работу recurrence в методах агрегата assign, create
-   * [] инвариант если дело recurrence то startDate \ deadline в рамках одного дня ?? может на пару дней ??
-   *
-   * ----------------------------------------------------
-   *
-   * [x] получить все мастер события если есть признак повторяемости (в окне)
-   *    userId, start_date <= to, recurrence in NOT NULL
-   * [x] получить оверрайды по мастер событиям (в окне)
-   *    userId, from\to, master_id === tasks.id
-   * [x] получить tasks (в окне)
-   *   userId, from\to
-   *
-   * [x] вычислить на какие даты нужно создать виртуальные дела
-   * [x] создать виртуальные дела TaskView
-   * [x] смешать с tasks и отсортировать по start_date
-   * []
-   * []
-   * */
   async execute({ input }: GetDiaryTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
       const { userId, meta } = input;

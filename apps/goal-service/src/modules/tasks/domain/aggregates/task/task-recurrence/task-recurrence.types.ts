@@ -1,12 +1,12 @@
 import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday } from '@big-d/api-contracts';
-import { DateVo } from '@big-d/api-utils';
+import { DateVo, MonthdaysVo, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 
 interface TaskRecurrenceState {
   readonly id: number;
   readonly userId: number;
   readonly taskId: number;
   status: TaskRecurrenceStatus;
-  timezone: string;
+  timezone: TimezoneVo;
   startDate: DateVo;
   pattern: string;
   untilDate?: DateVo;
@@ -17,15 +17,15 @@ interface TaskRecurrenceState {
   };
   weekstart: TaskRecurrenceWeekday;
   weekdays?: TaskRecurrenceWeekday[];
-  monthdays?: number[];
-  yearmonths?: number[];
+  monthdays?: MonthdaysVo;
+  yearmonths?: YearmonthsVo;
 }
 
 interface TaskRecurrenceCreateInput {
   readonly userId: number;
   readonly taskId: number;
   readonly status: TaskRecurrenceStatus;
-  readonly timezone: string;
+  readonly timezone: TimezoneVo;
   readonly startDate: DateVo;
   readonly pattern: string;
   readonly frequency: RecurrenceFrequency;
@@ -33,8 +33,8 @@ interface TaskRecurrenceCreateInput {
   readonly untilDate?: DateVo;
   readonly interval?: number;
   readonly weekdays?: TaskRecurrenceWeekday[];
-  readonly monthdays?: number[];
-  readonly yearmonths?: number[];
+  readonly monthdays?: MonthdaysVo;
+  readonly yearmonths?: YearmonthsVo;
 }
 
 interface TaskRecurrenceReplaceInput {
@@ -46,8 +46,8 @@ interface TaskRecurrenceReplaceInput {
   readonly untilDate?: DateVo;
   readonly interval?: number;
   readonly weekdays?: TaskRecurrenceWeekday[];
-  readonly monthdays?: number[];
-  readonly yearmonths?: number[];
+  readonly monthdays?: MonthdaysVo;
+  readonly yearmonths?: YearmonthsVo;
 }
 
 interface TaskRecurrenceRestoreInput {
@@ -55,7 +55,7 @@ interface TaskRecurrenceRestoreInput {
   readonly userId: number;
   readonly taskId: number;
   readonly status: TaskRecurrenceStatus;
-  readonly timezone: string;
+  readonly timezone: TimezoneVo;
   readonly startDate: DateVo;
   readonly pattern: string;
   readonly frequency: RecurrenceFrequency;
@@ -63,8 +63,8 @@ interface TaskRecurrenceRestoreInput {
   readonly untilDate?: DateVo;
   readonly interval?: number;
   readonly weekdays?: TaskRecurrenceWeekday[];
-  readonly monthdays?: number[];
-  readonly yearmonths?: number[];
+  readonly monthdays?: MonthdaysVo;
+  readonly yearmonths?: YearmonthsVo;
 }
 
 export { TaskRecurrenceRestoreInput, TaskRecurrenceCreateInput, TaskRecurrenceState, TaskRecurrenceReplaceInput };
