@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { compact } from 'lodash';
 import { TasksOverridesRepositoryWritePort, TaskTransaction } from '../ports';
 import {
-  TaskOverrideById,
+  TaskOverrideByIds,
   TaskOverrideByRecurrencesIds,
   TaskOverrideByUserId,
   tasksCombinators,
@@ -22,7 +22,7 @@ class TaskOverrideService {
 
   async getOverride(input: { userId: number; id: number }, trx?: TaskTransaction): Promise<TaskOverride> {
     const override = await this.tasksOverridesRepository.getOneOverride(
-      and(...compact([TaskOverrideByUserId(input.userId), TaskOverrideById(input.id)])),
+      and(...compact([TaskOverrideByUserId(input.userId), TaskOverrideByIds([input.id])])),
       trx,
     );
 
@@ -44,11 +44,17 @@ class TaskOverrideService {
   }
 
   async deleteOverridesByRecurrenceId(
-    input: { userId: number; recurrenceId: number },
+    input: { userId: number; recurrenceId: number; ids: number[] },
     trx?: TaskTransaction,
   ): Promise<number> {
     return await this.tasksOverridesRepository.deleteManyOverride(
-      and(TaskOverrideByUserId(input.userId), TaskOverrideByRecurrencesIds([input.recurrenceId])),
+      and(
+        ...compact([
+          TaskOverrideByUserId(input.userId),
+          TaskOverrideByRecurrencesIds([input.recurrenceId]),
+          input.ids.length > 0 && TaskOverrideByIds(input.ids),
+        ]),
+      ),
       trx,
     );
   }

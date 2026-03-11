@@ -104,7 +104,6 @@ class TaskService {
     trx?: TaskTransaction,
   ): Promise<{ task: Task; recurrence?: TaskRecurrence }> {
     const { recurrence, ...taskPatch } = input;
-    const now = new Date().toISOString();
 
     const task = await this.taskCheckerService.ensureTaskExists({ taskId: input.id, userId: input.userId }, { trx });
     const currentRecurrence = await this.taskRecurrenceService.getRecurrence(
@@ -121,8 +120,7 @@ class TaskService {
 
     const timezone = currentRecurrence?.timezone ?? GoalServiceRequestContext.getStore()?.state?.userTimezone ?? 'UTC';
 
-    const { shouldDeleteOverrides, shouldDeleteRecurrence, ...replaceData } = this.taskWithRecurrenceService.replace({
-      now,
+    const replaceData = this.taskWithRecurrenceService.replace({
       task,
       taskPatch,
       currentRecurrence,
@@ -136,15 +134,21 @@ class TaskService {
       await this.taskRecurrenceService.upsertRecurrence(replaceData.recurrence, trx);
     }
 
-    if (shouldDeleteOverrides && currentRecurrence != null) {
-      await this.taskOverrideService.deleteOverridesByRecurrenceId(
-        { userId: input.userId, recurrenceId: currentRecurrence.id },
-        trx,
-      );
-    }
+    if (replaceData.isCancel) {
+      if (replaceData.overridesToDelete.length > 0) {
+        await this.taskOverrideService.deleteOverridesByRecurrenceId(
+          {
+            userId: input.userId,
+            recurrenceId: replaceData.recurrence.id,
+            ids: replaceData.overridesToDelete.map((o) => o.id),
+          },
+          trx,
+        );
+      }
 
-    if (shouldDeleteRecurrence && currentRecurrence != null) {
-      await this.taskRecurrenceService.deleteRecurrence({ id: currentRecurrence.id }, trx);
+      if (replaceData.shouldDeleteRecurrence) {
+        await this.taskRecurrenceService.deleteRecurrence({ id: replaceData.recurrence.id }, trx);
+      }
     }
 
     return {
