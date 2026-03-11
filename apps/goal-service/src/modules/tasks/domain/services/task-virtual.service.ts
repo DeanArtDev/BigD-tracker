@@ -22,15 +22,12 @@ class TaskVirtualService {
     const delta = timeAndDate(sourceTask.startDate).diff(sourceTask.deadline);
     const deadline = virtualTaskStart.add(Math.abs(delta), 'millisecond');
 
-    const replacedTask = TaskFactory.replace(sourceTask, {
-      name: sourceTask.name,
-      description: sourceTask.description,
-      priority: sourceTask.priority,
-      weight: sourceTask.weight,
+    const virtualTask = this.createVirtualTaskFromSource({
+      sourceTask,
       startDate: virtualTaskStart.toISOString(),
       deadline: deadline.toISOString(),
     });
-    const deletedTask = TaskFactory.deleteSoft(replacedTask);
+    const deletedTask = TaskFactory.deleteSoft(virtualTask);
     const createdOverrideDraft = TaskOverrideFactory.create({
       task: deletedTask,
       type: taskStatusToOverrideTypeMap[deletedTask.status],
@@ -41,6 +38,22 @@ class TaskVirtualService {
     return {
       override: createdOverrideDraft,
     };
+  }
+
+  private createVirtualTaskFromSource(input: { sourceTask: Task; startDate: string; deadline: string }): Task {
+    const { sourceTask, startDate, deadline } = input;
+
+    return TaskFactory.create({
+      userId: sourceTask.userId,
+      groupId: sourceTask.groupId,
+      recurrenceId: sourceTask.recurrenceId,
+      name: sourceTask.name,
+      description: sourceTask.description,
+      priority: sourceTask.priority,
+      weight: sourceTask.weight,
+      startDate,
+      deadline,
+    });
   }
 }
 
