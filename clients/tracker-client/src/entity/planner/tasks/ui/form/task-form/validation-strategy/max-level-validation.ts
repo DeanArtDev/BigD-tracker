@@ -135,15 +135,6 @@ const maxLevelValidation = z
       });
     }
 
-    if (!isSameDay(start, deadline)) {
-      ctx.issues.push({
-        path: ['deadline'],
-        input: deadline,
-        code: 'custom',
-        message: 'Дата начала и дедлайн должны быть в рамках одного дня',
-      });
-    }
-
     if (end != null && !isWithinCalendarDaysFromToday(end, 90)) {
       ctx.issues.push({
         path: ['recurrence.end'],
