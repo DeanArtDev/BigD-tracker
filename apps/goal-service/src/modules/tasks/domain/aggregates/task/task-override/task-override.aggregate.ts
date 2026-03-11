@@ -19,7 +19,6 @@ class TaskOverride {
 
     const assertInput = { taskId: task.id, startDate: task.startDate };
     assertStartDateIsRequired(assertInput);
-    taskAsserts.notDraft(task);
 
     return new TaskOverride({
       id: NaN,

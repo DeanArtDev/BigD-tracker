@@ -278,6 +278,9 @@ class Task extends AggregateRoot {
   get status() {
     return this.#state.status;
   }
+  get recurrenceId() {
+    return this.#state.recurrenceId;
+  }
 
   get isDraft(): boolean {
     return Number.isNaN(this.#state.id);
