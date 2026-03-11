@@ -36,7 +36,7 @@ class CompleteDeleteTaskUseCase {
         };
       }
 
-      throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });
+      throw new ExceptionTaskUnprocessable({ taskId, message: 'Виртуальные и оверрайды дел нельзя удалить полностью' });
     });
   }
 }

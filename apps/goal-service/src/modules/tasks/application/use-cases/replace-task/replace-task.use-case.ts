@@ -1,6 +1,6 @@
 import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
 import { TaskFactory, TaskOverrideFactory } from '@/modules/tasks/domain';
-import { TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
+import { taskServiceAsserts, TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
 import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -68,7 +68,7 @@ class ReplaceTaskUseCase {
       }
 
       if (isOverride) {
-        this.taskWithRecurrenceService.ensureNotRepeatable({
+        taskServiceAsserts.ensureNotRepeatable({
           type: 'override',
           recurrence: input.recurrence,
           taskId: id,

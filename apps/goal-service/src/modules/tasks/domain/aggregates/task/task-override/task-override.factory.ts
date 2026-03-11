@@ -18,6 +18,10 @@ class TaskOverrideFactory {
     const { task, type } = patch;
     return override.replace({ task, type });
   }
+
+  static delete(override: TaskOverride): TaskOverride {
+    return override.delete();
+  }
 }
 
 export { TaskOverrideFactory };
