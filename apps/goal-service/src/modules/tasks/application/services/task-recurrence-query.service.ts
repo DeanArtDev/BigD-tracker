@@ -20,6 +20,22 @@ class TaskRecurrenceQueryService {
   ) {}
 
   createRule(recurrence: TaskRecurrenceValues & { timezone: string }): RRule {
+    function shapeRuleDate(date: string) {
+      const localDate = timeAndDate(date).tz(recurrence.timezone);
+
+      return new Date(
+        Date.UTC(
+          localDate.year(),
+          localDate.month(),
+          localDate.date(),
+          localDate.hour(),
+          localDate.minute(),
+          localDate.second(),
+          localDate.millisecond(),
+        ),
+      );
+    }
+
     return new RRule({
       freq: recurrence.frequency,
       tzid: recurrence.timezone,
@@ -28,8 +44,8 @@ class TaskRecurrenceQueryService {
       bymonth: recurrence.monthdays,
       byyearday: recurrence.yearmonths,
       byweekday: recurrence.weekdays?.map((wd) => numberToWeekdayMap[wd]),
-      dtstart: new Date(recurrence.startDate),
-      until: recurrence.untilDate != null ? new Date(recurrence.untilDate) : undefined,
+      dtstart: shapeRuleDate(recurrence.startDate),
+      until: recurrence.untilDate != null ? shapeRuleDate(recurrence.untilDate) : undefined,
     });
   }
 
@@ -51,7 +67,7 @@ class TaskRecurrenceQueryService {
     const virtualViews: TaskView[] = [];
 
     for (const recurrence of recurrences) {
-      const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, recurrence.timezone);
+      const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, userTimezone);
       const overrides = await this.tasksOverridesRepository.getManyOverrides(
         GetTasksOverrides({ userId, from, to, recurrenceIds: [recurrence.id] }),
         trx,
@@ -88,9 +104,15 @@ class TaskRecurrenceQueryService {
       });
 
       const sourceTask = await this.taskCheckerService.ensureTaskExists({ taskId: recurrence.taskId, userId });
+      const sourceTaskDurationDelta = Math.abs(timeAndDate(sourceTask.deadline).diff(sourceTask.startDate));
+      const shiftedFrom = new Date(from.getTime() - sourceTaskDurationDelta);
 
-      for (const occurrence of rule.between(from, to, true)) {
+      for (const occurrence of rule.between(shiftedFrom, to, true)) {
         const occurrenceStart = this.createTimePoint(occurrence, recurrence.timezone, sourceTask.startDate);
+        const startDate = timeAndDate(sourceTask.startDate).tz(recurrence.timezone).date(occurrenceStart.date());
+        const deadline = startDate.clone().add(sourceTaskDurationDelta, 'millisecond');
+
+        if (startDate.toDate() > to || deadline.toDate() < from) continue;
 
         const hashKey = TaskIdBuilder.wrapVirtualId({
           recurrenceId: recurrence.id,
@@ -103,9 +125,6 @@ class TaskRecurrenceQueryService {
           virtualViews.push(this.#shapeOverride(override, recurrence.timezone));
           overridesMap.delete(hashKey);
         } else {
-          const startDate = timeAndDate(sourceTask.startDate).tz(recurrence.timezone).date(occurrenceStart.date());
-          const deadline = timeAndDate(sourceTask.deadline).tz(recurrence.timezone).date(occurrenceStart.date());
-
           virtualViews.push(
             TasksViewMapper.fromPlainToView({
               id: hashKey,
