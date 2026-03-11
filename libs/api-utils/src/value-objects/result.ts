@@ -1,4 +1,5 @@
 import { BaseValueObject } from './base-value-object';
+import { ExceptionInvalidInvariant } from './exceptions';
 
 class Result implements BaseValueObject {
   #value: number;
@@ -13,7 +14,10 @@ class Result implements BaseValueObject {
 
   public static create(value: number): Result {
     if (value < 0 || value > 100) {
-      throw new Error('Result available value range is from 0 to 100');
+      throw new ExceptionInvalidInvariant({
+        message: 'Result available value range is from 0 to 100',
+        field: 'result',
+      });
     }
 
     return new Result(value);

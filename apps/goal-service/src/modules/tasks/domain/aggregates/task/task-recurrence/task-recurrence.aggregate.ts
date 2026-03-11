@@ -1,5 +1,6 @@
-import { recurrenceFrequencyToKeyMap, TaskRecurrenceStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, recurrenceFrequencyToKeyMap, TaskRecurrenceStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import {
   TaskRecurrenceCreateInput,
   TaskRecurrenceReplaceInput,
@@ -17,6 +18,7 @@ class TaskRecurrence {
 
   static create(input: TaskRecurrenceCreateInput): TaskRecurrence {
     taskAsserts.datesIntersections({ end: input.untilDate, start: input.startDate });
+    TaskRecurrence.assertWeekdaysForWeeklyFrequency({ frequency: input.frequency, weekdays: input.weekdays });
 
     return new TaskRecurrence({
       id: NaN,
@@ -60,6 +62,11 @@ class TaskRecurrence {
       start: input.startDate,
       end: input.untilDate ?? this.#state.untilDate,
     });
+    TaskRecurrence.assertWeekdaysForWeeklyFrequency({
+      frequency: input.frequency,
+      weekdays: input.weekdays,
+      taskId: this.#state.taskId,
+    });
 
     this.#state.pattern = input.pattern;
     this.#state.startDate = input.startDate;
@@ -95,7 +102,7 @@ class TaskRecurrence {
     return this.#state.userId;
   }
   get timezone() {
-    return this.#state.timezone;
+    return this.#state.timezone.value;
   }
   get status() {
     return this.#state.status;
@@ -122,10 +129,10 @@ class TaskRecurrence {
     return this.#state.weekdays;
   }
   get monthdays() {
-    return this.#state.monthdays;
+    return this.#state.monthdays?.value;
   }
   get yearmonths() {
-    return this.#state.yearmonths;
+    return this.#state.yearmonths?.value;
   }
 
   get isDraft() {
@@ -134,6 +141,20 @@ class TaskRecurrence {
 
   get isCanceled() {
     return this.#state.status === TaskRecurrenceStatus.CANCELED;
+  }
+
+  private static assertWeekdaysForWeeklyFrequency(input: {
+    frequency: RecurrenceFrequency;
+    weekdays?: TaskRecurrenceState['weekdays'];
+    taskId?: number;
+  }): void {
+    if (input.frequency === RecurrenceFrequency.WEEKLY && (input.weekdays?.length ?? 0) === 0) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Для WEEKLY recurrence нужно указать хотя бы один weekday',
+        field: 'weekdays',
+        taskId: input.taskId,
+      });
+    }
   }
 }
 

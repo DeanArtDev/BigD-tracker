@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { merge } from 'lodash';
 
-interface RequestContextState {
+interface RequestContextInputState {
   correlationId?: string;
   userTimezone?: string;
   readonly userId?: number;
@@ -10,11 +10,20 @@ interface RequestContextState {
   readonly initiator?: 'user' | 'system';
 }
 
-class RequestContext<TDetails extends RequestContextState = RequestContextState> {
-  #state: TDetails & { correlationId: string };
+interface RequestContextState extends Omit<RequestContextInputState, 'userTimezone' | 'correlationId'> {
+  correlationId: string;
+  userTimezone: string;
+}
+
+class RequestContext<TDetails extends RequestContextInputState = RequestContextInputState> {
+  #state: Omit<TDetails, 'userTimezone' | 'correlationId'> & RequestContextState;
 
   constructor(state: TDetails) {
-    this.#state = { ...state, correlationId: state.correlationId ?? (randomUUID() as string) };
+    this.#state = {
+      ...state,
+      correlationId: state.correlationId ?? (randomUUID() as string),
+      userTimezone: state.userTimezone ?? 'UTC',
+    };
   }
 
   get correlationId(): string {
@@ -35,3 +44,4 @@ class RequestContext<TDetails extends RequestContextState = RequestContextState>
 }
 
 export { RequestContext, RequestContextState };
+export type { RequestContextInputState };

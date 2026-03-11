@@ -12,12 +12,7 @@ import { GroupByStatus, GroupByUserId, groupsCombinators } from '../../specifica
 import { GetAssignableGroupsQuery } from './get-assignable-groups.query';
 
 const { and, not } = groupsCombinators;
-/** TODO:FIXME:
- * [] группа юзера
- * [] группа не завершена
- * [] группа не в составе начатой цели ( унести эту проверку в GOAL BC )
- * []
- * */
+
 @QueryHandler(GetAssignableGroupsQuery)
 export class GetAssignableGroupsHandler implements IQueryHandler<GetAssignableGroupsQuery> {
   constructor(

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { Result } from '../result';
+import { ExceptionInvalidInvariant } from '../exceptions';
+
+type InvalidInvariantError = InstanceType<typeof ExceptionInvalidInvariant>;
 
 describe('Result', () => {
   it('creates when within range', () => {
@@ -9,8 +12,23 @@ describe('Result', () => {
   });
 
   it('throws when outside range', () => {
-    expect(() => Result.create(-1)).toThrowError('Result available value range');
-    expect(() => Result.create(101)).toThrowError('Result available value range');
+    try {
+      Result.create(-1);
+      throw new Error('Expected Result.create to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
+      expect((error as InvalidInvariantError).details.message).toBe('Result available value range is from 0 to 100');
+      expect((error as InvalidInvariantError).details.field).toBe('result');
+    }
+
+    try {
+      Result.create(101);
+      throw new Error('Expected Result.create to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
+      expect((error as InvalidInvariantError).details.message).toBe('Result available value range is from 0 to 100');
+      expect((error as InvalidInvariantError).details.field).toBe('result');
+    }
   });
 
   it('compares equality', () => {

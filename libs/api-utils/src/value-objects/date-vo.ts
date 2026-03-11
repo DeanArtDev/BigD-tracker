@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { isISO8601, isBefore, isAfter } from 'validator';
 import { BaseValueObject } from './base-value-object';
+import { ExceptionInvalidInvariant } from './exceptions';
 
 type DateVoState = string | Date;
 
@@ -9,12 +10,18 @@ class DateVo implements BaseValueObject {
 
   private constructor(state: string) {
     if (!isISO8601(state)) {
-      throw new Error(`Date: ${state} has invalid format`);
+      throw new ExceptionInvalidInvariant({
+        message: `Date: ${state} has invalid format`,
+        field: 'date',
+      });
     }
 
     const newDate = dayjs(state);
     if (!newDate.isValid()) {
-      throw new Error(`Date: ${state} is invalid`);
+      throw new ExceptionInvalidInvariant({
+        message: `Date: ${state} is invalid`,
+        field: 'date',
+      });
     }
 
     this.#state = newDate.set('milliseconds', 0).toDate();

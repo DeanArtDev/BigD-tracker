@@ -23,6 +23,22 @@ function createExecutionContext(correlationId: string): ExecutionContext {
   } as ExecutionContext;
 }
 
+function createExecutionContextWithoutTimezone(correlationId: string): ExecutionContext {
+  return {
+    switchToRpc: () => ({
+      getContext: () => ({
+        getMessage: () => ({
+          properties: {
+            headers: {
+              'x-correlation-id': correlationId,
+            },
+          },
+        }),
+      }),
+    }),
+  } as ExecutionContext;
+}
+
 describe('RequestContextInterceptor', () => {
   test('keeps correlationId inside deferred handler execution', async () => {
     const interceptor = new RequestContextInterceptor();
@@ -35,5 +51,17 @@ describe('RequestContextInterceptor', () => {
     const result = await firstValueFrom(interceptor.intercept(context, next));
 
     expect(result).toBe('cid-from-header');
+  });
+
+  test('sets UTC as default userTimezone when header is missing', async () => {
+    const interceptor = new RequestContextInterceptor();
+    const context = createExecutionContextWithoutTimezone('cid-no-timezone');
+    const next: CallHandler = {
+      handle: () => defer(() => of(GoalServiceRequestContext.getStore()?.state.userTimezone)),
+    };
+
+    const result = await firstValueFrom(interceptor.intercept(context, next));
+
+    expect(result).toBe('UTC');
   });
 });

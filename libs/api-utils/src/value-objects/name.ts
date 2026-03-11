@@ -1,5 +1,6 @@
 import { isEmpty } from 'validator';
 import { BaseValueObject } from './base-value-object';
+import { ExceptionInvalidInvariant } from './exceptions';
 
 class Name implements BaseValueObject {
   static CHAR_LIMIT = 256;
@@ -17,11 +18,17 @@ class Name implements BaseValueObject {
     const normalized = value.trim();
 
     if (isEmpty(normalized)) {
-      throw new Error(`Name: ${normalized} must not be empty string`);
+      throw new ExceptionInvalidInvariant({
+        message: `Name: ${normalized} must not be empty string`,
+        field: 'name',
+      });
     }
 
     if (normalized.length > Name.CHAR_LIMIT) {
-      throw new Error(`Name: ${normalized} is to long. Limit is ${Name.CHAR_LIMIT}`);
+      throw new ExceptionInvalidInvariant({
+        message: `Name: ${normalized} is to long. Limit is ${Name.CHAR_LIMIT}`,
+        field: 'name',
+      });
     }
 
     return new Name(normalized);
