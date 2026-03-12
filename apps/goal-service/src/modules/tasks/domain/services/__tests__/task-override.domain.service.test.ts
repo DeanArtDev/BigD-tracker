@@ -77,6 +77,70 @@ describe('TaskOverrideDomainService', () => {
     jest.useRealTimers();
   });
 
+  test('clones override using override dates', () => {
+    const override = buildOverride({
+      id: 31,
+      status: TaskStatus.COMPLETED,
+      startDate: '2026-03-12T09:30:00.000Z',
+      deadline: '2026-03-12T13:45:00.000Z',
+    });
+
+    const result = service.clone({
+      taskId: TaskIdBuilder.wrapOverrideId({
+        recurrenceId: 19,
+        overrideId: 31,
+        date: '2026-03-12T10:00:00.000Z',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      override,
+    });
+
+    expect(result.task.id).toBeNaN();
+    expect(result.task.userId).toBe(77);
+    expect(result.task.groupId).toBeUndefined();
+    expect(result.task.recurrenceId).toBeUndefined();
+    expect(result.task.name).toBe('Override task');
+    expect(result.task.description).toBe('override desc');
+    expect(result.task.priority).toBe(4);
+    expect(result.task.weight).toBe(9);
+    expect(result.task.startDate).toBe('2026-03-12T09:30:00.000Z');
+    expect(result.task.deadline).toBe('2026-03-12T13:45:00.000Z');
+    expect(result.task.endDate).toBeUndefined();
+    expect(result.task.status).toBe(TaskStatus.IN_PROGRESS);
+  });
+
+  test('clones override from canceled recurrence', () => {
+    const override = buildOverride({
+      id: 31,
+      startDate: '2026-03-12T09:30:00.000Z',
+      deadline: '2026-03-12T13:45:00.000Z',
+    });
+
+    const result = service.clone({
+      taskId: TaskIdBuilder.wrapOverrideId({
+        recurrenceId: 19,
+        overrideId: 31,
+        date: '2026-03-12T10:00:00.000Z',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, status: TaskRecurrenceStatus.CANCELED }),
+      override,
+    });
+
+    expect(result.task.id).toBeNaN();
+    expect(result.task.startDate).toBe('2026-03-12T09:30:00.000Z');
+    expect(result.task.deadline).toBe('2026-03-12T13:45:00.000Z');
+  });
+
   test('rejects deleting override that belongs to another recurrence', () => {
     expect(() =>
       service.delete({
@@ -150,7 +214,7 @@ describe('TaskOverrideDomainService', () => {
     expect(result.override.status).toBe(TaskStatus.DELETED);
   });
 
-  test('finishes override using override state instead of source task state', () => {
+  test('finishes override with COMPLETED when override deadline is after finish date', () => {
     const override = buildOverride({
       id: 31,
       status: TaskStatus.IN_PROGRESS,
@@ -189,10 +253,10 @@ describe('TaskOverrideDomainService', () => {
     expect(result.override.deadline).toBe('2026-03-13T13:45:00.000Z');
     expect(result.override.endDate).toBe('2026-03-12T12:00:00.000Z');
     expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
-    expect(result.override.status).toBe(TaskStatus.OVERDUE);
+    expect(result.override.status).toBe(TaskStatus.COMPLETED);
   });
 
-  test('finishes override with COMPLETED when override deadline is before finish date', () => {
+  test('finishes override with OVERDUE when override deadline is before finish date', () => {
     const override = buildOverride({
       id: 31,
       status: TaskStatus.IN_PROGRESS,
@@ -231,6 +295,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.override.deadline).toBe('2026-03-12T11:45:00.000Z');
     expect(result.override.endDate).toBe('2026-03-12T12:00:00.000Z');
     expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
-    expect(result.override.status).toBe(TaskStatus.COMPLETED);
+    expect(result.override.status).toBe(TaskStatus.OVERDUE);
   });
 });

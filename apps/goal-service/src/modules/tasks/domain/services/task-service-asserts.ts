@@ -75,17 +75,6 @@ const taskServiceAsserts = {
     });
   },
 
-  ensureRecurrenceIsNotCanceled(currentRecurrence: TaskRecurrence): void {
-    if (!currentRecurrence.isCanceled) {
-      return;
-    }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      message: `Невозможно удалить дело в отмененной серии recurrenceId:${currentRecurrence.id}`,
-      field: 'status',
-    });
-  },
-
   ensureRepeatableSourceTask(input: { taskId: string; sourceTask: Task }): void {
     if (input.sourceTask.startDate != null && input.sourceTask.deadline != null) {
       return;

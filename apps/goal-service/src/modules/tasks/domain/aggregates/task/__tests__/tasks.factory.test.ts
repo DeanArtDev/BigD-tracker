@@ -35,12 +35,16 @@ describe('TaskFactory', () => {
     const task = TaskFactory.create({
       userId: 23,
       name: 'Clone me',
+      startDate: futureDate(1),
+      deadline: futureDate(2),
     });
 
     const clone = TaskFactory.clone(task);
 
     expect(clone.isDraft).toBe(true);
-    expect(clone.status).toBe(TaskStatus.NOT_STARTED);
+    expect(clone.startDate).toBe(DateVo.create(futureDate(1)).value);
+    expect(clone.deadline).toBe(DateVo.create(futureDate(2)).value);
+    expect(clone.status).toBe(TaskStatus.IN_PROGRESS);
   });
 
   it('replaces task fields through factory', () => {

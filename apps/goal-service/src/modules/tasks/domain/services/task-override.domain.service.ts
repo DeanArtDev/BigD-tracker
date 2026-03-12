@@ -4,6 +4,18 @@ import { Task, TaskFactory, TaskOverride, TaskOverrideFactory, TaskRecurrence } 
 import { taskServiceAsserts } from './task-service-asserts';
 
 class TaskOverrideDomainService {
+  clone(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; override: TaskOverride }) {
+    const { override } = input;
+
+    this.#assertDependenciesConsistency(input);
+
+    const task = this.#restoreTaskFromOverride(override);
+
+    return {
+      task: TaskFactory.clone(task),
+    };
+  }
+
   delete(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; override: TaskOverride }) {
     const { override } = input;
 
@@ -48,7 +60,6 @@ class TaskOverrideDomainService {
       message: 'Запрашиваемое дело принадлежит другой серии',
     });
     taskServiceAsserts.ensureSourceTaskBelongsToRecurrence({ taskId, sourceTask, currentRecurrence });
-    taskServiceAsserts.ensureRecurrenceIsNotCanceled(currentRecurrence);
     taskServiceAsserts.ensureRepeatableSourceTask({ taskId, sourceTask });
     taskServiceAsserts.ensureOverrideDateMatchesTaskId({
       taskId,

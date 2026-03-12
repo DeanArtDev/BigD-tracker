@@ -1,4 +1,3 @@
-import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { DateVo, Name } from '@big-d/api-utils';
 import { timeAndDate } from '@shared/date-and-time';
 import { Task } from './tasks.aggregate';
@@ -53,16 +52,7 @@ class TaskFactory {
   }
 
   static clone(task: Task): Task {
-    const clonedTask = task.clone();
-
-    if (!clonedTask.isDraft) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Cloned task aggregate from task:${task.id} must be a draft`,
-        field: 'clone',
-      });
-    }
-
-    return clonedTask;
+    return task.clone();
   }
 
   static replace(task: Task, input: TaskFactoryReplaceInput): Task {

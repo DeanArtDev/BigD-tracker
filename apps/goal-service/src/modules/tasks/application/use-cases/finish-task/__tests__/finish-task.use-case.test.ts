@@ -13,7 +13,7 @@ describe('FinishTaskUseCase', () => {
     jest.useRealTimers();
   });
 
-  test('creates overdue override for virtual task finish when deadline is after finish date', async () => {
+  test('creates completed override for virtual task finish when deadline is after finish date', async () => {
     const userId = 77;
     const taskId = 7001;
     const recurrenceId = 8001;
@@ -106,7 +106,7 @@ describe('FinishTaskUseCase', () => {
     expect(overrideArg.startDate).toBe(expectedStart.toISOString());
     expect(overrideArg.deadline).toBe(expectedDeadline.toISOString());
     expect(overrideArg.endDate).toBe(expectedStart.add(1, 'hour').toISOString());
-    expect(overrideArg.status).toBe(TaskStatus.OVERDUE);
+    expect(overrideArg.status).toBe(TaskStatus.COMPLETED);
     expect(overrideArg.type).toBe(TaskOverrideType.OVERRIDE);
     expect(overrideTrxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
@@ -226,7 +226,7 @@ describe('FinishTaskUseCase', () => {
     expect(overrideArg.startDate).toBe('2026-03-12T09:30:00.000Z');
     expect(overrideArg.deadline).toBe('2026-03-13T13:45:00.000Z');
     expect(overrideArg.endDate).toBe('2026-03-12T12:00:00.000Z');
-    expect(overrideArg.status).toBe(TaskStatus.OVERDUE);
+    expect(overrideArg.status).toBe(TaskStatus.COMPLETED);
     expect(overrideArg.type).toBe(TaskOverrideType.OVERRIDE);
     expect(overrideTrxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();

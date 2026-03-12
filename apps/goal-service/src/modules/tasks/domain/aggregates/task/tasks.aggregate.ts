@@ -28,7 +28,7 @@ class Task extends AggregateRoot {
     if (endDate != null) {
       if (deadline == null) return TaskStatus.COMPLETED;
 
-      return deadline.isAfter(endDate.value) ? TaskStatus.OVERDUE : TaskStatus.COMPLETED;
+      return deadline.isAfter(endDate.value) ? TaskStatus.COMPLETED : TaskStatus.OVERDUE;
     }
 
     if (startDate) return TaskStatus.IN_PROGRESS;
@@ -193,6 +193,9 @@ class Task extends AggregateRoot {
 
   public clone(): Task {
     if (this.#isAllowTo('CLONE')) {
+      const startDate = this.#state.startDate;
+      const deadline = this.#state.deadline;
+
       return new Task({
         id: NaN,
         userId: this.#state.userId,
@@ -200,9 +203,9 @@ class Task extends AggregateRoot {
         description: this.#state.description,
         priority: this.#state.priority,
         weight: this.#state.weight,
-        startDate: undefined,
-        deadline: undefined,
-        status: TaskStatus.NOT_STARTED,
+        startDate,
+        deadline,
+        status: Task.calculateStatusByDates({ startDate, deadline }),
       });
     }
 
