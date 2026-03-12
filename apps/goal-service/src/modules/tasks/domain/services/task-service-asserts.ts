@@ -109,6 +109,16 @@ const taskServiceAsserts = {
       field: 'id',
     });
   },
+
+  ensureDatesAreExistent(input: { taskId: number | string; startDate?: string; deadline?: string }): void {
+    if (input.startDate == null || input.deadline == null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        taskId: input.taskId,
+        message: 'Дело должно иметь startDate и deadline',
+        field: 'startDate/deadline',
+      });
+    }
+  },
 };
 
 export { taskServiceAsserts };

@@ -2,6 +2,7 @@ import { TaskRecurrenceValues } from '@/modules/tasks/application/types';
 import { TaskIdBuilder, TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksOverridesToken } from '@/modules/tasks/tokens';
 import { numberToWeekdayMap, TaskStatus } from '@big-d/api-contracts';
+import { TimezoneVo } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
 import { timeAndDate } from '@shared/date-and-time';
 import { GoalServiceRequestContext } from '@shared/request-context';
@@ -56,7 +57,7 @@ class TaskRecurrenceQueryService {
     const { userId } = input;
 
     const request = GoalServiceRequestContext.getStore()?.state;
-    const userTimezone = request?.userTimezone ?? 'UTC';
+    const userTimezone = TimezoneVo.create(request?.userTimezone ?? 'UTC').value;
 
     const { from: userTzFrom, to: userTzTo } = this.#datesToTZUtc({ from: input.from, to: input.to }, userTimezone);
     const recurrences = await this.tasksOverridesRepository.getManyRecurrences(

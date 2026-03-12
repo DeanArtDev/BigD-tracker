@@ -19,8 +19,12 @@ class TaskOverrideFactory {
     return override.replace({ task, type });
   }
 
-  static delete(override: TaskOverride): TaskOverride {
-    return override.delete();
+  static delete(override: TaskOverride, task: Task): TaskOverride {
+    return override.delete({ task });
+  }
+
+  static finish(override: TaskOverride, task: Task): TaskOverride {
+    return override.finish({ task });
   }
 }
 

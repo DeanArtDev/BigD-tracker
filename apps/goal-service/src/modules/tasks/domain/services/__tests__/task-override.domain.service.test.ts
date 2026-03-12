@@ -47,6 +47,8 @@ function buildOverride(
     recurrenceId?: number;
     recurrenceStart?: string;
     status?: TaskStatus;
+    startDate?: string;
+    deadline?: string;
   } = {},
 ): TaskOverride {
   return TaskOverride.restore({
@@ -57,8 +59,8 @@ function buildOverride(
       description: 'override desc',
       priority: Priority.create(4),
       weight: Weight.create(9),
-      startDate: DateVo.create('2026-03-12T09:30:00.000Z'),
-      deadline: DateVo.create('2026-03-12T13:45:00.000Z'),
+      startDate: DateVo.create(input.startDate ?? '2026-03-12T09:30:00.000Z'),
+      deadline: DateVo.create(input.deadline ?? '2026-03-12T13:45:00.000Z'),
       endDate: undefined,
       status: input.status ?? TaskStatus.IN_PROGRESS,
     }),
@@ -70,6 +72,10 @@ function buildOverride(
 
 describe('TaskOverrideDomainService', () => {
   const service = new TaskOverrideDomainService();
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
 
   test('rejects deleting override that belongs to another recurrence', () => {
     expect(() =>
@@ -142,5 +148,89 @@ describe('TaskOverrideDomainService', () => {
     expect(result.override.endDate).toBeUndefined();
     expect(result.override.type).toBe(TaskOverrideType.DELETED);
     expect(result.override.status).toBe(TaskStatus.DELETED);
+  });
+
+  test('finishes override using override state instead of source task state', () => {
+    const override = buildOverride({
+      id: 31,
+      status: TaskStatus.IN_PROGRESS,
+      deadline: '2026-03-13T13:45:00.000Z',
+    });
+    const finishedAt = new Date('2026-03-12T12:00:00.000Z');
+
+    jest.useFakeTimers().setSystemTime(finishedAt);
+
+    const result = service.finish({
+      taskId: TaskIdBuilder.wrapOverrideId({
+        recurrenceId: 19,
+        overrideId: 31,
+        date: '2026-03-12T10:00:00.000Z',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+        status: TaskStatus.DELETED,
+      }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      override,
+    });
+
+    expect(result.override).toBe(override);
+    expect(result.override.id).toBe(31);
+    expect(result.override.recurrenceId).toBe(19);
+    expect(result.override.recurrenceStart).toBe('2026-03-12T10:00:00.000Z');
+    expect(result.override.name).toBe('Override task');
+    expect(result.override.description).toBe('override desc');
+    expect(result.override.priority).toBe(4);
+    expect(result.override.weight).toBe(9);
+    expect(result.override.cancelReason).toBeUndefined();
+    expect(result.override.startDate).toBe('2026-03-12T09:30:00.000Z');
+    expect(result.override.deadline).toBe('2026-03-13T13:45:00.000Z');
+    expect(result.override.endDate).toBe('2026-03-12T12:00:00.000Z');
+    expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
+    expect(result.override.status).toBe(TaskStatus.OVERDUE);
+  });
+
+  test('finishes override with COMPLETED when override deadline is before finish date', () => {
+    const override = buildOverride({
+      id: 31,
+      status: TaskStatus.IN_PROGRESS,
+      deadline: '2026-03-12T11:45:00.000Z',
+    });
+    const finishedAt = new Date('2026-03-12T12:00:00.000Z');
+
+    jest.useFakeTimers().setSystemTime(finishedAt);
+
+    const result = service.finish({
+      taskId: TaskIdBuilder.wrapOverrideId({
+        recurrenceId: 19,
+        overrideId: 31,
+        date: '2026-03-12T10:00:00.000Z',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+        status: TaskStatus.DELETED,
+      }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      override,
+    });
+
+    expect(result.override).toBe(override);
+    expect(result.override.id).toBe(31);
+    expect(result.override.recurrenceId).toBe(19);
+    expect(result.override.recurrenceStart).toBe('2026-03-12T10:00:00.000Z');
+    expect(result.override.name).toBe('Override task');
+    expect(result.override.description).toBe('override desc');
+    expect(result.override.priority).toBe(4);
+    expect(result.override.weight).toBe(9);
+    expect(result.override.cancelReason).toBeUndefined();
+    expect(result.override.startDate).toBe('2026-03-12T09:30:00.000Z');
+    expect(result.override.deadline).toBe('2026-03-12T11:45:00.000Z');
+    expect(result.override.endDate).toBe('2026-03-12T12:00:00.000Z');
+    expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
+    expect(result.override.status).toBe(TaskStatus.COMPLETED);
   });
 });

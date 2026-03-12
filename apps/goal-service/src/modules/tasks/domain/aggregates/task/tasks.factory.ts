@@ -1,5 +1,6 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { DateVo, Name } from '@big-d/api-utils';
+import { timeAndDate } from '@shared/date-and-time';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
 import { Priority, Weight } from './value-objects';
@@ -79,7 +80,8 @@ class TaskFactory {
   }
 
   static finish(task: Task): Task {
-    return task.finish();
+    const now = timeAndDate().utc().toISOString();
+    return task.finish({ now: DateVo.create(now) });
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {
