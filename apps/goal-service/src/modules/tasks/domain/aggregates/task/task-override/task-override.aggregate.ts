@@ -1,4 +1,5 @@
-import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
+import { Task } from '@/modules/tasks/domain';
+import { TaskOverrideType } from '@big-d/api-contracts';
 import { assertStartDateIsRequired, taskAsserts } from '../tasks.invariants';
 import {
   TaskOverrideCreateInput,
@@ -86,9 +87,18 @@ class TaskOverride {
     return this;
   }
 
-  public delete(): TaskOverride {
+  public delete({ task }: { task: Task }): TaskOverride {
     this.#state.type = TaskOverrideType.DELETED;
-    this.#state.status = TaskStatus.DELETED;
+    this.#state.status = task.status;
+
+    return this;
+  }
+
+  public finish({ task }: { task: Task }): TaskOverride {
+    this.#state.type = TaskOverrideType.OVERRIDE;
+
+    this.#state.status = task.status;
+    this.#state.endDate = task.endDate;
 
     return this;
   }

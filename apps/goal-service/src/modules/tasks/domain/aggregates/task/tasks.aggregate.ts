@@ -28,10 +28,7 @@ class Task extends AggregateRoot {
     if (endDate != null) {
       if (deadline == null) return TaskStatus.COMPLETED;
 
-      const endOfDate = DateVo.create(new Date(new Date().setHours(23, 59, 59, 999)));
-      return endOfDate.isBefore(deadline.value) || endOfDate.equals(deadline)
-        ? TaskStatus.COMPLETED
-        : TaskStatus.OVERDUE;
+      return deadline.isAfter(endDate.value) ? TaskStatus.OVERDUE : TaskStatus.COMPLETED;
     }
 
     if (startDate) return TaskStatus.IN_PROGRESS;
@@ -216,12 +213,12 @@ class Task extends AggregateRoot {
     });
   }
 
-  public finish() {
+  public finish({ now }: { now: DateVo }) {
     if (this.#isAllowTo('FINISH')) {
       const startDate = this.#state.startDate;
       const deadline = this.#state.deadline;
 
-      this.#state.endDate = DateVo.create(new Date());
+      this.#state.endDate = now;
       taskAsserts.datesIntersections({ start: startDate, end: this.#state.endDate });
 
       this.#setStatus(

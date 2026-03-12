@@ -91,4 +91,84 @@ describe('TaskVirtualService', () => {
       }),
     ).toThrow();
   });
+
+  test('creates overdue override for virtual task when deadline is after finish date', () => {
+    const virtualDate = '2026-03-12T10:00:00.000Z';
+    const sourceTask = buildTask({
+      startDate: '2026-03-01T10:00:00.000Z',
+      deadline: '2026-03-02T12:30:00.000Z',
+    });
+    const currentRecurrence = buildRecurrence();
+    const expectedStart = timeAndDate(virtualDate).tz(currentRecurrence.timezone, true).utc();
+    const expectedDeadline = expectedStart.add(1590, 'minute');
+    const finishedAt = expectedStart.add(1, 'hour').toDate();
+
+    jest.useFakeTimers().setSystemTime(finishedAt);
+
+    try {
+      const result = service.finish({
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
+        sourceTask,
+        currentRecurrence,
+      });
+
+      expect(result.override.id).toBeNaN();
+      expect(result.override.userId).toBe(77);
+      expect(result.override.groupId).toBeUndefined();
+      expect(result.override.recurrenceId).toBe(currentRecurrence.id);
+      expect(result.override.recurrenceStart).toBe(virtualDate);
+      expect(result.override.name).toBe('Task');
+      expect(result.override.description).toBe('desc');
+      expect(result.override.priority).toBe(1);
+      expect(result.override.weight).toBe(1);
+      expect(result.override.cancelReason).toBeUndefined();
+      expect(result.override.startDate).toBe(expectedStart.toISOString());
+      expect(result.override.deadline).toBe(expectedDeadline.toISOString());
+      expect(result.override.endDate).toBe(expectedStart.add(1, 'hour').toISOString());
+      expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
+      expect(result.override.status).toBe(TaskStatus.OVERDUE);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('creates completed override for virtual task when deadline is before finish date', () => {
+    const virtualDate = '2026-03-12T10:00:00.000Z';
+    const sourceTask = buildTask({
+      startDate: '2026-03-01T10:00:00.000Z',
+      deadline: '2026-03-01T10:30:00.000Z',
+    });
+    const currentRecurrence = buildRecurrence();
+    const expectedStart = timeAndDate(virtualDate).tz(currentRecurrence.timezone, true).utc();
+    const expectedDeadline = expectedStart.add(30, 'minute');
+    const finishedAt = expectedStart.add(1, 'hour').toDate();
+
+    jest.useFakeTimers().setSystemTime(finishedAt);
+
+    try {
+      const result = service.finish({
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
+        sourceTask,
+        currentRecurrence,
+      });
+
+      expect(result.override.id).toBeNaN();
+      expect(result.override.userId).toBe(77);
+      expect(result.override.groupId).toBeUndefined();
+      expect(result.override.recurrenceId).toBe(currentRecurrence.id);
+      expect(result.override.recurrenceStart).toBe(virtualDate);
+      expect(result.override.name).toBe('Task');
+      expect(result.override.description).toBe('desc');
+      expect(result.override.priority).toBe(1);
+      expect(result.override.weight).toBe(1);
+      expect(result.override.cancelReason).toBeUndefined();
+      expect(result.override.startDate).toBe(expectedStart.toISOString());
+      expect(result.override.deadline).toBe(expectedDeadline.toISOString());
+      expect(result.override.endDate).toBe(expectedStart.add(1, 'hour').toISOString());
+      expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
+      expect(result.override.status).toBe(TaskStatus.COMPLETED);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });

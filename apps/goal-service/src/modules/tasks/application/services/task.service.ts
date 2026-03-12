@@ -2,6 +2,7 @@ import { ExceptionTaskCreationFailed } from '@/modules/tasks/application/excepti
 import { Task, TaskFactory, TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
+import { TimezoneVo } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
 import { TasksWriteRepository, TaskTransaction } from '../ports';
@@ -118,7 +119,9 @@ class TaskService {
           )
         : [];
 
-    const timezone = currentRecurrence?.timezone ?? GoalServiceRequestContext.getStore()?.state?.userTimezone ?? 'UTC';
+    const timezone =
+      currentRecurrence?.timezone ??
+      TimezoneVo.create(GoalServiceRequestContext.getStore()?.state?.userTimezone ?? 'UTC').value;
 
     const replaceData = this.taskWithRecurrenceService.replace({
       task,

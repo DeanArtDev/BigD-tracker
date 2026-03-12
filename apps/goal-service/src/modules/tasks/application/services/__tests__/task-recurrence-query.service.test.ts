@@ -242,6 +242,51 @@ describe('TaskRecurrenceQueryService', () => {
     expect(taskCheckerService.ensureTaskExists).toHaveBeenCalledTimes(1);
   });
 
+  test('generates a virtual task with IN_PROGRESS status even if source task has another status', async () => {
+    const recurrence = getTaskRecurrence({
+      id: 94010,
+      userId: 880,
+      taskId: 94010,
+      status: TaskRecurrenceStatus.ACTIVE,
+      timezone: 'UTC',
+      startDate: '2026-03-01T10:00:00.000Z',
+      untilDate: '2026-03-02T10:00:00.000Z',
+    });
+    const sourceTask = getTask({
+      id: 94010,
+      userId: 880,
+      name: 'Recurring task',
+      description: 'repeat',
+      priority: 4,
+      weight: 5,
+      startDate: '2026-03-01T10:00:00.000Z',
+      deadline: '2026-03-01T12:00:00.000Z',
+      status: TaskStatus.NOT_STARTED,
+    });
+    const tasksOverridesRepository = {
+      getManyRecurrences: jest.fn().mockResolvedValue([recurrence]),
+      getManyOverrides: jest.fn().mockResolvedValue([]),
+    };
+    const taskCheckerService = {
+      ensureTaskExists: jest.fn().mockResolvedValue(sourceTask),
+    };
+    const service = new TaskRecurrenceQueryService(tasksOverridesRepository as never, taskCheckerService as never);
+
+    const result = await service.calculateTasks({
+      userId: 880,
+      from: '2026-03-02',
+      to: '2026-03-02',
+    });
+
+    expect(result.virtualViews).toHaveLength(1);
+    expect(result.virtualViews[0]).toMatchObject({
+      id: 'v::94010::2026-03-02T10:00:00.000Z',
+      status: TaskStatus.IN_PROGRESS,
+      startDate: '2026-03-02T10:00:00.000Z',
+      deadline: '2026-03-02T12:00:00.000Z',
+    });
+  });
+
   test('returns long virtual task when requested day intersects occurrence interval', async () => {
     const recurrence = getTaskRecurrence({
       id: 94011,
