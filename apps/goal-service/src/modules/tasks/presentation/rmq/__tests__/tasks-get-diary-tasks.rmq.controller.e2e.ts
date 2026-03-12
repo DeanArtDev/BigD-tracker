@@ -367,6 +367,77 @@ describe('TasksRmqController (rmq e2e)', () => {
       });
     });
 
+    test('should build origin tasks range by user timezone day bounds', async () => {
+      const userId = 790;
+
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockReset();
+      tasksOverridesWriteRepoMock.getManyOverrides.mockReset();
+      tasksReadRepoMock.getByRange.mockReset();
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([]);
+      tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
+
+      const payload: GoalGetDiaryTasks.Request = new RmqRecordBuilder({
+        data: {
+          userId,
+          filter: {
+            from: '2026-03-02T00:00:00.000Z',
+            to: '2026-03-02T00:00:00.000Z',
+          },
+        },
+      })
+        .setOptions({
+          headers: {
+            [CORRELATION_HEADER_KEY]: 'origin-range-correlation',
+            [USER_TIME_ZONE_HEADER_KEY]: 'Asia/Novosibirsk',
+          },
+        })
+        .build();
+
+      await sendMessage<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(GoalGetDiaryTasks.pattern, payload);
+
+      const tasksSpec = firstArg(tasksReadRepoMock.getByRange) as {
+        kind?: string;
+        children?: Array<{ toExpr?: (...args: unknown[]) => unknown }>;
+      };
+      const startDateExpr = tasksSpec.children?.[1]?.toExpr?.((...args: unknown[]) => args) as unknown[];
+      const deadlineExpr = tasksSpec.children?.[2]?.toExpr?.((...args: unknown[]) => args) as unknown[];
+
+      expect(startDateExpr[0]).toBe('tasks.start_date');
+      expect(startDateExpr[1]).toBe('<=');
+      expect((startDateExpr[2] as Date).toISOString()).toBe('2026-03-02T16:59:59.999Z');
+
+      expect(deadlineExpr[0]).toBe('tasks.deadline');
+      expect(deadlineExpr[1]).toBe('>=');
+      expect((deadlineExpr[2] as Date).toISOString()).toBe('2026-03-01T17:00:00.000Z');
+    });
+
+    test('should exclude deleted and archived origin tasks from range query', async () => {
+      const userId = 791;
+
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockReset();
+      tasksOverridesWriteRepoMock.getManyOverrides.mockReset();
+      tasksReadRepoMock.getByRange.mockReset();
+      tasksOverridesWriteRepoMock.getManyRecurrences.mockResolvedValueOnce([]);
+      tasksReadRepoMock.getByRange.mockResolvedValueOnce([]);
+
+      const payload: GoalGetDiaryTasks.Request = buildPayload({
+        data: {
+          userId,
+          filter: {
+            from: '2026-03-02T00:00:00.000Z',
+            to: '2026-03-02T23:59:59.000Z',
+          },
+        },
+      });
+
+      await sendMessage<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(GoalGetDiaryTasks.pattern, payload);
+
+      const tasksSpec = specToDebugString(firstArg(tasksReadRepoMock.getByRange));
+
+      expect(tasksSpec).toContain('NOT(');
+      expect(tasksSpec).toContain('tasks.byStatus');
+    });
+
     test('should return weekly virtual tasks only for Wednesday, Friday and Saturday', async () => {
       const userId = 888;
       const sourceTask = getTask({

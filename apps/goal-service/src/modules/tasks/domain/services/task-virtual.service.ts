@@ -4,6 +4,30 @@ import { Task, TaskFactory, TaskOverrideFactory, TaskRecurrence } from '../aggre
 import { taskServiceAsserts } from './task-service-asserts';
 
 class TaskVirtualService {
+  clone(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
+    const { sourceTask, currentRecurrence } = input;
+
+    const { virtualData } = this.#assertDependenciesConsistency(input);
+
+    const { startDate, deadline } = this.#shapeRelatedDates({
+      taskId: sourceTask.id,
+      startDate: sourceTask.startDate,
+      virtualDate: virtualData.date,
+      deadline: sourceTask.deadline,
+      timezone: currentRecurrence.timezone,
+    });
+
+    const virtualTask = this.#createVirtualTaskFromSource({
+      sourceTask,
+      startDate: startDate.toISOString(),
+      deadline: deadline.toISOString(),
+    });
+
+    return {
+      task: TaskFactory.clone(virtualTask),
+    };
+  }
+
   delete(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
     const { sourceTask, currentRecurrence } = input;
 
@@ -94,7 +118,6 @@ class TaskVirtualService {
       actualRecurrenceId: virtualData.recurrenceId,
       message: 'Дело принадлежит другой серии',
     });
-    taskServiceAsserts.ensureRecurrenceIsNotCanceled(currentRecurrence);
     taskServiceAsserts.ensureSourceTaskBelongsToRecurrence({ taskId, sourceTask, currentRecurrence });
     taskServiceAsserts.ensureRepeatableSourceTask({ taskId, sourceTask });
 

@@ -95,7 +95,7 @@ describe('Task aggregate', () => {
     ).toThrow();
   });
 
-  it('finishes task with OVERDUE when deadline is after finish date', () => {
+  it('finishes task with COMPLETED when deadline is after finish date', () => {
     const task = Task.restore({
       id: 13,
       userId: 1,
@@ -109,11 +109,11 @@ describe('Task aggregate', () => {
 
     task.finish({ now: DateVo.create(new Date().toISOString()) });
 
-    expect(task.status).toBe(TaskStatus.OVERDUE);
+    expect(task.status).toBe(TaskStatus.COMPLETED);
     expect(task.endDate).toBeDefined();
   });
 
-  it('finishes task with COMPLETED when deadline is before finish date', () => {
+  it('finishes task with OVERDUE when deadline is before finish date', () => {
     const task = Task.restore({
       id: 14,
       userId: 1,
@@ -127,7 +127,7 @@ describe('Task aggregate', () => {
 
     task.finish({ now: DateVo.create(new Date().toISOString()) });
 
-    expect(task.status).toBe(TaskStatus.COMPLETED);
+    expect(task.status).toBe(TaskStatus.OVERDUE);
     expect(task.endDate).toBeDefined();
   });
 });

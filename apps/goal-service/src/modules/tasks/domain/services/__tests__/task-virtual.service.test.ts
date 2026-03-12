@@ -45,6 +45,56 @@ function buildRecurrence(
 describe('TaskVirtualService', () => {
   const service = new TaskVirtualService();
 
+  test('clones virtual task with materialized virtual dates', () => {
+    const virtualDate = '2026-03-12T08:00:00.000Z';
+    const sourceTask = buildTask({
+      startDate: '2026-03-01T10:00:00.000Z',
+      deadline: '2026-03-01T12:30:00.000Z',
+    });
+    const currentRecurrence = buildRecurrence();
+
+    const result = service.clone({
+      taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
+      sourceTask,
+      currentRecurrence,
+    });
+
+    const expectedStart = timeAndDate(virtualDate).tz(currentRecurrence.timezone, true).utc();
+    const expectedDeadline = expectedStart.add(150, 'minute');
+
+    expect(result.task.id).toBeNaN();
+    expect(result.task.userId).toBe(77);
+    expect(result.task.groupId).toBeUndefined();
+    expect(result.task.recurrenceId).toBeUndefined();
+    expect(result.task.name).toBe('Task');
+    expect(result.task.description).toBe('desc');
+    expect(result.task.priority).toBe(1);
+    expect(result.task.weight).toBe(1);
+    expect(result.task.startDate).toBe(expectedStart.toISOString());
+    expect(result.task.deadline).toBe(expectedDeadline.toISOString());
+    expect(result.task.endDate).toBeUndefined();
+    expect(result.task.status).toBe(TaskStatus.IN_PROGRESS);
+  });
+
+  test('clones virtual task from canceled recurrence', () => {
+    const virtualDate = '2026-03-12T08:00:00.000Z';
+    const sourceTask = buildTask({
+      startDate: '2026-03-01T10:00:00.000Z',
+      deadline: '2026-03-01T12:30:00.000Z',
+    });
+    const currentRecurrence = buildRecurrence({ status: TaskRecurrenceStatus.CANCELED });
+
+    const result = service.clone({
+      taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
+      sourceTask,
+      currentRecurrence,
+    });
+
+    expect(result.task.id).toBeNaN();
+    expect(result.task.startDate).toBeDefined();
+    expect(result.task.deadline).toBeDefined();
+  });
+
   test('creates deleted override for virtual task', () => {
     const virtualDate = '2026-03-12T08:00:00.000Z';
     const sourceTask = buildTask({
@@ -79,20 +129,7 @@ describe('TaskVirtualService', () => {
     expect(result.override.status).toBe(TaskStatus.DELETED);
   });
 
-  test('rejects deleting virtual task from canceled recurrence', () => {
-    expect(() =>
-      service.delete({
-        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: 19, date: '2026-03-12T08:00:00.000Z' }),
-        sourceTask: buildTask({
-          startDate: '2026-03-01T10:00:00.000Z',
-          deadline: '2026-03-01T12:30:00.000Z',
-        }),
-        currentRecurrence: buildRecurrence({ status: TaskRecurrenceStatus.CANCELED }),
-      }),
-    ).toThrow();
-  });
-
-  test('creates overdue override for virtual task when deadline is after finish date', () => {
+  test('creates completed override for virtual task when deadline is after finish date', () => {
     const virtualDate = '2026-03-12T10:00:00.000Z';
     const sourceTask = buildTask({
       startDate: '2026-03-01T10:00:00.000Z',
@@ -126,13 +163,13 @@ describe('TaskVirtualService', () => {
       expect(result.override.deadline).toBe(expectedDeadline.toISOString());
       expect(result.override.endDate).toBe(expectedStart.add(1, 'hour').toISOString());
       expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
-      expect(result.override.status).toBe(TaskStatus.OVERDUE);
+      expect(result.override.status).toBe(TaskStatus.COMPLETED);
     } finally {
       jest.useRealTimers();
     }
   });
 
-  test('creates completed override for virtual task when deadline is before finish date', () => {
+  test('creates overdue override for virtual task when deadline is before finish date', () => {
     const virtualDate = '2026-03-12T10:00:00.000Z';
     const sourceTask = buildTask({
       startDate: '2026-03-01T10:00:00.000Z',
@@ -166,7 +203,7 @@ describe('TaskVirtualService', () => {
       expect(result.override.deadline).toBe(expectedDeadline.toISOString());
       expect(result.override.endDate).toBe(expectedStart.add(1, 'hour').toISOString());
       expect(result.override.type).toBe(TaskOverrideType.OVERRIDE);
-      expect(result.override.status).toBe(TaskStatus.COMPLETED);
+      expect(result.override.status).toBe(TaskStatus.OVERDUE);
     } finally {
       jest.useRealTimers();
     }

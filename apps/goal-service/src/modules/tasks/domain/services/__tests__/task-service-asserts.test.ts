@@ -70,12 +70,6 @@ describe('taskServiceAsserts', () => {
     ).toThrow();
   });
 
-  test('rejects canceled recurrence', () => {
-    expect(() =>
-      taskServiceAsserts.ensureRecurrenceIsNotCanceled(buildRecurrence({ status: TaskRecurrenceStatus.CANCELED })),
-    ).toThrow();
-  });
-
   test('rejects non-repeatable source task', () => {
     expect(() =>
       taskServiceAsserts.ensureRepeatableSourceTask({

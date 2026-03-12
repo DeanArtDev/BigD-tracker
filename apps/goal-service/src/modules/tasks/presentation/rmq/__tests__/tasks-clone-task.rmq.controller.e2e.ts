@@ -1,7 +1,9 @@
 import { initTestEnvironment } from '@/../jest.setup';
-import { Task, TaskIdBuilder } from '@/modules/tasks/domain';
-import { GroupsToken, TasksToken } from '@/modules/tasks/tokens';
-import { GoalCloneTask, RmqErrorKind } from '@big-d/api-contracts';
+import { Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
+import { GroupsToken, TasksOverridesToken, TasksToken } from '@/modules/tasks/tokens';
+import { GoalCloneTask, RmqErrorKind, TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
+import { timeAndDate } from '@shared/date-and-time';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -13,11 +15,12 @@ import {
   sendMessageBuilder,
   unwrapRpcError,
 } from '@shared/__tests__';
-import { getGroupWithTasks, getTask, getTaskView } from '@shared/__tests__/entities';
+import { getGroupWithTasks, getTask, getTaskRecurrence, getTaskView } from '@shared/__tests__/entities';
 import {
   groupReadRepoMock,
   groupWriteRepoMock,
   inboxReadRepoMock,
+  tasksOverridesWriteRepoMock,
   tasksReadRepoMock,
   tasksWriteRepoMock,
 } from '@shared/__tests__';
@@ -41,12 +44,18 @@ describe('TasksRmqController (rmq e2e)', () => {
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
 
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
       .overrideProvider(TasksToken.WRITE_REPOSITORY)
       .useValue(tasksWriteRepoMock)
       .overrideProvider(TasksToken.READ_REPOSITORY)
       .useValue(tasksReadRepoMock)
+      .overrideProvider(TasksOverridesToken.WRITE_REPOSITORY)
+      .useValue(tasksOverridesWriteRepoMock)
       .overrideProvider(GroupsToken.WRITE_REPOSITORY)
       .useValue(groupWriteRepoMock)
       .overrideProvider(GroupsToken.READ_REPOSITORY)
@@ -73,8 +82,21 @@ describe('TasksRmqController (rmq e2e)', () => {
     test('should clone task without group', async () => {
       const userId = 21;
       const taskId = 2001;
-      const originalTask = getTask({ id: taskId, userId, name: 'Original' });
-      const clonedTask = getTask({ id: originalTask.id + 1, userId, name: originalTask.name });
+      const originalTask = getTask({
+        id: taskId,
+        userId,
+        name: 'Original',
+        startDate: '2026-03-12T10:00:00.000Z',
+        deadline: '2026-03-12T12:00:00.000Z',
+      });
+      const clonedTask = getTask({
+        id: originalTask.id + 1,
+        userId,
+        name: originalTask.name,
+        startDate: originalTask.startDate,
+        deadline: originalTask.deadline,
+        status: TaskStatus.IN_PROGRESS,
+      });
       const taskView = getTaskView({ id: clonedTask.id, userId, name: clonedTask.name });
 
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(originalTask);
@@ -96,8 +118,169 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(clonedTaskArg).toBeInstanceOf(Task);
       expect(clonedTaskArg.id).toEqual(NaN);
       expect(clonedTaskArg.name).toBe('Original');
+      expect(clonedTaskArg.startDate).toBe('2026-03-12T10:00:00.000Z');
+      expect(clonedTaskArg.deadline).toBe('2026-03-12T12:00:00.000Z');
+      expect(clonedTaskArg.status).toBe(TaskStatus.IN_PROGRESS);
       expect(trxArg).toEqual(expectTransaction());
       expect(tasksReadRepoMock.getById).toHaveBeenCalledWith({ id: clonedTask.id, userId }, expectTransaction());
+      expect(res).toEqual({
+        data: toTaskResponse(taskView),
+      });
+    });
+
+    test('should clone virtual task without recurrence as ordinary task', async () => {
+      const userId = 27;
+      const sourceTaskId = 3101;
+      const recurrenceId = 4101;
+      const recurrenceStart = '2026-03-12T10:00:00.000Z';
+      const virtualTaskId = TaskIdBuilder.wrapVirtualId({ recurrenceId, date: recurrenceStart });
+      const sourceTask = getTask({
+        id: sourceTaskId,
+        userId,
+        name: 'Virtual source',
+        description: 'source description',
+        priority: 3,
+        weight: 7,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      });
+      const recurrence = getTaskRecurrence({
+        id: recurrenceId,
+        taskId: sourceTaskId,
+        userId,
+        startDate: '2026-03-01T10:00:00.000Z',
+      });
+      const expectedStart = timeAndDate(recurrenceStart).tz(recurrence.timezone, true).utc().toISOString();
+      const expectedDeadline = timeAndDate(recurrenceStart)
+        .tz(recurrence.timezone, true)
+        .utc()
+        .add(2, 'hour')
+        .toISOString();
+      const clonedTask = getTask({
+        id: 3102,
+        userId,
+        name: 'Virtual source',
+        description: 'source description',
+        priority: 3,
+        weight: 7,
+        startDate: expectedStart,
+        deadline: expectedDeadline,
+        status: TaskStatus.IN_PROGRESS,
+      });
+      const taskView = getTaskView({ id: clonedTask.id, userId, name: clonedTask.name });
+
+      tasksOverridesWriteRepoMock.getOneRecurrence.mockResolvedValueOnce(recurrence);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(sourceTask);
+      tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
+      tasksReadRepoMock.getById.mockResolvedValueOnce(taskView);
+
+      const payload: GoalCloneTask.Request = buildPayload({
+        data: {
+          userId,
+          taskId: virtualTaskId,
+        },
+      });
+
+      const res = await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
+
+      const [[clonedTaskArg, trxArg]] = tasksWriteRepoMock.createTask.mock.calls;
+      expect(clonedTaskArg).toBeInstanceOf(Task);
+      expect(clonedTaskArg.id).toEqual(NaN);
+      expect(clonedTaskArg.name).toBe('Virtual source');
+      expect(clonedTaskArg.description).toBe('source description');
+      expect(clonedTaskArg.priority).toBe(3);
+      expect(clonedTaskArg.weight).toBe(7);
+      expect(clonedTaskArg.recurrenceId).toBeUndefined();
+      expect(clonedTaskArg.startDate).toBe(expectedStart);
+      expect(clonedTaskArg.deadline).toBe(expectedDeadline);
+      expect(clonedTaskArg.status).toBe(TaskStatus.IN_PROGRESS);
+      expect(trxArg).toEqual(expectTransaction());
+      expect(res).toEqual({
+        data: toTaskResponse(taskView),
+      });
+    });
+
+    test('should clone override as ordinary task with override dates', async () => {
+      const userId = 28;
+      const sourceTaskId = 3201;
+      const recurrenceId = 4201;
+      const overrideId = 5201;
+      const recurrenceStart = '2026-03-12T10:00:00.000Z';
+      const overrideTaskId = TaskIdBuilder.wrapOverrideId({ recurrenceId, overrideId, date: recurrenceStart });
+      const sourceTask = getTask({
+        id: sourceTaskId,
+        userId,
+        name: 'Source task',
+        description: 'source description',
+        priority: 2,
+        weight: 5,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      });
+      const recurrence = getTaskRecurrence({
+        id: recurrenceId,
+        taskId: sourceTaskId,
+        userId,
+        startDate: '2026-03-01T10:00:00.000Z',
+      });
+      const override = TaskOverride.restore({
+        task: getTask({
+          id: overrideId,
+          userId,
+          name: 'Override task',
+          description: 'override description',
+          priority: 4,
+          weight: 9,
+          startDate: '2026-03-12T09:30:00.000Z',
+          deadline: '2026-03-12T13:45:00.000Z',
+          status: TaskStatus.COMPLETED,
+        }),
+        recurrenceId,
+        recurrenceStart: DateVo.restore(recurrenceStart),
+        type: TaskOverrideType.OVERRIDE,
+      });
+      const clonedTask = getTask({
+        id: 3202,
+        userId,
+        name: 'Override task',
+        description: 'override description',
+        priority: 4,
+        weight: 9,
+        startDate: '2026-03-12T09:30:00.000Z',
+        deadline: '2026-03-12T13:45:00.000Z',
+        status: TaskStatus.IN_PROGRESS,
+      });
+      const taskView = getTaskView({ id: clonedTask.id, userId, name: clonedTask.name });
+
+      tasksOverridesWriteRepoMock.getOneRecurrence.mockResolvedValueOnce(recurrence);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(sourceTask);
+      tasksOverridesWriteRepoMock.getOneOverride.mockResolvedValueOnce(override);
+      tasksWriteRepoMock.createTask.mockResolvedValueOnce(clonedTask);
+      tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(clonedTask);
+      tasksReadRepoMock.getById.mockResolvedValueOnce(taskView);
+
+      const payload: GoalCloneTask.Request = buildPayload({
+        data: {
+          userId,
+          taskId: overrideTaskId,
+        },
+      });
+
+      const res = await sendMessage<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, payload);
+
+      const [[clonedTaskArg, trxArg]] = tasksWriteRepoMock.createTask.mock.calls;
+      expect(clonedTaskArg).toBeInstanceOf(Task);
+      expect(clonedTaskArg.id).toEqual(NaN);
+      expect(clonedTaskArg.name).toBe('Override task');
+      expect(clonedTaskArg.description).toBe('override description');
+      expect(clonedTaskArg.priority).toBe(4);
+      expect(clonedTaskArg.weight).toBe(9);
+      expect(clonedTaskArg.recurrenceId).toBeUndefined();
+      expect(clonedTaskArg.startDate).toBe('2026-03-12T09:30:00.000Z');
+      expect(clonedTaskArg.deadline).toBe('2026-03-12T13:45:00.000Z');
+      expect(clonedTaskArg.status).toBe(TaskStatus.IN_PROGRESS);
+      expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: toTaskResponse(taskView),
       });

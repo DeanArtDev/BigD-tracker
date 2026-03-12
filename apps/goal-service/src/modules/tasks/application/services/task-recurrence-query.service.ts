@@ -59,16 +59,15 @@ class TaskRecurrenceQueryService {
     const request = GoalServiceRequestContext.getStore()?.state;
     const userTimezone = TimezoneVo.create(request?.userTimezone ?? 'UTC').value;
 
-    const { from: userTzFrom, to: userTzTo } = this.#datesToTZUtc({ from: input.from, to: input.to }, userTimezone);
+    const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, userTimezone);
     const recurrences = await this.tasksOverridesRepository.getManyRecurrences(
-      GetRecurrencesByRange({ userId, to: userTzTo, from: userTzFrom }),
+      GetRecurrencesByRange({ userId, to, from }),
       trx,
     );
 
     const virtualViews: TaskView[] = [];
 
     for (const recurrence of recurrences) {
-      const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, userTimezone);
       const overrides = await this.tasksOverridesRepository.getManyOverrides(
         GetTasksOverrides({ userId, from, to, recurrenceIds: [recurrence.id] }),
         trx,
