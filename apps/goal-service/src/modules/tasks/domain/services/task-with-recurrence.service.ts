@@ -1,7 +1,7 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, MonthdaysVo, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
 
 interface TaskWithRecurrenceInput {

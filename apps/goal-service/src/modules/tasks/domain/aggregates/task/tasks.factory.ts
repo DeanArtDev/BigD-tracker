@@ -1,5 +1,5 @@
 import { DateVo, Name } from '@big-d/api-utils';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
 import { Priority, Weight } from './value-objects';

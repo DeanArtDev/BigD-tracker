@@ -3,7 +3,7 @@ import { Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
 import { GroupsToken, TasksOverridesToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalCloneTask, RmqErrorKind, TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';

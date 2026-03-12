@@ -1,5 +1,5 @@
 import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
 import { taskServiceAsserts } from './task-service-asserts';
 

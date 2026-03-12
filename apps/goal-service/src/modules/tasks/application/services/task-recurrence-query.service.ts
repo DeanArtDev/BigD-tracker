@@ -4,7 +4,7 @@ import { TasksOverridesToken } from '@/modules/tasks/tokens';
 import { numberToWeekdayMap, TaskStatus } from '@big-d/api-contracts';
 import { TimezoneVo } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { GoalServiceRequestContext } from '@shared/request-context';
 import { RRule } from 'rrule';
 import { TasksViewMapper, TaskView } from '../dto';
