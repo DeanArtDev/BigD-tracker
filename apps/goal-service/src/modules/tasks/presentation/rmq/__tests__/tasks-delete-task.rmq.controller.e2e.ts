@@ -6,7 +6,7 @@ import { DateVo } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import {
   buildPayload,
   connectRmqClients,

@@ -9,7 +9,9 @@
 
     "dev": {
       "dependsOn": ["^build"],
-      "persistent": true
+      "persistent": true,
+      "interruptible": true,
+      "cache": false
     },
 
     "build": {

@@ -4,7 +4,7 @@ import { TimezoneVo } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { GoalServiceRequestContext } from '@shared/request-context';
 import { compact } from 'lodash';
 import { TaskView } from '../../dto';

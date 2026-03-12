@@ -4,7 +4,7 @@ import { FinishTaskUseCase } from '../finish-task.use-case';
 import { TaskOverride } from '@/modules/tasks/domain';
 import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
-import { timeAndDate } from '@shared/date-and-time';
+import { timeAndDate } from '@big-d/api-utils';
 import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
 
 describe('FinishTaskUseCase', () => {
