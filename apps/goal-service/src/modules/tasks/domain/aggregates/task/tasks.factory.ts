@@ -68,8 +68,8 @@ class TaskFactory {
     return task.replace(state);
   }
 
-  static finish(task: Task): Task {
-    return task.finish({ now: DateVo.now() });
+  static finish(task: Task, timezone: string): Task {
+    return task.finish({ now: DateVo.nowByTZ(timezone) });
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {

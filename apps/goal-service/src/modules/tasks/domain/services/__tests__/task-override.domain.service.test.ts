@@ -238,6 +238,7 @@ describe('TaskOverrideDomainService', () => {
       }),
       currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
       override,
+      timezone: 'UTC',
     });
 
     expect(result.override).toBe(override);
@@ -280,6 +281,7 @@ describe('TaskOverrideDomainService', () => {
       }),
       currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
       override,
+      timezone: 'UTC',
     });
 
     expect(result.override).toBe(override);

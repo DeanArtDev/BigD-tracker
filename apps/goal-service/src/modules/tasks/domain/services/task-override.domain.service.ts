@@ -30,13 +30,19 @@ class TaskOverrideDomainService {
     };
   }
 
-  finish(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; override: TaskOverride }) {
+  finish(input: {
+    taskId: string;
+    sourceTask: Task;
+    currentRecurrence: TaskRecurrence;
+    override: TaskOverride;
+    timezone: string;
+  }) {
     const { override } = input;
 
     this.#assertDependenciesConsistency(input);
 
     const task = this.#restoreTaskFromOverride(override);
-    const finishedTask = TaskFactory.finish(task);
+    const finishedTask = TaskFactory.finish(task, input.timezone);
     const finishedOverride = TaskOverrideFactory.finish(override, finishedTask);
 
     return {

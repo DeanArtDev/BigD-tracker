@@ -3,8 +3,10 @@ import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
+import { TimezoneVo } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { GoalServiceRequestContext } from '@shared/request-context';
 import {
   InboxGroupCheckerService,
   TaskCheckerService,
@@ -35,9 +37,12 @@ class FinishTaskUseCase {
       const { taskId, userId } = input;
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
 
+      const request = GoalServiceRequestContext.getStore()?.state;
+      const userTimezone = TimezoneVo.create(request?.userTimezone ?? 'UTC').value;
+
       if (isOrigin) {
         const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
-        const finishedTask = TaskFactory.finish(task);
+        const finishedTask = TaskFactory.finish(task, userTimezone);
 
         await this.tasksWriteRepo.replaceTask(finishedTask, trx);
 
@@ -66,6 +71,7 @@ class FinishTaskUseCase {
           taskId,
           sourceTask: task,
           currentRecurrence: recurrence,
+          timezone: userTimezone,
         });
         await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
 
@@ -87,6 +93,7 @@ class FinishTaskUseCase {
           sourceTask: task,
           currentRecurrence: recurrence,
           override: currentOverride,
+          timezone: userTimezone,
         });
         await this.taskOverrideService.upsertOverride(overrideToUpdate, trx);
 
