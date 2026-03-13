@@ -11,9 +11,9 @@ interface TaskDiaryTimelineProps {
   readonly onEventClick: (task: TaskEntity | undefined) => void;
 }
 
-function TaskDiaryTimeline({ onEventClick }: TaskDiaryTimelineProps) {
+function TaskDiaryTimeline({ filterByGroup, onEventClick }: TaskDiaryTimelineProps) {
   const [dateSet, setDateSet] = useState<{ from: string; to: string }>();
-  const { taskList } = useTasksDiaryQuery(dateSet);
+  const { taskList } = useTasksDiaryQuery(dateSet != null ? { ...dateSet, group: filterByGroup } : undefined);
 
   const events = useMemo(() => {
     return taskList.map((task) => {

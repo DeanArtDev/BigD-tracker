@@ -7,7 +7,7 @@ import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import {
   overrideTypeByNameQuery,
-  overrideWithStatusAndTypeQuery,
+  overrideCommonQuery,
   recurrenceStatusByNameQuery,
   statusByNameQuery,
   taskFrequencyByNameQuery,
@@ -46,7 +46,7 @@ export class TasksOverridesWriteRepositoryKysely
 
   async getManyOverrides(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride[]> {
     return await this.errorCatcher('tasks.get-many-overrides', async () => {
-      const overrides = await overrideWithStatusAndTypeQuery(this.db, trx)
+      const overrides = await overrideCommonQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
         .execute();
 
@@ -56,7 +56,7 @@ export class TasksOverridesWriteRepositoryKysely
 
   async getOneOverride(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskOverride | null> {
     return await this.errorCatcher('tasks.get-one-override', async () => {
-      const override = await overrideWithStatusAndTypeQuery(this.db, trx)
+      const override = await overrideCommonQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
         .executeTakeFirst();
       if (override == null) return null;

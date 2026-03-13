@@ -39,6 +39,7 @@ class Task extends AggregateRoot {
     return new Task({
       id: input.id,
       userId: input.userId,
+      groupId: input.groupId,
       name: input.name,
       description: input.description,
       priority: input.priority,
@@ -58,6 +59,7 @@ class Task extends AggregateRoot {
     return new Task({
       id: NaN,
       userId: input.userId,
+      groupId: input.groupId,
       name: input.name,
       description: input.description,
       priority: input.priority,
@@ -199,6 +201,7 @@ class Task extends AggregateRoot {
       return new Task({
         id: NaN,
         userId: this.#state.userId,
+        groupId: this.#state.groupId,
         name: this.#state.name,
         description: this.#state.description,
         priority: this.#state.priority,

@@ -5,6 +5,7 @@ export class GetDiaryTasksQuery {
 
       readonly meta: {
         readonly filter: {
+          readonly group?: number[];
           readonly to: string;
           readonly from: string;
         };

@@ -62,6 +62,7 @@ const getTask = (
   data: Partial<{
     id: number;
     userId: number;
+    groupId?: number;
     name: string;
     description?: string;
     priority: number;
@@ -84,6 +85,7 @@ const getTask = (
     deadline: data.deadline != null ? DateVo.restore(data.deadline) : undefined,
     endDate: undefined,
     status: data.status ?? TaskStatus.NOT_STARTED,
+    groupId: data.groupId,
     recurrenceId: data.recurrenceId,
   });
 };

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsISO8601, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsISO8601, IsOptional, ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
 
 class GetDiaryTasksFilterDto {
@@ -8,6 +8,12 @@ class GetDiaryTasksFilterDto {
 
   @IsISO8601()
   to: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsArray()
+  @IsInt({ each: true })
+  group?: number[];
 }
 
 class GetDiaryTasksReqData {

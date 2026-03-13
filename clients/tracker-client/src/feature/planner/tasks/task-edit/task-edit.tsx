@@ -57,12 +57,13 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
             body: {
               data: {
                 ...formData,
+                startDate: formData.startDate ? dayjs(formData.startDate).format('YYYY-MM-DDTHH:mm') : undefined,
+                deadline: formData.deadline ? dayjs(formData.deadline).format('YYYY-MM-DDTHH:mm') : undefined,
                 recurrence: hasRecurrence
                   ? {
                       frequency: recurrence.frequency,
-                      startDate: dayjs(recurrence.start).utc(true).format('YYYY-MM-DD'),
-                      untilDate:
-                        recurrence.end != null ? dayjs(recurrence.end).utc(true).format('YYYY-MM-DD') : undefined,
+                      startDate: dayjs(recurrence.start).format('YYYY-MM-DDTHH:mm'),
+                      untilDate: recurrence.end != null ? dayjs(recurrence.end).format('YYYY-MM-DDTHH:mm') : undefined,
                       weekdays: recurrence?.weekdays,
                     }
                   : undefined,

@@ -5,4 +5,4 @@ export * from './override-type-by-name.query';
 export * from './task-recurrences.query';
 export * from './task-frequency-by-name.query';
 export * from './recurrence-status-by-name.query';
-export * from './override-with-status-and-type.query';
+export * from './override-common.query';

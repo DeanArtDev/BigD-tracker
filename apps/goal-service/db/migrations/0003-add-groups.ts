@@ -41,7 +41,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addPrimaryKeyConstraint('ttg_pkey', ['group_id', 'task_id'])
     .execute();
 
-  await db.schema.createIndex('ttg_task_id_idx').on('task_to_group').column('task_id').execute();
+  await db.schema.createIndex('ttg_task_id_uidx').unique().on('task_to_group').column('task_id').execute();
 
   await db.schema
     .createIndex('ttg_group_position_task_idx')
