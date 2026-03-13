@@ -1,11 +1,9 @@
 import { TasksToken } from '@/modules/tasks/tokens';
 import { TaskStatus } from '@big-d/api-contracts';
-import { TimezoneVo } from '@big-d/api-utils';
+import { timeAndDate } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { timeAndDate } from '@big-d/api-utils';
-import { GoalServiceRequestContext } from '@shared/request-context';
 import { compact } from 'lodash';
 import { TaskView } from '../../dto';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
@@ -40,17 +38,15 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
         trx,
       );
 
-      const request = GoalServiceRequestContext.getStore()?.state;
-      const userTimezone = TimezoneVo.create(request?.userTimezone ?? 'UTC').value;
-      const userTZto = timeAndDate(filter.to).tz(userTimezone).endOf('date').utc().toDate();
-      const userTZFrom = timeAndDate(filter.from).tz(userTimezone).startOf('date').utc().toDate();
+      const to = timeAndDate(filter.to).endOf('date').toDate();
+      const from = timeAndDate(filter.from).startOf('date').toDate();
 
       const tasks = await this.tasksReadRepository.getByRange(
         and(
           ...compact([
             TaskByUserId(userId),
-            TaskByStartDateLessOrEqual(userTZto),
-            TaskByDeadlineGreaterOrEqual(userTZFrom),
+            TaskByStartDateLessOrEqual(to),
+            TaskByDeadlineGreaterOrEqual(from),
             not(TaskByStatus([TaskStatus.DELETED, TaskStatus.ARCHIVED])),
             recurrences.length > 0 && not(TaskByIds(recurrences.map((r) => r.taskId))),
           ]),
@@ -61,9 +57,9 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
       );
 
       return [...virtualViews, ...tasks].sort((a, b) => {
-        if (!a.startDate && !b.startDate) return 0;
-        if (!a.startDate) return 1;
-        if (!b.startDate) return -1;
+        if (a.startDate == null && b.startDate == null) return 0;
+        if (a.startDate == null) return 1;
+        if (b.startDate == null) return -1;
         return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
       });
     });

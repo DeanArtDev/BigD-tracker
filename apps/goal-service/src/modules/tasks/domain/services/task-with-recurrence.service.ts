@@ -1,7 +1,6 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
-import { DateVo, MonthdaysVo, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
-import { timeAndDate } from '@big-d/api-utils';
+import { DateVo, MonthdaysVo, timeAndDate, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
 
 interface TaskWithRecurrenceInput {
@@ -106,7 +105,44 @@ class TaskWithRecurrenceService {
     });
   }
 
-  replace(input: TaskWithRecurrenceReplaceInput): TaskWithRecurrenceReplaceResult {
+  public create(input: {
+    task: Task;
+    recurrenceData: Omit<TaskWithRecurrenceInput, 'pattern'>;
+    patternShaper: (data: Omit<TaskWithRecurrenceInput, 'pattern'>) => string;
+  }): {
+    draftRecurrence: TaskRecurrence;
+  } {
+    const { task, recurrenceData, patternShaper } = input;
+
+    this.assertTaskPersisted(task);
+    this.assertRecurrenceInvariants({
+      taskId: task.id,
+      taskStartDate: task.startDate,
+      recurrenceStartDate: recurrenceData.startDate,
+    });
+
+    const draftRecurrence = TaskRecurrence.create({
+      userId: task.userId,
+      taskId: task.id,
+      status: TaskRecurrenceStatus.ACTIVE,
+      pattern: patternShaper(recurrenceData),
+      timezone: TimezoneVo.create(recurrenceData.timezone),
+      startDate: DateVo.create(recurrenceData.startDate),
+      frequency: recurrenceData.frequency,
+      weekstart: recurrenceData.weekstart ?? 0,
+      untilDate: recurrenceData.untilDate != null ? DateVo.create(recurrenceData.untilDate) : undefined,
+      interval: recurrenceData.interval,
+      weekdays: recurrenceData.weekdays,
+      monthdays: recurrenceData.monthdays != null ? MonthdaysVo.create(recurrenceData.monthdays) : undefined,
+      yearmonths: recurrenceData.yearmonths != null ? YearmonthsVo.create(recurrenceData.yearmonths) : undefined,
+    });
+
+    return {
+      draftRecurrence,
+    };
+  }
+
+  public replace(input: TaskWithRecurrenceReplaceInput): TaskWithRecurrenceReplaceResult {
     const { task, taskPatch, currentRecurrence, currentOverrides = [], recurrencePatch, patternShaper } = input;
 
     this.assertOverridesBelongToRecurrence({
@@ -121,7 +157,7 @@ class TaskWithRecurrenceService {
 
     if (isCreate) {
       const pattern = patternShaper(recurrencePatch);
-      const next = this.create({
+      const next = this.#create({
         task,
         taskPatch,
         recurrence: { ...recurrencePatch, pattern },
@@ -135,7 +171,7 @@ class TaskWithRecurrenceService {
 
     if (isUpdate) {
       const pattern = patternShaper(recurrencePatch);
-      const next = this.update({
+      const next = this.#update({
         task,
         taskPatch,
         currentRecurrence,
@@ -149,7 +185,7 @@ class TaskWithRecurrenceService {
     }
 
     if (isCancel) {
-      const next = this.cancel({
+      const next = this.#cancel({
         task,
         taskPatch,
         currentRecurrence,
@@ -169,7 +205,7 @@ class TaskWithRecurrenceService {
     };
   }
 
-  create(input: TaskWithRecurrenceCreateInput): { task: Task; recurrence: TaskRecurrence } {
+  #create(input: TaskWithRecurrenceCreateInput): { task: Task; recurrence: TaskRecurrence } {
     const { task, taskPatch, recurrence } = input;
 
     const updatedTask = TaskFactory.replace(task, taskPatch);
@@ -179,7 +215,6 @@ class TaskWithRecurrenceService {
       taskId: updatedTask.id,
       taskStartDate: taskPatch.startDate,
       recurrenceStartDate: recurrence.startDate,
-      timezone: recurrence.timezone,
     });
 
     return {
@@ -202,7 +237,7 @@ class TaskWithRecurrenceService {
     };
   }
 
-  update(input: TaskWithRecurrenceUpdateInput): { task: Task; recurrence: TaskRecurrence } {
+  #update(input: TaskWithRecurrenceUpdateInput): { task: Task; recurrence: TaskRecurrence } {
     const { task, taskPatch, recurrencePatch, currentRecurrence } = input;
     const updatedTask = TaskFactory.replace(task, taskPatch);
     const timezone = currentRecurrence?.timezone ?? recurrencePatch.timezone;
@@ -211,7 +246,6 @@ class TaskWithRecurrenceService {
       taskId: updatedTask.id,
       taskStartDate: updatedTask.startDate,
       recurrenceStartDate: recurrencePatch.startDate,
-      timezone,
     });
 
     return {
@@ -249,7 +283,7 @@ class TaskWithRecurrenceService {
     };
   }
 
-  cancel(input: TaskWithRecurrenceCancelInput): {
+  #cancel(input: TaskWithRecurrenceCancelInput): {
     task: Task;
     recurrence: TaskRecurrence;
     shouldDeleteRecurrence: boolean;
@@ -372,9 +406,8 @@ class TaskWithRecurrenceService {
     taskId: number;
     taskStartDate?: string;
     recurrenceStartDate: string;
-    timezone: string;
   }): void {
-    const { taskId, taskStartDate, recurrenceStartDate, timezone } = input;
+    const { taskId, taskStartDate, recurrenceStartDate } = input;
 
     if (taskStartDate == null) {
       throw new ExceptionTaskDomainInvalidInvariant({
@@ -384,7 +417,7 @@ class TaskWithRecurrenceService {
       });
     }
 
-    if (!this.isSameDayByTimezone({ left: taskStartDate, right: recurrenceStartDate, timezone })) {
+    if (!this.isSameDayByTimezone({ left: taskStartDate, right: recurrenceStartDate })) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: 'startDate Task и TaskRecurrence.startDate должны быть в рамках одного дня таймзоны recurrence',
         field: 'startDate',
@@ -393,9 +426,9 @@ class TaskWithRecurrenceService {
     }
   }
 
-  private isSameDayByTimezone(input: { left: string; right: string; timezone: string }): boolean {
-    const { left, right, timezone } = input;
-    return timeAndDate(left).tz(timezone).format('YYYY-MM-DD') === timeAndDate(right).tz(timezone).format('YYYY-MM-DD');
+  private isSameDayByTimezone(input: { left: string; right: string }): boolean {
+    const { left, right } = input;
+    return timeAndDate(left).format('YYYY-MM-DD') === timeAndDate(right).format('YYYY-MM-DD');
   }
 }
 

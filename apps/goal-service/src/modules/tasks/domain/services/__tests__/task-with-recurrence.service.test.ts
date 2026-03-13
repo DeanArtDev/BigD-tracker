@@ -108,26 +108,24 @@ describe('TaskWithRecurrenceService', () => {
 
   it('creates recurrence when task startDate is in the same timezone day', () => {
     const result = service.create({
-      task: buildTask(),
-      taskPatch: {
-        name: 'Task',
-        description: 'desc',
-        priority: 1,
-        weight: 1,
-        startDate: '2023-01-01T01:00',
+      task: buildTask({ startDate: '2023-01-01T01:00' }),
+      recurrenceData: {
+        startDate: '2023-01-01T15:00',
+        timezone: 'Asia/Novosibirsk',
+        frequency: RecurrenceFrequency.DAILY,
+        weekstart: TaskRecurrenceWeekday.MO,
       },
-      recurrence: buildRecurrence({ startDate: '2023-01-01T15:00' }),
+      patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
     });
 
-    expect(result.task.startDate).toBe('2023-01-01T01:00');
-    expect(result.recurrence.taskId).toBe(11);
-    expect(result.recurrence.startDate).toBe('2023-01-01T15:00');
-    expect(result.recurrence.status).toBe(TaskRecurrenceStatus.ACTIVE);
+    expect(result.draftRecurrence.taskId).toBe(11);
+    expect(result.draftRecurrence.startDate).toBe('2023-01-01T15:00');
+    expect(result.draftRecurrence.status).toBe(TaskRecurrenceStatus.ACTIVE);
   });
 
   it('requires task startDate when recurrence is present', () => {
     expect(() =>
-      service.create({
+      service.replace({
         task: buildTask(),
         taskPatch: {
           name: 'Task',
@@ -135,14 +133,21 @@ describe('TaskWithRecurrenceService', () => {
           priority: 1,
           weight: 1,
         },
-        recurrence: buildRecurrence(),
+        currentRecurrence: undefined,
+        recurrencePatch: {
+          startDate: '2023-01-01T15:00',
+          timezone: 'Asia/Novosibirsk',
+          frequency: RecurrenceFrequency.DAILY,
+          weekstart: TaskRecurrenceWeekday.MO,
+        },
+        patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
       }),
     ).toThrow();
   });
 
   it('rejects different local days for task and recurrence startDate', () => {
     expect(() =>
-      service.create({
+      service.replace({
         task: buildTask(),
         taskPatch: {
           name: 'Task',
@@ -151,36 +156,16 @@ describe('TaskWithRecurrenceService', () => {
           weight: 1,
           startDate: '2023-01-01T01:00',
         },
-        recurrence: buildRecurrence({ startDate: '2023-01-01T20:00' }),
+        currentRecurrence: undefined,
+        recurrencePatch: {
+          startDate: '2023-01-02T00:20',
+          timezone: 'Asia/Novosibirsk',
+          frequency: RecurrenceFrequency.DAILY,
+          weekstart: TaskRecurrenceWeekday.MO,
+        },
+        patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
       }),
     ).toThrow();
-  });
-
-  it('updates task and recurrence using current recurrence timezone', () => {
-    const result = service.update({
-      task: buildTask({ startDate: '2023-01-01T01:00' }),
-      taskPatch: {
-        name: 'Updated task',
-        description: 'new desc',
-        priority: 2,
-        weight: 3,
-        startDate: '2023-01-01T05:00',
-      },
-      currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-01T15:00' }),
-      recurrencePatch: {
-        ...buildRecurrence({
-          startDate: '2023-01-01T13:00',
-          timezone: 'UTC',
-        }),
-        pattern: 'RRULE:FREQ=WEEKLY',
-        frequency: RecurrenceFrequency.WEEKLY,
-        weekdays: [TaskRecurrenceWeekday.MO],
-      },
-    });
-
-    expect(result.task.startDate).toBe('2023-01-01T05:00');
-    expect(result.recurrence.timezone).toBe('Asia/Novosibirsk');
-    expect(result.recurrence.pattern).toBe('RRULE:FREQ=WEEKLY');
   });
 
   it('replace marks recurrence create status', () => {
@@ -439,94 +424,5 @@ describe('TaskWithRecurrenceService', () => {
     expect(result.isCancel).toBeUndefined();
     expect(result.task.startDate).toBe('2023-01-01T05:00');
     expect(result.recurrence).toBeNull();
-  });
-
-  it('cancels recurrence and keeps it when it is still non-empty', () => {
-    const result = service.cancel({
-      task: buildTask({ startDate: '2023-01-01T01:00' }),
-      taskPatch: {
-        name: 'Updated task',
-        description: 'new desc',
-        priority: 2,
-        weight: 3,
-        startDate: '2023-01-01T05:00',
-      },
-      currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-01T00:00:00.000Z' }),
-      currentOverrides: [
-        buildOverride({
-          status: TaskStatus.COMPLETED,
-          deadline: '2023-01-02T10:00',
-        }),
-        buildOverride({
-          id: 32,
-          status: TaskStatus.COMPLETED,
-          deadline: '2023-01-04T16:30',
-        }),
-      ],
-      patternShaper: buildPatternShaper('RRULE:FREQ=DAILY;UNTIL=20230104T163000Z'),
-    });
-
-    expect(result.task.startDate).toBe('2023-01-01T05:00');
-    expect(result.recurrence?.untilDate).toBe('2023-01-04T16:30');
-    expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
-    expect(result.shouldDeleteRecurrence).toBe(false);
-    expect(result.overridesToDelete).toEqual([]);
-  });
-
-  it('deletes recurrence on cancel when all overrides are cancellable', () => {
-    const result = service.cancel({
-      task: buildTask({ startDate: '2023-01-03T01:00' }),
-      taskPatch: {
-        name: 'Updated task',
-        description: 'new desc',
-        priority: 2,
-        weight: 3,
-        startDate: '2023-01-03T05:00',
-      },
-      currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-03T12:00' }),
-      currentOverrides: [
-        buildOverride({
-          status: TaskStatus.NOT_STARTED,
-          deadline: '2023-01-04T10:00',
-        }),
-        buildOverride({
-          id: 32,
-          status: TaskStatus.ARCHIVED,
-          deadline: '2023-01-05T10:00',
-        }),
-      ],
-      patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
-    });
-
-    expect(result.recurrence.id).toBe(19);
-    expect(result.shouldDeleteRecurrence).toBe(true);
-    expect(result.overridesToDelete).toEqual([]);
-  });
-
-  it('uses patched task.startDate when canceling recurrence without deletion', () => {
-    const result = service.cancel({
-      task: buildTask(),
-      taskPatch: {
-        name: 'Updated task',
-        description: 'new desc',
-        priority: 2,
-        weight: 3,
-        startDate: '2023-01-01T05:00',
-      },
-      currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-01T00:00:00.000Z' }),
-      currentOverrides: [
-        buildOverride({
-          status: TaskStatus.COMPLETED,
-          deadline: '2023-01-02T10:00',
-        }),
-      ],
-      patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
-    });
-
-    expect(result.task.startDate).toBe('2023-01-01T05:00');
-    expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
-    expect(result.recurrence?.untilDate).toBe('2023-01-02T10:00');
-    expect(result.shouldDeleteRecurrence).toBe(false);
-    expect(result.overridesToDelete).toEqual([]);
   });
 });
