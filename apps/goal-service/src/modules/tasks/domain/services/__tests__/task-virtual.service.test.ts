@@ -145,6 +145,7 @@ describe('TaskVirtualService', () => {
       taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
       sourceTask,
       currentRecurrence,
+      timezone: 'UTC',
     });
 
     expect(result.override.id).toBeNaN();
@@ -180,6 +181,7 @@ describe('TaskVirtualService', () => {
       taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
       sourceTask,
       currentRecurrence,
+      timezone: 'UTC',
     });
 
     expect(result.override.id).toBeNaN();

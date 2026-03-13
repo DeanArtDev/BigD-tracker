@@ -5,16 +5,15 @@ import { taskServiceAsserts } from './task-service-asserts';
 
 class TaskVirtualService {
   clone(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
-    const { sourceTask, currentRecurrence } = input;
+    const { sourceTask } = input;
 
     const { virtualData } = this.#assertDependenciesConsistency(input);
 
-    const { startDate, deadline } = this.#shapeRelatedDates({
+    const { startDate, deadline } = this.#shapeDates({
       taskId: sourceTask.id,
       startDate: sourceTask.startDate,
       virtualDate: virtualData.date,
       deadline: sourceTask.deadline,
-      timezone: currentRecurrence.timezone,
     });
 
     const virtualTask = this.#createVirtualTaskFromSource({
@@ -33,12 +32,11 @@ class TaskVirtualService {
 
     const { virtualData } = this.#assertDependenciesConsistency(input);
 
-    const { startDate, deadline } = this.#shapeRelatedDates({
+    const { startDate, deadline } = this.#shapeDates({
       taskId: sourceTask.id,
       startDate: sourceTask.startDate,
       virtualDate: virtualData.date,
       deadline: sourceTask.deadline,
-      timezone: currentRecurrence.timezone,
     });
 
     const virtualTask = this.#createVirtualTaskFromSource({
@@ -60,17 +58,16 @@ class TaskVirtualService {
     };
   }
 
-  finish(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
+  finish(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; timezone: string }) {
     const { sourceTask, currentRecurrence } = input;
 
     const { virtualData } = this.#assertDependenciesConsistency(input);
 
-    const { startDate, deadline } = this.#shapeRelatedDates({
+    const { startDate, deadline } = this.#shapeDates({
       taskId: sourceTask.id,
       virtualDate: virtualData.date,
       startDate: sourceTask.startDate,
       deadline: sourceTask.deadline,
-      timezone: currentRecurrence.timezone,
     });
 
     const virtualTask = this.#createVirtualTaskFromSource({
@@ -79,7 +76,7 @@ class TaskVirtualService {
       deadline: deadline.toISOString(),
     });
 
-    const finishedTask = TaskFactory.finish(virtualTask);
+    const finishedTask = TaskFactory.finish(virtualTask, input.timezone);
     const createdOverrideDraft = TaskOverrideFactory.create({
       task: finishedTask,
       type: taskStatusToOverrideTypeMap[finishedTask.status],
@@ -124,14 +121,8 @@ class TaskVirtualService {
     return { virtualData };
   }
 
-  #shapeRelatedDates(input: {
-    taskId: number;
-    virtualDate: string;
-    timezone: string;
-    startDate?: string;
-    deadline?: string;
-  }) {
-    const { timezone, startDate } = input;
+  #shapeDates(input: { taskId: number; virtualDate: string; startDate?: string; deadline?: string }) {
+    const { startDate } = input;
 
     taskServiceAsserts.ensureDatesAreExistent({
       taskId: input.taskId,
@@ -139,7 +130,7 @@ class TaskVirtualService {
       deadline: input.deadline,
     });
 
-    const virtualTaskStart = timeAndDate(input.virtualDate).tz(timezone, true).utc();
+    const virtualTaskStart = timeAndDate(input.virtualDate);
     const delta = timeAndDate(startDate).diff(input.deadline);
     const deadline = virtualTaskStart.add(Math.abs(delta), 'millisecond');
 

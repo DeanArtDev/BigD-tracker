@@ -42,6 +42,19 @@ describe('DateVo', () => {
     }
   });
 
+  it('creates now instance by timezone', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-03-12T11:34:37.262Z'));
+
+    try {
+      const now = DateVo.nowByTZ('Asia/Novosibirsk');
+
+      expect(now.value).toBe('2026-03-12T18:34');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('formats date input to DateVo format in UTC', () => {
     expect(DateVo.format(new Date('2024-05-01T10:11:12.000Z'))).toBe('2024-05-01T10:11');
     expect(DateVo.format('2024-05-01T10:11:12.000Z')).toBe('2024-05-01T10:11');
@@ -71,6 +84,18 @@ describe('DateVo', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
       expect((error as InvalidInvariantError).details.message).toBe('Date: invalid-format is invalid');
+      expect((error as InvalidInvariantError).details.field).toBe('date');
+    }
+  });
+
+  it('throws on restore when date has timezone offset', () => {
+    try {
+      DateVo.restore('2024-05-01T10:11:00+07:00');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExceptionInvalidInvariant);
+      expect((error as InvalidInvariantError).details.message).toBe(
+        'Restored date must not have a timezone offset: 2024-05-01T10:11:00+07:00',
+      );
       expect((error as InvalidInvariantError).details.field).toBe('date');
     }
   });

@@ -3,6 +3,7 @@ import { TimeAndDate, timeAndDate } from '../time-and-date';
 import { isValidAbsoluteDateTimeWithoutTimezone } from '../validation';
 import { BaseValueObject } from './base-value-object';
 import { ExceptionInvalidInvariant } from './exceptions';
+import { TimezoneVo } from './timezone-vo';
 
 type DateVoInput = string | number;
 
@@ -12,12 +13,24 @@ type DateVoInput = string | number;
 class DateVo implements BaseValueObject {
   static FORMAT = 'YYYY-MM-DDTHH:mm';
 
+  /**
+   * Возвращает Instant в формате UTC без таймзоны и миллисекунд, например: 2026-03-13T15:10
+   * */
   static now(): DateVo {
     return DateVo.restore(timeAndDate.utc().format(DateVo.FORMAT));
   }
 
   /**
-   * Форматирует значение под валидный формат YYYY-MM-DDTHH:mm и создает
+   * Переводит now дату с таймзоной, к floating time
+   * 2026-03-13T15:10:37+07:00 -> 2026-03-13T15:10
+   * */
+  static nowByTZ(timezone: string): DateVo {
+    const tz = TimezoneVo.create(timezone).value;
+    return DateVo.restore(timeAndDate().tz(tz).utc(true).format(DateVo.FORMAT));
+  }
+
+  /**
+   * Форматирует Instant (в UTC) под валидный формат YYYY-MM-DDTHH:mm
    * */
   static format(date: Date | string): string {
     return DateVo.create(timeAndDate(date).utc().format(DateVo.FORMAT)).value;
@@ -68,6 +81,9 @@ class DateVo implements BaseValueObject {
     return new DateVo(d);
   }
 
+  /**
+   * Возвращает ZonedDateTime 2024-05-01T17:11:00+07:00
+   * */
   public tz(timezone: string): string {
     return this.#state.tz(timezone).format();
   }
