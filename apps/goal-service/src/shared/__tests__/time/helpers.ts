@@ -1,12 +1,14 @@
+import { DateVo } from '@big-d/api-utils';
+
 const futureDate = (offsetDays: number): string =>
-  new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
+  DateVo.format(new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000));
 
-const pastDate = (offsetDays: number): string => new Date(Date.now() - offsetDays * 24 * 60 * 60 * 1000).toISOString();
+const pastDate = (offsetDays: number): string => DateVo.format(new Date(Date.now() - offsetDays * 24 * 60 * 60 * 1000));
 
-const startOfToday = (): string => new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+const startOfToday = (): string => DateVo.format(new Date(new Date().setHours(0, 0, 0, 0)));
 
-const oneMsBeforeStartOfToday = (): string => new Date(new Date().setHours(0, 0, 0, 0) - 1).toISOString();
+const oneMsBeforeStartOfToday = (): string => DateVo.format(new Date(new Date().setHours(0, 0, 0, 0) - 1));
 
-const oneSecondBeforeStartOfToday = (): string => new Date(new Date().setHours(0, 0, 0, 0) - 1000).toISOString();
+const oneSecondBeforeStartOfToday = (): string => DateVo.format(new Date(new Date().setHours(0, 0, 0, 0) - 1000));
 
 export { futureDate, pastDate, startOfToday, oneMsBeforeStartOfToday, oneSecondBeforeStartOfToday };

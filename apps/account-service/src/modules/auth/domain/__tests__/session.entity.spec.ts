@@ -1,16 +1,25 @@
+import { SessionEntity } from '@/modules/auth/domain';
 import { DateVo } from '@big-d/api-utils';
-import { subMinutes, setMilliseconds } from 'date-fns';
-import { SessionEntity } from '../session.entity';
 
 describe('SessionEntity', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-03-12T13:50:00.000Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
   it('creates session and sets expiration date', () => {
-    const date = new Date(Date.now() + 1000).toISOString();
     const session = SessionEntity.create({
       uuid: '1',
       userId: 1,
-      expiresAt: DateVo.create(date),
+      expiresAt: DateVo.create('2026-03-13T13:50'),
     });
-    expect(session.expiresAt).toBe(setMilliseconds(date, 0).toISOString());
+
+    expect(session.expiresAt).toBe('2026-03-13T13:50');
     expect(session.isExpired).toBe(false);
   });
 
@@ -18,10 +27,11 @@ describe('SessionEntity', () => {
     const session = SessionEntity.restore({
       uuid: '1',
       userId: 1,
-      expiresAt: DateVo.create(subMinutes(new Date(), 1).toISOString()),
+      expiresAt: DateVo.create('2026-03-12T13:49'),
       revoked: false,
       token: '',
     });
+
     expect(session.isExpired).toBe(true);
   });
 });

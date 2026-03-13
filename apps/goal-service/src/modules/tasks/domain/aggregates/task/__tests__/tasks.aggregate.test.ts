@@ -1,6 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
-import { mockDate, pastDate } from '@shared/__tests__';
+import { mockDate } from '@shared/__tests__';
 import { futureDate } from '@shared/__tests__';
 import { Priority, Weight } from '../value-objects';
 import { Task } from '../tasks.aggregate';
@@ -103,11 +103,11 @@ describe('Task aggregate', () => {
       priority: Priority.create(2),
       weight: Weight.create(10),
       status: TaskStatus.IN_PROGRESS,
-      startDate: DateVo.create(pastDate(2)),
-      deadline: DateVo.create(futureDate(1)),
+      startDate: DateVo.restore('2022-12-30T00:00:00.000Z'),
+      deadline: DateVo.restore('2023-01-02T00:00:00.000Z'),
     });
 
-    task.finish({ now: DateVo.create(new Date().toISOString()) });
+    task.finish({ now: DateVo.restore('2023-01-01T00:00:00.000Z') });
 
     expect(task.status).toBe(TaskStatus.COMPLETED);
     expect(task.endDate).toBeDefined();
@@ -121,11 +121,11 @@ describe('Task aggregate', () => {
       priority: Priority.create(2),
       weight: Weight.create(10),
       status: TaskStatus.IN_PROGRESS,
-      startDate: DateVo.create(pastDate(2)),
-      deadline: DateVo.create(pastDate(1)),
+      startDate: DateVo.restore('2022-12-30T00:00:00.000Z'),
+      deadline: DateVo.restore('2022-12-31T00:00:00.000Z'),
     });
 
-    task.finish({ now: DateVo.create(new Date().toISOString()) });
+    task.finish({ now: DateVo.restore('2023-01-01T00:00:00.000Z') });
 
     expect(task.status).toBe(TaskStatus.OVERDUE);
     expect(task.endDate).toBeDefined();

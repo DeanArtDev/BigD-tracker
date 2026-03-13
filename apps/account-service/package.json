@@ -20,7 +20,7 @@
     "format:fix": "prettier --write \"src/**/*.ts\" \"db/**/*.ts\"  --check",
     "lint": "pnpm format && eslint \"{src,tools,db}/**/*.ts\"",
     "lint:fix": "pnpm format:fix && eslint \"{src,tools,db}/**/*.ts\" --fix",
-    "test": "jest --passWithNoTests",
+    "test": "TZ=UTC jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -103,7 +103,13 @@
       "**/*.ts"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    },
+    "setupFiles": [
+      "<rootDir>/test-setup.ts"
+    ]
   },
   "packageManager": "pnpm@10.10.0",
   "engines": {

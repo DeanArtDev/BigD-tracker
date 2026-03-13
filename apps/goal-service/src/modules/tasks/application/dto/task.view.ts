@@ -1,7 +1,16 @@
-import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
+import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
 import { TaskRecurrenceValues } from '../types';
 
-interface TaskViewRecurrenceState extends TaskRecurrenceValues {
+interface TaskViewRecurrenceRestoreInput {
+  startDate: DateVo;
+  frequency: RecurrenceFrequency;
+  untilDate?: DateVo;
+  interval?: number;
+  weekstart?: TaskRecurrenceWeekday;
+  weekdays?: TaskRecurrenceWeekday[];
+  monthdays?: number[];
+  yearmonths?: number[];
   readonly status?: TaskRecurrenceStatus;
 }
 
@@ -14,11 +23,11 @@ interface TaskViewState {
   readonly priority: number;
   readonly weight: number;
   readonly cancelReason?: string;
-  readonly startDate?: string;
-  readonly deadline?: string;
-  readonly endDate?: string;
+  readonly startDate?: DateVo;
+  readonly deadline?: DateVo;
+  readonly endDate?: DateVo;
   readonly status: TaskStatus;
-  readonly recurrence?: TaskViewRecurrenceState;
+  readonly recurrence?: TaskViewRecurrenceRestoreInput;
 }
 
 class TaskView {
@@ -42,9 +51,9 @@ class TaskView {
     const recurrence =
       input.recurrence?.status === TaskRecurrenceStatus.ACTIVE
         ? {
-            startDate: input.recurrence.startDate,
+            startDate: input.recurrence.startDate.value,
             frequency: input.recurrence.frequency,
-            untilDate: input.recurrence.untilDate,
+            untilDate: input.recurrence.untilDate?.value,
             interval: input.recurrence.interval,
             weekstart: input.recurrence.weekstart,
             weekdays: input.recurrence.weekdays,
@@ -63,12 +72,12 @@ class TaskView {
       input.groupId,
       input.description,
       input.cancelReason,
-      input.startDate,
-      input.deadline,
-      input.endDate,
+      input.startDate?.value,
+      input.deadline?.value,
+      input.endDate?.value,
       recurrence,
     );
   }
 }
 
-export { TaskView, TaskViewState, TaskViewRecurrenceState };
+export { TaskView, TaskViewState };

@@ -8,6 +8,7 @@ import { DateVo, MonthdaysVo, Name, TimezoneVo, YearmonthsVo } from '@big-d/api-
 type TestTaskRecurrenceInput = Omit<Partial<TaskRecurrenceValues>, 'frequency'> & {
   start?: string;
   end?: string;
+  status?: TaskRecurrenceStatus;
   frequency?:
     | RecurrenceFrequency
     | {
@@ -38,6 +39,22 @@ const normalizeRecurrence = (recurrence?: TestTaskRecurrenceInput): TaskRecurren
     weekdays: recurrence.weekdays,
     monthdays: recurrence.monthdays,
     yearmonths: recurrence.yearmonths,
+  };
+};
+
+const normalizeTaskViewRecurrence = (recurrence?: TestTaskRecurrenceInput) => {
+  const normalized = normalizeRecurrence(recurrence);
+
+  if (normalized == null) {
+    return undefined;
+  }
+
+  return {
+    ...normalized,
+    startDate: DateVo.restore(normalized.startDate),
+    untilDate: normalized.untilDate != null ? DateVo.restore(normalized.untilDate) : undefined,
+    status:
+      'status' in (recurrence ?? {}) && recurrence?.status != null ? recurrence.status : TaskRecurrenceStatus.ACTIVE,
   };
 };
 
@@ -87,7 +104,7 @@ const getTaskView = (
     recurrence?: TestTaskRecurrenceInput;
   }> = {},
 ): TaskView => {
-  const recurrence = normalizeRecurrence(data.recurrence);
+  const recurrence = normalizeTaskViewRecurrence(data.recurrence);
 
   return TaskView.restore({
     id: data.id == null ? TaskIdBuilder.wrapOriginId(1) : toTaskViewId(data.id),
@@ -97,9 +114,9 @@ const getTaskView = (
     priority: data.priority ?? 2,
     weight: data.weight ?? 1,
     cancelReason: data.cancelReason,
-    startDate: data.startDate,
-    deadline: data.deadline,
-    endDate: data.endDate,
+    startDate: data.startDate != null ? DateVo.restore(data.startDate) : undefined,
+    deadline: data.deadline != null ? DateVo.restore(data.deadline) : undefined,
+    endDate: data.endDate != null ? DateVo.restore(data.endDate) : undefined,
     status: data.status ?? TaskStatus.NOT_STARTED,
     recurrence,
   });

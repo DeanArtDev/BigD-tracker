@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsInt, IsISO8601, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
+import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
+import { buildTaskDateTimeApiProperty } from './task-date-time';
 import { TaskDto } from './task.dto';
 
 class CreateTaskReqData {
@@ -34,20 +36,16 @@ class CreateTaskReqData {
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({
-    example: '2025-06-24T13:01:02.471Z',
-  })
+  @ApiPropertyOptional(buildTaskDateTimeApiProperty())
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsOptional()
   @IsString()
   startDate?: string;
 
-  @ApiPropertyOptional({
-    example: '2026-05-24T13:01:02.471Z',
-  })
+  @ApiPropertyOptional(buildTaskDateTimeApiProperty())
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsOptional()
   @IsString()
   deadline?: string;

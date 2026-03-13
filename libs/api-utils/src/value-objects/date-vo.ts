@@ -1,58 +1,91 @@
-import dayjs from 'dayjs';
-import { isISO8601, isBefore, isAfter } from 'validator';
+import { isString } from 'lodash';
+import { TimeAndDate, timeAndDate } from '../time-and-date';
+import { isValidAbsoluteDateTimeWithoutTimezone } from '../validation';
 import { BaseValueObject } from './base-value-object';
 import { ExceptionInvalidInvariant } from './exceptions';
 
-type DateVoState = string | Date;
+type DateVoInput = string | number;
 
+/**
+ *  Value object для дат без таймзоны и миллисекунд
+ * */
 class DateVo implements BaseValueObject {
-  #state: Date;
+  static FORMAT = 'YYYY-MM-DDTHH:mm';
 
-  private constructor(state: string) {
-    if (!isISO8601(state)) {
-      throw new ExceptionInvalidInvariant({
-        message: `Date: ${state} has invalid format`,
-        field: 'date',
-      });
-    }
+  static now(): DateVo {
+    return DateVo.restore(timeAndDate.utc().format(DateVo.FORMAT));
+  }
 
-    const newDate = dayjs(state);
-    if (!newDate.isValid()) {
-      throw new ExceptionInvalidInvariant({
-        message: `Date: ${state} is invalid`,
-        field: 'date',
-      });
-    }
+  /**
+   * Форматирует значение под валидный формат YYYY-MM-DDTHH:mm и создает
+   * */
+  static format(date: Date | string): string {
+    return DateVo.create(timeAndDate(date).utc().format(DateVo.FORMAT)).value;
+  }
 
-    this.#state = newDate.set('milliseconds', 0).toDate();
+  #state: TimeAndDate;
+
+  private constructor(state: TimeAndDate) {
+    this.#state = state;
   }
 
   get value(): string {
-    return this.#state.toISOString();
+    return this.#state.format(DateVo.FORMAT);
   }
 
-  public static create(date: DateVoState): DateVo {
-    if (date instanceof Date) {
-      return new DateVo(date.toISOString());
+  get timestamp(): number {
+    return this.#state.valueOf();
+  }
+
+  public static create(date: DateVoInput): DateVo {
+    const newDate = timeAndDate(date);
+    if (!newDate.isValid()) {
+      throw new ExceptionInvalidInvariant({
+        message: `Date: ${date.toString()} is invalid`,
+        field: 'date',
+      });
     }
-    return new DateVo(date);
+
+    if (!isValidAbsoluteDateTimeWithoutTimezone(date) && isString(date)) {
+      throw new ExceptionInvalidInvariant({
+        message: `DateVo must be in format YYYY-MM-DDTHH:mm, but got: ${date}`,
+        field: 'date',
+      });
+    }
+
+    return new DateVo(newDate);
   }
 
-  public static restore(date: string): DateVo {
-    return new DateVo(date);
+  public static restore(date: DateVoInput): DateVo {
+    const d = timeAndDate(date);
+
+    if (d.utcOffset() > 0) {
+      throw new ExceptionInvalidInvariant({
+        message: `Restored date must not have a timezone offset: ${date}`,
+        field: 'date',
+      });
+    }
+    return new DateVo(d);
   }
 
-  public equals(other: DateVo): boolean {
-    return this.#state.valueOf() === dayjs(other.value).valueOf();
+  public tz(timezone: string): string {
+    return this.#state.tz(timezone).format();
   }
 
-  public isBefore(state: DateVoState): boolean {
-    return isBefore(this.value, new Date(state).toISOString());
+  public equals(other: DateVoInput | DateVo): boolean {
+    const otherValue = other instanceof DateVo ? other.value : other;
+    return this.#state.valueOf() === timeAndDate(otherValue).valueOf();
   }
 
-  public isAfter(state: DateVoState): boolean {
-    return isAfter(this.value, new Date(state).toISOString());
+  public isBefore(value: DateVoInput | DateVo): boolean {
+    const otherValue = value instanceof DateVo ? value.value : value;
+    return this.timestamp < DateVo.create(otherValue).timestamp;
+  }
+
+  public isAfter(value: DateVoInput | DateVo): boolean {
+    const otherValue = value instanceof DateVo ? value.value : value;
+    return this.timestamp > DateVo.create(otherValue).timestamp;
   }
 }
 
-export { DateVo, DateVoState };
+export { DateVo };

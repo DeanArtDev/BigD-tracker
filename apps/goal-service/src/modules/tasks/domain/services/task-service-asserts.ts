@@ -1,4 +1,5 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
+import { DateVo } from '@big-d/api-utils';
 import { Task, TaskIdBuilder, TaskRecurrence } from '../aggregates/task';
 
 const taskServiceAsserts = {
@@ -88,7 +89,7 @@ const taskServiceAsserts = {
   },
 
   ensureOverrideDateMatchesTaskId(input: { taskId: string; overrideDate: string; expectedDate: string }): void {
-    if (input.overrideDate === input.expectedDate) {
+    if (DateVo.format(input.overrideDate) === DateVo.format(input.expectedDate)) {
       return;
     }
 
