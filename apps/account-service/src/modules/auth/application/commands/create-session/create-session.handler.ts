@@ -35,7 +35,7 @@ export class CreateSessionHandler implements ICommandHandler<CreateSessionComman
       ip: input.ip,
       userId: input.userId,
       userAgent: input.userAgent,
-      expiresAt: DateVo.create(expirationDate),
+      expiresAt: DateVo.create(DateVo.format(expirationDate)),
     });
 
     const session = await this.authRepository.create(draftSession);

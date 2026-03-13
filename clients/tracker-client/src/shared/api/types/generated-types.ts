@@ -1342,13 +1342,13 @@ export interface components {
              */
             weekdays?: (0 | 1 | 2 | 3 | 4 | 5 | 6)[];
             /**
-             * @description День начала повторения
-             * @example 2025-06-24T13:01:02.471Z
+             * @description День начала повторения. Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
              */
             startDate: string;
             /**
-             * @description День окончания повторения
-             * @example 2026-05-24T13:01:02.471Z
+             * @description День окончания повторения. Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
              */
             untilDate?: string;
             /**
@@ -1374,7 +1374,10 @@ export interface components {
             interval?: number;
         };
         TaskDto: {
-            /** @example o:1 */
+            /**
+             * @description t:4 - это реальное дело, v:4:2026.02.02 - виртуальная
+             * @example t:4
+             */
             id: string;
             /** @example Имя дела */
             name: string;
@@ -1389,11 +1392,20 @@ export interface components {
              * @example 2
              */
             priority: number;
-            /** @example 2025-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             endDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             startDate?: string;
-            /** @example 2025-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             deadline?: string;
             /**
              * @description От 0 до 100
@@ -1648,6 +1660,15 @@ export interface components {
              * @example 2026-01-01
              */
             to: string;
+            /**
+             * @description IDs групп
+             * @example [
+             *       1,
+             *       2,
+             *       3
+             *     ]
+             */
+            group?: number[];
         };
         GetDeletedTasksResData: {
             /** @description Ответ сервера */
@@ -1690,9 +1711,15 @@ export interface components {
             weight?: number;
             /** @example Описание дела */
             description?: string;
-            /** @example 2025-06-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             startDate?: string;
-            /** @example 2026-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             deadline?: string;
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
@@ -1776,9 +1803,15 @@ export interface components {
              * @example 100
              */
             weight: number;
-            /** @example 2025-06-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             startDate?: string;
-            /** @example 2026-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             deadline?: string;
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
@@ -1801,9 +1834,15 @@ export interface components {
             priority?: number;
             /** @example Описание дела */
             description?: string;
-            /** @example 2025-06-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             startDate?: string;
-            /** @example 2026-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             deadline?: string;
         };
         CreateTaskInINBOXReq: {
@@ -1828,9 +1867,15 @@ export interface components {
              * @example 2
              */
             priority: number;
-            /** @example 2025-06-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             startDate?: string;
-            /** @example 2026-05-24T13:01:02.471Z */
+            /**
+             * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
+             * @example 2026-03-11T21:04
+             */
             deadline?: string;
         };
         UpdateInboxTaskReq: {

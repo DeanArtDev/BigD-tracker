@@ -53,12 +53,14 @@ class TaskRecurrenceQueryService {
    * дата и время будет одно и тоже
    * */
   async calculateTasks(
-    input: { userId: number; from: string; to: string },
+    input: { userId: number; from: string; to: string; group?: number[] } | { userId: number },
+    filter: { from: string; to: string; group?: number[] },
     trx?: TaskTransaction,
   ): Promise<{ virtualViews: TaskView[]; recurrences: TaskRecurrence[] }> {
     const { userId } = input;
-    const from = timeAndDate(input.from).startOf('day').toDate();
-    const to = timeAndDate(input.to).endOf('day').toDate();
+
+    const from = timeAndDate(filter.from).startOf('day').toDate();
+    const to = timeAndDate(filter.to).endOf('day').toDate();
 
     const recurrences = await this.tasksOverridesRepository.getManyRecurrences(
       GetRecurrencesByRange({ userId, to }),
@@ -72,29 +74,26 @@ class TaskRecurrenceQueryService {
       trx,
     );
 
-    const overridesMap = new Map(
-      overrides.map((o) => [
-        TaskIdBuilder.wrapVirtualId({
-          recurrenceId: o.recurrenceId,
-          date: DateVo.format(o.recurrenceStart),
-        }),
-        o,
-      ]),
-    );
+    const overridesMap = new Map(overrides.map((o) => [this.#getOverrideMapHashKey(o), o]));
 
     for (const recurrence of recurrences) {
       if (recurrence.isCanceled) {
-        for (const [, override] of overridesMap.entries()) {
+        const overridesByRecurrenceId = Array.from(overridesMap.values()).filter(
+          (o) => o.recurrenceId === recurrence.id,
+        );
+
+        for (const override of overridesByRecurrenceId) {
+          overridesMap.delete(this.#getOverrideMapHashKey(override));
+
           if (this.#isOverrideSkipped({ from, to }, override)) {
             continue;
           }
 
-          if (this.#isOverrideRender(override)) {
+          if (this.#isOverrideRender(override, filter)) {
             virtualViews.push(this.#shapeOverride(override));
           }
         }
 
-        overridesMap.clear();
         continue;
       }
 
@@ -112,6 +111,9 @@ class TaskRecurrenceQueryService {
       const sourceTask = await this.taskCheckerService.ensureTaskExists({ taskId: recurrence.taskId, userId });
       const sourceTaskDurationDelta = Math.abs(timeAndDate(sourceTask.deadline).diff(sourceTask.startDate));
       const shiftedFrom = timeAndDate(from).subtract(sourceTaskDurationDelta, 'millisecond').startOf('day').toDate();
+
+      const isSeriesGroupMatched = this.#isGroupMatched(filter.group, sourceTask.groupId);
+      if (!isSeriesGroupMatched) continue;
 
       for (const occurrence of rule.between(shiftedFrom, to, true)) {
         const occurrenceStart = this.createTimePoint(occurrence, sourceTask.startDate);
@@ -132,7 +134,7 @@ class TaskRecurrenceQueryService {
           continue;
         }
 
-        if (override != null && this.#isOverrideRender(override)) {
+        if (override != null && this.#isOverrideRender(override, filter)) {
           virtualViews.push(this.#shapeOverride(override));
           overridesMap.delete(overrideHashKey);
         } else {
@@ -161,7 +163,7 @@ class TaskRecurrenceQueryService {
         continue;
       }
 
-      if (override != null && this.#isOverrideRender(override)) {
+      if (override != null && this.#isOverrideRender(override, filter)) {
         virtualViews.push(this.#shapeOverride(override));
       }
     }
@@ -203,6 +205,13 @@ class TaskRecurrenceQueryService {
     });
   }
 
+  #getOverrideMapHashKey(override: TaskOverride) {
+    return TaskIdBuilder.wrapVirtualId({
+      recurrenceId: override.recurrenceId,
+      date: DateVo.format(override.recurrenceStart),
+    });
+  }
+
   #isOverrideSkipped({ from, to }: { from: Date; to: Date }, override?: TaskOverride): boolean {
     if (override == null) return false;
     if (override.isCancelled || override.isDeleted || override.isArchived || override.isMoved) {
@@ -215,8 +224,20 @@ class TaskRecurrenceQueryService {
     return !isInFromToRange;
   }
 
-  #isOverrideRender(override: TaskOverride): boolean {
-    return override.isOverride;
+  #isOverrideRender(override: TaskOverride, filter?: { group?: number[] }): boolean {
+    return override.isOverride && this.#isGroupMatched(filter?.group, override.groupId);
+  }
+
+  #isGroupMatched(groupIds?: number[], groupId?: number): boolean {
+    if (groupIds == null || groupIds.length === 0) {
+      return true;
+    }
+
+    if (groupId == null) {
+      return false;
+    }
+
+    return groupIds.includes(groupId);
   }
 }
 

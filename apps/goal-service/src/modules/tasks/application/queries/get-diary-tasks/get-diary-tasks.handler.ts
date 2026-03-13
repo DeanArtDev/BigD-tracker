@@ -10,6 +10,7 @@ import { TaskDatabase, TasksReadRepository } from '../../ports';
 import { TaskRecurrenceQueryService } from '../../services';
 import {
   TaskByDeadlineGreaterOrEqual,
+  TaskByGroupId,
   TaskByIds,
   TaskByStartDateLessOrEqual,
   TaskByStatus,
@@ -34,7 +35,8 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
       const { filter } = meta;
 
       const { virtualViews, recurrences } = await this.taskRecurrenceQueryService.calculateTasks(
-        { userId, from: filter.from, to: filter.to },
+        { userId },
+        { from: filter.from, to: filter.to, group: filter.group },
         trx,
       );
 
@@ -45,6 +47,7 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
         and(
           ...compact([
             TaskByUserId(userId),
+            filter.group != null && filter.group.length > 0 && TaskByGroupId(filter.group),
             TaskByStartDateLessOrEqual(to),
             TaskByDeadlineGreaterOrEqual(from),
             not(TaskByStatus([TaskStatus.DELETED, TaskStatus.ARCHIVED])),

@@ -3,7 +3,7 @@ import { $privetQueryClient } from '@/shared/api/api-client';
 
 const EMPTY_PLACEHOLDER: TaskEntity[] = [];
 
-function useTasksDiaryQuery(query?: { from: string; to: string }) {
+function useTasksDiaryQuery(query?: { from: string; to: string; group?: number[] }) {
   const { data, ...others } = $privetQueryClient.useQuery(
     'get',
     '/tasks/diary',

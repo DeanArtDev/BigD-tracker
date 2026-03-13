@@ -40,6 +40,8 @@ function TaskCreation({ trigger, groupId, options, onSuccess, onCansel }: TaskCr
             body: {
               data: {
                 ...formData,
+                startDate: formData.startDate ? dayjs(formData.startDate).format('YYYY-MM-DDTHH:mm') : undefined,
+                deadline: formData.deadline ? dayjs(formData.deadline).format('YYYY-MM-DDTHH:mm') : undefined,
                 groupId,
                 recurrence: hasRecurrence
                   ? {

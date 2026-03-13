@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsArray, IsISO8601, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, IsISO8601, IsInt, IsOptional, ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
 
 class GetDiaryTasksFilterDto {
@@ -19,6 +19,19 @@ class GetDiaryTasksFilterDto {
   @Expose()
   @IsISO8601()
   to: string;
+
+  @ApiPropertyOptional({
+    description: 'IDs групп',
+    type: Number,
+    isArray: true,
+    example: [1, 2, 3],
+  })
+  @Expose()
+  @IsOptional()
+  @Type(() => Number)
+  @IsArray()
+  @IsInt({ each: true })
+  group?: number[];
 }
 
 class GetDiaryTasksQuery {

@@ -136,6 +136,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             "tasks_recurrences_overrides"."description" as "description",
             "tasks_recurrences_overrides"."priority" as "priority",
             "tasks_recurrences_overrides"."weight" as "weight",
+            "task_to_group"."group_id" as "group_id",
             "tasks_recurrences_overrides"."cancel_reason" as "cancel_reason",
             "tasks_recurrences_overrides"."start_date" as "start_date",
             "tasks_recurrences_overrides"."end_date" as "end_date",
@@ -144,6 +145,10 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             task_statuses.name as "status",
             tasks_recurrences_override_types.name as "override_type"
           from "tasks_recurrences_overrides"
+          inner join "tasks_recurrences"
+            on "tasks_recurrences"."id" = "tasks_recurrences_overrides"."recurrence_id"
+          left join "task_to_group"
+            on "task_to_group"."task_id" = "tasks_recurrences"."task_id"
           inner join "task_statuses"
             on "tasks_recurrences_overrides"."status_id" = "task_statuses"."id"
           inner join "tasks_recurrences_override_types"
