@@ -1,5 +1,4 @@
 import { DateVo, Name } from '@big-d/api-utils';
-import { timeAndDate } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
 import { Priority, Weight } from './value-objects';
@@ -70,8 +69,7 @@ class TaskFactory {
   }
 
   static finish(task: Task): Task {
-    const now = timeAndDate().utc().toISOString();
-    return task.finish({ now: DateVo.create(now) });
+    return task.finish({ now: DateVo.now() });
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {

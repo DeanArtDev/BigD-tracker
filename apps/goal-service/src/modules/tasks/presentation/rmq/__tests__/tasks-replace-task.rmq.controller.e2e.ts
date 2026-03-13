@@ -127,8 +127,8 @@ describe('TasksRmqController (rmq e2e)', () => {
     test('should replace task fields and create daily recurrence when task initially has no startDate and deadline', async () => {
       const userId = 41;
       const taskId = 4021;
-      const startDate = '2026-03-10T10:00:00.000Z';
-      const deadline = '2026-03-10T12:00:00.000Z';
+      const startDate = '2026-03-10T10:00';
+      const deadline = '2026-03-10T12:00';
       const existingTask = getTask({
         id: taskId,
         userId,

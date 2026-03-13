@@ -1,5 +1,6 @@
 import { Task, TaskIdBuilder, TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskStatus } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
 import { TaskView } from './task.view';
 
 interface TackPlain {
@@ -20,6 +21,7 @@ interface TackPlain {
 class TasksViewMapper {
   static fromAggregateToView = (agr: Task, recurrence: TaskRecurrence | null): TaskView => {
     const hasRecurrence = recurrence != null;
+
     return TaskView.restore({
       id: TaskIdBuilder.wrapOriginId(agr.id),
       userId: agr.userId,
@@ -29,14 +31,14 @@ class TasksViewMapper {
       priority: agr.priority,
       weight: agr.weight,
       cancelReason: agr.cancelReason,
-      startDate: agr.startDate,
-      deadline: agr.deadline,
-      endDate: agr.endDate,
+      startDate: agr.startDate != null ? DateVo.create(DateVo.format(agr.startDate)) : undefined,
+      deadline: agr.deadline != null ? DateVo.create(DateVo.format(agr.deadline)) : undefined,
+      endDate: agr.endDate != null ? DateVo.create(DateVo.format(agr.endDate)) : undefined,
       status: agr.status,
       recurrence: hasRecurrence
         ? {
-            startDate: recurrence.startDate,
-            untilDate: recurrence.untilDate,
+            startDate: DateVo.create(DateVo.format(recurrence.startDate)),
+            untilDate: recurrence.untilDate != null ? DateVo.create(DateVo.format(recurrence.untilDate)) : undefined,
             frequency: recurrence.frequency.value,
             interval: recurrence.interval,
             monthdays: recurrence.monthdays,
@@ -58,9 +60,9 @@ class TasksViewMapper {
       priority: plain.priority,
       weight: plain.weight,
       cancelReason: plain.cancelReason,
-      startDate: plain.startDate,
-      deadline: plain.deadline,
-      endDate: plain.endDate,
+      startDate: plain.startDate != null ? DateVo.create(DateVo.format(plain.startDate)) : undefined,
+      deadline: plain.deadline != null ? DateVo.create(DateVo.format(plain.deadline)) : undefined,
+      endDate: plain.endDate != null ? DateVo.create(DateVo.format(plain.endDate)) : undefined,
       status: plain.status,
     });
   };
@@ -75,9 +77,9 @@ class TasksViewMapper {
       priority: override.priority,
       weight: override.weight,
       cancelReason: override.cancelReason,
-      startDate: override.startDate,
-      deadline: override.deadline,
-      endDate: override.endDate,
+      startDate: override.startDate != null ? DateVo.create(DateVo.format(override.startDate)) : undefined,
+      deadline: override.deadline != null ? DateVo.create(DateVo.format(override.deadline)) : undefined,
+      endDate: override.endDate != null ? DateVo.create(DateVo.format(override.endDate)) : undefined,
       status: override.status,
       recurrence: undefined,
     });

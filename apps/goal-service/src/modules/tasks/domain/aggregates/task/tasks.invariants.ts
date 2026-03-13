@@ -11,8 +11,6 @@ interface PartlyFields {
   readonly weight: Weight;
 }
 
-const startOfToday = () => DateVo.create(new Date(new Date().setHours(0, 0, 0, 0)));
-
 const taskAsserts = {
   endDateNotInThePast: (input: { end?: DateVo }) => {
     const { end } = input;
@@ -25,35 +23,11 @@ const taskAsserts = {
     }
   },
 
-  deadlineInThePast: (input: { taskId?: number; deadline?: DateVo }) => {
-    const { deadline, taskId } = input;
-
-    if (deadline != null && deadline.isBefore(startOfToday().value)) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `deadline:${deadline.value} can't be in the past`,
-        field: 'deadline',
-        taskId,
-      });
-    }
-  },
-
-  startDateInThePast: (input: { taskId?: number; start?: DateVo }) => {
-    const { start, taskId } = input;
-
-    if (start != null && start.isBefore(startOfToday().value)) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `startDate:${start.value} can't be in the past`,
-        field: 'startDate',
-        taskId,
-      });
-    }
-  },
-
   datesIntersections: (input: { start?: DateVo; end?: DateVo }) => {
     const { start, end } = input;
 
     if (start != null && end != null) {
-      if (start.equals(end) || start.isAfter(end.value)) {
+      if (start.equals(end) || start.isAfter(end)) {
         throw new ExceptionTaskDomainInvalidInvariant({
           message: `startDate:${start.value} must not be after or equal to endDate: ${end.value}`,
           field: 'startDate',

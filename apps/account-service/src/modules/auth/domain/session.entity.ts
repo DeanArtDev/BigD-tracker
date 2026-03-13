@@ -51,7 +51,7 @@ class SessionEntity {
   }
 
   get isExpired() {
-    const now = DateVo.create(new Date());
+    const now = DateVo.now();
     return this.#data.expiresAt.equals(now) || this.#data.expiresAt.isBefore(now.value);
   }
 

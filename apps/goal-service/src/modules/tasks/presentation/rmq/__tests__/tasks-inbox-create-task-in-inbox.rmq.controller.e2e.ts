@@ -35,6 +35,10 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
   let client: ClientProxy;
   let sendMessage: ReturnType<typeof sendMessageBuilder>;
 
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   beforeAll(async () => {
     const moduleRef = await createTestingModule()
       .overrideProvider(TasksToken.WRITE_REPOSITORY)
@@ -111,7 +115,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
           userId,
           name: 'Inbox Task',
           priority: 2,
-          deadline: '2000-01-01T00:00:00.000Z',
+          deadline: '2000-01-01T00:00',
         },
       });
 

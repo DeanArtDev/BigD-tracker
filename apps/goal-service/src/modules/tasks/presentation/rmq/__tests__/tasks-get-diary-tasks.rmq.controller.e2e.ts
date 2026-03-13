@@ -181,8 +181,8 @@ describe('TasksRmqController (rmq e2e)', () => {
         priority: 2,
         weight: 4,
         status: TaskStatus.IN_PROGRESS,
-        startDate: '2026-03-02T10:15:00.000Z',
-        deadline: '2026-03-02T12:00:00.000Z',
+        startDate: '2026-03-02T10:15',
+        deadline: '2026-03-02T12:00',
       });
       expect(res.data.items[2]).toMatchObject({
         id: TaskIdBuilder.wrapVirtualId({
@@ -195,8 +195,8 @@ describe('TasksRmqController (rmq e2e)', () => {
         priority: 2,
         weight: 4,
         status: TaskStatus.IN_PROGRESS,
-        startDate: '2026-03-03T10:15:00.000Z',
-        deadline: '2026-03-03T12:00:00.000Z',
+        startDate: '2026-03-03T10:15',
+        deadline: '2026-03-03T12:00',
       });
     });
 
@@ -313,27 +313,27 @@ describe('TasksRmqController (rmq e2e)', () => {
         id: TaskIdBuilder.wrapOverrideId({
           recurrenceId: recurrenceA.id,
           overrideId: overrideForA.id,
-          date: recurrenceStart,
+          date: DateVo.format(recurrenceStart),
         }),
         userId,
         name: 'Override for A',
         description: 'override A',
         priority: 1,
         weight: 7,
-        startDate: '2026-03-02T08:45:00.000Z',
+        startDate: '2026-03-02T08:45',
       });
       expect(res.data.items[1]).toMatchObject({
         id: TaskIdBuilder.wrapOverrideId({
           recurrenceId: recurrenceB.id,
           overrideId: overrideForB.id,
-          date: recurrenceStart,
+          date: DateVo.format(recurrenceStart),
         }),
         userId,
         name: 'Override for B',
         description: 'override B',
         priority: 4,
         weight: 9,
-        startDate: '2026-03-02T16:20:00.000Z',
+        startDate: '2026-03-02T16:20',
       });
     });
 

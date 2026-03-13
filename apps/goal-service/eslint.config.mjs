@@ -23,6 +23,7 @@ export default getServiceApiEslintConfig(
   {
     rules: {
       '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
 );

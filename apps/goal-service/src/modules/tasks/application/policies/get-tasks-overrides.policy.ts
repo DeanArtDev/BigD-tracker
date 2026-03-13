@@ -5,20 +5,18 @@ import { TaskOverrideByRecurrencesIds, TaskOverrideByUserId, tasksCombinators } 
 
 const { and, leaf } = tasksCombinators;
 
-function GetTasksOverrides(input: { userId: number; from: Date; to: Date; recurrenceIds: number[] }) {
+function GetRecurrenceTasksOverrides(input: { userId: number; to: Date; recurrenceIds?: number[] }) {
   const spec = and(
     and(
       ...compact([
         TaskOverrideByUserId(input.userId),
-        input.recurrenceIds.length > 0 && TaskOverrideByRecurrencesIds(input.recurrenceIds),
+        input.recurrenceIds != null &&
+          input.recurrenceIds?.length > 0 &&
+          TaskOverrideByRecurrencesIds(input.recurrenceIds),
         leaf({
           key: 'tasks.overrideByStartDateInRange',
           purpose: 'filter',
-          toExpr: (eb) =>
-            eb.and([
-              eb('tasks_recurrences_overrides.start_date', '<=', input.to),
-              eb('tasks_recurrences_overrides.deadline', '>=', input.from),
-            ]),
+          toExpr: (eb) => eb.and([eb('tasks_recurrences_overrides.start_date', '<=', input.to)]),
         }),
       ]),
     ),
@@ -30,4 +28,4 @@ function GetTasksOverrides(input: { userId: number; from: Date; to: Date; recurr
   });
 }
 
-export { GetTasksOverrides };
+export { GetRecurrenceTasksOverrides };

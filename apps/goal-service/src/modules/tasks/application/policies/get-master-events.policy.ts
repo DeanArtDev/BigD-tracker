@@ -4,7 +4,7 @@ import { tagSpec } from '@big-d/api-utils';
 
 const { and } = tasksCombinators;
 
-function GetRecurrencesByRange(input: { userId: number; to: Date; from: Date }) {
+function GetRecurrencesByRange(input: { userId: number; to: Date }) {
   const spec = and(TaskRecurrenceByStartDateLessOrEqual(input.to), TaskRecurrenceByUserId(input.userId));
 
   return tagSpec<TasksDB>(spec, {

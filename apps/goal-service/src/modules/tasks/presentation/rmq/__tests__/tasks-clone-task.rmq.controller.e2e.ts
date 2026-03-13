@@ -118,8 +118,8 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(clonedTaskArg).toBeInstanceOf(Task);
       expect(clonedTaskArg.id).toEqual(NaN);
       expect(clonedTaskArg.name).toBe('Original');
-      expect(clonedTaskArg.startDate).toBe('2026-03-12T10:00:00.000Z');
-      expect(clonedTaskArg.deadline).toBe('2026-03-12T12:00:00.000Z');
+      expect(clonedTaskArg.startDate).toBe('2026-03-12T10:00');
+      expect(clonedTaskArg.deadline).toBe('2026-03-12T12:00');
       expect(clonedTaskArg.status).toBe(TaskStatus.IN_PROGRESS);
       expect(trxArg).toEqual(expectTransaction());
       expect(tasksReadRepoMock.getById).toHaveBeenCalledWith({ id: clonedTask.id, userId }, expectTransaction());
@@ -150,12 +150,12 @@ describe('TasksRmqController (rmq e2e)', () => {
         userId,
         startDate: '2026-03-01T10:00:00.000Z',
       });
-      const expectedStart = timeAndDate(recurrenceStart).tz(recurrence.timezone, true).utc().toISOString();
-      const expectedDeadline = timeAndDate(recurrenceStart)
-        .tz(recurrence.timezone, true)
-        .utc()
-        .add(2, 'hour')
-        .toISOString();
+      const expectedStart = DateVo.format(
+        timeAndDate(recurrenceStart).tz(recurrence.timezone, true).utc().toISOString(),
+      );
+      const expectedDeadline = DateVo.format(
+        timeAndDate(recurrenceStart).tz(recurrence.timezone, true).utc().add(2, 'hour').toISOString(),
+      );
       const clonedTask = getTask({
         id: 3102,
         userId,
@@ -277,8 +277,8 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(clonedTaskArg.priority).toBe(4);
       expect(clonedTaskArg.weight).toBe(9);
       expect(clonedTaskArg.recurrenceId).toBeUndefined();
-      expect(clonedTaskArg.startDate).toBe('2026-03-12T09:30:00.000Z');
-      expect(clonedTaskArg.deadline).toBe('2026-03-12T13:45:00.000Z');
+      expect(clonedTaskArg.startDate).toBe('2026-03-12T09:30');
+      expect(clonedTaskArg.deadline).toBe('2026-03-12T13:45');
       expect(clonedTaskArg.status).toBe(TaskStatus.IN_PROGRESS);
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({

@@ -1,7 +1,9 @@
 import { RecurrenceFrequency, TaskRecurrenceWeekday } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsArray, IsEnum, IsInt, IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
+import { buildTaskDateTimeApiProperty } from './task-date-time';
 
 class TaskRecurrencyDto {
   @ApiProperty({
@@ -25,21 +27,15 @@ class TaskRecurrencyDto {
   @IsEnum(TaskRecurrenceWeekday, { each: true })
   weekdays?: TaskRecurrenceWeekday[];
 
-  @ApiProperty({
-    example: '2025-06-24T13:01:02.471Z',
-    description: 'День начала повторения',
-  })
+  @ApiProperty(buildTaskDateTimeApiProperty('День начала повторения'))
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsString()
   startDate: string;
 
-  @ApiPropertyOptional({
-    example: '2026-05-24T13:01:02.471Z',
-    description: 'День окончания повторения',
-  })
+  @ApiPropertyOptional(buildTaskDateTimeApiProperty('День окончания повторения'))
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsOptional()
   @IsString()
   untilDate?: string;

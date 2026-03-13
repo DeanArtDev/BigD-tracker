@@ -290,7 +290,10 @@ class TaskWithRecurrenceService {
       timezone: currentRecurrence.timezone,
     });
 
-    const cancelledRecurrence = currentRecurrence.cancel({ cancelDate: DateVo.create(cancelDate), pattern });
+    const cancelledRecurrence = currentRecurrence.cancel({
+      cancelDate: DateVo.create(DateVo.format(cancelDate)),
+      pattern,
+    });
 
     return {
       task: updatedTask,

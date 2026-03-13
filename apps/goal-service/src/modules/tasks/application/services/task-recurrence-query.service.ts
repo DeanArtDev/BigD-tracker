@@ -2,13 +2,11 @@ import { TaskRecurrenceValues } from '@/modules/tasks/application/types';
 import { TaskIdBuilder, TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksOverridesToken } from '@/modules/tasks/tokens';
 import { numberToWeekdayMap, TaskStatus } from '@big-d/api-contracts';
-import { TimezoneVo } from '@big-d/api-utils';
+import { DateVo, timeAndDate } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
-import { timeAndDate } from '@big-d/api-utils';
-import { GoalServiceRequestContext } from '@shared/request-context';
 import { RRule } from 'rrule';
 import { TasksViewMapper, TaskView } from '../dto';
-import { GetRecurrencesByRange, GetTasksOverrides } from '../policies';
+import { GetRecurrencesByRange, GetRecurrenceTasksOverrides } from '../policies';
 import { TasksOverridesRepositoryWritePort, TaskTransaction } from '../ports';
 import { TaskCheckerService } from './task-checker.service';
 
@@ -20,9 +18,9 @@ class TaskRecurrenceQueryService {
     private readonly taskCheckerService: TaskCheckerService,
   ) {}
 
-  createRule(recurrence: TaskRecurrenceValues & { timezone: string }): RRule {
+  createRule(recurrence: TaskRecurrenceValues): RRule {
     function shapeRuleDate(date: string) {
-      const localDate = timeAndDate(date).tz(recurrence.timezone);
+      const localDate = timeAndDate(date);
 
       return new Date(
         Date.UTC(
@@ -39,7 +37,6 @@ class TaskRecurrenceQueryService {
 
     return new RRule({
       freq: recurrence.frequency,
-      tzid: recurrence.timezone,
       wkst: recurrence.weekstart,
       interval: recurrence.interval ?? 1,
       bymonth: recurrence.monthdays,
@@ -50,40 +47,50 @@ class TaskRecurrenceQueryService {
     });
   }
 
+  /**
+   * Сервис валидно работает только с датами без таймзоны
+   * не важно где было создано recurrence в любой таймзоне
+   * дата и время будет одно и тоже
+   * */
   async calculateTasks(
     input: { userId: number; from: string; to: string },
     trx?: TaskTransaction,
   ): Promise<{ virtualViews: TaskView[]; recurrences: TaskRecurrence[] }> {
     const { userId } = input;
+    const from = timeAndDate(input.from).startOf('day').toDate();
+    const to = timeAndDate(input.to).endOf('day').toDate();
 
-    const request = GoalServiceRequestContext.getStore()?.state;
-    const userTimezone = TimezoneVo.create(request?.userTimezone ?? 'UTC').value;
-
-    const { from, to } = this.#datesToTZUtc({ from: input.from, to: input.to }, userTimezone);
     const recurrences = await this.tasksOverridesRepository.getManyRecurrences(
-      GetRecurrencesByRange({ userId, to, from }),
+      GetRecurrencesByRange({ userId, to }),
       trx,
     );
 
     const virtualViews: TaskView[] = [];
 
-    for (const recurrence of recurrences) {
-      const overrides = await this.tasksOverridesRepository.getManyOverrides(
-        GetTasksOverrides({ userId, from, to, recurrenceIds: [recurrence.id] }),
-        trx,
-      );
-      const overridesMap = new Map(
-        overrides.map((o) => [
-          TaskIdBuilder.wrapVirtualId({ recurrenceId: o.recurrenceId, date: o.recurrenceStart }),
-          o,
-        ]),
-      );
+    const overrides = await this.tasksOverridesRepository.getManyOverrides(
+      GetRecurrenceTasksOverrides({ userId, to }),
+      trx,
+    );
 
+    const overridesMap = new Map(
+      overrides.map((o) => [
+        TaskIdBuilder.wrapVirtualId({
+          recurrenceId: o.recurrenceId,
+          date: DateVo.format(o.recurrenceStart),
+        }),
+        o,
+      ]),
+    );
+
+    for (const recurrence of recurrences) {
       if (recurrence.isCanceled) {
         for (const [, override] of overridesMap.entries()) {
-          if (this.#isOverrideSkipped(override)) continue;
+          if (this.#isOverrideSkipped({ from, to }, override)) {
+            continue;
+          }
+
           if (this.#isOverrideRender(override)) {
-            virtualViews.push(this.#shapeOverride(override, recurrence.timezone));
+            virtualViews.push(this.#shapeOverride(override));
           }
         }
 
@@ -100,34 +107,38 @@ class TaskRecurrenceQueryService {
         yearmonths: recurrence.yearmonths,
         startDate: recurrence.startDate,
         untilDate: recurrence.untilDate,
-        timezone: recurrence.timezone,
       });
 
       const sourceTask = await this.taskCheckerService.ensureTaskExists({ taskId: recurrence.taskId, userId });
       const sourceTaskDurationDelta = Math.abs(timeAndDate(sourceTask.deadline).diff(sourceTask.startDate));
-      const shiftedFrom = new Date(from.getTime() - sourceTaskDurationDelta);
+      const shiftedFrom = timeAndDate(from).subtract(sourceTaskDurationDelta, 'millisecond').startOf('day').toDate();
 
       for (const occurrence of rule.between(shiftedFrom, to, true)) {
-        const occurrenceStart = this.createTimePoint(occurrence, recurrence.timezone, sourceTask.startDate);
-        const startDate = timeAndDate(sourceTask.startDate).tz(recurrence.timezone).date(occurrenceStart.date());
+        const occurrenceStart = this.createTimePoint(occurrence, sourceTask.startDate);
+        const startDate = timeAndDate(sourceTask.startDate).date(occurrenceStart.date());
         const deadline = startDate.clone().add(sourceTaskDurationDelta, 'millisecond');
 
         if (startDate.toDate() > to || deadline.toDate() < from) continue;
 
-        const hashKey = TaskIdBuilder.wrapVirtualId({
+        const overrideHashKey = TaskIdBuilder.wrapVirtualId({
           recurrenceId: recurrence.id,
-          date: occurrenceStart.toISOString(),
+          date: DateVo.format(occurrenceStart.toISOString()),
         });
-        const override = overridesMap.get(hashKey);
 
-        if (this.#isOverrideSkipped(override)) continue;
+        const override = overridesMap.get(overrideHashKey);
+
+        if (this.#isOverrideSkipped({ to, from }, override)) {
+          overridesMap.delete(overrideHashKey);
+          continue;
+        }
+
         if (override != null && this.#isOverrideRender(override)) {
-          virtualViews.push(this.#shapeOverride(override, recurrence.timezone));
-          overridesMap.delete(hashKey);
+          virtualViews.push(this.#shapeOverride(override));
+          overridesMap.delete(overrideHashKey);
         } else {
           virtualViews.push(
             TasksViewMapper.fromPlainToView({
-              id: hashKey,
+              id: overrideHashKey,
               userId: sourceTask.userId,
               description: sourceTask.description,
               endDate: sourceTask.endDate,
@@ -143,36 +154,34 @@ class TaskRecurrenceQueryService {
           );
         }
       }
+    }
 
-      for (const [, override] of overridesMap.entries()) {
-        if (override?.isCancelled || override?.isDeleted || override?.isArchived || override?.isMoved) continue;
-        if (override?.isOverride) {
-          virtualViews.push(this.#shapeOverride(override, recurrence.timezone));
-        }
+    for (const [, override] of overridesMap.entries()) {
+      if (this.#isOverrideSkipped({ to, from }, override)) {
+        continue;
       }
 
-      overridesMap.clear();
+      if (override != null && this.#isOverrideRender(override)) {
+        virtualViews.push(this.#shapeOverride(override));
+      }
     }
 
     return { virtualViews, recurrences };
   }
 
-  public createTimePoint(occurrence: string | Date, timezone: string, date?: string) {
-    const sourceStartDate = timeAndDate(date).tz(timezone).utc(true);
+  public createTimePoint(occurrence: string | Date, date?: string) {
+    const sourceStartDate = timeAndDate(date);
 
     return timeAndDate(occurrence)
-      .tz(timezone)
-      .utc(true)
       .hour(sourceStartDate.hour())
       .minute(sourceStartDate.minute())
       .second(sourceStartDate.second())
       .millisecond(sourceStartDate.millisecond());
   }
 
-  #shapeOverride(override: TaskOverride, recurrenceTimezone: string) {
-    const startDate = timeAndDate(override.startDate).tz(recurrenceTimezone).utc().toISOString();
-    const deadline =
-      override.deadline != null ? timeAndDate(override.deadline).tz(recurrenceTimezone).utc().toISOString() : undefined;
+  #shapeOverride(override: TaskOverride) {
+    const startDate = timeAndDate(override.startDate).toISOString();
+    const deadline = override.deadline != null ? timeAndDate(override.deadline).toISOString() : undefined;
 
     return TasksViewMapper.fromPlainToView({
       id: TaskIdBuilder.wrapOverrideId({
@@ -194,20 +203,20 @@ class TaskRecurrenceQueryService {
     });
   }
 
-  #isOverrideSkipped(override?: TaskOverride): boolean {
+  #isOverrideSkipped({ from, to }: { from: Date; to: Date }, override?: TaskOverride): boolean {
     if (override == null) return false;
-    return override.isCancelled || override.isDeleted || override.isArchived || override.isMoved;
+    if (override.isCancelled || override.isDeleted || override.isArchived || override.isMoved) {
+      return true;
+    }
+
+    const start = timeAndDate(override.startDate).toDate();
+    const deadline = timeAndDate(override.deadline).toDate();
+    const isInFromToRange = start <= to && deadline >= from;
+    return !isInFromToRange;
   }
 
   #isOverrideRender(override: TaskOverride): boolean {
     return override.isOverride;
-  }
-
-  #datesToTZUtc(dates: { from: string; to: string }, timezone: string) {
-    return {
-      from: timeAndDate.tz(dates.from, 'YYYY-MM-DD', timezone).startOf('day').utc().toDate(),
-      to: timeAndDate.tz(dates.to, 'YYYY-MM-DD', timezone).endOf('day').utc().toDate(),
-    };
   }
 }
 

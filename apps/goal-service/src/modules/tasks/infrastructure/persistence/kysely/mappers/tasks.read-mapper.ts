@@ -1,6 +1,7 @@
 import { TaskView } from '@/modules/tasks/application/dto';
 import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
 
 interface RawTask {
   readonly id: number;
@@ -52,20 +53,20 @@ class TasksReadKyselyMapper {
       priority: raw.priority,
       weight: raw.weight,
       cancelReason: raw.cancel_reason ?? undefined,
-      startDate: raw.start_date != null ? new Date(raw.start_date).toISOString() : undefined,
-      deadline: raw.deadline != null ? new Date(raw.deadline).toISOString() : undefined,
-      endDate: raw.end_date != null ? new Date(raw.end_date).toISOString() : undefined,
+      startDate: raw.start_date != null ? DateVo.create(DateVo.format(raw.start_date)) : undefined,
+      deadline: raw.deadline != null ? DateVo.create(DateVo.format(raw.deadline)) : undefined,
+      endDate: raw.end_date != null ? DateVo.create(DateVo.format(raw.end_date)) : undefined,
       status: raw.status,
       recurrence: hasRecurrence
         ? {
-            startDate: new Date(start_date).toISOString(),
+            startDate: DateVo.create(DateVo.format(start_date)),
+            untilDate: until_date != null ? DateVo.create(DateVo.format(until_date)) : undefined,
             frequency: RecurrenceFrequency[recurrence_frequency],
             interval: interval ?? undefined,
             weekdays: weekdays ?? undefined,
             monthdays: monthdays ?? undefined,
             status: recurrence_status ?? undefined,
             yearmonths: yearmonths ?? undefined,
-            untilDate: until_date != null ? new Date(until_date).toISOString() : undefined,
           }
         : undefined,
     });

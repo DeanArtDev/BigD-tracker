@@ -1,5 +1,5 @@
 import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
-import { timeAndDate } from '@big-d/api-utils';
+import { DateVo, timeAndDate } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
 import { taskServiceAsserts } from './task-service-asserts';
 
@@ -103,8 +103,8 @@ class TaskVirtualService {
       description: sourceTask.description,
       priority: sourceTask.priority,
       weight: sourceTask.weight,
-      startDate,
-      deadline,
+      startDate: DateVo.format(startDate),
+      deadline: DateVo.format(deadline),
     });
   }
 

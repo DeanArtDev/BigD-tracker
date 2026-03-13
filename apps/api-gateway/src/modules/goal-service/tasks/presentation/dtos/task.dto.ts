@@ -1,11 +1,16 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsISO8601, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
+import { buildTaskDateTimeApiProperty } from './task-date-time';
 
 class TaskDto {
-  @ApiProperty({ example: 'o:1' })
+  @ApiProperty({
+    example: 't:4',
+    description: 't:4 - это реальное дело, v:4:2026.02.02 - виртуальная',
+  })
   @Expose()
   @IsString()
   id: string;
@@ -39,23 +44,23 @@ class TaskDto {
   @IsInt()
   priority: number;
 
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @ApiPropertyOptional(buildTaskDateTimeApiProperty())
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsOptional()
   @IsString()
   endDate?: string;
 
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @ApiPropertyOptional(buildTaskDateTimeApiProperty())
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsOptional()
   @IsString()
   startDate?: string;
 
-  @ApiPropertyOptional({ example: '2025-05-24T13:01:02.471Z' })
+  @ApiPropertyOptional(buildTaskDateTimeApiProperty())
   @Expose()
-  @IsISO8601()
+  @IsAbsoluteDateTimeWithoutTimezone()
   @IsOptional()
   @IsString()
   deadline?: string;
