@@ -1,12 +1,11 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsInt, IsOptional, ValidateNested } from 'class-validator';
+import { IsInt, ValidateNested } from 'class-validator';
 
 class TaskRecoveryReqData {
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
+  @ApiProperty({ example: 1 })
   @IsInt()
-  groupId?: number;
+  groupId: number;
 }
 
 class TaskRecoveryReq {

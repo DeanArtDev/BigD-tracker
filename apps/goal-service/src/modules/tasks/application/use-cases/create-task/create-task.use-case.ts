@@ -5,7 +5,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
 import { TaskView } from '../../dto';
 import { TaskDatabase } from '../../ports';
-import { TaskQueryService, TaskRecurrenceQueryService, TaskRecurrenceService, TaskService } from '../../services';
+import {
+  GroupCheckerService,
+  TaskQueryService,
+  TaskRecurrenceQueryService,
+  TaskRecurrenceService,
+  TaskService,
+} from '../../services';
 import { CreateTaskCommand } from './create-task.command';
 
 @Injectable()
@@ -14,6 +20,7 @@ class CreateTaskUseCase {
 
   constructor(
     private readonly taskServices: TaskService,
+    private readonly groupCheckerService: GroupCheckerService,
     private readonly taskQueryService: TaskQueryService,
     private readonly taskRecurrenceService: TaskRecurrenceService,
     private readonly taskRecurrenceQueryService: TaskRecurrenceQueryService,
@@ -25,14 +32,14 @@ class CreateTaskUseCase {
     return this.db.runTransaction(async (trx) => {
       const { recurrence } = input;
 
-      const createdTask = await this.taskServices.createTask(input, trx);
-
       if (input.groupId != null) {
-        await this.taskServices.addTaskToGroup(
-          { taskId: createdTask.id, groupId: input.groupId, userId: input.userId },
-          trx,
+        await this.groupCheckerService.ensureGroupExists(
+          { groupId: input.groupId, userId: input.userId },
+          { trx, includeInbox: true },
         );
       }
+
+      const createdTask = await this.taskServices.createTask(input, trx);
 
       if (recurrence != null) {
         const userTimezone = TimezoneVo.create(

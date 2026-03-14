@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsString, ValidateNested } from 'class-validator';
 
 class TaskRecoveryReqData {
   @IsInt()
@@ -8,9 +8,8 @@ class TaskRecoveryReqData {
   @IsString()
   taskId: string;
 
-  @IsOptional()
   @IsInt()
-  groupId?: number;
+  groupId: number;
 }
 
 class TaskRecoveryReq {

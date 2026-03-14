@@ -19,7 +19,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { toLower } from 'lodash';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { leftJoinGroupLinks, leftJoinTaskRecurrences, taskFullSelect, tasksWithStatusQuery } from '../utils';
+import { leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -31,7 +31,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return await this.errorCatcher('tasks.get-by-id', async () => {
       const { id, userId } = input;
 
-      const task = await leftJoinTaskRecurrences(leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx)))
+      const task = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .where('tasks.id', '=', id)
         .where('tasks.user_id', '=', userId)
         .executeTakeFirst();
@@ -59,9 +59,9 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return await this.errorCatcher('tasks.is-task-into-group', async () => {
       const result = await this.db
         .qb(trx)
-        .selectFrom('task_to_group')
+        .selectFrom('tasks')
         .where('group_id', '=', input.groupId)
-        .where('task_id', '=', input.taskId)
+        .where('id', '=', input.taskId)
         .executeTakeFirst();
 
       return result != null;
@@ -77,7 +77,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     return await this.errorCatcher('tasks.get-by-range.read', async () => {
       const { page, perPage } = params;
 
-      const tasks = await leftJoinTaskRecurrences(leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx)))
+      const tasks = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .distinct()
         .where((eb) => specifications.toExpr(eb))
         .$if(sort == null, (qb) => qb.orderBy('tasks.id', 'asc'))
@@ -140,14 +140,8 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
       let query = tasksWithStatusQuery(this.db, trx);
 
       const shapeMap = {
-        with_group_links_left_join: (qb: typeof query) =>
-          qb
-            .leftJoin('task_to_group', 'task_to_group.task_id', 'tasks.id')
-            .select(['task_to_group.group_id as group_id']),
-        with_group_links_inner_join: (qb: typeof query) =>
-          qb
-            .innerJoin('task_to_group', 'task_to_group.task_id', 'tasks.id')
-            .select(['task_to_group.group_id as group_id']),
+        with_group_links_left_join: (qb: typeof query) => qb,
+        with_group_links_inner_join: (qb: typeof query) => qb.where('tasks.group_id', 'is not', null),
       };
 
       for (const shape of shapes) {
@@ -155,7 +149,7 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         apply != null && (query = apply);
       }
 
-      const tasks = await leftJoinTaskRecurrences(taskFullSelect(query))
+      const tasks = await leftJoinTaskRecurrences(query)
         .where((eb) => specifications.toExpr(eb))
         .orderBy('id', 'asc')
         .execute();

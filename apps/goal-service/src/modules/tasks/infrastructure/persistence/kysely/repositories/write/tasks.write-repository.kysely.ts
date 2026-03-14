@@ -4,7 +4,7 @@ import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { leftJoinGroupLinks, leftJoinTaskRecurrences, statusByNameQuery, tasksWithStatusQuery } from '../utils';
+import { leftJoinTaskRecurrences, statusByNameQuery, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksWriteRepositoryKysely extends BaseTasksRepository implements TasksWriteRepository {
@@ -16,7 +16,7 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
 
   async getTaskById(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<Task | null> {
     return await this.errorCatcher('tasks.get-write-task-by-id', async () => {
-      const query = leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
+      const query = tasksWithStatusQuery(this.db, trx)
         .where('tasks.id', '=', input.taskId)
         .where('tasks.user_id', '=', input.userId);
       const task = await leftJoinTaskRecurrences(query).executeTakeFirst();
@@ -45,12 +45,15 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           start_date: task.startDate,
           description: task.description,
           user_id: task.userId,
+          group_id: task.groupId,
           priority: task.priority,
+          weight: task.weight,
           status_id,
         })
         .returning([
           'id',
           'user_id',
+          'group_id',
           'name',
           'description',
           'priority',
@@ -62,6 +65,10 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
         ])
         .executeTakeFirstOrThrow();
 
+      if (task.groupId != null) {
+        await this.#syncGroupLinks({ groupId: task.groupId, taskId: taskResponse.id }, trx);
+      }
+
       return TasksWriteKyselyMapper.fromRawToAgr({ ...taskResponse, status: status_name });
     });
   }
@@ -69,6 +76,8 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
   async replaceTask(task: Task, trx?: TaskTransaction): Promise<Task> {
     return await this.errorCatcher('tasks.replace', async () => {
       const { id: status_id } = await statusByNameQuery([task.status], this.db, trx).executeTakeFirstOrThrow();
+
+      await this.#syncGroupLinks({ groupId: task.groupId, taskId: task.id }, trx);
 
       const result = await this.db
         .qb(trx)
@@ -78,6 +87,7 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
         .set({
           name: task.name,
           description: task.description ?? null,
+          group_id: task.groupId ?? null,
           priority: task.priority,
           weight: task.weight,
           start_date: task.startDate ?? null,
@@ -88,6 +98,7 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
         .returning([
           'id',
           'user_id',
+          'group_id',
           'name',
           'description',
           'priority',
@@ -110,8 +121,56 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
     });
   }
 
-  async addTaskToGroup(input: { groupId: number; taskId: number }, trx?: TaskTransaction): Promise<void> {
-    return await this.errorCatcher('tasks.add-to-group', async () => {
+  async deleteTask(input: { userId: number; taskId: number }, trx?: TaskTransaction): Promise<boolean> {
+    return await this.errorCatcher('tasks.task-deleting', async () => {
+      const result = await this.db
+        .qb(trx)
+        .deleteFrom(this.#tableName)
+        .where('id', '=', input.taskId)
+        .where('user_id', '=', input.userId)
+        .executeTakeFirst();
+
+      return result.numDeletedRows > 0;
+    });
+  }
+
+  async #syncGroupLinks(input: { groupId?: number; taskId: number }, trx?: TaskTransaction): Promise<void> {
+    return await this.errorCatcher('tasks.sync-group-links', async () => {
+      const currentLink = await this.db
+        .qb(trx)
+        .selectFrom('task_to_group')
+        .select(['group_id', 'position'])
+        .where('task_id', '=', input.taskId)
+        .executeTakeFirst();
+
+      if (input.groupId == null) {
+        await this.#deleteGroupLink({ taskId: input.taskId }, trx);
+        return;
+      }
+
+      if (currentLink == null) {
+        await this.#createGroupLink({ groupId: input.groupId, taskId: input.taskId }, trx);
+        return;
+      }
+
+      if (currentLink.group_id === input.groupId) {
+        return;
+      }
+
+      await this.#updateGroupLink(
+        {
+          taskId: input.taskId,
+          groupId: input.groupId,
+          previousGroupId: currentLink.group_id,
+          previousPosition: currentLink.position,
+        },
+        trx,
+      );
+    });
+  }
+
+  async #createGroupLink(input: { groupId: number; taskId: number }, trx?: TaskTransaction): Promise<void> {
+    return await this.errorCatcher('tasks.create-group-link', async () => {
       const lastPosition = await this.db
         .qb(trx)
         .selectFrom('task_to_group')
@@ -131,8 +190,41 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
     });
   }
 
-  async removeTaskFromGroup(input: { taskId: number }, trx?: TaskTransaction): Promise<void> {
-    return await this.errorCatcher('tasks.remove-from-group', async () => {
+  async #updateGroupLink(
+    input: { taskId: number; groupId: number; previousGroupId: number; previousPosition: number },
+    trx?: TaskTransaction,
+  ): Promise<void> {
+    return await this.errorCatcher('tasks.update-group-link', async () => {
+      const qb = this.db.qb(trx);
+
+      await qb
+        .updateTable('task_to_group')
+        .set((eb) => ({
+          position: eb('position', '-', 1),
+        }))
+        .where('group_id', '=', input.previousGroupId)
+        .where('position', '>', input.previousPosition)
+        .execute();
+
+      const lastPosition = await qb
+        .selectFrom('task_to_group')
+        .select((eb) => eb.fn.count('task_id').as('count'))
+        .where('group_id', '=', input.groupId)
+        .executeTakeFirst();
+
+      await qb
+        .updateTable('task_to_group')
+        .set({
+          group_id: input.groupId,
+          position: Number(lastPosition?.count ?? 0),
+        })
+        .where('task_id', '=', input.taskId)
+        .executeTakeFirstOrThrow();
+    });
+  }
+
+  async #deleteGroupLink(input: { taskId: number }, trx?: TaskTransaction): Promise<void> {
+    return await this.errorCatcher('tasks.delete-group-link', async () => {
       const qb = this.db.qb(trx);
 
       const taskToGroupLink = await qb
@@ -150,35 +242,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
         .where('group_id', '=', taskToGroupLink.group_id)
         .where('position', '>', taskToGroupLink.position)
         .execute();
-    });
-  }
-
-  async changeTaskStatus(task: Task, trx?: TaskTransaction): Promise<void> {
-    return await this.errorCatcher('tasks.change-task-status', async () => {
-      const { id, userId, status } = task;
-
-      const { id: status_id } = await statusByNameQuery([status], this.db, trx).executeTakeFirstOrThrow();
-
-      await this.db
-        .qb(trx)
-        .updateTable(this.#tableName)
-        .set({ status_id })
-        .where('id', '=', id)
-        .where('user_id', '=', userId)
-        .executeTakeFirst();
-    });
-  }
-
-  async deleteTask(input: { userId: number; taskId: number }, trx?: TaskTransaction): Promise<boolean> {
-    return await this.errorCatcher('tasks.task-deleting', async () => {
-      const result = await this.db
-        .qb(trx)
-        .deleteFrom(this.#tableName)
-        .where('id', '=', input.taskId)
-        .where('user_id', '=', input.userId)
-        .executeTakeFirst();
-
-      return result.numDeletedRows > 0;
     });
   }
 }

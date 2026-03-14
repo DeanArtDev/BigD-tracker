@@ -136,7 +136,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             "tasks_recurrences_overrides"."description" as "description",
             "tasks_recurrences_overrides"."priority" as "priority",
             "tasks_recurrences_overrides"."weight" as "weight",
-            "task_to_group"."group_id" as "group_id",
+            "tasks_recurrences_overrides"."group_id" as "group_id",
             "tasks_recurrences_overrides"."cancel_reason" as "cancel_reason",
             "tasks_recurrences_overrides"."start_date" as "start_date",
             "tasks_recurrences_overrides"."end_date" as "end_date",
@@ -145,10 +145,6 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             task_statuses.name as "status",
             tasks_recurrences_override_types.name as "override_type"
           from "tasks_recurrences_overrides"
-          inner join "tasks_recurrences"
-            on "tasks_recurrences"."id" = "tasks_recurrences_overrides"."recurrence_id"
-          left join "task_to_group"
-            on "task_to_group"."task_id" = "tasks_recurrences"."task_id"
           inner join "task_statuses"
             on "tasks_recurrences_overrides"."status_id" = "task_statuses"."id"
           inner join "tasks_recurrences_override_types"
@@ -366,9 +362,9 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           insert into "tasks_recurrences_overrides"
             (
               "recurrence_id",
+              "user_id",
               "name",
               "start_date",
-              "user_id",
               "priority",
               "status_id",
               "weight",
@@ -389,6 +385,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           returning
             "id",
             "weight",
+            "group_id",
             "recurrence_id",
             "cancel_reason",
             "name",
@@ -403,9 +400,9 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
         `,
           parameters: [
             21,
+            77,
             'Task name',
             '2026-01-10T10:00',
-            77,
             2,
             1,
             1,

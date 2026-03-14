@@ -1,9 +1,9 @@
-import { ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { ExceptionTaskUnprocessable } from '../../exceptions';
+import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import { InboxGroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
 import { AssignTaskToInboxCommand } from './assign-task-to-inbox.command';
 
@@ -30,9 +30,8 @@ class AssignTaskToInboxUseCase {
           { trx },
         );
 
-        TaskFactory.assignToGroup(sureTask, 'IN_BOX');
-        await this.tasksWriteRepo.removeTaskFromGroup({ taskId: data.id }, trx);
-        await this.tasksWriteRepo.addTaskToGroup({ taskId: data.id, groupId: inboxId }, trx);
+        const task = TaskFactory.assignToGroup(sureTask, inboxId);
+        await this.tasksWriteRepo.replaceTask(task, trx);
         return { success: true };
       }
 

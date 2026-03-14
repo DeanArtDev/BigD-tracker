@@ -196,13 +196,11 @@ describe('GroupsReadRepositoryKysely', () => {
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
-          from "task_to_group" as "ttg"
-          inner join "groups" as "g"
-            on "g"."id" = "ttg"."group_id"
+          from "tasks"
           where
-            "ttg"."group_id" = $1
-            and "ttg"."task_id" = $2
-            and "g"."user_id" = $3
+            "tasks"."group_id" = $1
+            and "tasks"."id" = $2
+            and "tasks"."user_id" = $3
         `,
           parameters: [222, 111, 15],
         });

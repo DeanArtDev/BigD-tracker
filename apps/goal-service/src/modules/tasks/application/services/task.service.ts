@@ -1,4 +1,3 @@
-import { ExceptionTaskCreationFailed } from '@/modules/tasks/application/exceptions';
 import { Task, TaskFactory, TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -7,7 +6,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
 import { TasksWriteRepository, TaskTransaction } from '../ports';
 import { TaskRecurrenceValues } from '../types';
-import { GroupCheckerService } from './group-checker.service';
 import { TaskCheckerService } from './task-checker.service';
 import { TaskOverrideService } from './task-override.service';
 import { TaskRecurrenceQueryService } from './task-recurrence-query.service';
@@ -30,6 +28,7 @@ interface CreateTaskInput {
 
 interface ReplaceTaskInput {
   readonly id: number;
+  readonly groupId?: number;
   readonly name: string;
   readonly userId: number;
   readonly description?: string;
@@ -40,19 +39,12 @@ interface ReplaceTaskInput {
   readonly recurrence?: TaskRecurrenceValues;
 }
 
-interface AddTaskToGroupInput {
-  readonly userId: number;
-  readonly groupId: number;
-  readonly taskId: number;
-}
-
 @Injectable()
 class TaskService {
   private readonly taskWithRecurrenceService = new TaskWithRecurrenceService();
 
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
-    private readonly groupCheckerService: GroupCheckerService,
     private readonly taskOverrideService: TaskOverrideService,
     private readonly taskRecurrenceService: TaskRecurrenceService,
     private readonly taskRecurrenceQueryService: TaskRecurrenceQueryService,
@@ -62,31 +54,14 @@ class TaskService {
 
   async createTask(input: CreateTaskInput, trx?: TaskTransaction): Promise<Task> {
     const draftTask = TaskFactory.create(input);
-    const createdTask = await this.tasksWriteRepo.createTask(draftTask, trx);
-
-    if (createdTask == null) {
-      throw new ExceptionTaskCreationFailed({});
-    }
-
-    return createdTask;
+    return await this.tasksWriteRepo.createTask(draftTask, trx);
   }
 
   async cloneTask(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<Task> {
     const { taskId, userId } = input;
 
     const task = await this.taskCheckerService.ensureTaskExists({ taskId, userId }, { trx });
-    const clonedTask = TaskFactory.clone(task);
-
-    const createdTask = await this.tasksWriteRepo.createTask(clonedTask, trx);
-    const newTask = await this.tasksWriteRepo.getTaskById({ taskId: createdTask.id, userId: createdTask.userId }, trx);
-
-    if (newTask == null) {
-      throw new ExceptionTaskCreationFailed({
-        taskId: createdTask.id,
-      });
-    }
-
-    return newTask;
+    return await this.tasksWriteRepo.createTask(TaskFactory.clone(task), trx);
   }
 
   async softDeleteTask(input: DeleteTaskInput, trx?: TaskTransaction): Promise<{ id: number }> {
@@ -94,10 +69,9 @@ class TaskService {
       { taskId: input.taskId, userId: input.userId },
       { trx },
     );
-    const draftTask = TaskFactory.deleteSoft(task);
-    await this.tasksWriteRepo.changeTaskStatus(draftTask, trx);
-    await this.tasksWriteRepo.removeTaskFromGroup({ taskId: draftTask.id }, trx);
-    return { id: draftTask.id };
+    const replacedTask = await this.tasksWriteRepo.replaceTask(TaskFactory.deleteSoft(task), trx);
+
+    return { id: replacedTask.id };
   }
 
   async replaceTask(
@@ -159,12 +133,6 @@ class TaskService {
       recurrence: replaceData.recurrence ?? undefined,
     };
   }
-
-  async addTaskToGroup(input: AddTaskToGroupInput, trx?: TaskTransaction): Promise<void> {
-    const { taskId, userId, groupId } = input;
-    await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
-    await this.tasksWriteRepo.addTaskToGroup({ taskId, groupId }, trx);
-  }
 }
 
-export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput, AddTaskToGroupInput };
+export { TaskService, CreateTaskInput, ReplaceTaskInput, DeleteTaskInput };

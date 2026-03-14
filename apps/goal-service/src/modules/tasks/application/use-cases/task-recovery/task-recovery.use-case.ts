@@ -1,9 +1,9 @@
-import { ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { ExceptionTaskUnprocessable } from '../../exceptions';
+import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import { GroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
 import { TaskRecoveryCommand } from './task-recovery.command';
 
@@ -26,14 +26,9 @@ class TaskRecoveryUseCase {
       if (isOrigin) {
         const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const recoveredTask = TaskFactory.recovery(task);
-        const replacedTask = await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
-
-        if (groupId != null) {
-          await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
-          TaskFactory.assignToGroup(replacedTask);
-          await this.tasksWriteRepo.addTaskToGroup({ taskId: data.id, groupId }, trx);
-        }
-
+        await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
+        TaskFactory.assignToGroup(recoveredTask, groupId);
+        await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
         return { id: recoveredTask.id };
       }
 

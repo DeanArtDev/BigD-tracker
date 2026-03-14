@@ -1,24 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsInt, IsOptional, ValidateNested } from 'class-validator';
+import { ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
-
-class CloneTaskReqData {
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
-  @IsInt()
-  groupId?: number;
-}
-
-class CloneTaskReq {
-  @ApiProperty({
-    description: 'Запрос сервера',
-    type: CloneTaskReqData,
-  })
-  @ValidateNested()
-  @Type(() => CloneTaskReqData)
-  data: CloneTaskReqData;
-}
 
 class CloneTaskRes {
   @ApiProperty({ description: 'Ответ сервера' })
@@ -28,4 +11,4 @@ class CloneTaskRes {
   data: TaskDto;
 }
 
-export { CloneTaskReq, CloneTaskRes };
+export { CloneTaskRes };

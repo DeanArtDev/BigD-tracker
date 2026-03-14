@@ -6,8 +6,6 @@ function overrideCommonQuery(db: TaskDatabase, trx?: TaskTransaction) {
   return db
     .qb(trx)
     .selectFrom('tasks_recurrences_overrides')
-    .innerJoin('tasks_recurrences', 'tasks_recurrences.id', 'tasks_recurrences_overrides.recurrence_id')
-    .leftJoin('task_to_group', 'task_to_group.task_id', 'tasks_recurrences.task_id')
     .innerJoin('task_statuses', 'tasks_recurrences_overrides.status_id', 'task_statuses.id')
     .innerJoin(
       'tasks_recurrences_override_types',
@@ -22,7 +20,7 @@ function overrideCommonQuery(db: TaskDatabase, trx?: TaskTransaction) {
       'tasks_recurrences_overrides.description as description',
       'tasks_recurrences_overrides.priority as priority',
       'tasks_recurrences_overrides.weight as weight',
-      'task_to_group.group_id as group_id',
+      'tasks_recurrences_overrides.group_id as group_id',
       'tasks_recurrences_overrides.cancel_reason as cancel_reason',
       'tasks_recurrences_overrides.start_date as start_date',
       'tasks_recurrences_overrides.end_date as end_date',

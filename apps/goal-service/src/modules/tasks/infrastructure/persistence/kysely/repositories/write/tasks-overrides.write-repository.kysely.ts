@@ -147,42 +147,34 @@ export class TasksOverridesWriteRepositoryKysely
       ).executeTakeFirstOrThrow();
 
       const overrideType = await overrideTypeByNameQuery([override.type], this.db, trx).executeTakeFirstOrThrow();
+      const upsertData = {
+        cancel_reason: override.cancelReason,
+        group_id: override.groupId,
+        name: override.name,
+        deadline: override.deadline,
+        end_date: override.endDate,
+        start_date: override.startDate,
+        description: override.description,
+        priority: override.priority,
+        status_id,
+        weight: override.weight,
+        override_type_id: overrideType.id,
+        recurrence_start: override.recurrenceStart,
+      };
+
       const rawOverride = await this.db
         .qb(trx)
         .insertInto('tasks_recurrences_overrides')
         .values({
           recurrence_id: override.recurrenceId,
-          cancel_reason: override.cancelReason,
-          name: override.name,
-          deadline: override.deadline,
-          end_date: override.endDate,
-          start_date: override.startDate,
-          description: override.description,
           user_id: override.userId,
-          priority: override.priority,
-          status_id,
-          weight: override.weight,
-          override_type_id: overrideType.id,
-          recurrence_start: override.recurrenceStart,
+          ...upsertData,
         })
-        .onConflict((oc) =>
-          oc.columns(['recurrence_id', 'recurrence_start']).doUpdateSet({
-            cancel_reason: override.cancelReason,
-            name: override.name,
-            deadline: override.deadline,
-            end_date: override.endDate,
-            start_date: override.startDate,
-            description: override.description,
-            priority: override.priority,
-            status_id,
-            weight: override.weight,
-            override_type_id: overrideType.id,
-            recurrence_start: override.recurrenceStart,
-          }),
-        )
+        .onConflict((oc) => oc.columns(['recurrence_id', 'recurrence_start']).doUpdateSet(upsertData))
         .returning([
           'id',
           'weight',
+          'group_id',
           'recurrence_id',
           'cancel_reason',
           'name',

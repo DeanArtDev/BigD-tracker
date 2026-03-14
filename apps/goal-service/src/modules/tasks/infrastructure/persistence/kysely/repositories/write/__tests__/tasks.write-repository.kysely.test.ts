@@ -17,6 +17,7 @@ describe('TasksWriteRepositoryKysely', () => {
           select
             "tasks"."id" as "id",
             "tasks"."user_id" as "user_id",
+            "tasks"."group_id" as "group_id",
             "tasks"."name" as "name",
             "tasks"."description" as "description",
             "tasks"."priority" as "priority",
@@ -26,9 +27,6 @@ describe('TasksWriteRepositoryKysely', () => {
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
             task_statuses.name as "status",
-            "task_to_group"."group_id" as "group_id",
-            "task_to_group"."task_id" as "group_task_id",
-            "task_to_group"."position" as "position",
             "tasks_recurrences"."id" as "recurrence_id",
             "tasks_recurrences"."user_id" as "recurrence_user_id",
             "tasks_recurrences"."task_id" as "recurrence_task_id",
@@ -46,8 +44,6 @@ describe('TasksWriteRepositoryKysely', () => {
           from "tasks"
           inner join "task_statuses"
             on "tasks"."status_id" = "task_statuses"."id"
-          left join "task_to_group"
-            on "task_to_group"."task_id" = "tasks"."id"
           left join "tasks_recurrences"
             on "tasks_recurrences"."task_id" = "tasks"."id"
           left join "recurrences_frequencies"
@@ -76,6 +72,7 @@ describe('TasksWriteRepositoryKysely', () => {
             {
               id: 11,
               user_id: 77,
+              group_id: null,
               name: 'Task name',
               description: null,
               priority: 2,
@@ -104,18 +101,12 @@ describe('TasksWriteRepositoryKysely', () => {
         });
         expectSqlQuery(recorder.queries[1], {
           sql: `
-          insert into "tasks"
-            (
-              "name",
-              "user_id",
-              "priority",
-              "status_id"
-            )
-          values
-            ($1, $2, $3, $4)
+          insert into "tasks" ("name", "user_id", "priority", "weight", "status_id")
+          values ($1, $2, $3, $4, $5)
           returning
             "id",
             "user_id",
+            "group_id",
             "name",
             "description",
             "priority",
@@ -125,7 +116,7 @@ describe('TasksWriteRepositoryKysely', () => {
             "end_date",
             "deadline"
         `,
-          parameters: ['Task name', 77, 2, 1],
+          parameters: ['Task name', 77, 2, 1, 1],
         });
       },
     );
@@ -139,10 +130,17 @@ describe('TasksWriteRepositoryKysely', () => {
           rows: [{ id: 2, name: TaskStatus.IN_PROGRESS }],
         });
         recorder.enqueueResult({
+          rows: [],
+        });
+        recorder.enqueueResult({
+          rows: [],
+        });
+        recorder.enqueueResult({
           rows: [
             {
               id: 11,
               user_id: 77,
+              group_id: null,
               name: 'Task name',
               description: null,
               priority: 2,
@@ -158,7 +156,7 @@ describe('TasksWriteRepositoryKysely', () => {
 
         await repository.replaceTask(getTask({ id: 11, userId: 77, status: TaskStatus.IN_PROGRESS }));
 
-        expect(recorder.queries).toHaveLength(3);
+        expect(recorder.queries).toHaveLength(5);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
@@ -171,84 +169,15 @@ describe('TasksWriteRepositoryKysely', () => {
         });
         expectSqlQuery(recorder.queries[1], {
           sql: `
-          update "tasks"
-          set
-            "name" = $1,
-            "description" = $2,
-            "priority" = $3,
-            "weight" = $4,
-            "start_date" = $5,
-            "deadline" = $6,
-            "status_id" = $7
-          where
-            "id" = $8
-            and "user_id" = $9
-          returning
-            "id",
-            "user_id",
-            "name",
-            "description",
-            "priority",
-            "weight",
-            "cancel_reason",
-            "start_date",
-            "end_date",
-            "deadline"
-        `,
-          parameters: ['Task name', null, 2, 1, null, null, 2, 11, 77],
-        });
-        expectSqlQuery(recorder.queries[2], {
-          sql: `
           select
-            "tasks_recurrences"."id"
-          from "tasks_recurrences"
-          where "tasks_recurrences"."task_id" = $1
+            "group_id",
+            "position"
+          from "task_to_group"
+          where "task_id" = $1
         `,
           parameters: [11],
         });
-      },
-    );
-  });
-
-  test('addTaskToGroup returns expected sql and params', async () => {
-    await withRepository<TasksDB, TasksWriteRepositoryKysely>(
-      (db) => new TasksWriteRepositoryKysely(db),
-      async ({ repository, recorder }) => {
-        await repository.addTaskToGroup({ groupId: 901, taskId: 11 });
-
-        expect(recorder.queries).toHaveLength(2);
-
-        expectSqlQuery(recorder.queries[0], {
-          sql: `
-          select
-            count("task_id") as "count"
-          from "task_to_group"
-          where "group_id" = $1
-        `,
-          parameters: [901],
-        });
-
-        expectSqlQuery(recorder.queries[1], {
-          sql: `
-          insert into "task_to_group"
-            ("group_id", "task_id", "position")
-          values
-            ($1, $2, $3)
-        `,
-          parameters: [901, 11, 0],
-        });
-      },
-    );
-  });
-
-  test('removeTaskFromGroup returns expected sql and params', async () => {
-    await withRepository<TasksDB, TasksWriteRepositoryKysely>(
-      (db) => new TasksWriteRepositoryKysely(db),
-      async ({ repository, recorder }) => {
-        await repository.removeTaskFromGroup({ taskId: 11 });
-
-        expect(recorder.queries).toHaveLength(1);
-        expectSqlQuery(recorder.queries[0], {
+        expectSqlQuery(recorder.queries[2], {
           sql: `
           delete from "task_to_group"
           where "task_id" = $1
@@ -258,39 +187,44 @@ describe('TasksWriteRepositoryKysely', () => {
         `,
           parameters: [11],
         });
-      },
-    );
-  });
-
-  test('changeTaskStatus returns expected sql and params', async () => {
-    await withRepository<TasksDB, TasksWriteRepositoryKysely>(
-      (db) => new TasksWriteRepositoryKysely(db),
-      async ({ repository, recorder }) => {
-        recorder.enqueueResult({
-          rows: [{ id: 3, name: TaskStatus.COMPLETED }],
-        });
-        await repository.changeTaskStatus(getTask({ id: 11, userId: 77, status: TaskStatus.COMPLETED }));
-
-        expect(recorder.queries).toHaveLength(2);
-        expectSqlQuery(recorder.queries[0], {
-          sql: `
-          select
-            "id",
-            task_statuses.name as "name"
-          from "task_statuses"
-          where "task_statuses"."name" in ($1)
-        `,
-          parameters: [TaskStatus.COMPLETED],
-        });
-        expectSqlQuery(recorder.queries[1], {
+        expectSqlQuery(recorder.queries[3], {
           sql: `
           update "tasks"
-          set "status_id" = $1
+          set
+            "name" = $1,
+            "description" = $2,
+            "group_id" = $3,
+            "priority" = $4,
+            "weight" = $5,
+            "start_date" = $6,
+            "deadline" = $7,
+            "status_id" = $8
           where
-            "id" = $2
-            and "user_id" = $3
+            "id" = $9
+            and "user_id" = $10
+          returning
+            "id",
+            "user_id",
+            "group_id",
+            "name",
+            "description",
+            "priority",
+            "weight",
+            "cancel_reason",
+            "start_date",
+            "end_date",
+            "deadline"
         `,
-          parameters: [3, 11, 77],
+          parameters: ['Task name', null, null, 2, 1, null, null, 2, 11, 77],
+        });
+        expectSqlQuery(recorder.queries[4], {
+          sql: `
+          select
+            "tasks_recurrences"."id"
+          from "tasks_recurrences"
+          where "tasks_recurrences"."task_id" = $1
+        `,
+          parameters: [11],
         });
       },
     );
