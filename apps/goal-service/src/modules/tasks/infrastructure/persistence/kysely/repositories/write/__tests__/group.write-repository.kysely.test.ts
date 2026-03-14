@@ -128,7 +128,7 @@ describe('GroupWriteRepositoryKysely', () => {
           tasks: [getTask({ id: 111, userId: 77 })],
         });
 
-        await repository.replaceGroupWithTasks(group);
+        await repository.replaceGroupAndTaskOrder(group);
 
         expect(recorder.queries).toHaveLength(3);
 

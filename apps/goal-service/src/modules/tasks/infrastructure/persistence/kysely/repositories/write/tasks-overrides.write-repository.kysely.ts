@@ -138,6 +138,22 @@ export class TasksOverridesWriteRepositoryKysely
     });
   }
 
+  async updateGroupIdForManyOverride(
+    input: { userId: number; recurrenceId: number; groupId?: number },
+    trx?: TaskTransaction,
+  ): Promise<void> {
+    return await this.errorCatcher('tasks.update-overrides-group-id', async () => {
+      await this.db
+        .qb(trx)
+        .updateTable('tasks_recurrences_overrides')
+        .set({
+          group_id: input.groupId ?? null,
+        })
+        .where('recurrence_id', '=', input.recurrenceId)
+        .execute();
+    });
+  }
+
   async upsertOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
     return await this.errorCatcher('tasks.upsert-override', async () => {
       const { id: status_id, name: status_name } = await statusByNameQuery(

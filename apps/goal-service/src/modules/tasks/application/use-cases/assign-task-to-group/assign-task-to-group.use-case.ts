@@ -4,13 +4,14 @@ import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { GroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
+import { GroupCheckerService, TaskCheckerService, TaskOverrideService, TaskTypeService } from '../../services';
 import { AssignTaskToGroupCommand } from './assign-task-to-group.command';
 
 @Injectable()
 class AssignTaskToGroupUseCase {
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
+    private readonly taskOverrideService: TaskOverrideService,
     private readonly groupCheckerService: GroupCheckerService,
     private readonly taskTypeService: TaskTypeService,
 
@@ -22,15 +23,38 @@ class AssignTaskToGroupUseCase {
     return this.db.runTransaction(async (trx) => {
       const { taskId, groupId, userId } = input;
 
-      const { isOrigin, data } = this.taskTypeService.getType({ taskId });
+      const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
+      await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
 
       if (isOrigin) {
         const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
-        await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
-        await this.groupCheckerService.ensureTaskNotInGroup({ groupId, userId, taskId: data.id }, { trx });
-
         const assignedTask = TaskFactory.assignToGroup(sureTask, groupId);
         await this.tasksWriteRepo.replaceTask(assignedTask, trx);
+
+        if (sureTask.recurrenceId != null) {
+          await this.taskOverrideService.updateGroupIdForManyOverrides(
+            { userId, groupId, recurrenceId: sureTask.recurrenceId },
+            trx,
+          );
+        }
+        return { success: true };
+      }
+
+      if (isVirtual || isOverride) {
+        const recurrence = await this.taskCheckerService.ensureRecurrenceExists(
+          { id: data.recurrenceId, userId },
+          { trx },
+        );
+        const sourceTask = await this.taskCheckerService.ensureTaskExists(
+          { taskId: recurrence.taskId, userId },
+          { trx },
+        );
+        const assignedTask = TaskFactory.assignToGroup(sourceTask, groupId);
+        await this.tasksWriteRepo.replaceTask(assignedTask, trx);
+        await this.taskOverrideService.updateGroupIdForManyOverrides(
+          { userId, groupId, recurrenceId: recurrence.id },
+          trx,
+        );
 
         return { success: true };
       }

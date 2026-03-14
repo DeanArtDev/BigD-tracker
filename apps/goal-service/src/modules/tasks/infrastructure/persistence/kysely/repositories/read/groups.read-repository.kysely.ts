@@ -122,6 +122,7 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
             deadline: task.deadline,
             status: task.status,
             recurrence: {
+              recurrence_status: task.recurrence_status,
               timezone: task.recurrence_timezone,
               recurrence_frequency: task.recurrence_frequency,
               start_date: task.start_date,

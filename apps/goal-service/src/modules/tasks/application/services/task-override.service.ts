@@ -59,6 +59,13 @@ class TaskOverrideService {
     );
   }
 
+  async updateGroupIdForManyOverrides(
+    input: { userId: number; recurrenceId: number; groupId: number | undefined },
+    trx?: TaskTransaction,
+  ): Promise<void> {
+    return await this.tasksOverridesRepository.updateGroupIdForManyOverride(input, trx);
+  }
+
   async upsertOverride(input: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
     return await this.tasksOverridesRepository.upsertOverride(input, trx);
   }

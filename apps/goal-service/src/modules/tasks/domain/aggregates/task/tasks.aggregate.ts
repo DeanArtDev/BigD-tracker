@@ -49,6 +49,7 @@ class Task extends AggregateRoot {
       deadline: input.deadline,
       endDate: input.endDate,
       status: input.status,
+      recurrenceId: input.recurrenceId,
     });
   }
 
