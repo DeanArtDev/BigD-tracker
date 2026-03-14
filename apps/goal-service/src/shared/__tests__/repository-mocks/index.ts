@@ -20,10 +20,7 @@ const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
   getTaskById: jest.fn(),
   createTask: jest.fn(),
   deleteTask: jest.fn(),
-  changeTaskStatus: jest.fn(),
   replaceTask: jest.fn(),
-  addTaskToGroup: jest.fn(),
-  removeTaskFromGroup: jest.fn(),
 };
 
 const tasksOverridesWriteRepoMock: Record<keyof TasksOverridesRepositoryWritePort, jest.Mock> = {

@@ -3,7 +3,7 @@ export class TaskRecoveryCommand {
     readonly input: {
       readonly taskId: string;
       readonly userId: number;
-      readonly groupId?: number;
+      readonly groupId: number;
     },
   ) {}
 }

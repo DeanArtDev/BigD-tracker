@@ -56,6 +56,7 @@ class TaskFactory {
 
   static replace(task: Task, input: TaskFactoryReplaceInput): Task {
     const state: TaskReplaceInput = {
+      groupId: task.groupId,
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
@@ -77,6 +78,7 @@ class TaskFactory {
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
+      groupId: task.groupId,
       weight: Weight.create(task.weight),
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
@@ -97,8 +99,8 @@ class TaskFactory {
     return task.recovery();
   }
 
-  static assignToGroup(task: Task, type: 'COMMON' | 'IN_BOX' = 'COMMON'): Task {
-    return task.assignToGroup({ reset: type === 'IN_BOX' });
+  static assignToGroup(task: Task, groupId: number): Task {
+    return task.assignToGroup({ groupId });
   }
 
   static unassignFromGroup(task: Task): Task {

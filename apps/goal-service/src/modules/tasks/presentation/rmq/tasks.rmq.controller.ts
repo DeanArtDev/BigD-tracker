@@ -70,7 +70,6 @@ export class TasksRmqController {
         new CloneTaskCommand({
           userId: payload.userId,
           taskId: payload.taskId,
-          groupId: payload.groupId,
         }),
       ),
     };

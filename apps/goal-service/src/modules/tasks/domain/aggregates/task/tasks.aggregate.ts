@@ -80,6 +80,7 @@ class Task extends AggregateRoot {
       this.#state.description = input.description;
       this.#state.priority = input.priority;
       this.#state.weight = input.weight;
+      this.#state.groupId = input.groupId;
       this.#state.startDate = startDate;
       this.#state.deadline = deadline;
 
@@ -153,24 +154,9 @@ class Task extends AggregateRoot {
     });
   }
 
-  public assignToGroup({ reset = false }: { reset?: boolean } = {}): this {
+  public assignToGroup({ groupId }: { groupId: number }): this {
     if (this.#isAllowTo('ASSIGN')) {
-      if (reset) {
-        const { deadline, startDate } = this.#state;
-
-        this.#state.endDate = undefined;
-        this.#state.startDate = undefined;
-        this.#state.deadline = undefined;
-
-        this.#setStatus(
-          Task.calculateStatusByDates({
-            startDate,
-            deadline,
-            endDate: this.#state.endDate,
-          }),
-        );
-      }
-
+      this.#state.groupId = groupId;
       return this;
     }
 
@@ -183,6 +169,7 @@ class Task extends AggregateRoot {
 
   public unassignFromGroup(): this {
     if (this.#isAllowTo('UNASSIGN')) {
+      this.#state.groupId = undefined;
       return this;
     }
 

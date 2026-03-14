@@ -1,5 +1,3 @@
-import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskFactory } from '@/modules/tasks/domain';
 import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
@@ -7,13 +5,9 @@ import { TimezoneVo } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
-import {
-  InboxGroupCheckerService,
-  TaskCheckerService,
-  TaskOverrideService,
-  TaskRecurrenceService,
-  TaskTypeService,
-} from '../../services';
+import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '../../exceptions';
+import { TaskDatabase, TasksWriteRepository } from '../../ports';
+import { TaskCheckerService, TaskOverrideService, TaskRecurrenceService, TaskTypeService } from '../../services';
 import { FinishTaskCommand } from './finish-task.command';
 
 @Injectable()
@@ -23,7 +17,6 @@ class FinishTaskUseCase {
 
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
-    private readonly inboxGroupCheckerService: InboxGroupCheckerService,
     private readonly taskTypeService: TaskTypeService,
     private readonly taskRecurrenceService: TaskRecurrenceService,
     private readonly taskOverrideService: TaskOverrideService,
@@ -43,18 +36,7 @@ class FinishTaskUseCase {
       if (isOrigin) {
         const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const finishedTask = TaskFactory.finish(task, userTimezone);
-
         await this.tasksWriteRepo.replaceTask(finishedTask, trx);
-
-        const isTaskInGroup = await this.inboxGroupCheckerService.ensureTaskInInboxGroup(
-          { taskId: data.id, userId },
-          { trx, skipException: true },
-        );
-
-        if (isTaskInGroup) {
-          await this.tasksWriteRepo.removeTaskFromGroup({ taskId: finishedTask.id }, trx);
-        }
-
         return;
       }
 

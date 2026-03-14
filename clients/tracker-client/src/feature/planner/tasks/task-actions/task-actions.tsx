@@ -78,7 +78,6 @@ function TaskActions({
 
       <AssignInboxTaskToGroupDialog
         open={recoveryOpen || assignOpen}
-        taskGroupId={groupId}
         loading={isLoading}
         onOpenChange={(value) => {
           if (!value) {

@@ -112,6 +112,7 @@ export interface Tasks {
   deadline: Timestamp | null;
   description: string | null;
   end_date: Timestamp | null;
+  group_id: number | null;
   id: Generated<number>;
   name: string;
   priority: Generated<number>;
@@ -147,6 +148,7 @@ export interface TasksRecurrencesOverrides {
   deadline: Timestamp | null;
   description: string | null;
   end_date: Timestamp | null;
+  group_id: number | null;
   id: Generated<number>;
   name: string;
   override_type_id: number;

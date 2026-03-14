@@ -30,7 +30,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('name', 'varchar(150)', (col) => col.notNull().unique())
     .execute();
 
-  // === Таблицы связей ===
   // одно дело не может быть в разных группах
   await db.schema
     .createTable('task_to_group')
@@ -41,6 +40,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addPrimaryKeyConstraint('ttg_pkey', ['group_id', 'task_id'])
     .execute();
 
+  // === Индексы ===
   await db.schema.createIndex('ttg_task_id_uidx').unique().on('task_to_group').column('task_id').execute();
 
   await db.schema
@@ -58,15 +58,29 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 
   await db.schema
-    .alterTable('task_to_group')
-    .addForeignKeyConstraint('ttg_task_id_fk', ['task_id'], 'tasks', ['id'], (cb) =>
-      cb.onDelete('cascade').onUpdate('no action'),
+    .alterTable('tasks')
+    .addForeignKeyConstraint('tasks_group_id_fk', ['group_id'], 'groups', ['id'], (cb) =>
+      cb.onDelete('set null').onUpdate('no action'),
+    )
+    .execute();
+
+  await db.schema
+    .alterTable('tasks_recurrences_overrides')
+    .addForeignKeyConstraint('tasks_recurrences_overrides_group_id_fk', ['group_id'], 'groups', ['id'], (cb) =>
+      cb.onDelete('set null').onUpdate('no action'),
     )
     .execute();
 
   await db.schema
     .alterTable('task_to_group')
     .addForeignKeyConstraint('ttg_group_id_fk', ['group_id'], 'groups', ['id'], (cb) =>
+      cb.onDelete('cascade').onUpdate('no action'),
+    )
+    .execute();
+
+  await db.schema
+    .alterTable('task_to_group')
+    .addForeignKeyConstraint('ttg_task_id_fk', ['task_id'], 'tasks', ['id'], (cb) =>
       cb.onDelete('cascade').onUpdate('no action'),
     )
     .execute();

@@ -5,7 +5,7 @@ import { Priority, Weight } from './value-objects';
 interface TaskState {
   readonly id: number;
   readonly userId: number;
-  readonly groupId?: number;
+  groupId?: number;
   name: Name;
   description?: string;
   priority: Priority;
@@ -47,6 +47,7 @@ interface TaskRestoreInput {
 }
 
 interface TaskReplaceInput {
+  readonly groupId?: number;
   readonly name: Name;
   readonly description?: string;
   readonly priority: Priority;

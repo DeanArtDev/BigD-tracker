@@ -32,11 +32,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 import {
   AssignTaskToGroupRes,
-  CloneTaskReq,
   CloneTaskRes,
   CompleteDeleteTaskRes,
   CreateTaskReq,
@@ -215,23 +214,17 @@ export class TasksController {
 
   @Post('/:taskId/clone')
   @ApiOperation({ summary: 'Клонирование дела' })
-  @ApiBody({ required: false, type: CloneTaskReq })
   @ApiResponse({
     status: HttpStatus.OK,
     type: CloneTaskRes,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @ValidateRpcResponse(CloneTaskRes)
-  async cloneTask(
-    @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('taskId') taskId: string,
-    @Body() { data }: CloneTaskReq,
-  ): Promise<CloneTaskRes> {
+  async cloneTask(@TokenPayload() { uid }: AccessTokenPayload, @Param('taskId') taskId: string): Promise<CloneTaskRes> {
     return await this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, {
       data: {
         userId: uid,
         taskId,
-        groupId: data?.groupId,
       },
     });
   }

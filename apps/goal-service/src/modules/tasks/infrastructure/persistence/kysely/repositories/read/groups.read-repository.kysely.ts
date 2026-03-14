@@ -16,18 +16,11 @@ import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { flow } from 'lodash';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { firstOrThrowError, getAvailableGroupQuery } from '../helpers';
-import {
-  groupWithStatusQuery,
-  innerJoinGroupLinks,
-  leftJoinTaskRecurrences,
-  taskFullSelect,
-  tasksWithStatusQuery,
-} from '../utils';
+import { groupWithStatusQuery, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupsReadRepositoryKysely extends BaseTasksRepository implements GroupsReadRepository {
@@ -98,11 +91,14 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirst();
       if (group == null) return null;
 
-      const query = innerJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
-        .orderBy('task_to_group.position', 'asc')
-        .where('task_to_group.group_id', '=', group.id)
+      const taskQuery = tasksWithStatusQuery(this.db, trx)
+        .where('tasks.group_id', '=', group.id)
         .$if(taskSpecifications != null, (eb) => eb.where((eb) => taskSpecifications!.toExpr(eb)));
-      const tasks = await leftJoinTaskRecurrences(query).execute();
+
+      const tasks = await leftJoinTaskRecurrences(taskQuery)
+        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
+        .orderBy('task_to_group.position', 'asc')
+        .execute();
 
       return GroupReadKyselyMapper.fromRawToDetailedView({
         id: group.id,
@@ -164,9 +160,8 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
       if (group == null) return null;
 
       const tasks = await tasksWithStatusQuery(this.db, trx)
-        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
-        .where('task_to_group.group_id', '=', group.id)
-        .orderBy('task_to_group.position', 'asc')
+        .where('tasks.group_id', '=', group.id)
+        .orderBy('tasks.id', 'asc')
         .execute();
 
       return GroupReadKyselyMapper.fromRawToWithTaskView({
@@ -205,20 +200,16 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
 
       const tasks = await this.db
         .qb(trx)
-        .selectFrom('task_to_group as ttg')
-        .innerJoin('groups as g', 'g.id', 'ttg.group_id')
-        .where('ttg.group_id', '=', groupId)
-        .where('ttg.task_id', '=', taskId)
-        .where('g.user_id', '=', userId)
+        .selectFrom('tasks')
+        .where('tasks.group_id', '=', groupId)
+        .where('tasks.id', '=', taskId)
+        .where('tasks.user_id', '=', userId)
         .execute();
 
       return tasks.length > 0;
     });
   }
 
-  /**
-   * Если сортировка id будет desc, то и cursor должен менять направление выборки c g.id > lastId на g.id < lastId
-   * */
   async getGroupListWithTasks(
     groupSpecifications: TasksSpecification,
     taskSpecifications: TasksSpecification,
@@ -233,12 +224,11 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
 
       const response: GroupWithTasksView[] = [];
 
-      const taskQuery = flow(tasksWithStatusQuery, taskFullSelect, innerJoinGroupLinks);
-
-      const tasks = await taskQuery(this.db, trx)
+      const tasks = await tasksWithStatusQuery(this.db, trx)
+        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
         .where((eb) => taskSpecifications.toExpr(eb))
         .where(
-          'task_to_group.group_id',
+          'tasks.group_id',
           'in',
           groups.map((group) => group.id),
         )

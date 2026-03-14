@@ -1,7 +1,7 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import { TaskDatabase, GroupInboxReadRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { tasksAreInInboxSpec } from '@/modules/tasks/domain';
-import { leftJoinGroupLinks, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
+import { leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
@@ -20,8 +20,8 @@ export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implemen
       const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirst();
       if (inbox == null) return null;
 
-      const query = leftJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
-        .where('group_id', '=', inbox.id)
+      const query = tasksWithStatusQuery(this.db, trx)
+        .where('tasks.group_id', '=', inbox.id)
         .where('task_statuses.name', 'in', tasksAreInInboxSpec.default);
       const tasks = await leftJoinTaskRecurrences(query).orderBy('tasks.id', 'asc').execute();
 
@@ -69,9 +69,9 @@ export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implemen
 
       const tasks = await this.db
         .qb(trx)
-        .selectFrom('task_to_group')
+        .selectFrom('tasks')
         .where('group_id', '=', inbox.id)
-        .where('task_id', '=', input.taskId)
+        .where('id', '=', input.taskId)
         .execute();
 
       return {

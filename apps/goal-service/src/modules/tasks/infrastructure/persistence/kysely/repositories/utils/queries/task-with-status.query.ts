@@ -10,6 +10,7 @@ function tasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
     .select([
       'tasks.id as id',
       'tasks.user_id as user_id',
+      'tasks.group_id as group_id',
       'tasks.name as name',
       'tasks.description as description',
       'tasks.priority as priority',

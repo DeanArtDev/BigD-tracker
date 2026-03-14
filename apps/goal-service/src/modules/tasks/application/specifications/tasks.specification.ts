@@ -37,7 +37,7 @@ const TaskByGroupId = (groupIds: number[]) =>
   leaf({
     key: 'tasks.byGroupId',
     purpose: 'filter',
-    toExpr: (eb) => eb('task_to_group.group_id', 'in', groupIds),
+    toExpr: (eb) => eb('tasks.group_id', 'in', groupIds),
   });
 
 const TaskByPriority = (priority: number[]) =>
@@ -51,7 +51,7 @@ const TaskInGroup = () =>
   leaf({
     key: 'tasks.inGroup',
     purpose: 'filter',
-    toExpr: (eb) => eb('task_to_group.group_id', 'is not', null),
+    toExpr: (eb) => eb('tasks.group_id', 'is not', null),
   });
 
 const TaskByStatus = (statuses: TaskStatus[]) =>

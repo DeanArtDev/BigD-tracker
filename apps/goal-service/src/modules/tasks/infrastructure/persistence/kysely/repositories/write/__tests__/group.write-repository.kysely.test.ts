@@ -130,7 +130,7 @@ describe('GroupWriteRepositoryKysely', () => {
 
         await repository.replaceGroupWithTasks(group);
 
-        expect(recorder.queries).toHaveLength(4);
+        expect(recorder.queries).toHaveLength(3);
 
         expectSqlQuery(recorder.queries[0], {
           sql: `
@@ -155,20 +155,6 @@ describe('GroupWriteRepositoryKysely', () => {
         });
 
         expectSqlQuery(recorder.queries[2], {
-          sql: `
-          update "tasks"
-          set
-            "name" = $1,
-            "priority" = $2,
-            "weight" = $3
-          where
-            "id" = $4
-            and "user_id" = $5
-        `,
-          parameters: ['Task name', 2, 1, 111, 77],
-        });
-
-        expectSqlQuery(recorder.queries[3], {
           sql: `
           insert into "task_to_group"
             ("task_id", "group_id", "position")

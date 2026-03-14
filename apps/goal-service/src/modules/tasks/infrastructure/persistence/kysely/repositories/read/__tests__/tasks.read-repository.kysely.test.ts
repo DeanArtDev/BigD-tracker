@@ -23,6 +23,7 @@ describe('TasksReadRepositoryKysely', () => {
           select
             "tasks"."id" as "id",
             "tasks"."user_id" as "user_id",
+            "tasks"."group_id" as "group_id",
             "tasks"."name" as "name",
             "tasks"."description" as "description",
             "tasks"."priority" as "priority",
@@ -32,9 +33,6 @@ describe('TasksReadRepositoryKysely', () => {
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
             task_statuses.name as "status",
-            "task_to_group"."group_id" as "group_id",
-            "task_to_group"."task_id" as "group_task_id",
-            "task_to_group"."position" as "position",
             "tasks_recurrences"."id" as "recurrence_id",
             "tasks_recurrences"."user_id" as "recurrence_user_id",
             "tasks_recurrences"."task_id" as "recurrence_task_id",
@@ -52,8 +50,6 @@ describe('TasksReadRepositoryKysely', () => {
           from "tasks"
           inner join "task_statuses"
             on "tasks"."status_id" = "task_statuses"."id"
-          left join "task_to_group"
-            on "task_to_group"."task_id" = "tasks"."id"
           left join "tasks_recurrences"
             on "tasks_recurrences"."task_id" = "tasks"."id"
           left join "recurrences_frequencies"
@@ -80,10 +76,10 @@ describe('TasksReadRepositoryKysely', () => {
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
-          from "task_to_group"
+          from "tasks"
           where
             "group_id" = $1
-            and "task_id" = $2
+            and "id" = $2
         `,
           parameters: [22, 111],
         });
@@ -112,6 +108,7 @@ describe('TasksReadRepositoryKysely', () => {
           select distinct
             "tasks"."id" as "id",
             "tasks"."user_id" as "user_id",
+            "tasks"."group_id" as "group_id",
             "tasks"."name" as "name",
             "tasks"."description" as "description",
             "tasks"."priority" as "priority",
@@ -121,9 +118,6 @@ describe('TasksReadRepositoryKysely', () => {
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
             task_statuses.name as "status",
-            "task_to_group"."group_id" as "group_id",
-            "task_to_group"."task_id" as "group_task_id",
-            "task_to_group"."position" as "position",
             "tasks_recurrences"."id" as "recurrence_id",
             "tasks_recurrences"."user_id" as "recurrence_user_id",
             "tasks_recurrences"."task_id" as "recurrence_task_id",
@@ -141,8 +135,6 @@ describe('TasksReadRepositoryKysely', () => {
           from "tasks"
           inner join "task_statuses"
             on "tasks"."status_id" = "task_statuses"."id"
-          left join "task_to_group"
-            on "task_to_group"."task_id" = "tasks"."id"
           left join "tasks_recurrences"
             on "tasks_recurrences"."task_id" = "tasks"."id"
           left join "recurrences_frequencies"
@@ -179,6 +171,7 @@ describe('TasksReadRepositoryKysely', () => {
           select
             "tasks"."id" as "id",
             "tasks"."user_id" as "user_id",
+            "tasks"."group_id" as "group_id",
             "tasks"."name" as "name",
             "tasks"."description" as "description",
             "tasks"."priority" as "priority",
@@ -188,17 +181,6 @@ describe('TasksReadRepositoryKysely', () => {
             "tasks"."end_date" as "end_date",
             "tasks"."deadline" as "deadline",
             task_statuses.name as "status",
-            "task_to_group"."group_id" as "group_id",
-            "tasks"."id" as "id",
-            "tasks"."user_id" as "user_id",
-            "tasks"."name" as "name",
-            "tasks"."description" as "description",
-            "tasks"."priority" as "priority",
-            "tasks"."weight" as "weight",
-            "tasks"."cancel_reason" as "cancel_reason",
-            "tasks"."start_date" as "start_date",
-            "tasks"."end_date" as "end_date",
-            "tasks"."deadline" as "deadline",
             "tasks_recurrences"."id" as "recurrence_id",
             "tasks_recurrences"."user_id" as "recurrence_user_id",
             "tasks_recurrences"."task_id" as "recurrence_task_id",
@@ -216,8 +198,6 @@ describe('TasksReadRepositoryKysely', () => {
           from "tasks"
           inner join "task_statuses"
             on "tasks"."status_id" = "task_statuses"."id"
-          left join "task_to_group"
-            on "task_to_group"."task_id" = "tasks"."id"
           left join "tasks_recurrences"
             on "tasks_recurrences"."task_id" = "tasks"."id"
           left join "recurrences_frequencies"

@@ -1,14 +1,10 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import {
-  ExceptionRecurrenceNotExist,
-  ExceptionTaskCreationFailed,
-  ExceptionTaskUnprocessable,
-} from '@/modules/tasks/application/exceptions';
-import { TaskDatabase, TasksWriteRepository } from '@/modules/tasks/application/ports';
 import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { TaskView } from '../../dto';
+import { ExceptionRecurrenceNotExist, ExceptionTaskCreationFailed, ExceptionTaskUnprocessable } from '../../exceptions';
+import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import {
   TaskCheckerService,
   TaskOverrideService,
@@ -38,14 +34,11 @@ class CloneTaskUseCase {
 
   async execute({ input }: CloneTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
-      const { taskId, userId, groupId } = input;
+      const { taskId, userId } = input;
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
 
       if (isOrigin) {
         const clonedTask = await this.taskServices.cloneTask({ taskId: data.id, userId }, trx);
-        if (groupId != null) {
-          await this.taskServices.addTaskToGroup({ taskId: clonedTask.id, userId, groupId }, trx);
-        }
         return await this.taskQueryService.getById({ taskId: clonedTask.id, userId: clonedTask.userId }, trx);
       }
 
@@ -65,6 +58,7 @@ class CloneTaskUseCase {
           sourceTask,
           currentRecurrence: recurrence,
         });
+
         const createdTask = await this.tasksWriteRepo.createTask(task, trx);
         const clonedTask = await this.tasksWriteRepo.getTaskById(
           { taskId: createdTask.id, userId: createdTask.userId },
@@ -75,10 +69,6 @@ class CloneTaskUseCase {
           throw new ExceptionTaskCreationFailed({
             taskId: createdTask.id,
           });
-        }
-
-        if (groupId != null) {
-          await this.taskServices.addTaskToGroup({ taskId: clonedTask.id, userId, groupId }, trx);
         }
 
         return await this.taskQueryService.getById({ taskId: clonedTask.id, userId: clonedTask.userId }, trx);
@@ -103,22 +93,8 @@ class CloneTaskUseCase {
           override,
         });
         const createdTask = await this.tasksWriteRepo.createTask(task, trx);
-        const clonedTask = await this.tasksWriteRepo.getTaskById(
-          { taskId: createdTask.id, userId: createdTask.userId },
-          trx,
-        );
 
-        if (clonedTask == null) {
-          throw new ExceptionTaskCreationFailed({
-            taskId: createdTask.id,
-          });
-        }
-
-        if (groupId != null) {
-          await this.taskServices.addTaskToGroup({ taskId: clonedTask.id, userId, groupId }, trx);
-        }
-
-        return await this.taskQueryService.getById({ taskId: clonedTask.id, userId: clonedTask.userId }, trx);
+        return await this.taskQueryService.getById({ taskId: createdTask.id, userId: createdTask.userId }, trx);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

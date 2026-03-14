@@ -9,6 +9,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'integer', (col) => col.primaryKey().generatedByDefaultAsIdentity())
     // Нет связи с сервисом account
     .addColumn('user_id', 'integer', (col) => col.notNull())
+    // Дело может быть только в одной группе
+    .addColumn('group_id', 'integer')
     // Имя дела
     .addColumn('name', 'varchar(256)', (col) => col.notNull())
     // Связь к какому паттерну повторений относится

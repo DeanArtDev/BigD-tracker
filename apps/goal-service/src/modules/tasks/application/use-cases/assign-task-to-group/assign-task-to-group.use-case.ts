@@ -4,13 +4,12 @@ import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { GroupCheckerService, TaskCheckerService, TaskService, TaskTypeService } from '../../services';
+import { GroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
 import { AssignTaskToGroupCommand } from './assign-task-to-group.command';
 
 @Injectable()
 class AssignTaskToGroupUseCase {
   constructor(
-    private readonly taskServices: TaskService,
     private readonly taskCheckerService: TaskCheckerService,
     private readonly groupCheckerService: GroupCheckerService,
     private readonly taskTypeService: TaskTypeService,
@@ -27,11 +26,11 @@ class AssignTaskToGroupUseCase {
 
       if (isOrigin) {
         const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
+        await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
         await this.groupCheckerService.ensureTaskNotInGroup({ groupId, userId, taskId: data.id }, { trx });
 
-        const assignedTask = TaskFactory.assignToGroup(sureTask);
-        await this.tasksWriteRepo.removeTaskFromGroup({ taskId: data.id }, trx);
-        await this.taskServices.addTaskToGroup({ taskId: assignedTask.id, groupId, userId }, trx);
+        const assignedTask = TaskFactory.assignToGroup(sureTask, groupId);
+        await this.tasksWriteRepo.replaceTask(assignedTask, trx);
 
         return { success: true };
       }

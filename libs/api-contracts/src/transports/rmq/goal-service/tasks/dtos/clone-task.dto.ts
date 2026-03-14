@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsString, ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
 
 class CloneTaskReqData {
@@ -8,10 +8,6 @@ class CloneTaskReqData {
 
   @IsString()
   taskId: string;
-
-  @IsInt()
-  @IsOptional()
-  groupId?: number;
 }
 
 class CloneTaskReq {

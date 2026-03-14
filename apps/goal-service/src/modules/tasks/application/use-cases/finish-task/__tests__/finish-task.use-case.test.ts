@@ -46,9 +46,6 @@ describe('FinishTaskUseCase', () => {
     const taskCheckerService = {
       ensureTaskExists: jest.fn().mockResolvedValue(sourceTask),
     };
-    const inboxGroupCheckerService = {
-      ensureTaskInInboxGroup: jest.fn(),
-    };
     const taskTypeService = {
       getType: jest.fn().mockReturnValue({
         isOrigin: false,
@@ -67,11 +64,9 @@ describe('FinishTaskUseCase', () => {
     };
     const tasksWriteRepo = {
       replaceTask: jest.fn(),
-      removeTaskFromGroup: jest.fn(),
     };
     const useCase = new FinishTaskUseCase(
       taskCheckerService as never,
-      inboxGroupCheckerService as never,
       taskTypeService as never,
       taskRecurrenceService as never,
       taskOverrideService as never,
@@ -110,8 +105,6 @@ describe('FinishTaskUseCase', () => {
     expect(overrideArg.type).toBe(TaskOverrideType.OVERRIDE);
     expect(overrideTrxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
-    expect(tasksWriteRepo.removeTaskFromGroup).not.toHaveBeenCalled();
-    expect(inboxGroupCheckerService.ensureTaskInInboxGroup).not.toHaveBeenCalled();
   });
 
   test('updates override for override task finish', async () => {
@@ -162,9 +155,6 @@ describe('FinishTaskUseCase', () => {
     const taskCheckerService = {
       ensureTaskExists: jest.fn().mockResolvedValue(sourceTask),
     };
-    const inboxGroupCheckerService = {
-      ensureTaskInInboxGroup: jest.fn(),
-    };
     const taskTypeService = {
       getType: jest.fn().mockReturnValue({
         isOrigin: false,
@@ -185,11 +175,9 @@ describe('FinishTaskUseCase', () => {
     };
     const tasksWriteRepo = {
       replaceTask: jest.fn(),
-      removeTaskFromGroup: jest.fn(),
     };
     const useCase = new FinishTaskUseCase(
       taskCheckerService as never,
-      inboxGroupCheckerService as never,
       taskTypeService as never,
       taskRecurrenceService as never,
       taskOverrideService as never,
@@ -230,7 +218,5 @@ describe('FinishTaskUseCase', () => {
     expect(overrideArg.type).toBe(TaskOverrideType.OVERRIDE);
     expect(overrideTrxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
-    expect(tasksWriteRepo.removeTaskFromGroup).not.toHaveBeenCalled();
-    expect(inboxGroupCheckerService.ensureTaskInInboxGroup).not.toHaveBeenCalled();
   });
 });

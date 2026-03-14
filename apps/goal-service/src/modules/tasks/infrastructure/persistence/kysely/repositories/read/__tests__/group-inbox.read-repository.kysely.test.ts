@@ -17,8 +17,6 @@ describe('GroupInboxReadRepositoryKysely', () => {
             "g"."user_id" as "user_id",
             "g"."name" as "name"
           from "groups" as "g"
-          left join "task_to_group" as "ttg"
-            on "ttg"."group_id" = "g"."id"
           where
             "g"."name" = $1
             and "g"."user_id" = $2
@@ -43,8 +41,6 @@ describe('GroupInboxReadRepositoryKysely', () => {
             "g"."user_id" as "user_id",
             "g"."name" as "name"
           from "groups" as "g"
-          left join "task_to_group" as "ttg"
-            on "ttg"."group_id" = "g"."id"
           where
             "g"."name" = $1
             and "g"."user_id" = $2

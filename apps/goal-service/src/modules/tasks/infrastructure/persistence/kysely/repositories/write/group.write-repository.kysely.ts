@@ -8,7 +8,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { groupWithStatusQuery, innerJoinGroupLinks, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
+import { groupWithStatusQuery, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupWriteRepositoryKysely extends BaseTasksRepository implements GroupsWriteRepository {
@@ -35,9 +35,9 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirst();
       if (group == null) return null;
 
-      const taskQuery = innerJoinGroupLinks(tasksWithStatusQuery(this.db, trx))
-        .where('task_to_group.group_id', '=', input.groupId)
-        .orderBy('task_to_group.position', 'asc');
+      const taskQuery = tasksWithStatusQuery(this.db, trx)
+        .where('tasks.group_id', '=', input.groupId)
+        .orderBy('tasks.id', 'asc');
       const tasks = await leftJoinTaskRecurrences(taskQuery).execute();
 
       return GroupWriteKyselyMapper.fromRawToAgrWithTasks({
@@ -101,7 +101,7 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
   }
 
   /**
-   * Обновление группы с ее делами
+   * Обновление группы и порядка ее дел
    * */
   async replaceGroupWithTasks(group: GroupWithTasks, trx?: TaskTransaction): Promise<void> {
     return await this.errorCatcher('groups.replace-with-tasks', async () => {
@@ -118,26 +118,6 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirstOrThrow();
 
       await this.db.qb(trx).deleteFrom('task_to_group as ttg').where('ttg.group_id', '=', group.id).execute();
-
-      for (let i = 0; i < group.tasks.length; i++) {
-        const task = group.tasks[i];
-
-        await this.db
-          .qb(trx)
-          .updateTable('tasks')
-          .where('id', '=', task.id)
-          .where('user_id', '=', group.userId)
-          .set({
-            name: task.name,
-            description: task.description,
-            priority: task.priority,
-            start_date: task.startDate,
-            deadline: task.deadline,
-            weight: task.weight,
-          })
-          .executeTakeFirstOrThrow();
-      }
-
       if (group.tasks.length > 0) {
         await this.db
           .qb(trx)
