@@ -292,6 +292,29 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
     );
   });
 
+  test('updateGroupIdForManyOverride returns expected sql and params', async () => {
+    await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
+      (db) => new TasksOverridesWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({
+          rows: [],
+        });
+
+        await repository.updateGroupIdForManyOverride({ userId: 77, recurrenceId: 11, groupId: 5 });
+
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          update "tasks_recurrences_overrides"
+          set "group_id" = $1
+          where "recurrence_id" = $2
+        `,
+          parameters: [5, 11],
+        });
+      },
+    );
+  });
+
   test('upsertOverride returns expected sql and params', async () => {
     await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
       (db) => new TasksOverridesWriteRepositoryKysely(db),

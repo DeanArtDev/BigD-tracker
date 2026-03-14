@@ -103,7 +103,7 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
   /**
    * Обновление группы и порядка ее дел
    * */
-  async replaceGroupWithTasks(group: GroupWithTasks, trx?: TaskTransaction): Promise<void> {
+  async replaceGroupAndTaskOrder(group: GroupWithTasks, trx?: TaskTransaction): Promise<void> {
     return await this.errorCatcher('groups.replace-with-tasks', async () => {
       await this.db
         .qb(trx)

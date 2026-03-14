@@ -1,4 +1,4 @@
-import { Task } from '@/modules/tasks/domain';
+import { Task, tasksQuerySpec } from '@/modules/tasks/domain';
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { GroupStatus } from '@big-d/api-contracts';
 import { isFunction } from 'lodash';
@@ -42,7 +42,9 @@ class GroupWithTasks {
   }
 
   public delete(): this {
-    if (this.#state.tasks.length > 0) {
+    const tasks = this.#state.tasks.filter((task: Task) => tasksQuerySpec.readableStatuses.includes(task.status));
+
+    if (tasks.length > 0) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Group can't be delete if has at least one task`,
         field: 'tasks',
@@ -54,8 +56,15 @@ class GroupWithTasks {
   }
 
   public replace(input: GroupWithTasksReplaceInput): this {
-    this.#state.tasks = input.tasks;
     this.#state.group = isFunction(input.group) ? input.group(this.#state.group) : input.group;
+    if (input.tasks.some((t) => t.groupId !== this.#state.group.id)) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Дело не принадлежит этой группе',
+        field: 'tasks',
+      });
+    }
+
+    this.#state.tasks = input.tasks;
 
     return this;
   }

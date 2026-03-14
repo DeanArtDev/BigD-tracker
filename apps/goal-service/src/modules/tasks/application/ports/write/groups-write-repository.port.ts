@@ -5,7 +5,7 @@ import { TaskTransaction } from '../transaction-manager.port';
 interface GroupsWriteRepository {
   createGroup(group: Group, trx?: TaskTransaction): Promise<Group>;
 
-  replaceGroupWithTasks(group: GroupWithTasks, trx?: TaskTransaction): Promise<void>;
+  replaceGroupAndTaskOrder(group: GroupWithTasks, trx?: TaskTransaction): Promise<void>;
 
   getGroupById(
     input: { groupId: number; userId: number; includeInbox?: boolean },

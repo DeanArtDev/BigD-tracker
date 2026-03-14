@@ -15,6 +15,11 @@ interface TasksOverridesRepositoryWritePort {
 
   upsertRecurrence(override: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence>;
 
+  updateGroupIdForManyOverride(
+    input: { userId: number; recurrenceId: number; groupId?: number },
+    trx?: TaskTransaction,
+  ): Promise<void>;
+
   deleteRecurrence(input: { id: number }, trx?: TaskTransaction): Promise<boolean>;
 
   deleteManyOverride(specifications: TasksSpecification, trx?: TaskTransaction): Promise<number>;

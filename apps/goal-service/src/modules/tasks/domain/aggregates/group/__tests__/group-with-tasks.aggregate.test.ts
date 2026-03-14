@@ -20,6 +20,7 @@ describe('GroupWithTasks aggregate', () => {
     getTask({
       id,
       userId: 55,
+      groupId: 101,
       name: `Task ${id}`,
       priority: 1,
       weight: 10,

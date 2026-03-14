@@ -1,12 +1,16 @@
-import { Task } from '@/modules/tasks/domain';
+import { Task, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
-import { ExceptionTaskNotExist } from '../exceptions';
+import { ExceptionRecurrenceNotExist, ExceptionTaskNotExist } from '../exceptions';
 import { TasksWriteRepository, TaskTransaction } from '../ports';
+import { TaskRecurrenceService } from './task-recurrence.service';
 
 @Injectable()
 class TaskCheckerService {
-  constructor(@Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository) {}
+  constructor(
+    private readonly taskRecurrenceService: TaskRecurrenceService,
+    @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
+  ) {}
 
   async ensureTaskExists(
     input: { taskId: number; userId: number },
@@ -33,6 +37,33 @@ class TaskCheckerService {
     }
 
     return task;
+  }
+
+  async ensureRecurrenceExists(
+    input: { id: number; userId: number },
+    params?: { trx?: TaskTransaction; skipException?: false | undefined },
+  ): Promise<TaskRecurrence>;
+  async ensureRecurrenceExists(
+    input: { id: number; userId: number },
+    params: { trx?: TaskTransaction; skipException: true },
+  ): Promise<TaskRecurrence | null>;
+  async ensureRecurrenceExists(
+    input: { id: number; userId: number },
+    params?: { trx?: TaskTransaction; skipException?: boolean },
+  ): Promise<TaskRecurrence | null> {
+    const { skipException, trx } = params ?? {};
+
+    const recurrence = await this.taskRecurrenceService.getRecurrence(input, trx);
+
+    if (skipException != null) {
+      return recurrence;
+    }
+
+    if (recurrence == null) {
+      throw new ExceptionRecurrenceNotExist({ recurrenceId: input.id });
+    }
+
+    return recurrence;
   }
 }
 

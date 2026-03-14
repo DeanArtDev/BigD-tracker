@@ -8,7 +8,7 @@ function GroupDeleteByUserPolicy(input: { userId: number; groupId: number }) {
   const spec = and(GroupById(input.groupId), GroupByUserId(input.userId), not(GroupInbox()));
 
   return tagSpec<TasksDB>(spec, {
-    key: 'groups.policy.delete-by-user',
+    key: 'groups.policy.group-delete',
     purpose: 'policy',
   });
 }

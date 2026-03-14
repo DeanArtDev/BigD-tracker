@@ -48,7 +48,7 @@ class ReplaceGroupUseCase {
         tasks: readyToReplaceTasks,
       });
 
-      await this.groupsWriteRepo.replaceGroupWithTasks(groupWithTasks, trx);
+      await this.groupsWriteRepo.replaceGroupAndTaskOrder(groupWithTasks, trx);
       return await this.groupsReadRepo.getGroupWithTasksById({ groupId, userId }, { trx, throwError: true });
     });
   }
