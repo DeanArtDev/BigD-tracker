@@ -7,7 +7,7 @@ import { Task } from '../tasks.aggregate';
 
 mockDate();
 
-const createTask = (params?: { startDate?: string; deadline?: string }) =>
+const createTask = (params?: { startDate?: string; deadline?: string; recurrenceId?: number }) =>
   Task.create({
     userId: 1,
     name: Name.create('Task'),
@@ -16,6 +16,7 @@ const createTask = (params?: { startDate?: string; deadline?: string }) =>
     weight: Weight.create(10),
     startDate: params?.startDate != null ? DateVo.create(params.startDate) : undefined,
     deadline: params?.deadline != null ? DateVo.create(params.deadline) : undefined,
+    recurrenceId: params?.recurrenceId,
   });
 
 describe('Task aggregate', () => {

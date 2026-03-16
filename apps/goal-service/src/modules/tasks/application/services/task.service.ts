@@ -69,8 +69,8 @@ class TaskService {
       { taskId: input.taskId, userId: input.userId },
       { trx },
     );
-    const replacedTask = await this.tasksWriteRepo.replaceTask(TaskFactory.deleteSoft(task), trx);
-
+    const { taskToDelete } = this.taskWithRecurrenceService.softDelete({ task });
+    const replacedTask = await this.tasksWriteRepo.replaceTask(taskToDelete, trx);
     return { id: replacedTask.id };
   }
 

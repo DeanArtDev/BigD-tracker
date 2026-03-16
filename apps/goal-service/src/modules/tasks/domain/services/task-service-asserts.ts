@@ -1,20 +1,8 @@
-import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { DateVo } from '@big-d/api-utils';
-import { Task, TaskIdBuilder, TaskRecurrence } from '../aggregates/task';
+import { Task, TaskIdBuilder } from '../aggregates/task';
+import { ExceptionTaskDomainInvalidInvariant } from '../exceptions';
 
 const taskServiceAsserts = {
-  ensureNotRepeatable(input: { type: 'virtual' | 'override'; recurrence?: unknown; taskId?: string | number }): void {
-    if (input.recurrence == null) {
-      return;
-    }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      message: `${input.type} task cannot have recurrence`,
-      field: 'recurrence',
-      taskId: typeof input.taskId === 'number' ? input.taskId : undefined,
-    });
-  },
-
   ensureVirtualId(taskId: string): { recurrenceId: number; date: string } {
     const idData = TaskIdBuilder.unwrapId(taskId);
 
@@ -29,83 +17,44 @@ const taskServiceAsserts = {
     return idData.virtual;
   },
 
-  ensureOverrideId(taskId: string): { recurrenceId: number; overrideId: number; date: string } {
-    const idData = TaskIdBuilder.unwrapId(taskId);
+  ensureRecurrenceIdMatched(input: { taskId: number; currentRecurrenceId?: number; nextRecurrenceId?: number }): void {
+    if (input.currentRecurrenceId == null && input.nextRecurrenceId == null) return;
 
-    if (idData?.override == null) {
+    if (input.currentRecurrenceId !== input.nextRecurrenceId) {
       throw new ExceptionTaskDomainInvalidInvariant({
-        taskId,
-        message: 'Дело не является оверрайдом',
+        taskId: input.taskId,
+        message: `Разные серии повторений ${input.currentRecurrenceId} и ${input.nextRecurrenceId}`,
         field: 'id',
       });
     }
-
-    return idData.override;
   },
 
-  ensureRecurrenceIdMatchesTaskId(input: {
-    taskId: string;
-    expectedRecurrenceId: number;
-    actualRecurrenceId: number;
-    message: string;
-  }): void {
-    if (input.actualRecurrenceId === input.expectedRecurrenceId) {
-      return;
+  ensureRepeatableSourceTask(sourceTask: Task): void {
+    if (sourceTask.startDate == null || sourceTask.deadline == null || sourceTask.recurrenceId == null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        taskId: sourceTask.id,
+        message: 'Повторяемое должно иметь startDate и deadline',
+        field: 'id',
+      });
     }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      taskId: input.taskId,
-      message: input.message,
-      field: 'id',
-    });
   },
 
-  ensureSourceTaskBelongsToRecurrence(input: {
-    taskId: string;
-    sourceTask: Task;
-    currentRecurrence: TaskRecurrence;
-  }): void {
-    if (input.sourceTask.id === input.currentRecurrence.taskId) {
-      return;
-    }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      taskId: input.taskId,
-      message: 'Дело принадлежит другой серии',
-      field: 'id',
-    });
-  },
-
-  ensureRepeatableSourceTask(input: { taskId: string; sourceTask: Task }): void {
-    if (input.sourceTask.startDate != null && input.sourceTask.deadline != null) {
-      return;
-    }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      taskId: input.taskId,
-      message: 'Повторяемое должно иметь startDate и deadline',
-      field: 'id',
-    });
-  },
-
-  ensureOverrideDateMatchesTaskId(input: { taskId: string; overrideDate: string; expectedDate: string }): void {
-    if (DateVo.format(input.overrideDate) === DateVo.format(input.expectedDate)) {
-      return;
-    }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      taskId: input.taskId,
-      message: 'Не корректная дата в id дела',
-      field: 'id',
-    });
-  },
-
-  ensureDatesAreExistent(input: { taskId: number | string; startDate?: string; deadline?: string }): void {
-    if (input.startDate == null || input.deadline == null) {
+  ensureRecurrenceStartMatched(input: { taskId: number; date: string; expectedDate: string }): void {
+    if (!DateVo.create(input.date).equals(DateVo.create(input.expectedDate))) {
       throw new ExceptionTaskDomainInvalidInvariant({
         taskId: input.taskId,
-        message: 'Дело должно иметь startDate и deadline',
-        field: 'startDate/deadline',
+        message: 'Не корректная дата в id дела',
+        field: 'id',
+      });
+    }
+  },
+
+  ensureRecurrenceAndTaskMatched(input: { taskId: number; expectedTaskId: number }): void {
+    if (input.taskId !== input.expectedTaskId) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        taskId: input.taskId,
+        message: 'Дело принадлежит другой серии',
+        field: 'id',
       });
     }
   },

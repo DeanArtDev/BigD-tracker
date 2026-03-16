@@ -95,9 +95,9 @@ function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): voi
   }
 }
 
-type StartOptional = { taskId: number; startDate?: string | null };
-type StartRequired = { taskId: number; startDate: string };
-function assertStartDateIsRequired(input: StartOptional): asserts input is StartRequired {
+type DatesOptional = { taskId: number; startDate?: string | null; deadline?: string | null };
+type DatesRequired = { taskId: number; startDate: string; deadline: string };
+function assertStartDateAndDeadlineAreRequired(input: DatesOptional): asserts input is DatesRequired {
   if (input.startDate == null) {
     throw new ExceptionTaskDomainInvalidInvariant({
       message: `Оверрайд не может быть применен к делу: ${input.taskId} с пустой датой начала`,
@@ -105,6 +105,14 @@ function assertStartDateIsRequired(input: StartOptional): asserts input is Start
       taskId: input.taskId,
     });
   }
+
+  if (input.deadline == null) {
+    throw new ExceptionTaskDomainInvalidInvariant({
+      message: `Оверрайд не может быть применен к делу: ${input.taskId} с пустым дедлайном`,
+      field: 'deadline',
+      taskId: input.taskId,
+    });
+  }
 }
 
-export { taskAsserts, assertHasCancelReason, assertTaskReplace, assertStartDateIsRequired };
+export { taskAsserts, assertHasCancelReason, assertTaskReplace, assertStartDateAndDeadlineAreRequired };

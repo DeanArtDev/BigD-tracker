@@ -213,7 +213,6 @@ class Task extends AggregateRoot {
       const deadline = this.#state.deadline;
 
       this.#state.endDate = now;
-      taskAsserts.datesIntersections({ start: startDate, end: this.#state.endDate });
 
       this.#setStatus(
         Task.calculateStatusByDates({

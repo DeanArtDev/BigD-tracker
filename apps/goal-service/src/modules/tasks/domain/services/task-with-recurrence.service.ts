@@ -99,10 +99,64 @@ class TaskWithRecurrenceService {
     }
 
     throw new ExceptionTaskDomainInvalidInvariant({
-      message: `${input.type} task cannot have recurrence`,
+      message: `${input.type} дело не может быть повторяемым`,
       field: 'recurrence',
       taskId: typeof input.taskId === 'number' ? input.taskId : undefined,
     });
+  }
+
+  public finish(input: { task: Task; timezone: string }) {
+    const { task, timezone } = input;
+
+    if (task.recurrenceId != null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Дело - источник серии повторений не может быть завершено',
+        field: 'recurrenceId',
+        taskId: task.id,
+      });
+    }
+
+    const taskToFinish = TaskFactory.finish(task, timezone);
+
+    return {
+      taskToFinish,
+    };
+  }
+
+  public softDelete(input: { task: Task }) {
+    const { task } = input;
+
+    if (task.recurrenceId != null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Дело - источник серии повторений не может быть удален',
+        field: 'recurrenceId',
+        taskId: task.id,
+      });
+    }
+
+    const taskToDelete = TaskFactory.deleteSoft(task);
+
+    return {
+      taskToDelete,
+    };
+  }
+
+  public deleteComplete(input: { task: Task }) {
+    const { task } = input;
+
+    if (task.recurrenceId != null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Дело - источник серии повторений не может быть удален',
+        field: 'recurrenceId',
+        taskId: task.id,
+      });
+    }
+
+    const taskToDelete = TaskFactory.deleteComplete(task);
+
+    return {
+      taskToDelete,
+    };
   }
 
   public create(input: {
@@ -151,11 +205,11 @@ class TaskWithRecurrenceService {
       currentOverrides,
     });
 
-    const isCreate = (currentRecurrence == null || currentRecurrence.isCanceled) && recurrencePatch != null;
-    const isUpdate = currentRecurrence != null && recurrencePatch != null;
-    const isCancel = currentRecurrence != null && recurrencePatch == null;
+    const isCreateRecurrence = (currentRecurrence == null || currentRecurrence.isCanceled) && recurrencePatch != null;
+    const isUpdateRecurrence = currentRecurrence != null && recurrencePatch != null;
+    const isCancelRecurrence = currentRecurrence != null && recurrencePatch == null;
 
-    if (isCreate) {
+    if (isCreateRecurrence) {
       const pattern = patternShaper(recurrencePatch);
       const next = this.#create({
         task,
@@ -169,7 +223,7 @@ class TaskWithRecurrenceService {
       };
     }
 
-    if (isUpdate) {
+    if (isUpdateRecurrence) {
       const pattern = patternShaper(recurrencePatch);
       const next = this.#update({
         task,
@@ -184,7 +238,7 @@ class TaskWithRecurrenceService {
       };
     }
 
-    if (isCancel) {
+    if (isCancelRecurrence) {
       const next = this.#cancel({
         task,
         taskPatch,
@@ -297,7 +351,7 @@ class TaskWithRecurrenceService {
         task: updatedTask,
         recurrence: currentRecurrence,
         shouldDeleteRecurrence: true,
-        overridesToDelete: [],
+        overridesToDelete: currentOverrides,
       };
     }
 
@@ -346,29 +400,21 @@ class TaskWithRecurrenceService {
     }
   }
 
+  #overrideStatusesToDelete = [
+    TaskStatus.NOT_STARTED,
+    TaskStatus.IN_PROGRESS,
+    TaskStatus.CANCELLED,
+    TaskStatus.ARCHIVED,
+    TaskStatus.DELETED,
+  ];
+
   private canDeleteRecurrence(overrides: TaskOverride[]): boolean {
     if (overrides.length <= 0) return true;
-    return overrides.every((override) =>
-      [
-        TaskStatus.NOT_STARTED,
-        TaskStatus.IN_PROGRESS,
-        TaskStatus.CANCELLED,
-        TaskStatus.ARCHIVED,
-        TaskStatus.DELETED,
-      ].includes(override.status),
-    );
+    return overrides.every((override) => this.#overrideStatusesToDelete.includes(override.status));
   }
 
   private overridesToDeleteFilter(overrides: TaskOverride[]): TaskOverride[] {
-    return overrides.filter((override) =>
-      [
-        TaskStatus.NOT_STARTED,
-        TaskStatus.IN_PROGRESS,
-        TaskStatus.CANCELLED,
-        TaskStatus.ARCHIVED,
-        TaskStatus.DELETED,
-      ].includes(override.status),
-    );
+    return overrides.filter((override) => this.#overrideStatusesToDelete.includes(override.status));
   }
 
   private assertOverridesBelongToRecurrence(input: {
@@ -391,15 +437,13 @@ class TaskWithRecurrenceService {
     }
 
     const hasForeignOverride = currentOverrides.some((override) => override.recurrenceId !== currentRecurrence.id);
-    if (!hasForeignOverride) {
-      return;
+    if (hasForeignOverride) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Все currentOverrides должны принадлежать currentRecurrence',
+        field: 'currentOverrides',
+        taskId,
+      });
     }
-
-    throw new ExceptionTaskDomainInvalidInvariant({
-      message: 'Все currentOverrides должны принадлежать currentRecurrence',
-      field: 'currentOverrides',
-      taskId,
-    });
   }
 
   private assertRecurrenceInvariants(input: {
@@ -419,7 +463,7 @@ class TaskWithRecurrenceService {
 
     if (!this.isSameDayByTimezone({ left: taskStartDate, right: recurrenceStartDate })) {
       throw new ExceptionTaskDomainInvalidInvariant({
-        message: 'startDate Task и TaskRecurrence.startDate должны быть в рамках одного дня таймзоны recurrence',
+        message: 'startDate Task и TaskRecurrence.startDate должны быть в рамках одного дня',
         field: 'startDate',
         taskId,
       });

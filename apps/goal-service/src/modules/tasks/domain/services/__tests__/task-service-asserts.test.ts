@@ -1,10 +1,12 @@
-import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
-import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
-import { Task, TaskIdBuilder, TaskRecurrence } from '../../aggregates/task';
+import { TaskStatus } from '@big-d/api-contracts';
+import { DateVo, Name } from '@big-d/api-utils';
+import { Task, TaskIdBuilder } from '../../aggregates/task';
 import { Priority, Weight } from '../../aggregates/task/value-objects';
 import { taskServiceAsserts } from '../task-service-asserts';
 
-function buildTask(input: { id?: number; startDate?: string; deadline?: string; status?: TaskStatus } = {}): Task {
+function buildTask(
+  input: { id?: number; startDate?: string; deadline?: string; recurrenceId?: number; status?: TaskStatus } = {},
+): Task {
   return Task.restore({
     id: input.id ?? 11,
     userId: 77,
@@ -16,75 +18,54 @@ function buildTask(input: { id?: number; startDate?: string; deadline?: string; 
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
     endDate: undefined,
     status: input.status ?? TaskStatus.IN_PROGRESS,
-  });
-}
-
-function buildRecurrence(
-  input: { id?: number; taskId?: number; timezone?: string; status?: TaskRecurrenceStatus } = {},
-): TaskRecurrence {
-  return TaskRecurrence.restore({
-    id: input.id ?? 19,
-    userId: 77,
-    taskId: input.taskId ?? 11,
-    status: input.status ?? TaskRecurrenceStatus.ACTIVE,
-    timezone: TimezoneVo.create(input.timezone ?? 'UTC'),
-    startDate: DateVo.restore('2026-03-01T10:00:00.000Z'),
-    pattern: 'RRULE:FREQ=DAILY',
-    frequency: RecurrenceFrequency.DAILY,
-    weekstart: TaskRecurrenceWeekday.MO,
+    recurrenceId: input.recurrenceId,
   });
 }
 
 describe('taskServiceAsserts', () => {
   test('parses valid virtual id', () => {
     expect(
-      taskServiceAsserts.ensureVirtualId(
-        TaskIdBuilder.wrapVirtualId({ recurrenceId: 19, date: '2026-03-12T10:00:00.000Z' }),
-      ),
-    ).toEqual({ recurrenceId: 19, date: '2026-03-12T10:00:00.000Z' });
+      taskServiceAsserts.ensureVirtualId(TaskIdBuilder.wrapVirtualId({ recurrenceId: 19, date: '2026-03-12T10:00' })),
+    ).toEqual({ recurrenceId: 19, date: '2026-03-12T10:00' });
   });
 
   test('rejects invalid virtual id', () => {
     expect(() => taskServiceAsserts.ensureVirtualId(TaskIdBuilder.wrapOriginId(11))).toThrow();
   });
 
-  test('parses valid override id', () => {
-    expect(
-      taskServiceAsserts.ensureOverrideId(
-        TaskIdBuilder.wrapOverrideId({ recurrenceId: 19, overrideId: 31, date: '2026-03-12T10:00:00.000Z' }),
-      ),
-    ).toEqual({ recurrenceId: 19, overrideId: 31, date: '2026-03-12T10:00:00.000Z' });
-  });
-
-  test('rejects invalid override id', () => {
-    expect(() => taskServiceAsserts.ensureOverrideId(TaskIdBuilder.wrapOriginId(11))).toThrow();
-  });
-
-  test('rejects mismatched source task and recurrence', () => {
+  test('rejects mismatched recurrence ids', () => {
     expect(() =>
-      taskServiceAsserts.ensureSourceTaskBelongsToRecurrence({
-        taskId: 'v::19::2026-03-12T10:00:00.000Z',
-        sourceTask: buildTask({ id: 11 }),
-        currentRecurrence: buildRecurrence({ taskId: 12 }),
+      taskServiceAsserts.ensureRecurrenceIdMatched({
+        taskId: 11,
+        currentRecurrenceId: 19,
+        nextRecurrenceId: 31,
+      }),
+    ).toThrow();
+  });
+
+  test('rejects mismatched recurrence task id', () => {
+    expect(() =>
+      taskServiceAsserts.ensureRecurrenceAndTaskMatched({
+        taskId: 11,
+        expectedTaskId: 12,
       }),
     ).toThrow();
   });
 
   test('rejects non-repeatable source task', () => {
     expect(() =>
-      taskServiceAsserts.ensureRepeatableSourceTask({
-        taskId: 'v::19::2026-03-12T10:00:00.000Z',
-        sourceTask: buildTask({ startDate: '2026-03-01T10:00:00.000Z' }),
-      }),
+      taskServiceAsserts.ensureRepeatableSourceTask(
+        buildTask({ startDate: '2026-03-01T10:00:00.000Z', recurrenceId: 19 }),
+      ),
     ).toThrow();
   });
 
-  test('rejects mismatched override date', () => {
+  test('rejects mismatched recurrence start date', () => {
     expect(() =>
-      taskServiceAsserts.ensureOverrideDateMatchesTaskId({
-        taskId: 'ov::19::2026-03-12T10:00:00.000Z::31',
-        overrideDate: '2026-03-13T10:00:00.000Z',
-        expectedDate: '2026-03-12T10:00:00.000Z',
+      taskServiceAsserts.ensureRecurrenceStartMatched({
+        taskId: 11,
+        date: '2026-03-13T10:00',
+        expectedDate: '2026-03-12T10:00',
       }),
     ).toThrow();
   });

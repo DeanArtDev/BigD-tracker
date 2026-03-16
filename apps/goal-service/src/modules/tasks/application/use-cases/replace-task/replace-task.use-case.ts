@@ -1,10 +1,12 @@
-import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import { TaskFactory, TaskOverrideFactory } from '@/modules/tasks/domain';
-import { taskServiceAsserts, TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
-import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
+import {
+  TaskOverrideDomainService,
+  TaskVirtualService,
+  TaskWithRecurrenceService,
+} from '@/modules/tasks/domain/services';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksViewMapper, TaskView } from '../../dto';
+import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '../../exceptions';
 import { TaskDatabase } from '../../ports';
 import {
   TaskCheckerService,
@@ -18,6 +20,8 @@ import { ReplaceTaskCommand } from './replace-task.command';
 @Injectable()
 class ReplaceTaskUseCase {
   private readonly taskWithRecurrenceService = new TaskWithRecurrenceService();
+  private readonly taskOverrideDomainService = new TaskOverrideDomainService();
+  private readonly taskVirtualService = new TaskVirtualService();
 
   constructor(
     private readonly taskServices: TaskService,
@@ -40,11 +44,7 @@ class ReplaceTaskUseCase {
       }
 
       if (isVirtual) {
-        this.taskWithRecurrenceService.ensureNotRepeatable({
-          type: 'virtual',
-          recurrence: input.recurrence,
-          taskId: id,
-        });
+        this.taskVirtualService.ensureVirtualTaskNotRepeatable({ recurrence: input.recurrence, taskId: id });
 
         const { userId } = input;
         const { recurrenceId, date } = data;
@@ -55,24 +55,22 @@ class ReplaceTaskUseCase {
         }
 
         const task = await this.taskCheckerService.ensureTaskExists({ userId, taskId: recurrence.taskId }, { trx });
-        const taskToReplace = TaskFactory.replace(task, patch);
 
-        const createdOverrideDraft = TaskOverrideFactory.create({
-          task: taskToReplace,
-          type: taskStatusToOverrideTypeMap[taskToReplace.status],
-          recurrenceId: recurrence.id,
+        const { overrideToCreate } = this.taskOverrideDomainService.create({
+          taskId: id,
+          sourceTask: task,
+          currentRecurrence: recurrence,
+
+          overridePatch: patch,
           recurrenceStart: date,
         });
-        const createdOverride = await this.taskOverrideService.upsertOverride(createdOverrideDraft, trx);
+
+        const createdOverride = await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
         return TasksViewMapper.fromOverrideToView(createdOverride);
       }
 
       if (isOverride) {
-        taskServiceAsserts.ensureNotRepeatable({
-          type: 'override',
-          recurrence: input.recurrence,
-          taskId: id,
-        });
+        this.taskOverrideDomainService.ensureOverrideTaskNotRepeatable({ recurrence: input.recurrence, taskId: id });
 
         const { userId } = input;
         const { recurrenceId, overrideId } = data;
@@ -85,12 +83,16 @@ class ReplaceTaskUseCase {
         const task = await this.taskCheckerService.ensureTaskExists({ userId, taskId: recurrence.taskId }, { trx });
         const override = await this.taskOverrideService.getOverride({ userId, id: overrideId }, trx);
 
-        const overrideToUpdate = TaskOverrideFactory.replace(override, {
-          task: TaskFactory.replace(task, patch),
-          type: taskStatusToOverrideTypeMap[task.status],
+        const { overrideToReplace } = this.taskOverrideDomainService.replace({
+          taskId: id,
+          sourceTask: task,
+          currentRecurrence: recurrence,
+
+          override,
+          overridePatch: patch,
         });
 
-        const createdOverride = await this.taskOverrideService.upsertOverride(overrideToUpdate, trx);
+        const createdOverride = await this.taskOverrideService.upsertOverride(overrideToReplace, trx);
         return TasksViewMapper.fromOverrideToView(createdOverride);
       }
 

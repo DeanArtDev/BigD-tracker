@@ -1,13 +1,16 @@
+import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
 import { DateVo, timeAndDate } from '@big-d/api-utils';
-import { Task, TaskFactory, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
+import { Task, TaskFactory, TaskIdBuilder, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
 import { taskServiceAsserts } from './task-service-asserts';
 
 class TaskVirtualService {
   clone(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
     const { sourceTask } = input;
 
-    const { virtualData } = this.#assertDependenciesConsistency(input);
+    const { virtualData } = this.#assertVirtualId(input);
+    this.#assertDependenciesConsistency(input);
+    this.#assertTaskPersisted(input.sourceTask);
 
     const { startDate, deadline } = this.#shapeDates({
       taskId: sourceTask.id,
@@ -30,7 +33,9 @@ class TaskVirtualService {
   delete(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
     const { sourceTask, currentRecurrence } = input;
 
-    const { virtualData } = this.#assertDependenciesConsistency(input);
+    const { virtualData } = this.#assertVirtualId(input);
+    this.#assertDependenciesConsistency(input);
+    this.#assertTaskPersisted(input.sourceTask);
 
     const { startDate, deadline } = this.#shapeDates({
       taskId: sourceTask.id,
@@ -61,7 +66,9 @@ class TaskVirtualService {
   finish(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; timezone: string }) {
     const { sourceTask, currentRecurrence } = input;
 
-    const { virtualData } = this.#assertDependenciesConsistency(input);
+    const { virtualData } = this.#assertVirtualId(input);
+    this.#assertDependenciesConsistency(input);
+    this.#assertTaskPersisted(input.sourceTask);
 
     const { startDate, deadline } = this.#shapeDates({
       taskId: sourceTask.id,
@@ -89,6 +96,16 @@ class TaskVirtualService {
     };
   }
 
+  public ensureVirtualTaskNotRepeatable(input: { recurrence?: unknown; taskId?: string | number }): void {
+    if (input.recurrence != null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: `Виртуальное дело не может быть повторяемым`,
+        field: 'recurrence',
+        taskId: input.taskId,
+      });
+    }
+  }
+
   #createVirtualTaskFromSource(input: { sourceTask: Task; startDate: string; deadline: string }): Task {
     const { sourceTask, startDate, deadline } = input;
 
@@ -105,31 +122,14 @@ class TaskVirtualService {
     });
   }
 
-  #assertDependenciesConsistency(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }) {
-    const { taskId, sourceTask, currentRecurrence } = input;
+  #assertDependenciesConsistency(input: { sourceTask: Task }) {
+    const { sourceTask } = input;
 
-    const virtualData = taskServiceAsserts.ensureVirtualId(taskId);
-    taskServiceAsserts.ensureRecurrenceIdMatchesTaskId({
-      taskId,
-      expectedRecurrenceId: currentRecurrence.id,
-      actualRecurrenceId: virtualData.recurrenceId,
-      message: 'Дело принадлежит другой серии',
-    });
-    taskServiceAsserts.ensureSourceTaskBelongsToRecurrence({ taskId, sourceTask, currentRecurrence });
-    taskServiceAsserts.ensureRepeatableSourceTask({ taskId, sourceTask });
-
-    return { virtualData };
+    taskServiceAsserts.ensureRepeatableSourceTask(sourceTask);
   }
 
   #shapeDates(input: { taskId: number; virtualDate: string; startDate?: string; deadline?: string }) {
     const { startDate } = input;
-
-    taskServiceAsserts.ensureDatesAreExistent({
-      taskId: input.taskId,
-      startDate: input.startDate,
-      deadline: input.deadline,
-    });
-
     const virtualTaskStart = timeAndDate(input.virtualDate);
     const delta = timeAndDate(startDate).diff(input.deadline);
     const deadline = virtualTaskStart.add(Math.abs(delta), 'millisecond');
@@ -138,6 +138,49 @@ class TaskVirtualService {
       startDate: virtualTaskStart,
       deadline,
     };
+  }
+
+  #assertTaskPersisted(task: Task): void {
+    if (task.isDraft) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        message: 'Дело не должно быть драфтом',
+        field: 'taskId',
+      });
+    }
+  }
+
+  #assertVirtualId(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence }): {
+    virtualData: { recurrenceId: number; date: string };
+  } {
+    const { taskId, sourceTask, currentRecurrence } = input;
+    const { virtual } = TaskIdBuilder.unwrapId(taskId) ?? {};
+
+    if (virtual == null) {
+      throw new ExceptionTaskDomainInvalidInvariant({
+        taskId,
+        message: 'Дело не является виртуальным',
+        field: 'id',
+      });
+    }
+
+    taskServiceAsserts.ensureRecurrenceIdMatched({
+      taskId: sourceTask.id,
+      currentRecurrenceId: sourceTask.recurrenceId,
+      nextRecurrenceId: currentRecurrence.id,
+    });
+
+    taskServiceAsserts.ensureRecurrenceIdMatched({
+      taskId: sourceTask.id,
+      currentRecurrenceId: currentRecurrence.id,
+      nextRecurrenceId: virtual.recurrenceId,
+    });
+
+    taskServiceAsserts.ensureRecurrenceAndTaskMatched({
+      taskId: sourceTask.id,
+      expectedTaskId: currentRecurrence.taskId,
+    });
+
+    return { virtualData: virtual };
   }
 }
 

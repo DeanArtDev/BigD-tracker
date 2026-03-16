@@ -1,6 +1,6 @@
 import { Task } from '@/modules/tasks/domain';
 import { TaskOverrideType } from '@big-d/api-contracts';
-import { assertStartDateIsRequired, taskAsserts } from '../tasks.invariants';
+import { assertStartDateAndDeadlineAreRequired, taskAsserts } from '../tasks.invariants';
 import {
   TaskOverrideCreateInput,
   TaskOverrideReplaceInput,
@@ -18,8 +18,8 @@ class TaskOverride {
   static create(input: TaskOverrideCreateInput): TaskOverride {
     const { task, type, recurrenceStart, recurrenceId } = input;
 
-    const assertInput = { taskId: task.id, startDate: task.startDate };
-    assertStartDateIsRequired(assertInput);
+    const assertInput = { taskId: task.id, startDate: task.startDate, deadline: task.deadline };
+    assertStartDateAndDeadlineAreRequired(assertInput);
 
     return new TaskOverride({
       id: NaN,
@@ -33,7 +33,7 @@ class TaskOverride {
       cancelReason: task.cancelReason,
       startDate: assertInput.startDate,
       endDate: task.endDate,
-      deadline: task.deadline,
+      deadline: assertInput.deadline,
       status: task.status,
       type,
       recurrenceStart,
@@ -43,8 +43,8 @@ class TaskOverride {
   static restore(input: TaskOverrideRestoreInput): TaskOverride {
     const { task, type, recurrenceStart, recurrenceId } = input;
 
-    const assertInput = { taskId: task.id, startDate: task.startDate };
-    assertStartDateIsRequired(assertInput);
+    const assertInput = { taskId: task.id, startDate: task.startDate, deadline: task.deadline };
+    assertStartDateAndDeadlineAreRequired(assertInput);
     taskAsserts.notDraft(task);
 
     return new TaskOverride({
@@ -60,7 +60,7 @@ class TaskOverride {
       cancelReason: task.cancelReason,
       startDate: assertInput.startDate,
       endDate: task.endDate,
-      deadline: task.deadline,
+      deadline: assertInput.deadline,
       status: task.status,
       type,
     });
@@ -69,8 +69,8 @@ class TaskOverride {
   public replace(input: TaskOverrideReplaceInput): TaskOverride {
     const { task, type } = input;
 
-    const assertInput = { taskId: task.id, startDate: task.startDate };
-    assertStartDateIsRequired(assertInput);
+    const assertInput = { taskId: task.id, startDate: task.startDate, deadline: task.deadline };
+    assertStartDateAndDeadlineAreRequired(assertInput);
     taskAsserts.notDraft(task);
 
     this.#state.type = type;
@@ -81,7 +81,7 @@ class TaskOverride {
     this.#state.cancelReason = task.cancelReason;
     this.#state.startDate = assertInput.startDate;
     this.#state.endDate = task.endDate;
-    this.#state.deadline = task.deadline;
+    this.#state.deadline = assertInput.deadline;
     this.#state.status = task.status;
 
     return this;

@@ -11,7 +11,9 @@ import { Task, TaskIdBuilder, TaskRecurrence } from '../../aggregates/task';
 import { Priority, Weight } from '../../aggregates/task/value-objects';
 import { TaskVirtualService } from '../task-virtual.service';
 
-function buildTask(input: { id?: number; startDate?: string; deadline?: string; status?: TaskStatus } = {}): Task {
+function buildTask(
+  input: { id?: number; recurrenceId?: number; startDate?: string; deadline?: string; status?: TaskStatus } = {},
+): Task {
   return Task.restore({
     id: input.id ?? 11,
     userId: 77,
@@ -23,6 +25,7 @@ function buildTask(input: { id?: number; startDate?: string; deadline?: string; 
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
     endDate: undefined,
     status: input.status ?? TaskStatus.IN_PROGRESS,
+    recurrenceId: input.recurrenceId,
   });
 }
 
@@ -45,9 +48,61 @@ function buildRecurrence(
 describe('TaskVirtualService', () => {
   const service = new TaskVirtualService();
 
+  test('rejects repeatable recurrence payload for virtual task', () => {
+    expect(() =>
+      service.ensureVirtualTaskNotRepeatable({
+        taskId: 'v::19::2026-03-12T08:00',
+        recurrence: { frequency: RecurrenceFrequency.DAILY },
+      }),
+    ).toThrow();
+  });
+
+  test('rejects virtual task when recurrence id from id does not match source task/current recurrence', () => {
+    expect(() =>
+      service.clone({
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: 99, date: '2026-03-12T08:00:00.000Z' }),
+        sourceTask: buildTask({
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+          deadline: '2026-03-01T12:30:00.000Z',
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      }),
+    ).toThrow();
+  });
+
+  test('rejects virtual task when source task and recurrence taskId do not match', () => {
+    expect(() =>
+      service.clone({
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: 19, date: '2026-03-12T08:00:00.000Z' }),
+        sourceTask: buildTask({
+          id: 11,
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+          deadline: '2026-03-01T12:30:00.000Z',
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 12 }),
+      }),
+    ).toThrow();
+  });
+
+  test('rejects virtual task without deadline', () => {
+    expect(() =>
+      service.delete({
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: 19, date: '2026-03-12T08:00:00.000Z' }),
+        sourceTask: buildTask({
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+        }),
+        currentRecurrence: buildRecurrence(),
+      }),
+    ).toThrow();
+  });
+
   test('clones virtual task with materialized virtual dates', () => {
     const virtualDate = '2026-03-12T08:00:00.000Z';
     const sourceTask = buildTask({
+      recurrenceId: 19,
       startDate: '2026-03-01T10:00:00.000Z',
       deadline: '2026-03-01T12:30:00.000Z',
     });
@@ -79,6 +134,7 @@ describe('TaskVirtualService', () => {
   test('clones virtual task from canceled recurrence', () => {
     const virtualDate = '2026-03-12T08:00:00.000Z';
     const sourceTask = buildTask({
+      recurrenceId: 19,
       startDate: '2026-03-01T10:00:00.000Z',
       deadline: '2026-03-01T12:30:00.000Z',
     });
@@ -98,6 +154,7 @@ describe('TaskVirtualService', () => {
   test('creates deleted override for virtual task', () => {
     const virtualDate = '2026-03-12T08:00:00.000Z';
     const sourceTask = buildTask({
+      recurrenceId: 19,
       startDate: '2026-03-01T10:00:00.000Z',
       deadline: '2026-03-01T12:30:00.000Z',
     });
@@ -132,6 +189,7 @@ describe('TaskVirtualService', () => {
   test('creates completed override for virtual task when deadline is after finish date', () => {
     const virtualDate = '2026-03-12T10:00:00.000Z';
     const sourceTask = buildTask({
+      recurrenceId: 19,
       startDate: '2026-03-01T10:00:00.000Z',
       deadline: '2026-03-02T12:30:00.000Z',
     });
@@ -168,6 +226,7 @@ describe('TaskVirtualService', () => {
   test('creates overdue override for virtual task when deadline is before finish date', () => {
     const virtualDate = '2026-03-12T10:00:00.000Z';
     const sourceTask = buildTask({
+      recurrenceId: 19,
       startDate: '2026-03-01T10:00:00.000Z',
       deadline: '2026-03-01T10:30:00.000Z',
     });
