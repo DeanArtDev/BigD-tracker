@@ -10,7 +10,9 @@ import { Task, TaskIdBuilder, TaskOverride, TaskRecurrence } from '../../aggrega
 import { Priority, Weight } from '../../aggregates/task/value-objects';
 import { TaskOverrideDomainService } from '../task-override.domain.service';
 
-function buildTask(input: { id?: number; startDate?: string; deadline?: string; status?: TaskStatus } = {}): Task {
+function buildTask(
+  input: { id?: number; recurrenceId?: number; startDate?: string; deadline?: string; status?: TaskStatus } = {},
+): Task {
   return Task.restore({
     id: input.id ?? 11,
     userId: 77,
@@ -22,11 +24,12 @@ function buildTask(input: { id?: number; startDate?: string; deadline?: string; 
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
     endDate: undefined,
     status: input.status ?? TaskStatus.IN_PROGRESS,
+    recurrenceId: input.recurrenceId,
   });
 }
 
 function buildRecurrence(
-  input: { id?: number; taskId?: number; timezone?: string; status?: TaskRecurrenceStatus } = {},
+  input: { id?: number; taskId?: number; timezone?: string; status?: TaskRecurrenceStatus; startDate?: string } = {},
 ): TaskRecurrence {
   return TaskRecurrence.restore({
     id: input.id ?? 19,
@@ -34,7 +37,7 @@ function buildRecurrence(
     taskId: input.taskId ?? 11,
     status: input.status ?? TaskRecurrenceStatus.ACTIVE,
     timezone: TimezoneVo.create(input.timezone ?? 'UTC'),
-    startDate: DateVo.restore('2026-03-01T10:00:00.000Z'),
+    startDate: DateVo.restore(input.startDate ?? '2026-03-01T10:00:00.000Z'),
     pattern: 'RRULE:FREQ=DAILY',
     frequency: RecurrenceFrequency.DAILY,
     weekstart: TaskRecurrenceWeekday.MO,
@@ -77,6 +80,74 @@ describe('TaskOverrideDomainService', () => {
     jest.useRealTimers();
   });
 
+  test('rejects repeatable recurrence payload for override task', () => {
+    expect(() =>
+      service.ensureOverrideTaskNotRepeatable({
+        taskId: 'ov::19::2026-03-12T10:00::31',
+        recurrence: { frequency: RecurrenceFrequency.DAILY },
+      }),
+    ).toThrow();
+  });
+
+  test('rejects override task when recurrence id from id does not match current recurrence', () => {
+    expect(() =>
+      service.clone({
+        taskId: TaskIdBuilder.wrapOverrideId({
+          recurrenceId: 99,
+          overrideId: 31,
+          date: '2026-03-12T10:00',
+        }),
+        sourceTask: buildTask({
+          id: 11,
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+          deadline: '2026-03-01T12:00:00.000Z',
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
+        override: buildOverride({ id: 31 }),
+      }),
+    ).toThrow();
+  });
+
+  test('rejects override task when source task and recurrence taskId do not match', () => {
+    expect(() =>
+      service.clone({
+        taskId: TaskIdBuilder.wrapOverrideId({
+          recurrenceId: 19,
+          overrideId: 31,
+          date: '2026-03-12T10:00',
+        }),
+        sourceTask: buildTask({
+          id: 11,
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+          deadline: '2026-03-01T12:00:00.000Z',
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 12, startDate: '2026-03-12T10:00' }),
+        override: buildOverride({ id: 31 }),
+      }),
+    ).toThrow();
+  });
+
+  test('rejects override task without deadline on source task', () => {
+    expect(() =>
+      service.clone({
+        taskId: TaskIdBuilder.wrapOverrideId({
+          recurrenceId: 19,
+          overrideId: 31,
+          date: '2026-03-12T10:00',
+        }),
+        sourceTask: buildTask({
+          id: 11,
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
+        override: buildOverride({ id: 31 }),
+      }),
+    ).toThrow();
+  });
+
   test('clones override using override dates', () => {
     const override = buildOverride({
       id: 31,
@@ -93,10 +164,11 @@ describe('TaskOverrideDomainService', () => {
       }),
       sourceTask: buildTask({
         id: 11,
+        recurrenceId: 19,
         startDate: '2026-03-01T10:00:00.000Z',
         deadline: '2026-03-01T12:00:00.000Z',
       }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
       override,
     });
 
@@ -129,10 +201,16 @@ describe('TaskOverrideDomainService', () => {
       }),
       sourceTask: buildTask({
         id: 11,
+        recurrenceId: 19,
         startDate: '2026-03-01T10:00:00.000Z',
         deadline: '2026-03-01T12:00:00.000Z',
       }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, status: TaskRecurrenceStatus.CANCELED }),
+      currentRecurrence: buildRecurrence({
+        id: 19,
+        taskId: 11,
+        status: TaskRecurrenceStatus.CANCELED,
+        startDate: '2026-03-12T10:00',
+      }),
       override,
     });
 
@@ -151,10 +229,11 @@ describe('TaskOverrideDomainService', () => {
         }),
         sourceTask: buildTask({
           id: 11,
+          recurrenceId: 19,
           startDate: '2026-03-01T10:00:00.000Z',
           deadline: '2026-03-01T12:00:00.000Z',
         }),
-        currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
         override: buildOverride({ id: 31, recurrenceId: 99 }),
       }),
     ).toThrow();
@@ -170,10 +249,11 @@ describe('TaskOverrideDomainService', () => {
         }),
         sourceTask: buildTask({
           id: 11,
+          recurrenceId: 19,
           startDate: '2026-03-01T10:00:00.000Z',
           deadline: '2026-03-01T12:00:00.000Z',
         }),
-        currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
         override: buildOverride({ id: 31, recurrenceStart: '2026-03-13T10:00:00.000Z' }),
       }),
     ).toThrow();
@@ -190,11 +270,12 @@ describe('TaskOverrideDomainService', () => {
       }),
       sourceTask: buildTask({
         id: 11,
+        recurrenceId: 19,
         startDate: '2026-03-01T10:00:00.000Z',
         deadline: '2026-03-01T12:00:00.000Z',
         status: TaskStatus.DELETED,
       }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
       override,
     });
 
@@ -232,11 +313,12 @@ describe('TaskOverrideDomainService', () => {
       }),
       sourceTask: buildTask({
         id: 11,
+        recurrenceId: 19,
         startDate: '2026-03-01T10:00:00.000Z',
         deadline: '2026-03-01T12:00:00.000Z',
         status: TaskStatus.DELETED,
       }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
       override,
       timezone: 'UTC',
     });
@@ -275,11 +357,12 @@ describe('TaskOverrideDomainService', () => {
       }),
       sourceTask: buildTask({
         id: 11,
+        recurrenceId: 19,
         startDate: '2026-03-01T10:00:00.000Z',
         deadline: '2026-03-01T12:00:00.000Z',
         status: TaskStatus.DELETED,
       }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11 }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
       override,
       timezone: 'UTC',
     });

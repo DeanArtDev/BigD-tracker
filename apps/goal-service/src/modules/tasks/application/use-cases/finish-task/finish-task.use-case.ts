@@ -1,7 +1,9 @@
-import { TaskFactory } from '@/modules/tasks/domain';
-import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
+import {
+  TaskOverrideDomainService,
+  TaskVirtualService,
+  TaskWithRecurrenceService,
+} from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
-import { TimezoneVo } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
@@ -14,6 +16,7 @@ import { FinishTaskCommand } from './finish-task.command';
 class FinishTaskUseCase {
   private taskVirtualService = new TaskVirtualService();
   private taskOverrideDomainService = new TaskOverrideDomainService();
+  private taskWithRecurrenceService = new TaskWithRecurrenceService();
 
   constructor(
     private readonly taskCheckerService: TaskCheckerService,
@@ -31,12 +34,12 @@ class FinishTaskUseCase {
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
 
       const request = GoalServiceRequestContext.getStore()?.state;
-      const userTimezone = TimezoneVo.create(request?.userTimezone ?? 'UTC').value;
+      const userTimezone = request?.userTimezone ?? 'UTC';
 
       if (isOrigin) {
         const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
-        const finishedTask = TaskFactory.finish(task, userTimezone);
-        await this.tasksWriteRepo.replaceTask(finishedTask, trx);
+        const { taskToFinish } = this.taskWithRecurrenceService.finish({ task, timezone: userTimezone });
+        await this.tasksWriteRepo.replaceTask(taskToFinish, trx);
         return;
       }
 

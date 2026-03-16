@@ -1,5 +1,5 @@
 import { TasksToken } from '@/modules/tasks/tokens';
-import { TaskStatus } from '@big-d/api-contracts';
+import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
 import { timeAndDate } from '@big-d/api-utils';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
@@ -11,15 +11,16 @@ import { TaskRecurrenceQueryService } from '../../services';
 import {
   TaskByDeadlineGreaterOrEqual,
   TaskByGroupId,
-  TaskByIds,
   TaskByStartDateLessOrEqual,
   TaskByStatus,
   TaskByUserId,
+  TaskRecurrenceByEmpty,
+  TaskRecurrenceByStatus,
   tasksCombinators,
 } from '../../specifications';
 import { GetDiaryTasksQuery } from './get-diary-tasks.query';
 
-const { and, not } = tasksCombinators;
+const { and, not, or } = tasksCombinators;
 
 @QueryHandler(GetDiaryTasksQuery)
 export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
@@ -34,7 +35,7 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
       const { userId, meta } = input;
       const { filter } = meta;
 
-      const { virtualViews, recurrences } = await this.taskRecurrenceQueryService.calculateTasks(
+      const { virtualViews } = await this.taskRecurrenceQueryService.calculateTasks(
         { userId },
         { from: filter.from, to: filter.to, group: filter.group },
         trx,
@@ -50,8 +51,8 @@ export class GetDiaryTasksHandler implements IQueryHandler<GetDiaryTasksQuery> {
             filter.group != null && filter.group.length > 0 && TaskByGroupId(filter.group),
             TaskByStartDateLessOrEqual(to),
             TaskByDeadlineGreaterOrEqual(from),
+            or(TaskRecurrenceByStatus([TaskRecurrenceStatus.CANCELED]), TaskRecurrenceByEmpty()),
             not(TaskByStatus([TaskStatus.DELETED, TaskStatus.ARCHIVED])),
-            recurrences.length > 0 && not(TaskByIds(recurrences.map((r) => r.taskId))),
           ]),
         ),
         { page: 1, perPage: 1000000 },

@@ -1,4 +1,4 @@
-import { DateVo, Name } from '@big-d/api-utils';
+import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
 import { Priority, Weight } from './value-objects';
@@ -70,7 +70,7 @@ class TaskFactory {
   }
 
   static finish(task: Task, timezone: string): Task {
-    return task.finish({ now: DateVo.nowByTZ(timezone) });
+    return task.finish({ now: DateVo.nowByTZ(TimezoneVo.create(timezone).value) });
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {

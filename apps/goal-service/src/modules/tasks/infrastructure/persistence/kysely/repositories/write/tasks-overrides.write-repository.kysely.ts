@@ -164,13 +164,13 @@ export class TasksOverridesWriteRepositoryKysely
 
       const overrideType = await overrideTypeByNameQuery([override.type], this.db, trx).executeTakeFirstOrThrow();
       const upsertData = {
-        cancel_reason: override.cancelReason,
-        group_id: override.groupId,
+        cancel_reason: override.cancelReason ?? null,
+        group_id: override.groupId ?? null,
         name: override.name,
-        deadline: override.deadline,
-        end_date: override.endDate,
+        deadline: override.deadline ?? null,
+        end_date: override.endDate ?? null,
         start_date: override.startDate,
-        description: override.description,
+        description: override.description ?? null,
         priority: override.priority,
         status_id,
         weight: override.weight,

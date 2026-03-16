@@ -43,7 +43,6 @@ export async function up(db: Kysely<any>): Promise<void> {
 
     .addCheckConstraint('tro_priority_check', sql`priority in (1, 2, 3, 4)`)
     .addCheckConstraint('tro_weight_check', sql`weight between 0 and 100`)
-    .addCheckConstraint('tro_end_after_start', sql`end_date is null or end_date > start_date`)
     .addCheckConstraint('tro_deadline_after_start', sql`end_date is null or deadline > start_date`)
     .execute();
   await setUpdateTriggerOnUpdatedAt('tasks_recurrences_overrides', db);

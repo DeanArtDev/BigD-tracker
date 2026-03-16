@@ -17,12 +17,12 @@ describe('FinishTaskUseCase', () => {
     const userId = 77;
     const taskId = 7001;
     const recurrenceId = 8001;
-    const recurrenceStart = '2026-03-12T10:00:00.000Z';
+    const recurrenceStart = '2026-03-12T10:00';
     const recurrence = getTaskRecurrence({
       id: recurrenceId,
       userId,
       taskId,
-      startDate: '2026-03-01T10:00:00.000Z',
+      startDate: '2026-03-01T10:00',
     });
     const sourceTask = getTask({
       id: taskId,
@@ -32,8 +32,8 @@ describe('FinishTaskUseCase', () => {
       description: 'virtual source description',
       priority: 3,
       weight: 5,
-      startDate: '2026-03-01T10:00:00.000Z',
-      deadline: '2026-03-02T12:00:00.000Z',
+      startDate: '2026-03-01T10:00',
+      deadline: '2026-03-02T12:00',
       status: TaskStatus.IN_PROGRESS,
     });
     const expectedStart = timeAndDate(recurrenceStart).tz(recurrence.timezone, true).utc();
@@ -112,12 +112,12 @@ describe('FinishTaskUseCase', () => {
     const taskId = 7002;
     const recurrenceId = 8002;
     const overrideId = 9002;
-    const recurrenceStart = '2026-03-12T10:00:00.000Z';
+    const recurrenceStart = '2026-03-12T10:00';
     const recurrence = getTaskRecurrence({
       id: recurrenceId,
       userId,
       taskId,
-      startDate: '2026-03-01T10:00:00.000Z',
+      startDate: recurrenceStart,
     });
     const sourceTask = getTask({
       id: taskId,
@@ -139,8 +139,8 @@ describe('FinishTaskUseCase', () => {
         description: 'override description',
         priority: 4,
         weight: 6,
-        startDate: '2026-03-12T09:30:00.000Z',
-        deadline: '2026-03-13T13:45:00.000Z',
+        startDate: '2026-03-12T09:30',
+        deadline: '2026-03-13T13:45',
         status: TaskStatus.IN_PROGRESS,
       }),
       recurrenceId,

@@ -15,7 +15,7 @@ interface TaskOverrodeState {
   weight: number;
   cancelReason?: string;
   startDate: string;
-  deadline?: string;
+  deadline: string;
   endDate?: string;
   status: TaskStatus;
   type: TaskOverrideType;
