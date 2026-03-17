@@ -296,6 +296,125 @@ describe('TaskOverrideDomainService', () => {
     expect(result.overrideToDelete.endDate).toBeUndefined();
     expect(result.overrideToDelete.type).toBe(TaskOverrideType.DELETED);
     expect(result.overrideToDelete.status).toBe(TaskStatus.DELETED);
+    expect(result.shouldDeleteRecurrence).toBe(false);
+  });
+
+  test('delete marks recurrence for deletion when canceled recurrence has the last override', () => {
+    const override = buildOverride({
+      id: 31,
+      status: TaskStatus.IN_PROGRESS,
+      recurrenceId: 19,
+    });
+
+    const result = service.delete({
+      taskId: TaskIdBuilder.wrapOverrideId({
+        recurrenceId: 19,
+        overrideId: 31,
+        date: '2026-03-12T10:00',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        recurrenceId: 19,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      }),
+      currentRecurrence: buildRecurrence({
+        id: 19,
+        taskId: 11,
+        status: TaskRecurrenceStatus.CANCELED,
+        startDate: '2026-03-12T10:00',
+      }),
+      override,
+      currentOverrides: [override],
+    });
+
+    expect(result.shouldDeleteRecurrence).toBe(true);
+    expect(result.overrideToDelete.type).toBe(TaskOverrideType.DELETED);
+    expect(result.overrideToDelete.status).toBe(TaskStatus.DELETED);
+  });
+
+  test('creates override from source task patch and recurrence start', () => {
+    const result = service.create({
+      taskId: TaskIdBuilder.wrapVirtualId({
+        recurrenceId: 19,
+        date: '2026-03-12T10:00',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        recurrenceId: 19,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
+      recurrenceStart: '2026-03-12T10:00',
+      overridePatch: {
+        userId: 77,
+        name: 'Created override',
+        description: 'patched desc',
+        priority: 4,
+        weight: 7,
+        startDate: '2026-03-12T08:15',
+        deadline: '2026-03-12T14:30',
+      },
+    });
+
+    expect(result.overrideToCreate.id).toBeNaN();
+    expect(result.overrideToCreate.type).toBe(TaskOverrideType.OVERRIDE);
+    expect(result.overrideToCreate.recurrenceId).toBe(19);
+    expect(result.overrideToCreate.recurrenceStart).toBe('2026-03-12T10:00');
+    expect(result.overrideToCreate.name).toBe('Created override');
+    expect(result.overrideToCreate.description).toBe('patched desc');
+    expect(result.overrideToCreate.priority).toBe(4);
+    expect(result.overrideToCreate.weight).toBe(7);
+    expect(result.overrideToCreate.startDate).toBe('2026-03-12T08:15');
+    expect(result.overrideToCreate.deadline).toBe('2026-03-12T14:30');
+  });
+
+  test('replaces override using patch values and keeps override identity', () => {
+    const override = buildOverride({
+      id: 31,
+      recurrenceId: 19,
+      recurrenceStart: '2026-03-12T10:00',
+      startDate: '2026-03-12T09:30',
+      deadline: '2026-03-12T13:45',
+      status: TaskStatus.IN_PROGRESS,
+    });
+
+    const result = service.replace({
+      taskId: TaskIdBuilder.wrapOverrideId({
+        recurrenceId: 19,
+        overrideId: 31,
+        date: '2026-03-12T10:00',
+      }),
+      sourceTask: buildTask({
+        id: 11,
+        recurrenceId: 19,
+        startDate: '2026-03-01T10:00:00.000Z',
+        deadline: '2026-03-01T12:00:00.000Z',
+      }),
+      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
+      override,
+      overridePatch: {
+        userId: 77,
+        name: 'Replaced override',
+        description: 'next desc',
+        priority: 2,
+        weight: 3,
+        startDate: '2026-03-12T07:00',
+        deadline: '2026-03-12T15:00',
+      },
+    });
+
+    expect(result.overrideToReplace.id).toBe(31);
+    expect(result.overrideToReplace.recurrenceId).toBe(19);
+    expect(result.overrideToReplace.recurrenceStart).toBe('2026-03-12T10:00');
+    expect(result.overrideToReplace.type).toBe(TaskOverrideType.OVERRIDE);
+    expect(result.overrideToReplace.name).toBe('Replaced override');
+    expect(result.overrideToReplace.description).toBe('next desc');
+    expect(result.overrideToReplace.priority).toBe(2);
+    expect(result.overrideToReplace.weight).toBe(3);
+    expect(result.overrideToReplace.startDate).toBe('2026-03-12T07:00');
+    expect(result.overrideToReplace.deadline).toBe('2026-03-12T15:00');
   });
 
   test('finishes override with COMPLETED when override deadline is after finish date', () => {

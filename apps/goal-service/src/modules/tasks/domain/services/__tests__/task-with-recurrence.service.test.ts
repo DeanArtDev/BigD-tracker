@@ -16,7 +16,15 @@ const buildPatternShaper =
     pattern;
 
 function buildTask(
-  input: { id?: number; recurrenceId?: number; startDate?: string; deadline?: string; status?: TaskStatus } = {},
+  input: {
+    id?: number;
+    recurrenceId?: number;
+    startDate?: string;
+    deadline?: string;
+    endDate?: string;
+    cancelReason?: string;
+    status?: TaskStatus;
+  } = {},
 ): Task {
   return Task.restore({
     id: input.id ?? 11,
@@ -25,9 +33,10 @@ function buildTask(
     description: 'desc',
     priority: Priority.create(1),
     weight: Weight.create(1),
+    cancelReason: input.cancelReason,
     startDate: input.startDate != null ? DateVo.restore(input.startDate) : undefined,
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
-    endDate: undefined,
+    endDate: input.endDate != null ? DateVo.restore(input.endDate) : undefined,
     status: input.status ?? (input.startDate != null ? TaskStatus.IN_PROGRESS : TaskStatus.NOT_STARTED),
     recurrenceId: input.recurrenceId,
   });
@@ -63,21 +72,41 @@ function buildStoredRecurrence(input: { id?: number; startDate: string; timezone
   });
 }
 
+function buildCanceledRecurrence(input: { id?: number; startDate: string; timezone?: string }): TaskRecurrence {
+  return TaskRecurrence.restore({
+    id: input?.id ?? 19,
+    userId: 77,
+    taskId: 11,
+    status: TaskRecurrenceStatus.CANCELED,
+    timezone: TimezoneVo.create(input.timezone ?? 'Asia/Novosibirsk'),
+    startDate: DateVo.restore(input.startDate),
+    pattern: 'RRULE:FREQ=DAILY',
+    frequency: RecurrenceFrequency.DAILY,
+    weekstart: TaskRecurrenceWeekday.MO,
+  });
+}
+
 function buildOverride(input: {
   id?: number;
   status: TaskStatus;
   recurrenceId?: number;
   deadline?: string;
+  recurrenceStart?: string;
+  startDate?: string;
+  endDate?: string;
+  cancelReason?: string;
 }): TaskOverride {
   return TaskOverride.restore({
     task: buildTask({
       id: input.id ?? 31,
-      startDate: '2023-01-03T05:00',
+      startDate: input.startDate ?? '2023-01-03T05:00',
       deadline: input.deadline,
+      endDate: input.endDate,
+      cancelReason: input.cancelReason,
       status: input.status,
     }),
     recurrenceId: input.recurrenceId ?? 19,
-    recurrenceStart: DateVo.restore('2023-01-03T12:00'),
+    recurrenceStart: DateVo.restore(input.recurrenceStart ?? '2023-01-03T12:00'),
     type: TaskOverrideType.OVERRIDE,
   });
 }
@@ -260,6 +289,58 @@ describe('TaskWithRecurrenceService', () => {
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.ACTIVE);
   });
 
+  it('replace updates recurrenceStart for all currentOverrides when canceled recurrence is recreated', () => {
+    const firstOverride = buildOverride({
+      id: 31,
+      status: TaskStatus.COMPLETED,
+      recurrenceId: 19,
+      recurrenceStart: '2023-01-03T12:00',
+      startDate: '2023-01-03T05:00',
+      deadline: '2023-01-03T12:00',
+      endDate: '2023-01-03T09:00',
+    });
+    const secondOverride = buildOverride({
+      id: 32,
+      status: TaskStatus.IN_PROGRESS,
+      recurrenceId: 19,
+      recurrenceStart: '2023-01-05T12:00',
+      startDate: '2023-01-05T05:00',
+      deadline: '2023-01-05T12:00',
+    });
+
+    const result = service.replace({
+      task: buildTask({ recurrenceId: 19, startDate: '2023-01-01T01:00', deadline: '2023-01-01T08:00' }),
+      taskPatch: {
+        name: 'Updated task',
+        description: 'new desc',
+        priority: 2,
+        weight: 3,
+        startDate: '2023-01-01T05:00',
+        deadline: '2023-01-01T08:00',
+      },
+      currentRecurrence: buildCanceledRecurrence({ id: 19, startDate: '2023-01-01T12:00' }),
+      currentOverrides: [firstOverride, secondOverride],
+      recurrencePatch: {
+        startDate: '2023-01-01T13:45',
+        timezone: 'Asia/Novosibirsk',
+        frequency: RecurrenceFrequency.DAILY,
+        weekstart: TaskRecurrenceWeekday.MO,
+      },
+      patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
+    });
+
+    expect(result.isRecurrenceUpdate).toBe(true);
+    if (!result.isRecurrenceUpdate) throw new Error('result should be recurrence update');
+    expect(result.overridesToUpdate).toHaveLength(2);
+    expect(result.overridesToUpdate.map((override) => override.recurrenceStart)).toEqual([
+      '2023-01-03T13:45',
+      '2023-01-05T13:45',
+    ]);
+    expect(result.overridesToUpdate[0]?.endDate).toBe('2023-01-03T09:00');
+    expect(result.overridesToUpdate[0]?.deadline).toBe('2023-01-03T12:00');
+    expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.ACTIVE);
+  });
+
   it('replace rejects overrides that do not belong to current recurrence', () => {
     expect(() =>
       service.replace({
@@ -304,6 +385,57 @@ describe('TaskWithRecurrenceService', () => {
     expect(result.isRecurrenceCancel).toBeUndefined();
     expect(result.recurrence?.pattern).toBe('RRULE:FREQ=WEEKLY');
     expect(result.recurrence?.timezone).toBe('Asia/Novosibirsk');
+  });
+
+  it('replace updates recurrenceStart for all currentOverrides when recurrence startDate changes', () => {
+    const firstOverride = buildOverride({
+      id: 41,
+      status: TaskStatus.COMPLETED,
+      recurrenceId: 19,
+      recurrenceStart: '2023-01-03T12:00',
+      startDate: '2023-01-03T05:00',
+      deadline: '2023-01-03T12:00',
+      endDate: '2023-01-03T09:00',
+    });
+    const secondOverride = buildOverride({
+      id: 42,
+      status: TaskStatus.ARCHIVED,
+      recurrenceId: 19,
+      recurrenceStart: '2023-01-06T12:00',
+      startDate: '2023-01-06T05:00',
+      deadline: '2023-01-06T12:00',
+    });
+
+    const result = service.replace({
+      task: buildTask({ recurrenceId: 19, startDate: '2023-01-01T01:00', deadline: '2023-01-01T05:00' }),
+      taskPatch: {
+        name: 'Updated task',
+        description: 'new desc',
+        priority: 2,
+        weight: 3,
+        startDate: '2023-01-01T05:00',
+        deadline: '2023-01-01T10:00',
+      },
+      currentRecurrence: buildStoredRecurrence({ id: 19, startDate: '2023-01-01T12:00' }),
+      currentOverrides: [firstOverride, secondOverride],
+      recurrencePatch: {
+        startDate: '2023-01-01T16:20',
+        timezone: 'UTC',
+        frequency: RecurrenceFrequency.DAILY,
+        weekstart: TaskRecurrenceWeekday.MO,
+      },
+      patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
+    });
+
+    expect(result.isRecurrenceUpdate).toBe(true);
+    if (!result.isRecurrenceUpdate) throw new Error('result should be recurrence update');
+    expect(result.overridesToUpdate).toHaveLength(2);
+    expect(result.overridesToUpdate.map((override) => override.recurrenceStart)).toEqual([
+      '2023-01-03T16:20',
+      '2023-01-06T16:20',
+    ]);
+    expect(result.overridesToUpdate[0]?.endDate).toBe('2023-01-03T09:00');
+    expect(result.overridesToUpdate[1]?.type).toBe(TaskOverrideType.OVERRIDE);
   });
 
   it('replace marks recurrence deletion when there are no overrides', () => {
