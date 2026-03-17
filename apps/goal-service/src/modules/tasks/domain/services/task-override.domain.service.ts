@@ -137,7 +137,7 @@ class TaskOverrideDomainService {
   }) {
     const { sourceTask, currentRecurrence, overridePatch, recurrenceStart } = input;
 
-    this.#assertOverrideId(input);
+    this.#assertOverrideIdCreation(input);
     this.#assertDependenciesConsistency(input);
 
     const taskToReplace = TaskFactory.replace(sourceTask, overridePatch);
@@ -202,11 +202,11 @@ class TaskOverrideDomainService {
     recurrence: TaskRecurrence;
     override: TaskOverride;
   }) {
-    const { taskId, overrideData, recurrence, override } = input;
+    const { taskId, overrideData, override } = input;
 
     taskServiceAsserts.ensureRecurrenceStartMatched({
       taskId,
-      date: recurrence.startDate,
+      date: overrideData.date,
       expectedDate: override.recurrenceStart,
     });
 
@@ -249,6 +249,21 @@ class TaskOverrideDomainService {
     });
 
     return { overrideData };
+  }
+
+  #assertOverrideIdCreation(input: { sourceTask: Task; currentRecurrence: TaskRecurrence }) {
+    const { sourceTask, currentRecurrence } = input;
+
+    taskServiceAsserts.ensureRecurrenceIdMatched({
+      taskId: sourceTask.id,
+      currentRecurrenceId: sourceTask.recurrenceId,
+      nextRecurrenceId: currentRecurrence.id,
+    });
+
+    taskServiceAsserts.ensureRecurrenceAndTaskMatched({
+      taskId: sourceTask.id,
+      expectedTaskId: currentRecurrence.taskId,
+    });
   }
 }
 
