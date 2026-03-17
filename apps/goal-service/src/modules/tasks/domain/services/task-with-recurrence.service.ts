@@ -277,7 +277,7 @@ class TaskWithRecurrenceService {
     this.assertTaskPersisted(updatedTask);
     this.assertRecurrenceInvariants({
       taskId: updatedTask.id,
-      taskStartDate: taskPatch.startDate,
+      taskStartDate: updatedTask.startDate,
       recurrenceStartDate: recurrence.startDate,
     });
 
@@ -343,6 +343,7 @@ class TaskWithRecurrenceService {
                 recurrencePatch.yearmonths != null ? YearmonthsVo.create(recurrencePatch.yearmonths) : undefined,
             })
           : currentRecurrence.replace({
+              status: TaskRecurrenceStatus.ACTIVE,
               startDate: DateVo.create(recurrencePatch.startDate),
               pattern: recurrencePatch.pattern,
               frequency: recurrencePatch.frequency,
@@ -377,6 +378,8 @@ class TaskWithRecurrenceService {
           startDate: DateVo.create(override.startDate),
           deadline: DateVo.create(override.deadline),
           status: override.status,
+          endDate: override.endDate != null ? DateVo.create(override.endDate) : undefined,
+          cancelReason: override.cancelReason,
           recurrenceId: override.recurrenceId,
         }),
         recurrenceId: override.recurrenceId,

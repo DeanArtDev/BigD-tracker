@@ -118,8 +118,6 @@ class TaskService {
       }
     }
 
-    console.log(replaceData);
-
     if (replaceData.isRecurrenceCancel) {
       if (replaceData.recurrence != null) {
         await this.taskRecurrenceService.updateRecurrence(replaceData.recurrence, trx);
