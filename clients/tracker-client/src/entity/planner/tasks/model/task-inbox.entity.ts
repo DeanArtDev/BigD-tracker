@@ -1,3 +1,4 @@
+import { TaskStatus, TaskType } from '@/entity/planner/tasks';
 import type { ApiSchemas } from '@/shared/api/types';
 
 type TaskDto = ApiSchemas['TaskDto'];
@@ -11,6 +12,8 @@ interface TaskInboxEntity {
   readonly description: TaskDto['description'];
   readonly priority: TaskDto['priority'];
   readonly recurrence: TaskDto['recurrence'];
+  readonly status: TaskStatus;
+  readonly type: TaskType;
 }
 
 export type { TaskInboxEntity };

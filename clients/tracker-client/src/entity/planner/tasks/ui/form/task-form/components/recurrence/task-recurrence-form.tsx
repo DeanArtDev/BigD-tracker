@@ -1,4 +1,4 @@
-import { DatePickerForm, SwitchForm, ToggleGroupMultiForm } from '@/shared/components/form';
+import { SwitchForm, ToggleGroupMultiForm } from '@/shared/components/form';
 import { SelectForm } from '@/shared/components/form/select-form';
 import { Typography } from '@/shared/components/typography';
 import { Collapsible, CollapsibleContent } from '@/shared/ui-kit/ui/collapsible';
@@ -12,13 +12,14 @@ import { taskRecurrenceWeekdayToHumanize } from '../../../../../lib/maps';
 import { TaskRecurrenceFrequency, TaskRecurrenceWeekday } from '../../../../../model';
 import { useTaskFieldsRulesContext } from '../../context';
 import { useValidationSchema } from '../../lib/use-validation-schema';
+import { UntilBlock } from './until-block';
 
 function TaskRecurrenceForm() {
   const { rules } = useTaskFieldsRulesContext();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const validationSchema = useValidationSchema();
   type TaskFormData = z.input<typeof validationSchema>;
-  const { resetField, subscribe } = useFormContext<TaskFormData>();
+  const { resetField } = useFormContext<TaskFormData>();
 
   const isRecurrence = useWatch<{ isRecurrence: TaskFormData['isRecurrence'] }>({
     name: 'isRecurrence',
@@ -39,27 +40,10 @@ function TaskRecurrenceForm() {
     });
   }, [isWeekly, resetField]);
 
-  useEffect(() => {
-    return subscribe({
-      name: ['isRecurrence'],
-      formState: { values: true },
-      callback: (data) => {
-        if (!data.values['isRecurrence']) {
-          resetField('recurrence', {
-            keepDirty: false,
-            keepTouched: false,
-            keepError: false,
-            defaultValue: null,
-          });
-        }
-      },
-    });
-  }, [subscribe, resetField]);
-
   return (
     <div className="flex flex-col grow">
       <div className="flex justify-between grow">
-        <Typography.H6>Повторять</Typography.H6>
+        <Typography.H6>Повторяемость</Typography.H6>
         <SwitchForm name="isRecurrence" disabled={rules?.recurrence.isDisabled} />
       </div>
 
@@ -107,21 +91,7 @@ function TaskRecurrenceForm() {
             </ToggleGroupMultiForm>
           )}
 
-          <DatePickerForm<TaskFormData>
-            name="recurrence.start"
-            disabled={rules?.recurrence.isDisabled}
-            isErrorMessage={false}
-            label="От:"
-            classNames={{ wrapper: 'flex', trigger: 'grow ml-2 max-h-[30px]' }}
-          />
-          <DatePickerForm<TaskFormData>
-            name="recurrence.end"
-            disabled={rules?.recurrence.isDisabled}
-            isErrorMessage={false}
-            endDay
-            label="До:"
-            classNames={{ wrapper: 'flex', trigger: 'grow ml-2 max-h-[30px]' }}
-          />
+          <UntilBlock />
         </CollapsibleContent>
       </Collapsible>
     </div>

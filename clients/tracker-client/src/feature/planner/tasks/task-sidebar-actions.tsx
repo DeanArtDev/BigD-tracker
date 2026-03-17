@@ -1,14 +1,15 @@
-import { TaskStatus } from '@/entity/planner/tasks';
+import { TaskStatus, TaskType } from '@/entity/planner/tasks';
 import { TaskStatusIndication } from '@/entity/planner/tasks/ui';
 import { TaskActions } from '@/feature/planner/tasks/task-actions';
 import { Label } from '@/shared/ui-kit/ui/label';
 import { SidebarGroup, SidebarSeparator } from '@/shared/ui-kit/ui/sidebar';
 
-interface SidebarActionsProps {
+interface TaskSidebarActionsProps {
   readonly groupId?: number;
   readonly taskInfo: {
     readonly id: string;
     readonly status: TaskStatus;
+    readonly type: TaskType;
   };
 
   readonly onFinishSuccess?: () => Promise<void> | void;
@@ -19,7 +20,7 @@ interface SidebarActionsProps {
   readonly onDeleteCompleteSuccess?: () => Promise<void> | void;
 }
 
-function SidebarActions({
+function TaskSidebarActions({
   taskInfo,
   groupId,
   onFinishSuccess,
@@ -28,8 +29,8 @@ function SidebarActions({
   onDeleteSuccess,
   onCloneSuccess,
   onDeleteCompleteSuccess,
-}: SidebarActionsProps) {
-  const { status, id: taskId } = taskInfo;
+}: TaskSidebarActionsProps) {
+  const { status, id: taskId, type } = taskInfo;
 
   return (
     <>
@@ -44,8 +45,9 @@ function SidebarActions({
         <Label>Действия:</Label>
 
         <TaskActions
-          status={status}
           taskId={taskId}
+          status={status}
+          type={type}
           groupId={groupId}
           trigger={{ className: 'ml-auto' }}
           onFinishSuccess={onFinishSuccess}
@@ -62,4 +64,4 @@ function SidebarActions({
   );
 }
 
-export { SidebarActions, type SidebarActionsProps };
+export { TaskSidebarActions, type TaskSidebarActionsProps };

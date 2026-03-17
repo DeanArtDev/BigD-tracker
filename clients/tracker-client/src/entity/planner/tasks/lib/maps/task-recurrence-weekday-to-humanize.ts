@@ -1,4 +1,4 @@
-import { TaskRecurrenceWeekday } from '@/entity/planner/tasks';
+import { TaskRecurrenceWeekday } from '../../model';
 
 const taskRecurrenceWeekdayToHumanize: Record<TaskRecurrenceWeekday, string> = {
   [TaskRecurrenceWeekday.MO]: 'пн',

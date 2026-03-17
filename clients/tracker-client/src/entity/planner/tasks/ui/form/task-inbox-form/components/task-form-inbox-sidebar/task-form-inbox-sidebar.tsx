@@ -24,7 +24,7 @@ function TaskFormInboxSidebar({ footerSlot }: TaskFormInboxSidebarProps) {
         <TaskPriorityPickerForm />
       </SidebarGroup>
 
-      <SidebarGroup className="mt-auto">{isFunction(footerSlot) ? footerSlot({ disabled }) : footerSlot}</SidebarGroup>
+      <SidebarGroup>{isFunction(footerSlot) ? footerSlot({ disabled }) : footerSlot}</SidebarGroup>
     </TaskSidebarRootForm>
   );
 }

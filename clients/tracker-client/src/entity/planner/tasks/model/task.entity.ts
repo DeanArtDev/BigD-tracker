@@ -1,4 +1,3 @@
-import { TaskPriority } from '@/entity/planner/tasks';
 import type { ApiSchemas } from '@/shared/api/types';
 import type { Override } from '@/shared/lib/type-helpers';
 
@@ -29,6 +28,7 @@ enum TaskRecurrenceFrequency {
   MINUTELY = 5,
   SECONDLY = 6,
 }
+
 enum TaskRecurrenceWeekday {
   MO = 0,
   TU = 1,
@@ -39,8 +39,23 @@ enum TaskRecurrenceWeekday {
   SU = 6,
 }
 
+enum TaskPriority {
+  DO = 1, // Важно и Срочно → Делай
+  PLAN = 2, // Важно и Несрочно → Планируй
+  DELEGATE = 3, // Неважно, но Срочно → Делегируй
+  DELETE = 4, // Неважно и Несрочно → Удали
+}
+
+enum TaskType {
+  ORIGINAL = 'ORIGINAL',
+  ORIGINAL_RECURRENCE = 'ORIGINAL_RECURRENCE',
+  VIRTUAL = 'VIRTUAL',
+  OVERRIDE = 'OVERRIDE',
+  UNKNOWN = 'UNKNOWN',
+}
+
 type OverrideStatus = Override<Omit<ApiSchemas['TaskDto'], 'userId'>, 'status', TaskStatus>;
-type TaskEntity = Override<OverrideStatus, 'priority', TaskPriority>;
+type TaskEntity = Override<OverrideStatus, 'priority', TaskPriority> & { type: TaskType };
 
 export { type TaskEntity };
-export { TaskRecurrenceFrequency, TaskStatus, TaskQueryStatus, TaskRecurrenceWeekday };
+export { TaskRecurrenceFrequency, TaskStatus, TaskQueryStatus, TaskRecurrenceWeekday, TaskType, TaskPriority };

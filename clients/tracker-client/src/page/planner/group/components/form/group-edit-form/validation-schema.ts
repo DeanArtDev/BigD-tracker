@@ -1,4 +1,4 @@
-import { TaskStatus } from '@/entity/planner/tasks';
+import { TaskRecurrenceFrequency, TaskRecurrenceWeekday, TaskStatus, TaskType } from '@/entity/planner/tasks';
 import { taskPriorityEnumSchema } from '@/entity/planner/tasks/lib/validation-schemas';
 import { transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
@@ -12,6 +12,15 @@ const taskSchema = z.object({
   startDate: z.string().optional().or(z.literal(null)).transform(transformPlaceholder.isoDate),
   weight: z.number().min(0).max(100),
   status: z.enum(TaskStatus),
+  type: z.enum(TaskType),
+  recurrence: z
+    .object({
+      startDate: z.string(),
+      untilDate: z.string().optional(),
+      frequency: z.enum(TaskRecurrenceFrequency),
+      weekdays: z.array(z.enum(TaskRecurrenceWeekday)).optional(),
+    })
+    .optional(),
 });
 
 const validationSchema = z.object({

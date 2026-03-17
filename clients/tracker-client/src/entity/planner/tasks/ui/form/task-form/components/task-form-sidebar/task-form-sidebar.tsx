@@ -16,7 +16,7 @@ interface TaskFormSidebarProps {
 }
 
 function TaskFormSidebar(props: TaskFormSidebarProps) {
-  const { rules, visibility } = useTaskFieldsRulesContext();
+  const { rules } = useTaskFieldsRulesContext();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const validationSchema = useValidationSchema();
   type TaskFormData = z.input<typeof validationSchema>;
@@ -52,7 +52,7 @@ function TaskFormSidebar(props: TaskFormSidebarProps) {
         )}
       </SidebarGroup>
 
-      {visibility?.recurrence && (
+      {rules?.recurrence.type !== 'hidden' && (
         <>
           <SidebarSeparator className="separator mx-0" />
           <SidebarGroup key="recurrence" className="flex flex-row px-4 gap-4">

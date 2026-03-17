@@ -26,7 +26,6 @@ function TaskDiaryManipulator() {
           key: 'add-task',
           element: (
             <TaskCreation
-              options={{ visibility: { recurrence: false } }}
               trigger={<ButtonAdd variant="outline" size="icon-lg" iconProps={{ className: 'size-7' }} />}
             />
           ),

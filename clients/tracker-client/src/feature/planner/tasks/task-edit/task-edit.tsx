@@ -1,8 +1,7 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useInvalidateAllTasks, useUpdateTask } from '@/entity/planner/tasks';
 import { TaskFormDialog, type TaskFormDialogProps } from '@/entity/planner/tasks/ui';
-import { SidebarActions } from './components/sidebar-actions';
-import dayjs from '@/shared/lib/time';
+import { TaskSidebarActions } from '@/feature/planner/tasks/task-sidebar-actions';
 
 interface TaskEditProps {
   readonly task: TaskFormDialogProps['task'] | null;
@@ -31,9 +30,9 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
       loading={isPending}
       footerSidebarSlot={() =>
         task != null && (
-          <SidebarActions
+          <TaskSidebarActions
             groupId={taskGroupId}
-            taskInfo={{ id: task?.id, status: task?.status }}
+            taskInfo={{ id: task?.id, status: task.status, type: task.type }}
             onFinishSuccess={onSuccess}
             onAssignSuccess={onSuccess}
             onDeleteSuccess={onSuccess}
@@ -47,28 +46,12 @@ function TaskEdit({ task, taskGroupId, onSuccess, onCansel }: TaskEditProps) {
       }}
       onSubmit={(formData) => {
         if (task == null) return;
-
-        const { recurrence } = formData;
-        const hasRecurrence = recurrence != null && recurrence.frequency != null && recurrence.start != null;
+        const { isRecurrence: _, ...data } = formData;
 
         updateTask(
           {
             params: { path: { taskId: task.id } },
-            body: {
-              data: {
-                ...formData,
-                startDate: formData.startDate ? dayjs(formData.startDate).format('YYYY-MM-DDTHH:mm') : undefined,
-                deadline: formData.deadline ? dayjs(formData.deadline).format('YYYY-MM-DDTHH:mm') : undefined,
-                recurrence: hasRecurrence
-                  ? {
-                      frequency: recurrence.frequency,
-                      startDate: dayjs(recurrence.start).format('YYYY-MM-DDTHH:mm'),
-                      untilDate: recurrence.end != null ? dayjs(recurrence.end).format('YYYY-MM-DDTHH:mm') : undefined,
-                      weekdays: recurrence?.weekdays,
-                    }
-                  : undefined,
-              },
-            },
+            body: { data },
           },
           { onSuccess: invalidate },
         );
