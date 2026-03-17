@@ -225,7 +225,7 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
 
       const response: GroupWithTasksView[] = [];
 
-      const tasks = await tasksWithStatusQuery(this.db, trx)
+      const tasks = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
         .where((eb) => taskSpecifications.toExpr(eb))
         .where(
@@ -252,6 +252,17 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
           end_date: task.end_date,
           deadline: task.deadline,
           status: task.status,
+          recurrence: {
+            recurrence_status: task.recurrence_status,
+            timezone: task.recurrence_timezone,
+            recurrence_frequency: task.recurrence_frequency,
+            start_date: task.start_date,
+            interval: task.recurrence_interval,
+            weekdays: task.recurrence_weekdays,
+            monthdays: task.recurrence_monthdays,
+            yearmonths: task.recurrence_yearmonths,
+            until_date: task.recurrence_until_date,
+          },
         });
 
         const arr = tasksByGroupIdMap.get(task.group_id);
