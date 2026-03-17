@@ -48,6 +48,7 @@ function TaskActions({
     handleRecovery,
     handleDeleteComplete,
   } = useTaskActionsHandlers({
+    prevGroupId: groupId,
     onFinishSuccess,
     onAssignSuccess,
     onRecoverSuccess,

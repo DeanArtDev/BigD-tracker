@@ -14,6 +14,7 @@ import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 import { toast } from 'sonner';
 
 interface UseTaskActionsHandlersProps {
+  readonly prevGroupId?: number;
   readonly onFinishSuccess?: () => Promise<void> | void;
   readonly onAssignSuccess?: () => Promise<void> | void;
   readonly onRecoverSuccess?: () => Promise<void> | void;
@@ -24,6 +25,8 @@ interface UseTaskActionsHandlersProps {
 
 function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
   const {
+    prevGroupId,
+
     onFinishSuccess,
     onAssignSuccess,
     onRecoverSuccess,
@@ -125,6 +128,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
   };
 
   const handleAssign = (taskId: TaskEntity['id'], groupId: number, success?: () => void) => {
+    if (prevGroupId === groupId) return;
     assignTaskToGroup(
       { params: { path: { taskId, groupId } } },
       {

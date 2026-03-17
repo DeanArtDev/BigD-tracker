@@ -60,7 +60,7 @@ function AssignableGroupPicker({
                 <Inbox className={cn('size-4 stroke-3', { 'stroke-gray-500': disabled })} />
               </>
             }
-            disabled={disabled || inbox.id === taskGroupId}
+            disabled={disabled}
             onClick={() => void onInboxSelect(inbox)}
           />
 
@@ -81,7 +81,7 @@ function AssignableGroupPicker({
                 <AssignableGroupItem
                   key={groupIndo.id}
                   item={groupIndo}
-                  disabled={disabled || isSelected}
+                  disabled={disabled}
                   actionSlot={
                     isSelected && <Check className={cn('size-4 stroke-3 ', { 'stroke-gray-500': disabled })} />
                   }

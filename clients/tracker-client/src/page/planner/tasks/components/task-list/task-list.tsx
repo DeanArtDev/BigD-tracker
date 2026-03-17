@@ -49,6 +49,7 @@ function TaskList({ tasks, initialLoading = false, onClick }: TaskListProps) {
                 <TaskActions
                   taskId={task.id}
                   type={task.type}
+                  groupId={task.groupId}
                   status={task.status}
                   trigger={{ className: 'my-auto mr-2' }}
                 />
