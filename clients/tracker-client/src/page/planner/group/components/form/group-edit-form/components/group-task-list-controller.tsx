@@ -20,8 +20,6 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const { formState } = useFormContext();
 
-  console.log(formState.errors);
-
   const [taskForUpdate, setTaskForUpdate] = useState<TaskEntity | null>(null);
 
   const { unassignTaskFromGroup, isPending } = useUnassignTaskFromGroup();

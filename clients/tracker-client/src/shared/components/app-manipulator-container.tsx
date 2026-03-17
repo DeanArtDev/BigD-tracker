@@ -28,7 +28,7 @@ function AppManipulatorContainer({ items }: AppManipulatorContainerProps) {
         'box-content max-w-full',
         'inline-block overflow-hidden transition-[width] duration-300 ease-out',
         'fixed bottom-4 md:bottom-8 inset-x-0 mx-auto',
-        'bg-secondary border-2 rounded-2xl shadow-lg',
+        'bg-secondary border-2 rounded-xl shadow-lg',
       )}
     >
       <ul className={cn('w-fit flex flex-nowrap gap-2 p-1.5')} ref={innerRef}>
