@@ -75,7 +75,7 @@ const typeToActionMap: Record<TaskType, (keyof typeof TaskActionType)[]> = {
   [TaskType.UNKNOWN]: [],
 };
 
-const allowIndicationStatusMap = {
+const allowIndicationStatusMap: Record<TaskStatus, boolean> = {
   [TaskStatus.NOT_STARTED]: true,
   [TaskStatus.IN_PROGRESS]: true,
   [TaskStatus.COMPLETED]: false,
@@ -83,6 +83,14 @@ const allowIndicationStatusMap = {
   [TaskStatus.CANCELLED]: false,
   [TaskStatus.ARCHIVED]: false,
   [TaskStatus.DELETED]: false,
+};
+
+const allowIndicationTypeMap: Record<TaskType, boolean> = {
+  [TaskType.OVERRIDE]: true,
+  [TaskType.VIRTUAL]: true,
+  [TaskType.ORIGINAL]: true,
+  [TaskType.ORIGINAL_RECURRENCE]: false,
+  [TaskType.UNKNOWN]: false,
 };
 
 const taskDomainModule = {
@@ -102,4 +110,11 @@ const taskDomainModule = {
   },
 };
 
-export { actionToStatuesMap, allowIndicationStatusMap, TaskActionType, taskDomainModule, typeToActionMap };
+export {
+  actionToStatuesMap,
+  allowIndicationStatusMap,
+  TaskActionType,
+  taskDomainModule,
+  typeToActionMap,
+  allowIndicationTypeMap,
+};

@@ -13,7 +13,8 @@ interface ThingCardProps {
 
 function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
   const { name, priority, deadline, startDate, status, type } = task;
-  const isAllowIndication = isAllowAccentIndicationTask(status);
+  const isRecurrence = type === TaskType.ORIGINAL_RECURRENCE;
+  const isAllowIndication = isAllowAccentIndicationTask(status, type);
 
   return (
     <TaskFrame
@@ -24,15 +25,15 @@ function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
         <div className="flex items-center gap-1">
           <TaskStatusIndication size="sm" status={task.status} />
 
-          {isAllowIndication && startDate != null && (
+          {startDate != null && (
             <TaskStartDate warningIndication={isAllowIndication} startDate={new Date(startDate)} size={12} />
           )}
 
-          {isAllowIndication && deadline != null && (
+          {deadline != null && (
             <TaskDeadlineDate warningIndication={isAllowIndication} deadline={new Date(deadline)} size={12} />
           )}
 
-          {type === TaskType.ORIGINAL_RECURRENCE && <Repeat size={12} />}
+          {isRecurrence && <Repeat size={12} />}
         </div>
       }
       actionsSlot={actionsSlot}

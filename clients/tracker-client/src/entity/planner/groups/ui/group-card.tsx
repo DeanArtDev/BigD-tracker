@@ -1,7 +1,7 @@
 import type { GroupStatus } from '@/entity/planner/groups';
 import { isAllowAccentIndicationGroup } from '@/entity/planner/groups/lib';
 import { GroupStatusIndication } from '@/entity/planner/groups/ui';
-import type { TaskEntity } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskType } from '@/entity/planner/tasks';
 import { getTasksStatusCount } from '@/entity/planner/tasks/lib';
 import { Typography } from '@/shared/components/typography';
 import dayjs, { getClosestTimeToNow } from '@/shared/lib/time';
@@ -23,7 +23,10 @@ interface GroupCardProps {
 function GroupCard({ name, tags, progress, status, tasks, onClick }: GroupCardProps) {
   const { total, overdue, done } = getTasksStatusCount(tasks);
 
-  const closestTaskDeadline = getClosestTimeToNow(tasks.map((t) => t.deadline));
+  const closestTaskDeadline = getClosestTimeToNow(
+    tasks.filter((t) => t.type !== TaskType.ORIGINAL_RECURRENCE).map((t) => t.deadline),
+  );
+
   const isDeadlineToday = closestTaskDeadline != null ? dayjs(closestTaskDeadline).isToday() : false;
   const isAllowIndicationGroup = isAllowAccentIndicationGroup(status);
 

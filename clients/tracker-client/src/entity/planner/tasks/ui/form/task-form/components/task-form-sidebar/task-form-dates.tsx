@@ -1,3 +1,4 @@
+import { TaskType } from '@/entity/planner/tasks';
 import { TaskDeadlineDate, TaskStartDate } from '@/entity/planner/tasks/ui';
 import { DatePickerForm, TimeForm } from '@/shared/components/form';
 import { Typography } from '@/shared/components/typography';
@@ -18,6 +19,8 @@ function TaskFormDates(props: { disabled?: boolean }) {
 
   const startDate = useWatch<{ startDate: TaskFormData['startDate'] }>({ name: 'startDate' });
   const deadline = useWatch<{ deadline: TaskFormData['deadline'] }>({ name: 'deadline' });
+  const type = useWatch<{ type: TaskFormData['type'] }>({ name: 'type' });
+  const isRecurrence = type === TaskType.ORIGINAL_RECURRENCE;
 
   const dateLimits = getMinMaxValues({ startDate, deadline });
 
@@ -43,7 +46,11 @@ function TaskFormDates(props: { disabled?: boolean }) {
                   tabIndex={-1}
                   onBlur={onBlur}
                 >
-                  {value != null ? <TaskStartDate startDate={value} size={15} showDate /> : <Plus />}
+                  {value != null ? (
+                    <TaskStartDate startDate={value} warningIndication={!isRecurrence} size={15} showDate />
+                  ) : (
+                    <Plus />
+                  )}
                 </Button>
               );
             }}
@@ -90,7 +97,11 @@ function TaskFormDates(props: { disabled?: boolean }) {
                   onBlur={onBlur}
                   tabIndex={-1}
                 >
-                  {value != null ? <TaskDeadlineDate deadline={value} size={15} showDate /> : <Plus />}
+                  {value != null ? (
+                    <TaskDeadlineDate warningIndication={!isRecurrence} deadline={value} size={15} showDate />
+                  ) : (
+                    <Plus />
+                  )}
                 </Button>
               );
             }}
