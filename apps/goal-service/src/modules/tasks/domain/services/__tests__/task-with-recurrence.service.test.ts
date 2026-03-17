@@ -308,7 +308,7 @@ describe('TaskWithRecurrenceService', () => {
 
   it('replace marks recurrence deletion when there are no overrides', () => {
     const result = service.replace({
-      task: buildTask({ startDate: '2023-01-03T01:00' }),
+      task: buildTask({ recurrenceId: 19, startDate: '2023-01-03T01:00' }),
       taskPatch: {
         name: 'Updated task',
         description: 'new desc',
@@ -331,13 +331,15 @@ describe('TaskWithRecurrenceService', () => {
     }
     expect(deleteByEmptyRecurrence.id).toBe(19);
     expect(result.shouldDeleteRecurrence).toBe(true);
+    expect(result.isRecurrenceCancel).toBe(true);
+    if (!result.isRecurrenceCancel) throw new Error('result should be recurrence cancel');
     expect(result.overridesToDelete).toEqual([]);
   });
 
   it('replace deletes recurrence with all cancellable overrides', () => {
     const recurrenceId = 333;
     const result = service.replace({
-      task: buildTask({ startDate: '2023-01-03T01:00' }),
+      task: buildTask({ recurrenceId, startDate: '2023-01-03T01:00' }),
       taskPatch: {
         name: 'Updated task',
         description: 'new desc',
@@ -367,12 +369,14 @@ describe('TaskWithRecurrenceService', () => {
     }
     expect(deleteByOverridesRecurrence.id).toBe(recurrenceId);
     expect(result.shouldDeleteRecurrence).toBe(false);
+    expect(result.isRecurrenceCancel).toBe(true);
+    if (!result.isRecurrenceCancel) throw new Error('result should be recurrence cancel');
     expect(result.overridesToDelete?.length).toEqual(3);
   });
 
   it('replace cancels recurrence without deletion when there is non-cancellable override', () => {
     const result = service.replace({
-      task: buildTask({ startDate: '2023-01-03T01:00' }),
+      task: buildTask({ recurrenceId: 19, startDate: '2023-01-03T01:00' }),
       taskPatch: {
         name: 'Updated task',
         description: 'new desc',
@@ -400,9 +404,11 @@ describe('TaskWithRecurrenceService', () => {
     expect(result.isRecurrenceCreate).toBeUndefined();
     expect(result.isRecurrenceUpdate).toBeUndefined();
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
-    expect(result.recurrence?.untilDate).toBe('2023-01-07T18:00');
+    expect(result.recurrence?.untilDate).toBe('2023-01-05T12:00');
     expect(result.recurrence).not.toBeNull();
     expect(result.shouldDeleteRecurrence).toBe(false);
+    expect(result.isRecurrenceCancel).toBe(true);
+    if (!result.isRecurrenceCancel) throw new Error('result should be recurrence cancel');
     expect(result.overridesToDelete).toEqual([]);
   });
 
@@ -424,7 +430,7 @@ describe('TaskWithRecurrenceService', () => {
     });
 
     const result = service.replace({
-      task: buildTask({ startDate: '2023-01-03T01:00' }),
+      task: buildTask({ recurrenceId: 19, startDate: '2023-01-03T01:00' }),
       taskPatch: {
         name: 'Updated task',
         description: 'new desc',
@@ -440,14 +446,16 @@ describe('TaskWithRecurrenceService', () => {
 
     expect(result.isRecurrenceCancel).toBe(true);
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
-    expect(result.recurrence?.untilDate).toBe('2023-01-07T18:00');
+    expect(result.recurrence?.untilDate).toBe('2023-01-05T12:00');
     expect(result.shouldDeleteRecurrence).toBe(false);
+    expect(result.isRecurrenceCancel).toBe(true);
+    if (!result.isRecurrenceCancel) throw new Error('result should be recurrence cancel');
     expect(result.overridesToDelete).toEqual([deletableA, deletableB]);
   });
 
   it('replace cancels recurrence without task.startDate when recurrence cannot be deleted', () => {
     const result = service.replace({
-      task: buildTask(),
+      task: buildTask({ recurrenceId: 19 }),
       taskPatch: {
         name: 'Updated task',
         description: 'new desc',
@@ -470,6 +478,8 @@ describe('TaskWithRecurrenceService', () => {
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
     expect(result.recurrence?.untilDate).toBe('2023-01-05T12:00');
     expect(result.shouldDeleteRecurrence).toBe(false);
+    expect(result.isRecurrenceCancel).toBe(true);
+    if (!result.isRecurrenceCancel) throw new Error('result should be recurrence cancel');
     expect(result.overridesToDelete).toEqual([]);
   });
 

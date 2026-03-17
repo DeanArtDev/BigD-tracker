@@ -230,7 +230,6 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           sql: `
           insert into "tasks_recurrences"
             (
-              "id",
               "user_id",
               "task_id",
               "timezone",
@@ -246,23 +245,22 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
               "recurrence_frequencies_id"
             )
           values
-            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
           on conflict ("task_id", "start_date")
           do update set
-            "pattern" = $15,
-            "start_date" = $16,
-            "until_date" = $17,
-            "yearmonths" = $18,
-            "monthdays" = $19,
-            "weekdays" = $20,
-            "interval" = $21,
-            "weekstart" = $22,
-            "recurrence_status_id" = $23,
-            "recurrence_frequencies_id" = $24
+            "pattern" = $14,
+            "start_date" = $15,
+            "until_date" = $16,
+            "yearmonths" = $17,
+            "monthdays" = $18,
+            "weekdays" = $19,
+            "interval" = $20,
+            "weekstart" = $21,
+            "recurrence_status_id" = $22,
+            "recurrence_frequencies_id" = $23
           returning *
         `,
           parameters: [
-            1,
             77,
             11,
             'UTC',

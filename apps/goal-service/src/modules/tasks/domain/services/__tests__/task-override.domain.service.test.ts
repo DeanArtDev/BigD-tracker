@@ -235,6 +235,7 @@ describe('TaskOverrideDomainService', () => {
         }),
         currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
         override: buildOverride({ id: 31, recurrenceId: 99 }),
+        currentOverrides: [buildOverride({ id: 31, recurrenceId: 99 })],
       }),
     ).toThrow();
   });
@@ -255,6 +256,7 @@ describe('TaskOverrideDomainService', () => {
         }),
         currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
         override: buildOverride({ id: 31, recurrenceStart: '2026-03-13T10:00:00.000Z' }),
+        currentOverrides: [buildOverride({ id: 31, recurrenceStart: '2026-03-13T10:00:00.000Z' })],
       }),
     ).toThrow();
   });
@@ -277,22 +279,23 @@ describe('TaskOverrideDomainService', () => {
       }),
       currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
       override,
+      currentOverrides: [override],
     });
 
-    expect(result.override).toBe(override);
-    expect(result.override.id).toBe(31);
-    expect(result.override.recurrenceId).toBe(19);
-    expect(result.override.recurrenceStart).toBe('2026-03-12T10:00');
-    expect(result.override.name).toBe('Override task');
-    expect(result.override.description).toBe('override desc');
-    expect(result.override.priority).toBe(4);
-    expect(result.override.weight).toBe(9);
-    expect(result.override.cancelReason).toBeUndefined();
-    expect(result.override.startDate).toBe('2026-03-12T09:30');
-    expect(result.override.deadline).toBe('2026-03-12T13:45');
-    expect(result.override.endDate).toBeUndefined();
-    expect(result.override.type).toBe(TaskOverrideType.DELETED);
-    expect(result.override.status).toBe(TaskStatus.DELETED);
+    expect(result.overrideToDelete).toBe(override);
+    expect(result.overrideToDelete.id).toBe(31);
+    expect(result.overrideToDelete.recurrenceId).toBe(19);
+    expect(result.overrideToDelete.recurrenceStart).toBe('2026-03-12T10:00');
+    expect(result.overrideToDelete.name).toBe('Override task');
+    expect(result.overrideToDelete.description).toBe('override desc');
+    expect(result.overrideToDelete.priority).toBe(4);
+    expect(result.overrideToDelete.weight).toBe(9);
+    expect(result.overrideToDelete.cancelReason).toBeUndefined();
+    expect(result.overrideToDelete.startDate).toBe('2026-03-12T09:30');
+    expect(result.overrideToDelete.deadline).toBe('2026-03-12T13:45');
+    expect(result.overrideToDelete.endDate).toBeUndefined();
+    expect(result.overrideToDelete.type).toBe(TaskOverrideType.DELETED);
+    expect(result.overrideToDelete.status).toBe(TaskStatus.DELETED);
   });
 
   test('finishes override with COMPLETED when override deadline is after finish date', () => {
