@@ -2,7 +2,6 @@ import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import { useCreateTask, useInvalidateAllTasks } from '@/entity/planner/tasks';
 import { TaskFormDialog, type TaskFormDialogProps } from '@/entity/planner/tasks/ui';
 import type { TaskFormProps } from '@/entity/planner/tasks/ui/form';
-import dayjs from '@/shared/lib/time';
 import { type ReactNode, useState } from 'react';
 
 interface TaskCreationProps {
@@ -32,28 +31,10 @@ function TaskCreation({ trigger, groupId, options, onSuccess, onCansel }: TaskCr
         !isOpen && onCansel?.();
       }}
       onSubmit={(formData) => {
-        const { recurrence } = formData;
-        const hasRecurrence = recurrence != null && recurrence.frequency != null && recurrence.start != null;
+        const { isRecurrence: _, ...data } = formData;
 
         createTask(
-          {
-            body: {
-              data: {
-                ...formData,
-                startDate: formData.startDate ? dayjs(formData.startDate).format('YYYY-MM-DDTHH:mm') : undefined,
-                deadline: formData.deadline ? dayjs(formData.deadline).format('YYYY-MM-DDTHH:mm') : undefined,
-                groupId,
-                recurrence: hasRecurrence
-                  ? {
-                      frequency: recurrence.frequency,
-                      startDate: dayjs(recurrence.start).format('YYYY-MM-DDTHH:mm'),
-                      untilDate: recurrence.end != null ? dayjs(recurrence.end).format('YYYY-MM-DDTHH:mm') : undefined,
-                      weekdays: recurrence?.weekdays,
-                    }
-                  : undefined,
-              },
-            },
-          },
+          { body: { data: { ...data, groupId } } },
 
           {
             onSuccess: async () => {

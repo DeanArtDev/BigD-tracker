@@ -1,6 +1,7 @@
-import type { TaskEntity } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskType } from '@/entity/planner/tasks';
 import { isAllowAccentIndicationTask } from '@/entity/planner/tasks/lib';
 import { TaskDeadlineDate, TaskFrame, TaskStartDate, TaskStatusIndication } from '@/entity/planner/tasks/ui';
+import { Repeat } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 interface ThingCardProps {
@@ -11,7 +12,7 @@ interface ThingCardProps {
 }
 
 function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
-  const { name, priority, deadline, startDate, status } = task;
+  const { name, priority, deadline, startDate, status, type } = task;
   const isAllowIndication = isAllowAccentIndicationTask(status);
 
   return (
@@ -30,6 +31,8 @@ function TaskCard({ task, className, actionsSlot, onClick }: ThingCardProps) {
           {isAllowIndication && deadline != null && (
             <TaskDeadlineDate warningIndication={isAllowIndication} deadline={new Date(deadline)} size={12} />
           )}
+
+          {type === TaskType.ORIGINAL_RECURRENCE && <Repeat size={12} />}
         </div>
       }
       actionsSlot={actionsSlot}

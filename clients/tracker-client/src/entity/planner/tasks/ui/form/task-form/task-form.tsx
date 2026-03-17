@@ -10,8 +10,13 @@ import { type ReactNode, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { TaskPriority } from '../../../lib/constants';
-import { type TaskEntity, TaskRecurrenceFrequency, TaskRecurrenceWeekday } from '../../../model';
+import {
+  taskDomainModule,
+  type TaskEntity,
+  TaskPriority,
+  TaskRecurrenceFrequency,
+  TaskRecurrenceWeekday,
+} from '../../../model';
 import { TaskHeaderForm } from '../task-header-form';
 import { TaskFormSidebarTrigger } from '../task-sidebar-root-form';
 import { SidebarErrorCatcher } from './components/sidebar-error-catcher';
@@ -19,6 +24,31 @@ import { TaskFormSidebar } from './components/task-form-sidebar';
 import { TaskFieldsRulesProvider, type TaskFieldsRulesProviderProps } from './context';
 import { useTaskFormValues } from './lib/use-task-form-values';
 import { useValidationSchema } from './lib/use-validation-schema';
+
+const { dateToTaskStandard } = taskDomainModule;
+
+type TaskFormSubmitDate = {
+  name: string;
+  priority: number;
+  deadline?: string;
+  startDate?: string;
+  weight: number;
+  description?: string;
+} & (
+  | {
+      isRecurrence: true;
+      recurrence: {
+        frequency: TaskRecurrenceFrequency;
+        startDate: string;
+        untilDate?: string;
+        weekdays?: TaskRecurrenceWeekday[];
+      };
+    }
+  | {
+      isRecurrence: false;
+      recurrence: undefined;
+    }
+);
 
 interface TaskFormProps extends FormStateEmitterProps {
   readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason'>;
@@ -31,20 +61,7 @@ interface TaskFormProps extends FormStateEmitterProps {
   readonly footerSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly footerSidebarSlot?: (props: { disabled: boolean }) => ReactNode;
   readonly defaultSidebarOpen?: boolean;
-  readonly onSubmit?: (data: {
-    name: string;
-    priority: number;
-    deadline?: string;
-    startDate?: string;
-    weight: number;
-    description?: string;
-    recurrence?: {
-      frequency: TaskRecurrenceFrequency;
-      start: string;
-      end?: string;
-      weekdays?: TaskRecurrenceWeekday[];
-    };
-  }) => void;
+  readonly onSubmit?: (data: TaskFormSubmitDate) => void;
 }
 
 function Component(props: TaskFormProps) {
@@ -98,20 +115,36 @@ function Component(props: TaskFormProps) {
               return;
             }
 
-            const { start, end, frequency, weekdays } = formData.recurrence ?? {};
-            const recurrence =
-              start != null && frequency != null
-                ? { start, end, frequency, weekdays: weekdays?.map(Number) }
-                : undefined;
+            const { startDate, isRecurrence } = formData;
+            const { end, frequency, weekdays, isEndless } = formData.recurrence ?? {};
+            const hasRecurrence = startDate != null && frequency != null && isRecurrence;
 
-            onSubmit?.({
+            const submitData = {
               name: formData.name,
               weight: formData.weight,
-              startDate: formData.startDate,
-              deadline: formData.deadline,
+              startDate: startDate != null ? dateToTaskStandard(startDate) : undefined,
+              deadline: formData.deadline != null ? dateToTaskStandard(formData.deadline) : undefined,
               description,
               priority: formData.priority != null ? formData.priority : TaskPriority.DELETE,
-              recurrence,
+            };
+
+            if (hasRecurrence) {
+              return void onSubmit?.({
+                ...submitData,
+                isRecurrence: true,
+                recurrence: {
+                  startDate: dateToTaskStandard(startDate),
+                  untilDate: !isEndless && end != null ? dateToTaskStandard(end) : undefined,
+                  frequency,
+                  weekdays: weekdays?.map(Number),
+                },
+              });
+            }
+
+            return void onSubmit?.({
+              ...submitData,
+              isRecurrence: false,
+              recurrence: undefined,
             });
           })(evt);
         }}
@@ -166,7 +199,7 @@ function TaskForm(props: TaskFormProps) {
   const options = merge({}, { visibility: { recurrence: true } }, props?.options);
 
   return (
-    <TaskFieldsRulesProvider status={props?.task?.status} options={options}>
+    <TaskFieldsRulesProvider status={props.task?.status} type={props.task?.type} options={options}>
       <Component {...props} />
     </TaskFieldsRulesProvider>
   );

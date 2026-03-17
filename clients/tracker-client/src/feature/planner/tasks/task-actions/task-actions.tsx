@@ -1,5 +1,5 @@
 import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
-import { type TaskEntity, TaskStatus } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskStatus, TaskType } from '@/entity/planner/tasks';
 import { TaskActionsDropdown } from '@/entity/planner/tasks/ui';
 import { useState } from 'react';
 import { useTaskActionsHandlers } from './use-task-actions-handlers';
@@ -8,6 +8,7 @@ interface TaskActionsProps {
   readonly taskId: TaskEntity['id'];
   readonly groupId?: number;
   readonly status: TaskStatus;
+  readonly type: TaskType;
 
   readonly trigger?: {
     readonly className?: string;
@@ -24,6 +25,7 @@ interface TaskActionsProps {
 function TaskActions({
   taskId,
   status,
+  type,
   groupId,
   trigger,
   onFinishSuccess,
@@ -65,6 +67,7 @@ function TaskActions({
       <TaskActionsDropdown
         triggerClassName={trigger?.className}
         loading={isLoading}
+        taskType={type}
         taskStatus={status}
         onAssign={() => void setAssignOpen(true)}
         onFinish={() => void handleFinish(taskId)}
@@ -77,6 +80,7 @@ function TaskActions({
       {confirmHolder}
 
       <AssignInboxTaskToGroupDialog
+        taskGroupId={groupId}
         open={recoveryOpen || assignOpen}
         loading={isLoading}
         onOpenChange={(value) => {

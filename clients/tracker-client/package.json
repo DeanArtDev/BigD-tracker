@@ -12,7 +12,7 @@
     "dead:deps:analyse": "knip --config ./knip.deps.json",
     "=== BUILD ===": "",
     "api:generate": "npx openapi-typescript http://localhost:4002/swagger/json -o src/shared/api/types/generated-types.ts",
-    "build": "tsc -b && vite build",
+    "build": "pnpm type:check && vite build",
     "type:check": "tsc -b --noEmit",
     "=== CI ===": "",
     "format": "prettier \"src/**/*.{ts,tsx}\" --check",

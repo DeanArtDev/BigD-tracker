@@ -1,5 +1,4 @@
-import { TaskRecurrenceFrequency, TaskRecurrenceWeekday } from '../model';
-import { TaskPriority } from './constants';
+import { TaskPriority, TaskRecurrenceFrequency, TaskRecurrenceWeekday } from '../model';
 
 const taskPriorityEnumSchema = Object.values(TaskPriority)
   .filter((v) => typeof v === 'number')

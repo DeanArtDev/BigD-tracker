@@ -47,7 +47,7 @@ function safeStringify(value: unknown) {
   try {
     return JSON.stringify(
       value,
-      (_key, val) => {
+      (_, val) => {
         if (val instanceof Error) {
           return {
             name: val.name,

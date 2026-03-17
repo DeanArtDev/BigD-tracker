@@ -37,6 +37,21 @@ export default tseslint.config(
       ...getClientEslintConfig().rules,
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'warn',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'all',
+          caughtErrors: 'all',
+          ignoreRestSiblings: false,
+
+          varsIgnorePattern: '^(_|__|___)$',
+          argsIgnorePattern: '^(_|__|___)$',
+          caughtErrorsIgnorePattern: '^(_|__|___)$',
+          destructuredArrayIgnorePattern: '^(_|__|___)$',
+        },
+      ],
     },
   },
 );

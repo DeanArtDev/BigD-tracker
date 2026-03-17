@@ -24,7 +24,6 @@ function SidebarErrorCatcher() {
         const err = [
           data.errors?.['startDate']?.message,
           data.errors?.['deadline']?.message,
-          errorList?.start?.message,
           errorList?.end?.message,
           errorList?.frequency?.message,
           errorList?.weekdays?.message,

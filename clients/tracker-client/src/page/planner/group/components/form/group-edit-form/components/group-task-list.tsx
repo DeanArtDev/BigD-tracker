@@ -18,7 +18,7 @@ import type { GroupEditFormData } from '../validation-schema';
 
 interface GroupTaskListProps {
   readonly afterTaskNameSlot?: (props: {
-    taskInfo: { id: TaskEntity['id']; status: TaskEntity['status'] };
+    taskInfo: { id: TaskEntity['id']; status: TaskEntity['status']; type: TaskEntity['type'] };
   }) => ReactNode;
   readonly beforeTaskListSlot?: ReactNode;
   readonly emptyPlaceholderBeforeEndSlot?: ReactNode;

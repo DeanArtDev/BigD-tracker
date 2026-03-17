@@ -1,4 +1,10 @@
-import { type TaskEntity, type TaskInboxEntity, TaskPriority, TaskStatus } from '@/entity/planner/tasks';
+import {
+  taskDomainModule,
+  type TaskEntity,
+  type TaskInboxEntity,
+  TaskPriority,
+  TaskStatus,
+} from '@/entity/planner/tasks';
 
 class TaskFactory {
   static #counter = 1;
@@ -13,7 +19,9 @@ class TaskFactory {
       startDate: undefined,
       deadline: undefined,
       description: undefined,
-      priority: 2,
+      type: taskDomainModule.parseId(overrides.id ?? id, overrides?.recurrence).type,
+      priority: TaskPriority.PLAN,
+      status: TaskStatus.NOT_STARTED,
       recurrence: undefined,
       ...overrides,
     };
@@ -33,6 +41,7 @@ class TaskFactory {
       weight: 1,
       cancelReason: undefined,
       recurrence: undefined,
+      type: taskDomainModule.parseId(overrides.id ?? id, overrides?.recurrence).type,
       priority: TaskPriority.PLAN,
       status: TaskStatus.NOT_STARTED,
       ...overrides,

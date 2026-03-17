@@ -1,9 +1,11 @@
-import { type TaskEntity, TaskStatus } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskStatus, TaskType } from '@/entity/planner/tasks';
 import { taskStatusToIconMap } from '@/entity/planner/tasks/lib/maps';
 import { Typography } from '@/shared/components/typography';
 import dayjs from '@/shared/lib/time';
 import { TimeEvent } from '@/shared/lib/time-view/core';
+import { useTimeViewController } from '@/shared/lib/time-view/react-integration/model';
 import { cn } from '@/shared/ui-kit/utils';
+import { Repeat } from 'lucide-react';
 
 interface EventViewProps {
   readonly event: TimeEvent<TaskEntity>;
@@ -12,7 +14,12 @@ interface EventViewProps {
 
 function EventView({ event, onClick }: EventViewProps) {
   const Icon = taskStatusToIconMap[event.extra!.status];
+  const isRepeatable = [TaskType.OVERRIDE, TaskType.VIRTUAL].some((t) => t === event.extra?.type);
   const isPriorityIndicate = [TaskStatus.IN_PROGRESS, TaskStatus.NOT_STARTED].some((s) => s === event.extra?.status);
+
+  const selectedDate = useTimeViewController().state.selectedDate;
+
+  const isToday = dayjs(event.to).date() !== dayjs(selectedDate).date();
 
   return (
     <article
@@ -28,15 +35,16 @@ function EventView({ event, onClick }: EventViewProps) {
       )}
       onClick={() => void onClick(event)}
     >
-      <li className="relative flex flex-col items-start">
+      <li className="relative flex grow flex-col items-start">
         <Icon className="size-3.5 absolute left-0 top-1" />
 
         <Typography.H6 className="flex line-clamp-1 break-all indent-[18px] leading-relaxed">
           {event.name}
         </Typography.H6>
 
-        <time className="flex line-clamp-1 text-gray-600 text-xs items-center break-all">
-          {`${dayjs(event.from).format('HH:mm')} - ${dayjs(event.to).format('HH:mm')}`}
+        <time className="flex line-clamp-1 text-gray-600 text-xs items-center break-all gap-1">
+          {dayjs(event.from).format('HH:mm')} &ndash; {dayjs(event.to).format(isToday ? 'D MMM HH:mm' : 'HH:mm')}
+          {isRepeatable && <Repeat className="size-3 ml-auto" />}
         </time>
       </li>
     </article>

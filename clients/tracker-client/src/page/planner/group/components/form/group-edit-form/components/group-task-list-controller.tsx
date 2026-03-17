@@ -1,11 +1,12 @@
 import { useInvalidateAllGroups } from '@/entity/planner/groups';
-import { type TaskEntity, useAssignTaskToGroup, useUnassignTaskFromGroup } from '@/entity/planner/tasks';
+import { type TaskEntity, TaskType, useAssignTaskToGroup, useUnassignTaskFromGroup } from '@/entity/planner/tasks';
 import { isAllowTaskAction } from '@/entity/planner/tasks/lib';
 import { TaskCreation } from '@/feature/planner/tasks/task-creation';
 import { TaskEdit } from '@/feature/planner/tasks/task-edit';
 import { ButtonAdd } from '@/shared/components/button-add';
 import { ButtonClose } from '@/shared/components/button-close';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
+import { Repeat } from 'lucide-react';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { GroupTaskAutocomplete } from './group-task-autocomplete';
@@ -18,6 +19,8 @@ interface GroupTaskListControllerProps {
 function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const { formState } = useFormContext();
+
+  console.log(formState.errors);
 
   const [taskForUpdate, setTaskForUpdate] = useState<TaskEntity | null>(null);
 
@@ -46,29 +49,33 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
   return (
     <>
       <GroupTaskList
-        afterTaskNameSlot={({ taskInfo: { status, id: taskId } }) => {
-          if (!isAllowTaskAction('UNASSIGN', status)) return null;
+        afterTaskNameSlot={({ taskInfo: { status, id: taskId, type } }) => {
+          const isRecurrence = type === TaskType.ORIGINAL_RECURRENCE;
+          if (!isAllowTaskAction('UNASSIGN', status, type) || !isRecurrence) return null;
 
           return (
-            <ButtonClose
-              className="size-5"
-              disabled={isPending}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
+            <>
+              <Repeat size={12} />
+              <ButtonClose
+                className="size-5"
+                disabled={isPending}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
 
-                viaConfirmation({
-                  isNeedConfirm: () => true,
-                  callback: () =>
-                    void unassignTaskFromGroup({ params: { path: { taskId, groupId } } }, { onSuccess: invalidate }),
+                  viaConfirmation({
+                    isNeedConfirm: () => true,
+                    callback: () =>
+                      void unassignTaskFromGroup({ params: { path: { taskId, groupId } } }, { onSuccess: invalidate }),
 
-                  dialog: {
-                    title: 'Удалить дело из группы?',
-                    content: 'Дело можно будет добавить в группу повторно',
-                  },
-                });
-              }}
-            />
+                    dialog: {
+                      title: 'Удалить дело из группы?',
+                      content: 'Дело можно будет добавить в группу повторно',
+                    },
+                  });
+                }}
+              />
+            </>
           );
         }}
         beforeTaskListSlot={TaskAutocomplete}
@@ -76,6 +83,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
         onTaskClick={(formTask) =>
           void setTaskForUpdate({
             id: formTask.id,
+            type: formTask.type,
             priority: Number(formTask.priority),
             description: formTask.description,
             name: formTask.name,
@@ -83,6 +91,7 @@ function GroupTaskListController({ groupId }: GroupTaskListControllerProps) {
             startDate: formTask.startDate ?? undefined,
             weight: formTask.weight,
             status: formTask.status,
+            recurrence: formTask.recurrence,
           })
         }
       />

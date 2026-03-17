@@ -1,6 +1,6 @@
-import { TaskPriority } from '@/entity/planner/tasks';
-import { type TaskEntity, TaskStatus } from '../../model';
+import { taskDomainModule, TaskPriority } from '@/entity/planner/tasks';
 import type { ApiSchemas } from '@/shared/api/types';
+import { type TaskEntity, TaskStatus } from '../../model';
 
 function taskDtoToEntity(dto: ApiSchemas['TaskDto']): TaskEntity {
   const priorityMap: Record<string, TaskPriority> = {
@@ -22,6 +22,7 @@ function taskDtoToEntity(dto: ApiSchemas['TaskDto']): TaskEntity {
     weight: dto.weight,
     startDate: dto.startDate,
     deadline: dto.deadline,
+    type: taskDomainModule.parseId(dto.id, dto.recurrence).type,
     recurrence: dto.recurrence,
   };
 }

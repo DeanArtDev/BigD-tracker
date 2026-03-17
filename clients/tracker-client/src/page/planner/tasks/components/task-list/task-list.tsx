@@ -48,8 +48,8 @@ function TaskList({ tasks, initialLoading = false, onClick }: TaskListProps) {
               actionsSlot={
                 <TaskActions
                   taskId={task.id}
+                  type={task.type}
                   status={task.status}
-                  groupId={task.groupId}
                   trigger={{ className: 'my-auto mr-2' }}
                 />
               }

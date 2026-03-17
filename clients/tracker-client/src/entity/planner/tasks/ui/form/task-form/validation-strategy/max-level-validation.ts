@@ -1,5 +1,5 @@
-import { TaskRecurrenceFrequency } from '@/entity/planner/tasks';
-import { isSameDay, isWithinCalendarDaysFromToday } from '@/shared/lib/time';
+import { TaskRecurrenceFrequency, TaskType } from '@/entity/planner/tasks';
+import { isWithinCalendarDaysFromToday } from '@/shared/lib/time';
 import { formPlaceholderValues, formTransform, transformPlaceholder } from '@/shared/lib/utils/zod';
 import { z } from 'zod';
 import {
@@ -17,6 +17,8 @@ const maxLevelValidation = z
     description: z.string().optional().transform(transformPlaceholder.optional),
     isDescriptionDirty: z.boolean(),
 
+    type: z.enum(TaskType).optional(),
+
     weight: z
       .number({ error: '' })
       .max(100, { error: 'Не больше 100' })
@@ -30,7 +32,7 @@ const maxLevelValidation = z
     isRecurrence: z.boolean(),
     recurrence: z
       .object({
-        start: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
+        isEndless: z.boolean(),
 
         end: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
 
@@ -63,21 +65,38 @@ const maxLevelValidation = z
     }
   })
   .check((ctx) => {
-    const { recurrence, startDate, deadline, isRecurrence } = ctx.value;
-    const { start, end, weekdays, frequency } = recurrence ?? {};
-    if (!isRecurrence) return;
+    /* OVERRIDE and VIRTUAL */
+    const { startDate, deadline, type } = ctx.value;
+    const isVirtual = type === TaskType.VIRTUAL;
+    const isOverride = type === TaskType.OVERRIDE;
 
-    const isRecurrenceValuesEmpty =
-      start == null || end == null || frequency == null || startDate == null || deadline == null;
+    if (!isVirtual && !isOverride) return;
 
-    if (start == null) {
+    if (startDate == null) {
       ctx.issues.push({
-        path: ['recurrence.start'],
-        input: start,
+        path: ['startDate'],
+        input: startDate,
         code: 'custom',
         message: 'Обязательное к заполнению поле',
       });
     }
+
+    if (deadline == null) {
+      ctx.issues.push({
+        path: ['deadline'],
+        input: deadline,
+        code: 'custom',
+        message: 'Обязательное к заполнению поле',
+      });
+    }
+  })
+  .check((ctx) => {
+    /* RECURRENCE */
+    const { recurrence, startDate, deadline, isRecurrence } = ctx.value;
+    const { end, weekdays, frequency } = recurrence ?? {};
+    if (!isRecurrence) return;
+
+    const isRecurrenceValuesEmpty = end == null || frequency == null || startDate == null || deadline == null;
 
     if (frequency == null) {
       ctx.issues.push({
@@ -114,24 +133,6 @@ const maxLevelValidation = z
         input: weekdays,
         code: 'custom',
         message: 'Укажите хотя бы один день недели',
-      });
-    }
-
-    const message = `Дата начала и дата начала повторений должны быть в рамках одного дня`;
-
-    if (!isSameDay(start, startDate)) {
-      ctx.issues.push({
-        path: ['recurrence.start'],
-        input: start,
-        code: 'custom',
-        message,
-      });
-
-      ctx.issues.push({
-        path: ['startDate'],
-        input: startDate,
-        code: 'custom',
-        message,
       });
     }
 

@@ -1,3 +1,4 @@
+import { TaskType } from '@/entity/planner/tasks';
 import { taskActionToHumanize } from '@/entity/planner/tasks/lib/maps';
 import { AppDropdown } from '@/shared/components/app-dropdown';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -12,6 +13,7 @@ interface TaskActionsDropdownProps {
   readonly loading: boolean;
   readonly triggerClassName?: string;
   readonly taskStatus: TaskStatus;
+  readonly taskType: TaskType;
   readonly onAssign?: () => void;
   readonly onFinish?: () => void;
   readonly onRecover?: () => void;
@@ -22,6 +24,7 @@ interface TaskActionsDropdownProps {
 
 function TaskActionsDropdown({
   taskStatus,
+  taskType,
   triggerClassName,
   loading,
 
@@ -39,7 +42,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.RECOVER])}
         </TaskAction>
       ),
-      allow: isAllowTaskAction('RECOVER', taskStatus),
+      allow: isAllowTaskAction('RECOVER', taskStatus, taskType),
     },
 
     {
@@ -48,7 +51,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.FINISH])}
         </TaskAction>
       ),
-      allow: isAllowTaskAction('FINISH', taskStatus),
+      allow: isAllowTaskAction('FINISH', taskStatus, taskType),
     },
 
     {
@@ -57,7 +60,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.CLONE])}
         </TaskAction>
       ),
-      allow: isAllowTaskAction('CLONE', taskStatus),
+      allow: isAllowTaskAction('CLONE', taskStatus, taskType),
     },
 
     {
@@ -66,7 +69,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.ASSIGN])}
         </TaskAction>
       ),
-      allow: isAllowTaskAction('ASSIGN', taskStatus),
+      allow: isAllowTaskAction('ASSIGN', taskStatus, taskType),
     },
 
     {
@@ -81,7 +84,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.DELETE_COMPLETE])}
         </TaskAction>
       ),
-      allow: isAllowTaskAction('DELETE_COMPLETE', taskStatus),
+      allow: isAllowTaskAction('DELETE_COMPLETE', taskStatus, taskType),
     },
 
     {
@@ -96,7 +99,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.DELETE])}
         </TaskAction>
       ),
-      allow: isAllowTaskAction('DELETE', taskStatus),
+      allow: isAllowTaskAction('DELETE', taskStatus, taskType),
     },
   ].filter((i) => i.allow);
 

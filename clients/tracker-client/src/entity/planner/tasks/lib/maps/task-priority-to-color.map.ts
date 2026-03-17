@@ -1,4 +1,4 @@
-import { TaskPriority } from '@/entity/planner/tasks';
+import { TaskPriority } from '../../model';
 
 const taskPriorityColorMap = {
   [TaskPriority.DO]: '--priority-1',

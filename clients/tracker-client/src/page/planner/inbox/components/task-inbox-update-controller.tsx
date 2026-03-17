@@ -1,7 +1,7 @@
-import { useInvalidateAllGroups, useInvalidateInbox } from '@/entity/planner/groups';
-import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
-import { type TaskInboxEntity, useAssignTaskToGroup, useInvalidateAllTasks } from '@/entity/planner/tasks';
+import { useInvalidateInbox } from '@/entity/planner/groups';
+import { type TaskInboxEntity, useInvalidateAllTasks } from '@/entity/planner/tasks';
 import { useUpdateInboxTask } from '@/entity/planner/tasks/model';
+import { TaskSidebarActions } from '@/feature/planner/tasks/task-sidebar-actions';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
@@ -25,8 +25,6 @@ function TaskInboxUpdateController({ inboxTask, onCancel, onSuccess }: TaskInbox
   const { updateInboxTask, isPending: isInboxTaskUpdatePending } = useUpdateInboxTask();
   const invalidateInbox = useInvalidateInbox();
   const invalidateAllTasks = useInvalidateAllTasks();
-  const invalidateAllGroups = useInvalidateAllGroups();
-  const { assignTaskToGroup, isPending: isAssignTaskToGroupPending } = useAssignTaskToGroup();
 
   return (
     <>
@@ -50,27 +48,17 @@ function TaskInboxUpdateController({ inboxTask, onCancel, onSuccess }: TaskInbox
           {...formStateEmitterProps}
           afterNameSlot={<AppDialogTrigger />}
           footerSidebarSlot={
-            <div className="ml-auto">
-              <AssignInboxTaskToGroupDialog
-                taskGroupId={inboxTask?.groupId}
-                loading={isAssignTaskToGroupPending}
-                onSelect={(groupInfo, close) => {
-                  if (inboxTask == null) return;
-
-                  assignTaskToGroup(
-                    { params: { path: { taskId: inboxTask.id, groupId: groupInfo.id } } },
-                    {
-                      onSuccess: async () => {
-                        await invalidateInbox();
-                        await invalidateAllGroups();
-                        close();
-                        onCancel?.();
-                      },
-                    },
-                  );
-                }}
+            inboxTask != null ? (
+              <TaskSidebarActions
+                groupId={1}
+                taskInfo={{ id: inboxTask.id, status: inboxTask.status, type: inboxTask.type }}
+                onFinishSuccess={onSuccess}
+                onAssignSuccess={onSuccess}
+                onDeleteSuccess={onSuccess}
+                onRecoverSuccess={onSuccess}
+                onDeleteCompleteSuccess={onSuccess}
               />
-            </div>
+            ) : null
           }
           onSubmit={(formResult) => {
             if (inboxTask == null) return;
