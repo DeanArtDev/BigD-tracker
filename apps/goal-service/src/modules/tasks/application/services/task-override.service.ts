@@ -69,6 +69,10 @@ class TaskOverrideService {
   async upsertOverride(input: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
     return await this.tasksOverridesRepository.upsertOverride(input, trx);
   }
+
+  async updateOverride(input: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
+    return await this.tasksOverridesRepository.updateOverride(input, trx);
+  }
 }
 
 export { TaskOverrideService };

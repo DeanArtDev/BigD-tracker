@@ -86,7 +86,7 @@ class TaskService {
       trx,
     );
     const currentOverrides =
-      currentRecurrence != null && recurrence == null
+      currentRecurrence != null
         ? await this.taskOverrideService.getOverridesByRecurrenceId(
             { userId: input.userId, recurrenceId: currentRecurrence.id },
             trx,
@@ -107,11 +107,24 @@ class TaskService {
     });
 
     const savedTask = await this.tasksWriteRepo.replaceTask(replaceData.task, trx);
-    if (replaceData.recurrence != null) {
-      await this.taskRecurrenceService.upsertRecurrence(replaceData.recurrence, trx);
+
+    if (replaceData.isRecurrenceUpdate) {
+      await this.taskRecurrenceService.updateRecurrence(replaceData.recurrence, trx);
+
+      if (replaceData.overridesToUpdate.length > 0) {
+        for (const override of replaceData.overridesToUpdate) {
+          await this.taskOverrideService.updateOverride(override, trx);
+        }
+      }
     }
 
-    if (replaceData.isCancel) {
+    console.log(replaceData);
+
+    if (replaceData.isRecurrenceCancel) {
+      if (replaceData.recurrence != null) {
+        await this.taskRecurrenceService.updateRecurrence(replaceData.recurrence, trx);
+      }
+
       if (replaceData.overridesToDelete.length > 0) {
         await this.taskOverrideService.deleteOverridesByRecurrenceId(
           {
@@ -125,6 +138,20 @@ class TaskService {
 
       if (replaceData.shouldDeleteRecurrence) {
         await this.taskRecurrenceService.deleteRecurrence({ id: replaceData.recurrence.id }, trx);
+      }
+    }
+
+    if (replaceData.isRecurrenceCreate) {
+      if (replaceData.overridesToUpdate.length > 0) {
+        for (const override of replaceData.overridesToUpdate) {
+          await this.taskOverrideService.updateOverride(override, trx);
+        }
+      }
+
+      if (currentRecurrence == null) {
+        await this.taskRecurrenceService.upsertRecurrence(replaceData.recurrence, trx);
+      } else {
+        await this.taskRecurrenceService.updateRecurrence(replaceData.recurrence, trx);
       }
     }
 

@@ -253,9 +253,9 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
     });
 
-    expect(result.isCreate).toBe(true);
-    expect(result.isUpdate).toBeUndefined();
-    expect(result.isCancel).toBeUndefined();
+    expect(result.isRecurrenceCreate).toBe(true);
+    expect(result.isRecurrenceUpdate).toBeUndefined();
+    expect(result.isRecurrenceCancel).toBeUndefined();
     expect(result.recurrence?.taskId).toBe(11);
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.ACTIVE);
   });
@@ -299,9 +299,9 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=WEEKLY'),
     });
 
-    expect(result.isCreate).toBeUndefined();
-    expect(result.isUpdate).toBe(true);
-    expect(result.isCancel).toBeUndefined();
+    expect(result.isRecurrenceCreate).toBeUndefined();
+    expect(result.isRecurrenceUpdate).toBe(true);
+    expect(result.isRecurrenceCancel).toBeUndefined();
     expect(result.recurrence?.pattern).toBe('RRULE:FREQ=WEEKLY');
     expect(result.recurrence?.timezone).toBe('Asia/Novosibirsk');
   });
@@ -321,9 +321,9 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY;UNTIL=20230103T000000Z'),
     });
 
-    expect(result.isCreate).toBeUndefined();
-    expect(result.isUpdate).toBeUndefined();
-    expect(result.isCancel).toBe(true);
+    expect(result.isRecurrenceCreate).toBeUndefined();
+    expect(result.isRecurrenceUpdate).toBeUndefined();
+    expect(result.isRecurrenceCancel).toBe(true);
     const deleteByEmptyRecurrence = result.recurrence;
     expect(deleteByEmptyRecurrence).not.toBeNull();
     if (deleteByEmptyRecurrence == null) {
@@ -357,9 +357,9 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY;UNTIL=20230103T000000Z'),
     });
 
-    expect(result.isCancel).toBe(true);
-    expect(result.isCreate).toBeUndefined();
-    expect(result.isUpdate).toBeUndefined();
+    expect(result.isRecurrenceCancel).toBe(true);
+    expect(result.isRecurrenceCreate).toBeUndefined();
+    expect(result.isRecurrenceUpdate).toBeUndefined();
     const deleteByOverridesRecurrence = result.recurrence;
     expect(deleteByOverridesRecurrence).not.toBeNull();
     if (deleteByOverridesRecurrence == null) {
@@ -396,9 +396,9 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY;UNTIL=20230103T000000Z'),
     });
 
-    expect(result.isCancel).toBe(true);
-    expect(result.isCreate).toBeUndefined();
-    expect(result.isUpdate).toBeUndefined();
+    expect(result.isRecurrenceCancel).toBe(true);
+    expect(result.isRecurrenceCreate).toBeUndefined();
+    expect(result.isRecurrenceUpdate).toBeUndefined();
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
     expect(result.recurrence?.untilDate).toBe('2023-01-07T18:00');
     expect(result.recurrence).not.toBeNull();
@@ -438,7 +438,7 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY;UNTIL=20230107T180000Z'),
     });
 
-    expect(result.isCancel).toBe(true);
+    expect(result.isRecurrenceCancel).toBe(true);
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
     expect(result.recurrence?.untilDate).toBe('2023-01-07T18:00');
     expect(result.shouldDeleteRecurrence).toBe(false);
@@ -465,7 +465,7 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY;UNTIL=20230103T000000Z'),
     });
 
-    expect(result.isCancel).toBe(true);
+    expect(result.isRecurrenceCancel).toBe(true);
     expect(result.task.startDate).toBeUndefined();
     expect(result.recurrence?.status).toBe(TaskRecurrenceStatus.CANCELED);
     expect(result.recurrence?.untilDate).toBe('2023-01-05T12:00');
@@ -488,9 +488,9 @@ describe('TaskWithRecurrenceService', () => {
       patternShaper: buildPatternShaper('RRULE:FREQ=DAILY'),
     });
 
-    expect(result.isCreate).toBeUndefined();
-    expect(result.isUpdate).toBeUndefined();
-    expect(result.isCancel).toBeUndefined();
+    expect(result.isRecurrenceCreate).toBeUndefined();
+    expect(result.isRecurrenceUpdate).toBeUndefined();
+    expect(result.isRecurrenceCancel).toBeUndefined();
     expect(result.task.startDate).toBe('2023-01-01T05:00');
     expect(result.recurrence).toBeNull();
   });

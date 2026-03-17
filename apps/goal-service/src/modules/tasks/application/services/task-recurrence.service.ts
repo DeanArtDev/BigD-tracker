@@ -36,6 +36,10 @@ class TaskRecurrenceService {
     );
   }
 
+  async updateRecurrence(recurrence: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence> {
+    return await this.tasksOverridesRepository.updateRecurrence(recurrence, trx);
+  }
+
   async upsertRecurrence(recurrence: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence> {
     return await this.tasksOverridesRepository.upsertRecurrence(recurrence, trx);
   }

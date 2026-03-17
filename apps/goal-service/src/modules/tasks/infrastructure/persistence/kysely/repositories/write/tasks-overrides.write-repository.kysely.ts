@@ -6,8 +6,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import {
-  overrideTypeByNameQuery,
   overrideCommonQuery,
+  overrideTypeByNameQuery,
   recurrenceStatusByNameQuery,
   statusByNameQuery,
   taskFrequencyByNameQuery,
@@ -89,6 +89,47 @@ export class TasksOverridesWriteRepositoryKysely
     });
   }
 
+  async updateRecurrence(recurrence: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence> {
+    return await this.errorCatcher('tasks.update-recurrence', async () => {
+      const { id: frequency_id, name: frequency_name } = await taskFrequencyByNameQuery(
+        [recurrence.frequency.key],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
+
+      const { id: recurrence_status_id, name: recurrence_status } = await recurrenceStatusByNameQuery(
+        [recurrence.status],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
+
+      const rawRecurrence = await this.db
+        .qb(trx)
+        .updateTable('tasks_recurrences')
+        .where('tasks_recurrences.id', '=', recurrence.id)
+        .set({
+          pattern: recurrence.pattern,
+          start_date: recurrence.startDate,
+          until_date: recurrence.untilDate ?? null,
+          yearmonths: recurrence.yearmonths ?? null,
+          monthdays: recurrence.monthdays ?? null,
+          weekdays: recurrence.weekdays ?? null,
+          interval: recurrence.interval ?? null,
+          weekstart: recurrence.weekstart,
+          recurrence_status_id,
+          recurrence_frequencies_id: frequency_id,
+        })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+
+      return TasksWriteKyselyMapper.fromRawToRecurrence({
+        ...rawRecurrence,
+        recurrence_frequency: frequency_name,
+        recurrence_status,
+      });
+    });
+  }
+
   async upsertRecurrence(recurrence: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence> {
     return await this.errorCatcher('tasks.upsert-recurrence', async () => {
       const { id: frequency_id, name: frequency_name } = await taskFrequencyByNameQuery(
@@ -120,7 +161,6 @@ export class TasksOverridesWriteRepositoryKysely
         .qb(trx)
         .insertInto('tasks_recurrences')
         .values({
-          id: recurrence.isDraft ? undefined : recurrence.id,
           user_id: recurrence.userId,
           task_id: recurrence.taskId,
           timezone: recurrence.timezone,
@@ -203,6 +243,45 @@ export class TasksOverridesWriteRepositoryKysely
           'override_type_id',
           'recurrence_start',
         ])
+        .executeTakeFirstOrThrow();
+
+      return TasksWriteKyselyMapper.fromRawToOverrideAgr({
+        ...rawOverride,
+        override_type: overrideType.name,
+        status: status_name,
+      });
+    });
+  }
+
+  async updateOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride> {
+    return await this.errorCatcher('tasks.update-override', async () => {
+      const { id: status_id, name: status_name } = await statusByNameQuery(
+        [override.status],
+        this.db,
+        trx,
+      ).executeTakeFirstOrThrow();
+
+      const overrideType = await overrideTypeByNameQuery([override.type], this.db, trx).executeTakeFirstOrThrow();
+
+      const rawOverride = await this.db
+        .qb(trx)
+        .updateTable('tasks_recurrences_overrides')
+        .where('id', '=', override.id)
+        .set({
+          cancel_reason: override.cancelReason ?? null,
+          group_id: override.groupId ?? null,
+          name: override.name,
+          deadline: override.deadline ?? null,
+          end_date: override.endDate ?? null,
+          start_date: override.startDate,
+          description: override.description ?? null,
+          priority: override.priority,
+          status_id,
+          weight: override.weight,
+          override_type_id: overrideType.id,
+          recurrence_start: override.recurrenceStart,
+        })
+        .returningAll()
         .executeTakeFirstOrThrow();
 
       return TasksWriteKyselyMapper.fromRawToOverrideAgr({

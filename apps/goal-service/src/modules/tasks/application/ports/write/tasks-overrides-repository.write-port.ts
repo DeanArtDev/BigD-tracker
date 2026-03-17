@@ -13,6 +13,10 @@ interface TasksOverridesRepositoryWritePort {
 
   upsertOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride>;
 
+  updateOverride(override: TaskOverride, trx?: TaskTransaction): Promise<TaskOverride>;
+
+  updateRecurrence(override: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence>;
+
   upsertRecurrence(override: TaskRecurrence, trx?: TaskTransaction): Promise<TaskRecurrence>;
 
   updateGroupIdForManyOverride(

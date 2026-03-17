@@ -63,15 +63,23 @@ class SoftDeleteTaskUseCase {
         }
         const task = await this.taskCheckerService.ensureTaskExists({ userId, taskId: recurrence?.taskId }, { trx });
         const currentOverride = await this.taskOverrideService.getOverride({ userId, id: overrideId }, trx);
+        const allRecurrenceOverrides = await this.taskOverrideService.getOverridesByRecurrenceId(
+          { userId, recurrenceId },
+          trx,
+        );
 
-        const { override: overrideToUpdate } = this.taskOverrideDomainService.delete({
+        const { overrideToDelete, shouldDeleteRecurrence } = this.taskOverrideDomainService.delete({
           taskId,
           sourceTask: task,
           currentRecurrence: recurrence,
           override: currentOverride,
+          allRecurrenceOverrides,
         });
 
-        const updatedOverride = await this.taskOverrideService.upsertOverride(overrideToUpdate, trx);
+        const updatedOverride = await this.taskOverrideService.upsertOverride(overrideToDelete, trx);
+        if (shouldDeleteRecurrence) {
+          await this.taskRecurrenceService.deleteRecurrence({ id: recurrence.id }, trx);
+        }
 
         return { id: updatedOverride.id };
       }

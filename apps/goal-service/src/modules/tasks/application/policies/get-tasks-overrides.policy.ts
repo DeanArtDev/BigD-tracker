@@ -16,7 +16,7 @@ function GetRecurrenceTasksOverrides(input: { userId: number; to: Date; recurren
         leaf({
           key: 'tasks.overrideByStartDateInRange',
           purpose: 'filter',
-          toExpr: (eb) => eb.and([eb('tasks_recurrences_overrides.start_date', '<=', input.to)]),
+          toExpr: (eb) => eb.and([eb('tasks_recurrences_overrides.recurrence_start', '<=', input.to)]),
         }),
       ]),
     ),

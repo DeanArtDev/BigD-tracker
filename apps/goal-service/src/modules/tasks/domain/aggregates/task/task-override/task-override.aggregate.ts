@@ -167,6 +167,10 @@ class TaskOverride {
   get isDraft() {
     return Number.isNaN(this.#state.id);
   }
+
+  public toObject() {
+    return { ...this.#state, recurrenceStart: this.#state.recurrenceStart.value };
+  }
 }
 
 export { TaskOverride };

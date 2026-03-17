@@ -32,8 +32,14 @@ class TaskOverrideDomainService {
     };
   }
 
-  delete(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; override: TaskOverride }) {
-    const { sourceTask, override, currentRecurrence } = input;
+  delete(input: {
+    taskId: string;
+    sourceTask: Task;
+    currentRecurrence: TaskRecurrence;
+    override: TaskOverride;
+    allRecurrenceOverrides: TaskOverride[];
+  }) {
+    const { sourceTask, override, currentRecurrence, allRecurrenceOverrides } = input;
 
     const { overrideData } = this.#assertOverrideId(input);
     this.#assertDependenciesConsistency(input);
@@ -49,8 +55,16 @@ class TaskOverrideDomainService {
     const deletedTask = TaskFactory.deleteSoft(task);
     const deletedOverride = TaskOverrideFactory.delete(override, deletedTask);
 
+    if (currentRecurrence.isCanceled && allRecurrenceOverrides.length === 1) {
+      return {
+        shouldDeleteRecurrence: true,
+        overrideToDelete: deletedOverride,
+      };
+    }
+
     return {
-      override: deletedOverride,
+      shouldDeleteRecurrence: false,
+      overrideToDelete: deletedOverride,
     };
   }
 
