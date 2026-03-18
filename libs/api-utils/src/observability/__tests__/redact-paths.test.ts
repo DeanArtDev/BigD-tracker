@@ -34,6 +34,10 @@ describe('SENSITIVE_LOG_PATHS', () => {
       data: {
         login: 'service-user',
         password: 'service-password',
+        data: {
+          login: 'deep-service-user',
+          password: 'deep-service-password',
+        },
       },
       req: {
         body: {
@@ -53,6 +57,8 @@ describe('SENSITIVE_LOG_PATHS', () => {
     expect(payload.password).toBe('[REDACTED]');
     expect(payload.data.login).toBe('[REDACTED]');
     expect(payload.data.password).toBe('[REDACTED]');
+    expect(payload.data.data.login).toBe('[REDACTED]');
+    expect(payload.data.data.password).toBe('[REDACTED]');
     expect(payload.req.body.login).toBe('[REDACTED]');
     expect(payload.req.body.password).toBe('[REDACTED]');
     expect(payload.req.body.data.login).toBe('[REDACTED]');
@@ -77,6 +83,10 @@ describe('SENSITIVE_LOG_PATHS', () => {
       data: {
         login: 'service-user',
         password: 'service-password',
+        data: {
+          login: 'deep-service-user',
+          password: 'deep-service-password',
+        },
       },
       req: {
         body: {
@@ -92,6 +102,8 @@ describe('SENSITIVE_LOG_PATHS', () => {
     expect(payload.password).toBeUndefined();
     expect(payload.data.login).toBeUndefined();
     expect(payload.data.password).toBeUndefined();
+    expect(payload.data.data.login).toBeUndefined();
+    expect(payload.data.data.password).toBeUndefined();
     expect(payload.req.body.login).toBeUndefined();
     expect(payload.req.body.password).toBeUndefined();
   });
