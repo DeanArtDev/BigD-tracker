@@ -26,7 +26,11 @@ function mockGetInboxTasks(fixtures: InboxTaskFixture[]) {
   server.use(
     http.get('*/api/groups/inbox', () => {
       return HttpResponse.json({
-        data: fixtures.map(getInboxTaskFixture),
+        data: {
+          id: 1,
+          name: 'Inbox',
+          tasks: fixtures.map(getInboxTaskFixture),
+        },
       });
     }),
   );

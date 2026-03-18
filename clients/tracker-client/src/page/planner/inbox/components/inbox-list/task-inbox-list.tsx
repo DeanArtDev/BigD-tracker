@@ -69,7 +69,7 @@ function TaskInboxList() {
   return (
     <ScrollAreaNativeVertical className="px-2 py-2 lg:py-4">
       <ul className="flex flex-col gap-1.5 sm:gap-2 justify-center h-full min-h-0 w-full">
-        {inbox?.map((i) =>
+        {inbox?.items.map((i) =>
           isMobile ? (
             <TaskInboxCardMobileLazy
               key={i.id}

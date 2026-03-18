@@ -710,23 +710,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/tasks/{taskId}/in-box/assign": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Перемещение дела в IN BOX */
-        post: operations["TasksInboxController_assignTaskToInbox"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/tasks/{taskId}/inbox": {
         parameters: {
             query?: never;
@@ -1423,9 +1406,17 @@ export interface components {
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
+        GetInBoxResData: {
+            /** @example 1 */
+            id: number;
+            /** @example Имя inbox */
+            name: string;
+            /** @description Список дел */
+            tasks: components["schemas"]["TaskDto"][];
+        };
         GetInBoxRes: {
             /** @description Ответ сервера */
-            data: components["schemas"]["TaskDto"][];
+            data: components["schemas"]["GetInBoxResData"];
         };
         GroupDto: {
             /** @example 1 */
@@ -1732,14 +1723,6 @@ export interface components {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"];
         };
-        CloneTaskReqData: {
-            /** @example 1 */
-            groupId?: number;
-        };
-        CloneTaskReq: {
-            /** @description Запрос сервера */
-            data: components["schemas"]["CloneTaskReqData"];
-        };
         CloneTaskRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"];
@@ -1750,7 +1733,7 @@ export interface components {
         };
         TaskRecoveryReqData: {
             /** @example 1 */
-            groupId?: number;
+            groupId: number;
         };
         TaskRecoveryReq: {
             /** @description Запрос сервера */
@@ -1848,14 +1831,6 @@ export interface components {
         CreateTaskInINBOXReq: {
             /** @description Запрос сервера */
             data: components["schemas"]["CreateTaskInINBOXReqData"];
-        };
-        AssignTaskToInboxResData: {
-            /** @example true */
-            success: boolean;
-        };
-        AssignTaskToInboxRes: {
-            /** @description Ответ сервера */
-            data: components["schemas"]["AssignTaskToInboxResData"];
         };
         UpdateInboxTaskReqData: {
             /** @example Имя дела */
@@ -2836,11 +2811,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["CloneTaskReq"];
-            };
-        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
@@ -3026,27 +2997,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateTaskRes"];
-                };
-            };
-        };
-    };
-    TasksInboxController_assignTaskToInbox: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                taskId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AssignTaskToInboxRes"];
                 };
             };
         };

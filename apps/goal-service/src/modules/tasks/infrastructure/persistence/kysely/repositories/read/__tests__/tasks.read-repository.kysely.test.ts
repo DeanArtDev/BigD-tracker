@@ -163,7 +163,7 @@ describe('TasksReadRepositoryKysely', () => {
       async ({ repository, recorder }) => {
         const spec = tasksCombinators.and(TaskByUserId(9), TaskByStatus([TaskStatus.NOT_STARTED]));
 
-        await repository.getMany(['with_group_links_left_join'], spec);
+        await repository.getMany(spec);
 
         expect(recorder.queries).toHaveLength(1);
         expectSqlQuery(recorder.queries[0], {

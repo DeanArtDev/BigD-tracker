@@ -1,4 +1,4 @@
-import type { GroupInfoEntity } from '@/entity/planner/groups/model';
+import { type GroupInfoEntity, useGetUserInbox } from '@/entity/planner/groups/model';
 import { AppEmptyPlaceholder } from '@/shared/components/app-empty-placeholder';
 import { isStringIncludesSearch, useEndToEndSearch } from '@/shared/lib/react/use-end-to-end-search';
 import { DataLoader } from '@/shared/ui-kit/ui/data-loader';
@@ -16,25 +16,20 @@ interface AssignableGroupPickerProps {
   readonly disabled?: boolean;
   readonly taskGroupId?: number;
   readonly onSelect: (item: GroupInfoEntity) => void;
-  readonly onInboxSelect: (item: GroupInfoEntity) => void;
 }
 
-function AssignableGroupPicker({
-  items,
-  taskGroupId,
-  disabled = false,
-  onSelect,
-  onInboxSelect,
-}: AssignableGroupPickerProps) {
+function AssignableGroupPicker({ items, taskGroupId, disabled = false, onSelect }: AssignableGroupPickerProps) {
+  const { inbox: inboxData } = useGetUserInbox();
+
   const groupInfoData = useMemo(() => {
-    const [inbox, rest] = partition(items, (item) => item.name === 'Inbox');
+    const [inbox, rest] = partition(items, (item) => item.name === inboxData?.name);
     const [pinned, others] = partition(rest, (item) => item.id === taskGroupId);
 
     return {
       inbox: inbox?.at(-1),
       items: [...pinned, ...others],
     };
-  }, [items, taskGroupId]);
+  }, [items, taskGroupId, inboxData]);
 
   const { foundData, handleSearchChange } = useEndToEndSearch<GroupInfoEntity>({
     data: groupInfoData.items,
@@ -61,7 +56,7 @@ function AssignableGroupPicker({
               </>
             }
             disabled={disabled}
-            onClick={() => void onInboxSelect(inbox)}
+            onClick={() => void onSelect(inbox)}
           />
 
           <Separator />

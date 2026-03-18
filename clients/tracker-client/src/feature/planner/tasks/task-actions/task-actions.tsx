@@ -44,7 +44,6 @@ function TaskActions({
     handleFinish,
     handleClone,
     handleAssign,
-    handleAssignToInbox,
     handleRecovery,
     handleDeleteComplete,
   } = useTaskActionsHandlers({
@@ -74,7 +73,7 @@ function TaskActions({
         onFinish={() => void handleFinish(taskId)}
         onDelete={() => void handleDelete(taskId)}
         onRecover={() => void setRecoveryOpen(true)}
-        onClone={() => void handleClone(taskId, groupId)}
+        onClone={() => void handleClone(taskId)}
         onDeleteComplete={() => void handleDeleteComplete(taskId)}
       />
 
@@ -98,16 +97,6 @@ function TaskActions({
 
           if (isAssignTurn) {
             handleAssign(taskId, groupInfo.id, close);
-          }
-        }}
-        onInboxSelect={(groupInfo, close) => {
-          if (isRecoveryTurn) {
-            handleRecovery({ taskId, groupId: groupInfo.id }, close);
-            return;
-          }
-
-          if (isAssignTurn) {
-            handleAssignToInbox(taskId, close);
           }
         }}
       />

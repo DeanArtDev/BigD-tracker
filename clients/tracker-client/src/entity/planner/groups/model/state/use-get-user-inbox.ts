@@ -4,14 +4,18 @@ import { groupsQueryKeys } from './query';
 
 function useGetUserInbox() {
   const { data, ...others } = $privetQueryClient.useQuery(...groupsQueryKeys.getInbox(), undefined, {
-    select: (data): TaskInboxEntity[] => {
-      return (data?.data ?? []).map<TaskInboxEntity>(taskInboxDtoToEntity);
+    select: (data) => {
+      return {
+        id: data.data.id,
+        name: data.data.name,
+        items: data.data.tasks.map<TaskInboxEntity>(taskInboxDtoToEntity),
+      };
     },
   });
 
   return {
     inbox: data,
-    isEmpty: data?.length === 0,
+    isEmpty: data?.items.length === 0,
     ...others,
   };
 }

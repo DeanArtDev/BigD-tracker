@@ -1,11 +1,5 @@
 import { TaskView } from '@/modules/tasks/application/dto';
-import {
-  TaskDatabase,
-  TasksReadRepository,
-  TasksShapeTypes,
-  TasksSorting,
-  TaskTransaction,
-} from '@/modules/tasks/application/ports';
+import { TaskDatabase, TasksReadRepository, TasksSorting, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import {
   RecurrenceFrequency,
@@ -131,25 +125,9 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async getMany(
-    shapes: TasksShapeTypes[],
-    specifications: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<TaskView[]> {
+  async getMany(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-many.read', async () => {
-      let query = tasksWithStatusQuery(this.db, trx);
-
-      const shapeMap = {
-        with_group_links_left_join: (qb: typeof query) => qb,
-        with_group_links_inner_join: (qb: typeof query) => qb.where('tasks.group_id', 'is not', null),
-      };
-
-      for (const shape of shapes) {
-        const apply = shapeMap[shape](query);
-        apply != null && (query = apply);
-      }
-
-      const tasks = await leftJoinTaskRecurrences(query)
+      const tasks = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .where((eb) => specifications.toExpr(eb))
         .orderBy('id', 'asc')
         .execute();

@@ -3,7 +3,6 @@ import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { SortDirection } from '@big-d/api-contracts';
 import { TaskTransaction } from '../transaction-manager.port';
 
-type TasksShapeTypes = 'with_group_links_left_join' | 'with_group_links_inner_join';
 interface TasksSorting {
   readonly priority?: SortDirection;
   readonly deadline?: SortDirection;
@@ -11,7 +10,7 @@ interface TasksSorting {
 }
 
 interface TasksReadRepository {
-  getMany(shapes: TasksShapeTypes[], specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
+  getMany(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
 
   getByRange(
     specifications: TasksSpecification,
@@ -25,4 +24,4 @@ interface TasksReadRepository {
   isTaskIntoGroup(input: { taskId: number; groupId: number }, trx?: TaskTransaction): Promise<boolean>;
 }
 
-export { TasksReadRepository, TasksShapeTypes, TasksSorting };
+export { TasksReadRepository, TasksSorting };

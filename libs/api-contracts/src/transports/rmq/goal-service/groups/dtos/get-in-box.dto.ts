@@ -1,6 +1,6 @@
 import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsString, ValidateNested } from 'class-validator';
 
 class GetInBoxGroupReqData {
   @IsInt()
@@ -13,11 +13,23 @@ class GetInBoxGroupReq {
   data: GetInBoxGroupReqData;
 }
 
-class GetInBoxGroupRes {
+class GetInBoxGroupResData {
+  @IsInt()
+  id: number;
+
+  @IsString()
+  name: string;
+
   @ValidateNested({ each: true })
   @IsArray()
   @Type(() => TaskDto)
-  data: TaskDto[];
+  tasks: TaskDto[];
+}
+
+class GetInBoxGroupRes {
+  @ValidateNested()
+  @Type(() => GetInBoxGroupResData)
+  data: GetInBoxGroupResData;
 }
 
 export { GetInBoxGroupReq, GetInBoxGroupRes };

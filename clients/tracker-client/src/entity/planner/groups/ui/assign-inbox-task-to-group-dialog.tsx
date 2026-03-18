@@ -8,7 +8,6 @@ interface AssignInboxTaskToGroupDialogProps {
   readonly trigger?: ReactNode;
   readonly taskGroupId?: number;
   readonly onSelect: (item: GroupInfoEntity, close: () => void) => void;
-  readonly onInboxSelect?: (item: GroupInfoEntity, close: () => void) => void;
   readonly open?: boolean;
   readonly onOpenChange?: (value: boolean) => void;
 }
@@ -20,7 +19,6 @@ function AssignInboxTaskToGroupDialog({
   open,
   onOpenChange,
   onSelect,
-  onInboxSelect,
 }: AssignInboxTaskToGroupDialogProps) {
   const { infoGroups = [], isLoading: isGroupAssignableLoading } = useGroupsAssignableQuery();
   const [_open, setOpen] = useState(open ?? false);
@@ -47,9 +45,6 @@ function AssignInboxTaskToGroupDialog({
         taskGroupId={taskGroupId}
         onSelect={(item) => {
           onSelect(item, close);
-        }}
-        onInboxSelect={(item) => {
-          onInboxSelect?.(item, close);
         }}
       />
     </AppDialog>
