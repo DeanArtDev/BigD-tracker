@@ -10,7 +10,6 @@ export * from './use-assignable-tasks.query';
 export * from './use-unassign-task-from-group';
 export * from './use-assign-task-to-group';
 export * from './use-task-finish';
-export * from './use-assign-task-to-inbox';
 export * from './use-tasks-deleted.query';
 export * from './use-delete-complete-task';
 export * from './use-task-recovery-task';

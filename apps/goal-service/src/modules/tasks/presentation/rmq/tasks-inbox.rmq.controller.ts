@@ -1,9 +1,5 @@
-import {
-  AssignTaskToInboxCommand,
-  CreateTaskInInboxCommand,
-  UpdateInboxTaskCommand,
-} from '@/modules/tasks/application/use-cases';
-import { GoalAssignTaskToInbox, GoalCreateTaskInInbox, GoalUpdateInboxTask } from '@big-d/api-contracts';
+import { CreateTaskInInboxCommand, UpdateInboxTaskCommand } from '@/modules/tasks/application/use-cases';
+import { GoalCreateTaskInInbox, GoalUpdateInboxTask } from '@big-d/api-contracts';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
@@ -48,15 +44,6 @@ export class TasksInboxRmqController {
           deadline: payload.deadline,
         }),
       ),
-    };
-  }
-
-  @MessagePattern(GoalAssignTaskToInbox.pattern)
-  async assignTaskIntoInbox(
-    @Payload() { data: payload }: GoalAssignTaskToInbox.Request,
-  ): Promise<GoalAssignTaskToInbox.Response> {
-    return {
-      data: await this.commandBus.execute(new AssignTaskToInboxCommand(payload)),
     };
   }
 }

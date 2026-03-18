@@ -2,7 +2,6 @@ import { useInvalidateAllGroups } from '@/entity/planner/groups';
 import {
   type TaskEntity,
   useAssignTaskToGroup,
-  useAssignTaskToInbox,
   useDeleteCompleteTask,
   useDeleteTask,
   useInvalidateAllTasks,
@@ -39,7 +38,6 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
 
   const { finishTask, isPending: isTaskFinishPending } = useTaskFinish();
   const { cloneTask, isPending: isTaskClonePending } = useTaskClone();
-  const { assignTaskToInbox, isPending: isAssignTaskToInboxPending } = useAssignTaskToInbox();
   const { deleteTask, isPending: isDeletePending } = useDeleteTask();
   const { deleteCompleteTask, isPending: isDeleteCompletePending } = useDeleteCompleteTask();
   const { recoveryTask, isPending: isTaskRecoveryPending } = useTaskRecoveryTask();
@@ -54,7 +52,6 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
 
   const isLoading =
     isAssignTaskToGroupPending ||
-    isAssignTaskToInboxPending ||
     isDeletePending ||
     isTaskFinishPending ||
     isDeleteCompletePending ||
@@ -114,9 +111,9 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleClone = (taskId: TaskEntity['id'], groupId?: number) => {
+  const handleClone = (taskId: TaskEntity['id']) => {
     cloneTask(
-      { params: { path: { taskId } }, body: { data: { groupId } } },
+      { params: { path: { taskId } } },
       {
         onSuccess: async () => {
           await onCloneSuccess?.();
@@ -142,21 +139,7 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
-  const handleAssignToInbox = (taskId: TaskEntity['id'], success?: () => void) => {
-    assignTaskToInbox(
-      { params: { path: { taskId } } },
-      {
-        onSuccess: async () => {
-          await onAssignSuccess?.();
-          await invalidate();
-          toast.success('Перемещено в IN BOX!');
-          success?.();
-        },
-      },
-    );
-  };
-
-  const handleRecovery = (data: { taskId: TaskEntity['id']; groupId?: number }, success?: () => void) => {
+  const handleRecovery = (data: { taskId: TaskEntity['id']; groupId: number }, success?: () => void) => {
     recoveryTask(
       { params: { path: { taskId: data.taskId } }, body: { data: { groupId: data.groupId } } },
       {
@@ -179,7 +162,6 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     handleFinish,
     handleClone,
     handleAssign,
-    handleAssignToInbox,
     handleRecovery,
     handleDeleteComplete,
   };
