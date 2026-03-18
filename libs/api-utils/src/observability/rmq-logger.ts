@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger, pino } from 'pino';
+import { SENSITIVE_LOG_PATHS } from './redact-paths';
 import { serializeErrorForLog } from './error-serializer';
 
 interface ILoggerService {
@@ -21,7 +22,7 @@ export class RmqLogger implements ILoggerService {
 
     this.logger = pino({
       redact: {
-        paths: ['data.refreshToken', 'data.sessionToken', 'data.session', 'data.token', 'token'],
+        paths: [...SENSITIVE_LOG_PATHS],
         remove: true,
       },
 

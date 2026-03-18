@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { RequestContext } from './request-context';
+import { SENSITIVE_LOG_PATHS } from './redact-paths';
 import { RmqInboundLoggingInterceptor } from './rmq-inbound-logger.interceptor';
 import { RmqLogger } from './rmq-logger';
 
@@ -44,17 +45,7 @@ class ObservabilityModule {
                 base: { env },
 
                 redact: {
-                  paths: [
-                    'req.query.token',
-                    'req.query.accessToken',
-                    'req.query.refreshToken',
-                    'req.headers.authorization',
-                    'req.headers.cookie',
-                    'req.headers.set-cookie',
-                    "req.headers['x-api-key']",
-                    'err.stack',
-                    'error.stack',
-                  ],
+                  paths: [...SENSITIVE_LOG_PATHS],
                   censor: '[REDACTED]',
                 },
 
