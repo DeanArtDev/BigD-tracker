@@ -22,6 +22,7 @@ class TaskFactory {
       type: taskDomainModule.parseId(overrides.id ?? id, overrides?.recurrence).type,
       priority: TaskPriority.PLAN,
       status: TaskStatus.NOT_STARTED,
+      weight: 100,
       recurrence: undefined,
       ...overrides,
     };

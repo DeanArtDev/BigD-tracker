@@ -4,8 +4,8 @@ import { getFieldRuleTypeByStatus } from '../constants';
 import { type TaskFieldsRulesContext, taskFieldsRulesContext, type TaskFormRule } from './context';
 
 interface TaskFieldsRulesProviderProps {
-  readonly options?: {
-    readonly visibility?: TaskFieldsRulesContext['visibility'];
+  readonly options: {
+    readonly visibility: TaskFieldsRulesContext['visibility'];
   };
   readonly status: TaskFieldsRulesContext['status'];
   readonly type?: TaskType;

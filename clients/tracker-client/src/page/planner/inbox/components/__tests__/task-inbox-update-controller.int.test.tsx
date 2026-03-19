@@ -2,13 +2,20 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { TaskFabric } from '@/shared/__tests__/entities';
-import { mockDate, mockGetAssignableGroups, mockJsonPut, renderWithProviders } from '@/shared/__tests__';
+import {
+  mockDate,
+  mockGetAssignableGroups,
+  mockGetInboxTasks,
+  mockJsonPut,
+  renderWithProviders,
+} from '@/shared/__tests__';
 import { TaskInboxUpdateController } from '../task-inbox-update-controller';
 
 interface UpdateInboxTaskRequest {
   data: {
     name: string;
     priority: number;
+    startDate?: string;
     deadline?: string;
     description?: string;
   };
@@ -30,27 +37,43 @@ describe('TaskInboxUpdateController integration', () => {
       response: {
         data: {
           ...inboxTask,
+          startDate: '2026-03-05T00:00:00.000Z',
           deadline: '2026-03-06T23:59:59.000Z',
         },
       },
     });
+    mockGetInboxTasks([]);
     mockGetAssignableGroups([]);
 
     renderWithProviders(<TaskInboxUpdateController inboxTask={inboxTask} />);
     const user = userEvent.setup();
 
     await screen.findByRole('button', { name: 'Сохранить' });
+    expect(screen.queryByText('Вес')).toBeNull();
     const sidebarTrigger = document.querySelector<SVGElement>('svg.lucide-panel-left')?.closest('button');
     expect(sidebarTrigger).not.toBeNull();
     await user.click(sidebarTrigger!);
 
-    await user.click(screen.getByRole('button', { name: /Дедлайн:/i }));
+    const startDateTrigger = screen.getByRole('heading', { name: 'Начало:' }).parentElement?.querySelector('button');
+    expect(startDateTrigger).not.toBeNull();
+    await user.click(startDateTrigger!);
 
-    const dateButton = document.querySelector<HTMLButtonElement>(
+    const startDateButton = document.querySelector<HTMLButtonElement>(
+      '[data-slot="calendar"] td[data-day="2026-03-05"] [data-slot="button"]',
+    );
+    expect(startDateButton).not.toBeNull();
+    await user.click(startDateButton!);
+    await user.keyboard('{Escape}');
+
+    const deadlineTrigger = screen.getByRole('heading', { name: 'Дедлайн:' }).parentElement?.querySelector('button');
+    expect(deadlineTrigger).not.toBeNull();
+    await user.click(deadlineTrigger!);
+
+    const deadlineDateButton = document.querySelector<HTMLButtonElement>(
       '[data-slot="calendar"] td[data-day="2026-03-06"] [data-slot="button"]',
     );
-    expect(dateButton).not.toBeNull();
-    await user.click(dateButton!);
+    expect(deadlineDateButton).not.toBeNull();
+    await user.click(deadlineDateButton!);
 
     await user.keyboard('{Escape}');
     await user.click(screen.getByRole('button', { name: 'Сохранить' }));
@@ -61,9 +84,11 @@ describe('TaskInboxUpdateController integration', () => {
         data: {
           name: inboxTask.name,
           priority: inboxTask.priority,
-          deadline: '2026-03-06T23:59:59.000Z',
+          startDate: '2026-03-05T00:00',
+          deadline: '2026-03-06T23:59',
         },
       });
+      expect(requestSpy.getLastBody()).not.toHaveProperty('data.weight');
     });
   });
 });

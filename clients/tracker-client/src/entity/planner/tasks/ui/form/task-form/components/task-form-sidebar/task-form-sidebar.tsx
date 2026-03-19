@@ -16,7 +16,8 @@ interface TaskFormSidebarProps {
 }
 
 function TaskFormSidebar(props: TaskFormSidebarProps) {
-  const { rules } = useTaskFieldsRulesContext();
+  const { rules, visibility } = useTaskFieldsRulesContext();
+  const { recurrence } = visibility;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const validationSchema = useValidationSchema();
   type TaskFormData = z.input<typeof validationSchema>;
@@ -34,25 +35,26 @@ function TaskFormSidebar(props: TaskFormSidebarProps) {
       <SidebarGroup key="priority" className="flex flex-row px-4 gap-4">
         <TaskPriorityPickerForm disabled={rules?.priority.isDisabled} />
 
-        {rules?.weight.isDisabled ? (
-          <div className="flex flex-col">
-            <Label>Вес</Label>
-            <span className="flex grow items-center text-gray-400">{weight}</span>
-          </div>
-        ) : (
-          <InputNumberForm
-            tabIndex={-1}
-            isErrorMessage
-            name="weight"
-            label="Вес"
-            step="any"
-            placeholder="0-100"
-            classNames={{ wrapper: 'w-20', input: 'bg-background' }}
-          />
-        )}
+        {visibility.weight &&
+          (rules?.weight.isDisabled ? (
+            <div className="flex flex-col">
+              <Label>Вес</Label>
+              <span className="flex grow items-center text-gray-400">{weight}</span>
+            </div>
+          ) : (
+            <InputNumberForm
+              tabIndex={-1}
+              isErrorMessage
+              name="weight"
+              label="Вес"
+              step="any"
+              placeholder="0-100"
+              classNames={{ wrapper: 'w-20', input: 'bg-background' }}
+            />
+          ))}
       </SidebarGroup>
 
-      {rules?.recurrence.type !== 'hidden' && (
+      {rules?.recurrence.type !== 'hidden' && recurrence && (
         <>
           <SidebarSeparator className="separator mx-0" />
           <SidebarGroup key="recurrence" className="flex flex-row px-4 gap-4">

@@ -3,7 +3,7 @@ import { AppDialog } from '@/shared/ui-kit/ui/app-dialog';
 import { type ReactNode, useState } from 'react';
 import { AssignableGroupPicker } from './assignable-group-picker';
 
-interface AssignInboxTaskToGroupDialogProps {
+interface AssignTaskToGroupDialogProps {
   readonly loading?: boolean;
   readonly trigger?: ReactNode;
   readonly taskGroupId?: number;
@@ -12,14 +12,14 @@ interface AssignInboxTaskToGroupDialogProps {
   readonly onOpenChange?: (value: boolean) => void;
 }
 
-function AssignInboxTaskToGroupDialog({
+function AssignTaskToGroupDialog({
   taskGroupId,
   loading,
   trigger,
   open,
   onOpenChange,
   onSelect,
-}: AssignInboxTaskToGroupDialogProps) {
+}: AssignTaskToGroupDialogProps) {
   const { infoGroups = [], isLoading: isGroupAssignableLoading } = useGroupsAssignableQuery();
   const [_open, setOpen] = useState(open ?? false);
 
@@ -51,4 +51,4 @@ function AssignInboxTaskToGroupDialog({
   );
 }
 
-export { AssignInboxTaskToGroupDialog, type AssignInboxTaskToGroupDialogProps };
+export { AssignTaskToGroupDialog, type AssignTaskToGroupDialogProps };
