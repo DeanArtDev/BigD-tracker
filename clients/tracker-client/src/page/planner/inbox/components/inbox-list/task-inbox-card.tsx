@@ -2,14 +2,14 @@ import type { TaskInboxEntity } from '@/entity/planner/tasks';
 import { TaskDeadlineDate, TaskFrame } from '@/entity/planner/tasks/ui';
 import type { ReactNode } from 'react';
 
-interface ThingInboxCardProps {
+interface TaskInboxCardProps {
   readonly task: TaskInboxEntity;
   readonly className?: string;
   readonly onClick?: () => void;
   readonly actionsSlot?: ReactNode;
 }
 
-function TaskInboxCard({ task, className, actionsSlot, onClick }: ThingInboxCardProps) {
+function TaskInboxCard({ task, className, actionsSlot, onClick }: TaskInboxCardProps) {
   const { name, priority, deadline } = task;
 
   return (
@@ -24,4 +24,4 @@ function TaskInboxCard({ task, className, actionsSlot, onClick }: ThingInboxCard
   );
 }
 
-export { TaskInboxCard, type ThingInboxCardProps };
+export { TaskInboxCard, type TaskInboxCardProps };

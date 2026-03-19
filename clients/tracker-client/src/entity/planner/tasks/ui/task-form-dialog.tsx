@@ -1,5 +1,4 @@
-import type { TaskFormProps } from '@/entity/planner/tasks/ui/form';
-import type { TaskFieldsRulesProviderProps } from '@/entity/planner/tasks/ui/form/task-form/context';
+import type { TaskFormProps } from './form';
 import { useFormStateEmitter } from '@/shared/components/form';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
@@ -11,7 +10,7 @@ const TaskFormLazy = withLazy(() => import('./form/task-form').then((m) => ({ de
 interface TaskFormDialogProps {
   readonly open: boolean;
   readonly loading?: boolean;
-  readonly options?: TaskFieldsRulesProviderProps['options'];
+  readonly options?: TaskFormProps['options'];
   readonly defaultValue?: TaskFormProps['defaultValue'];
   readonly task?: TaskFormProps['task'];
   readonly trigger?: ReactNode;

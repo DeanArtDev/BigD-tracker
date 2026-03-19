@@ -1,5 +1,6 @@
 import { ButtonLoading } from '@/shared/components/button-loading';
 import { FormStateEmitter, type FormStateEmitterProps, WysiwygForm } from '@/shared/components/form';
+import type { DeepPartial } from '@/shared/lib/type-helpers';
 import { useIsMobile } from '@/shared/ui-kit/helpers';
 import { Form } from '@/shared/ui-kit/ui/form';
 import { SidebarProvider } from '@/shared/ui-kit/ui/sidebar';
@@ -52,7 +53,7 @@ type TaskFormSubmitDate = {
 
 interface TaskFormProps extends FormStateEmitterProps {
   readonly task?: Omit<TaskEntity, 'endDate' | 'cancelReason'>;
-  readonly options?: TaskFieldsRulesProviderProps['options'];
+  readonly options?: DeepPartial<TaskFieldsRulesProviderProps['options']>;
   readonly afterNameSlot?: ReactNode;
   readonly defaultValue?: {
     readonly startDate?: Date;
@@ -196,7 +197,7 @@ function Component(props: TaskFormProps) {
 }
 
 function TaskForm(props: TaskFormProps) {
-  const options = merge({}, { visibility: { recurrence: true } }, props?.options);
+  const options = merge({}, { visibility: { recurrence: true, weight: true } }, props?.options);
 
   return (
     <TaskFieldsRulesProvider status={props.task?.status} type={props.task?.type} options={options}>

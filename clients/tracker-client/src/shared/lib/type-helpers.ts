@@ -10,7 +10,7 @@ type DeepRequired<T> = {
 };
 
 type DeepPartial<T> = {
-  [K in keyof T]?: Partial<T[K]>;
+  [K in keyof T]?: DeepPartial<T[K]>;
 };
 
 type Nullable<T> = {

@@ -12,6 +12,7 @@ function taskInboxDtoToEntity(dto: ApiSchemas['TaskDto']): TaskInboxEntity {
     description: dto.description,
     startDate: dto.startDate,
     deadline: dto.deadline,
+    weight: dto.weight,
     type: taskDomainModule.parseId(dto.id, dto.recurrence).type,
     recurrence: dto.recurrence,
   };

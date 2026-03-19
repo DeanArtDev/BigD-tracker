@@ -1,4 +1,4 @@
-import { AssignInboxTaskToGroupDialog } from '@/entity/planner/groups/ui';
+import { AssignTaskToGroupDialog } from '@/entity/planner/groups/ui';
 import { type TaskEntity, TaskStatus, TaskType } from '@/entity/planner/tasks';
 import { TaskActionsDropdown } from '@/entity/planner/tasks/ui';
 import { useState } from 'react';
@@ -79,7 +79,7 @@ function TaskActions({
 
       {confirmHolder}
 
-      <AssignInboxTaskToGroupDialog
+      <AssignTaskToGroupDialog
         taskGroupId={groupId}
         open={recoveryOpen || assignOpen}
         loading={isLoading}

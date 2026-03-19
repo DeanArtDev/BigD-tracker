@@ -20,8 +20,9 @@ interface TaskFormFiledRuleMap {
 interface TaskFieldsRulesContext {
   readonly status?: TaskStatus;
   readonly rules?: TaskFormFiledRuleMap;
-  readonly visibility?: {
-    readonly recurrence?: boolean;
+  readonly visibility: {
+    readonly recurrence: boolean;
+    readonly weight: boolean;
   };
 }
 
