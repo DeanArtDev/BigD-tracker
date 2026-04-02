@@ -30,15 +30,16 @@ class FinishTaskUseCase {
 
   async execute({ input }: FinishTaskCommand): Promise<void> {
     return this.db.runTransaction(async (trx) => {
-      const { taskId, userId } = input;
+      const { taskId, userId, reason, type } = input;
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
 
       const request = GoalServiceRequestContext.getStore()?.state;
       const userTimezone = request?.userTimezone ?? 'UTC';
+      const patch = { reason, type, timezone: userTimezone };
 
       if (isOrigin) {
         const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
-        const { taskToFinish } = this.taskWithRecurrenceService.finish({ task, timezone: userTimezone });
+        const { taskToFinish } = this.taskWithRecurrenceService.finish(task, patch);
         await this.tasksWriteRepo.replaceTask(taskToFinish, trx);
         return;
       }
@@ -52,12 +53,14 @@ class FinishTaskUseCase {
         }
         const task = await this.taskCheckerService.ensureTaskExists({ userId, taskId: recurrence?.taskId }, { trx });
 
-        const { override: overrideToCreate } = this.taskVirtualService.finish({
-          taskId,
-          sourceTask: task,
-          currentRecurrence: recurrence,
-          timezone: userTimezone,
-        });
+        const { override: overrideToCreate } = this.taskVirtualService.finish(
+          {
+            taskId,
+            sourceTask: task,
+            currentRecurrence: recurrence,
+          },
+          patch,
+        );
         await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
 
         return;
@@ -73,13 +76,15 @@ class FinishTaskUseCase {
         const task = await this.taskCheckerService.ensureTaskExists({ userId, taskId: recurrence?.taskId }, { trx });
         const currentOverride = await this.taskOverrideService.getOverride({ userId, id: overrideId }, trx);
 
-        const { override: overrideToUpdate } = this.taskOverrideDomainService.finish({
-          taskId,
-          sourceTask: task,
-          currentRecurrence: recurrence,
-          override: currentOverride,
-          timezone: userTimezone,
-        });
+        const { override: overrideToUpdate } = this.taskOverrideDomainService.finish(
+          {
+            taskId,
+            sourceTask: task,
+            currentRecurrence: recurrence,
+            override: currentOverride,
+          },
+          patch,
+        );
         await this.taskOverrideService.upsertOverride(overrideToUpdate, trx);
 
         return;

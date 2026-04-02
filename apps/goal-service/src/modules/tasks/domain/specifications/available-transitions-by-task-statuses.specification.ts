@@ -5,7 +5,7 @@ const allowTaskStatusTransitions: Record<TaskStatus, TaskStatus[]> = {
     TaskStatus.IN_PROGRESS,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
     TaskStatus.ARCHIVED,
     TaskStatus.DELETED,
   ],
@@ -14,12 +14,12 @@ const allowTaskStatusTransitions: Record<TaskStatus, TaskStatus[]> = {
     TaskStatus.NOT_STARTED,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
     TaskStatus.ARCHIVED,
     TaskStatus.DELETED,
   ],
 
-  [TaskStatus.CANCELLED]: [TaskStatus.ARCHIVED, TaskStatus.DELETED],
+  [TaskStatus.CANCELED]: [TaskStatus.ARCHIVED, TaskStatus.DELETED],
 
   [TaskStatus.COMPLETED]: [TaskStatus.DELETED],
 
@@ -39,7 +39,7 @@ const allowedTaskStatusByAction = {
     TaskStatus.IN_PROGRESS,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
     TaskStatus.ARCHIVED,
     TaskStatus.DELETED,
   ],

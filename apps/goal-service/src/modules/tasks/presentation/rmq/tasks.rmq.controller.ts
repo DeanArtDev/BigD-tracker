@@ -210,6 +210,8 @@ export class TasksRmqController {
       new FinishTaskCommand({
         userId: payload.userId,
         taskId: payload.taskId,
+        reason: payload.reason,
+        type: payload.type,
       }),
     );
     return { data: true };

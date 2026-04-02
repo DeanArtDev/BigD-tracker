@@ -1,7 +1,7 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { futureDate, pastDate } from '@shared/__tests__';
-import { assertHasCancelReason, assertTaskReplace, taskAsserts } from '../tasks.invariants';
+import { assertTaskReplace, taskAsserts } from '../tasks.invariants';
 import { Priority, Weight } from '../value-objects';
 
 describe('task invariants', () => {
@@ -105,30 +105,5 @@ describe('task invariants', () => {
         },
       ),
     ).toThrow();
-  });
-
-  it('requires cancel reason for cancelled status', () => {
-    expect(() =>
-      assertHasCancelReason({
-        status: TaskStatus.CANCELLED,
-      }),
-    ).toThrow();
-  });
-
-  it('allows cancel reason for cancelled status', () => {
-    expect(() =>
-      assertHasCancelReason({
-        status: TaskStatus.CANCELLED,
-        reason: 'No longer needed',
-      }),
-    ).not.toThrow();
-  });
-
-  it('skips cancel reason requirement for non-cancelled status', () => {
-    expect(() =>
-      assertHasCancelReason({
-        status: TaskStatus.IN_PROGRESS,
-      }),
-    ).not.toThrow();
   });
 });

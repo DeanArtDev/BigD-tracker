@@ -1,4 +1,4 @@
-import { TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
+import { TaskFinishStatus, TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, MonthdaysVo, Name, timeAndDate, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 import { maxBy } from 'lodash';
 import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
@@ -109,9 +109,7 @@ class TaskWithRecurrenceService {
     });
   }
 
-  public finish(input: { task: Task; timezone: string }) {
-    const { task, timezone } = input;
-
+  public finish(task: Task, patch: { timezone: string; type: TaskFinishStatus; reason?: string }) {
     if (task.recurrenceId != null) {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: 'Дело - источник серии повторений не может быть завершено',
@@ -120,7 +118,7 @@ class TaskWithRecurrenceService {
       });
     }
 
-    const taskToFinish = TaskFactory.finish(task, timezone);
+    const taskToFinish = TaskFactory.finish(task, patch);
 
     return {
       taskToFinish,
@@ -423,7 +421,7 @@ class TaskWithRecurrenceService {
       timezone: currentRecurrence.timezone,
     });
 
-    const cancelledRecurrence = currentRecurrence.cancel({
+    const canceledRecurrence = currentRecurrence.cancel({
       startDate: DateVo.create(DateVo.format(startDate)),
       cancelDate: DateVo.create(DateVo.format(cancelDate)),
       pattern,
@@ -431,7 +429,7 @@ class TaskWithRecurrenceService {
 
     return {
       task: updatedTask,
-      recurrence: cancelledRecurrence ?? null,
+      recurrence: canceledRecurrence ?? null,
       shouldDeleteRecurrence: false,
       overridesToDelete: TaskWithRecurrenceService.overridesToDeleteFilter(currentOverrides),
     };
@@ -449,7 +447,7 @@ class TaskWithRecurrenceService {
   static overrideStatusesToDelete = [
     TaskStatus.NOT_STARTED,
     TaskStatus.IN_PROGRESS,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
     TaskStatus.ARCHIVED,
     TaskStatus.DELETED,
   ];

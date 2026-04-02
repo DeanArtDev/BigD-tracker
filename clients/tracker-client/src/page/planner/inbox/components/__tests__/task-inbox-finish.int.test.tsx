@@ -1,14 +1,15 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { mockGetInboxTasks, mockPost, renderWithProviders } from '@/shared/__tests__';
+import { mockGetInboxTasks, mockJsonPost, renderWithProviders } from '@/shared/__tests__';
+import { TaskFinishStatus } from '@/entity/planner/tasks';
 import { TaskInboxList } from '../inbox-list/task-inbox-list';
 
 describe('TaskInboxList integration', () => {
   it('sends expected request to POST /tasks/{taskId}/finish', async () => {
-    const finishSpy = mockPost<{ data: { id: string } }>({
+    const finishSpy = mockJsonPost<{ data: { type: TaskFinishStatus } }, { data: boolean }>({
       path: '*/api/tasks/*/finish',
-      response: { data: { id: 'o:88' } },
+      response: { data: true },
     });
 
     mockGetInboxTasks([
@@ -28,9 +29,16 @@ describe('TaskInboxList integration', () => {
       ?.closest('button');
     expect(finishButton).not.toBeNull();
     await user.click(finishButton!);
+    await user.click(await screen.findByRole('button', { name: 'Завершить' }));
 
     await waitFor(() => {
       expect(finishSpy.getCallCount()).toBe(1);
+    });
+
+    expect(finishSpy.getLastBody()).toEqual({
+      data: {
+        type: TaskFinishStatus.COMPLETED,
+      },
     });
   });
 });

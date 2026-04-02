@@ -1,3 +1,4 @@
+import { TaskFinishStatus } from '@big-d/api-contracts';
 import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
@@ -69,8 +70,9 @@ class TaskFactory {
     return task.replace(state);
   }
 
-  static finish(task: Task, timezone: string): Task {
-    return task.finish({ now: DateVo.nowByTZ(TimezoneVo.create(timezone).value) });
+  static finish(task: Task, input: { timezone: string; type: TaskFinishStatus; reason?: string }): Task {
+    const { reason, timezone, type } = input;
+    return task.finish({ now: DateVo.nowByTZ(TimezoneVo.create(timezone).value), reason, type });
   }
 
   static updateInbox(task: Task, input: TaskFactoryUpdateInboxInput): Task {

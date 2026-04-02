@@ -40,6 +40,7 @@ import {
   CompleteDeleteTaskRes,
   CreateTaskReq,
   CreateTaskRes,
+  FinishTaskReq,
   FinishTaskRes,
   GetArchivedTasksQuery,
   GetArchivedTasksRes,
@@ -77,7 +78,7 @@ export class TasksController {
       TaskStatus.IN_PROGRESS,
       TaskStatus.COMPLETED,
       TaskStatus.OVERDUE,
-      TaskStatus.CANCELLED,
+      TaskStatus.CANCELED,
     ];
 
     const status = query.filter?.status?.filter((i) => availableStatuses.includes(i)) ?? availableStatuses;
@@ -240,11 +241,14 @@ export class TasksController {
   async finishTask(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Param('taskId') taskId: string,
+    @Body() { data }: FinishTaskReq,
   ): Promise<FinishTaskRes> {
     return await this.goalClient.send<GoalFinishTask.Response, GoalFinishTask.Request>(GoalFinishTask.pattern, {
       data: {
         userId: uid,
         taskId,
+        reason: data.reason,
+        type: data.type,
       },
     });
   }

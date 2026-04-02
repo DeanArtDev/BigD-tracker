@@ -11,3 +11,4 @@ export * from './wysiwyg-form';
 export * from './readable-input-form';
 export * from './switch-form';
 export * from './toggle-group-multi-form';
+export * from './radion-group-form';

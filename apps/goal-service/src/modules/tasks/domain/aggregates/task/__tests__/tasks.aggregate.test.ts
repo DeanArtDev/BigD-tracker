@@ -1,4 +1,4 @@
-import { TaskStatus } from '@big-d/api-contracts';
+import { TaskFinishStatus, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { mockDate } from '@shared/__tests__';
 import { futureDate } from '@shared/__tests__';
@@ -108,7 +108,7 @@ describe('Task aggregate', () => {
       deadline: DateVo.restore('2023-01-02T00:00:00.000Z'),
     });
 
-    task.finish({ now: DateVo.restore('2023-01-01T00:00:00.000Z') });
+    task.finish({ now: DateVo.restore('2023-01-01T00:00:00.000Z'), type: TaskFinishStatus.COMPLETED });
 
     expect(task.status).toBe(TaskStatus.COMPLETED);
     expect(task.endDate).toBeDefined();
@@ -126,7 +126,7 @@ describe('Task aggregate', () => {
       deadline: DateVo.restore('2022-12-31T00:00:00.000Z'),
     });
 
-    task.finish({ now: DateVo.restore('2023-01-01T00:00:00.000Z') });
+    task.finish({ now: DateVo.restore('2023-01-01T00:00:00.000Z'), type: TaskFinishStatus.OVERDUE });
 
     expect(task.status).toBe(TaskStatus.OVERDUE);
     expect(task.endDate).toBeDefined();

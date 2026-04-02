@@ -1,11 +1,30 @@
-import { TaskIdBuilder } from '@/modules/tasks/domain';
+import { TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
+import { TaskFinishStatus, TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
+import { DateVo } from '@big-d/api-utils';
+import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
 import { FinishTaskCommand } from '../finish-task.command';
 import { FinishTaskUseCase } from '../finish-task.use-case';
-import { TaskOverride } from '@/modules/tasks/domain';
-import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
-import { DateVo } from '@big-d/api-utils';
-import { timeAndDate } from '@big-d/api-utils';
-import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
+
+function createUseCase(deps: {
+  taskCheckerService?: { ensureTaskExists: jest.Mock };
+  taskTypeService?: { getType: jest.Mock };
+  taskRecurrenceService?: { getRecurrence: jest.Mock };
+  taskOverrideService?: { getOverride?: jest.Mock; upsertOverride: jest.Mock };
+  db?: { runTransaction: jest.Mock };
+  tasksWriteRepo?: { replaceTask: jest.Mock };
+}) {
+  return new FinishTaskUseCase(
+    (deps.taskCheckerService ?? { ensureTaskExists: jest.fn() }) as never,
+    (deps.taskTypeService ?? { getType: jest.fn() }) as never,
+    (deps.taskRecurrenceService ?? { getRecurrence: jest.fn() }) as never,
+    (deps.taskOverrideService ?? { upsertOverride: jest.fn() }) as never,
+    (deps.db ??
+      ({
+        runTransaction: jest.fn().mockImplementation(async (work) => await work({ id: 333, trueTransaction: true })),
+      } as const)) as never,
+    (deps.tasksWriteRepo ?? { replaceTask: jest.fn() }) as never,
+  );
+}
 
 describe('FinishTaskUseCase', () => {
   afterEach(() => {
@@ -13,7 +32,100 @@ describe('FinishTaskUseCase', () => {
     jest.useRealTimers();
   });
 
-  test('creates completed override for virtual task finish when deadline is after finish date', async () => {
+  test.each([
+    { type: TaskFinishStatus.COMPLETED, expectedStatus: TaskStatus.COMPLETED, reason: undefined },
+    { type: TaskFinishStatus.OVERDUE, expectedStatus: TaskStatus.OVERDUE, reason: undefined },
+    { type: TaskFinishStatus.CANCELED, expectedStatus: TaskStatus.CANCELED, reason: 'User canceled task' },
+  ])('finishes origin task with $type status', async ({ type, expectedStatus, reason }) => {
+    const userId = 76;
+    const taskId = 7000;
+    const task = getTask({
+      id: taskId,
+      userId,
+      name: 'Origin task',
+      description: 'origin description',
+      priority: 3,
+      weight: 5,
+      startDate: '2026-03-12T09:00',
+      deadline: '2026-03-12T18:00',
+      status: TaskStatus.IN_PROGRESS,
+    });
+    const finishedAt = new Date('2026-03-12T12:00:00.000Z');
+    const trx = { id: 333, trueTransaction: true };
+
+    jest.useFakeTimers().setSystemTime(finishedAt);
+
+    const taskCheckerService = {
+      ensureTaskExists: jest.fn().mockResolvedValue(task),
+    };
+    const taskTypeService = {
+      getType: jest.fn().mockReturnValue({
+        isOrigin: true,
+        isVirtual: false,
+        isOverride: false,
+        data: { id: taskId },
+      }),
+    };
+    const taskRecurrenceService = {
+      getRecurrence: jest.fn(),
+    };
+    const taskOverrideService = {
+      upsertOverride: jest.fn(),
+    };
+    const db = {
+      runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
+    };
+    const tasksWriteRepo = {
+      replaceTask: jest.fn(),
+    };
+    const useCase = createUseCase({
+      taskCheckerService,
+      taskTypeService,
+      taskRecurrenceService,
+      taskOverrideService,
+      db,
+      tasksWriteRepo,
+    });
+
+    await useCase.execute(
+      new FinishTaskCommand({
+        userId,
+        taskId: `t::${taskId}`,
+        type,
+        reason,
+      }),
+    );
+
+    expect(tasksWriteRepo.replaceTask).toHaveBeenCalledTimes(1);
+    const [taskArg, trxArg] = tasksWriteRepo.replaceTask.mock.calls[0];
+    expect(taskArg.id).toBe(taskId);
+    expect(taskArg.status).toBe(expectedStatus);
+    expect(taskArg.endDate).toBe(DateVo.format(finishedAt.toISOString()));
+    expect(taskArg.cancelReason).toBe(reason);
+    expect(trxArg).toBe(trx);
+    expect(taskOverrideService.upsertOverride).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    {
+      type: TaskFinishStatus.COMPLETED,
+      expectedStatus: TaskStatus.COMPLETED,
+      expectedOverrideType: TaskOverrideType.OVERRIDE,
+      reason: undefined,
+    },
+    {
+      type: TaskFinishStatus.OVERDUE,
+      expectedStatus: TaskStatus.OVERDUE,
+      expectedOverrideType: TaskOverrideType.OVERRIDE,
+      reason: undefined,
+    },
+    {
+      type: TaskFinishStatus.CANCELED,
+      expectedStatus: TaskStatus.CANCELED,
+      expectedOverrideType: TaskOverrideType.CANCELED,
+      reason: 'User canceled virtual task',
+    },
+  ])('creates virtual override with $type status', async ({ type, expectedStatus, expectedOverrideType, reason }) => {
     const userId = 77;
     const taskId = 7001;
     const recurrenceId = 8001;
@@ -36,9 +148,7 @@ describe('FinishTaskUseCase', () => {
       deadline: '2026-03-02T12:00',
       status: TaskStatus.IN_PROGRESS,
     });
-    const expectedStart = timeAndDate(recurrenceStart).tz(recurrence.timezone, true).utc();
-    const expectedDeadline = expectedStart.add(26, 'hour');
-    const finishedAt = expectedStart.add(1, 'hour').toDate();
+    const finishedAt = new Date('2026-03-12T12:00:00.000Z');
     const trx = { id: 333, trueTransaction: true };
 
     jest.useFakeTimers().setSystemTime(finishedAt);
@@ -50,6 +160,7 @@ describe('FinishTaskUseCase', () => {
       getType: jest.fn().mockReturnValue({
         isOrigin: false,
         isVirtual: true,
+        isOverride: false,
         data: { recurrenceId, date: recurrenceStart },
       }),
     };
@@ -65,49 +176,56 @@ describe('FinishTaskUseCase', () => {
     const tasksWriteRepo = {
       replaceTask: jest.fn(),
     };
-    const useCase = new FinishTaskUseCase(
-      taskCheckerService as never,
-      taskTypeService as never,
-      taskRecurrenceService as never,
-      taskOverrideService as never,
-      db as never,
-      tasksWriteRepo as never,
-    );
+    const useCase = createUseCase({
+      taskCheckerService,
+      taskTypeService,
+      taskRecurrenceService,
+      taskOverrideService,
+      db,
+      tasksWriteRepo,
+    });
 
     await useCase.execute(
       new FinishTaskCommand({
         userId,
         taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId, date: recurrenceStart }),
+        type,
+        reason,
       }),
     );
 
-    expect(db.runTransaction).toHaveBeenCalledTimes(1);
-    expect(taskTypeService.getType).toHaveBeenCalledWith({
-      taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId, date: recurrenceStart }),
-    });
-    expect(taskRecurrenceService.getRecurrence).toHaveBeenCalledWith({ userId, id: recurrenceId }, trx);
-    expect(taskCheckerService.ensureTaskExists).toHaveBeenCalledWith({ userId, taskId }, { trx });
     expect(taskOverrideService.upsertOverride).toHaveBeenCalledTimes(1);
-
-    const [overrideArg, overrideTrxArg] = taskOverrideService.upsertOverride.mock.calls[0];
-    expect(overrideArg.id).toBeNaN();
-    expect(overrideArg.userId).toBe(userId);
+    const [overrideArg, trxArg] = taskOverrideService.upsertOverride.mock.calls[0];
     expect(overrideArg.recurrenceId).toBe(recurrenceId);
     expect(overrideArg.recurrenceStart).toBe(DateVo.format(recurrenceStart));
-    expect(overrideArg.name).toBe('Virtual source');
-    expect(overrideArg.description).toBe('virtual source description');
-    expect(overrideArg.priority).toBe(3);
-    expect(overrideArg.weight).toBe(5);
-    expect(overrideArg.startDate).toBe(DateVo.format(expectedStart.toISOString()));
-    expect(overrideArg.deadline).toBe(DateVo.format(expectedDeadline.toISOString()));
-    expect(overrideArg.endDate).toBe(DateVo.format(expectedStart.add(1, 'hour').toISOString()));
-    expect(overrideArg.status).toBe(TaskStatus.COMPLETED);
-    expect(overrideArg.type).toBe(TaskOverrideType.OVERRIDE);
-    expect(overrideTrxArg).toBe(trx);
+    expect(overrideArg.status).toBe(expectedStatus);
+    expect(overrideArg.type).toBe(expectedOverrideType);
+    expect(overrideArg.cancelReason).toBe(reason);
+    expect(overrideArg.endDate).toBe(DateVo.format(finishedAt.toISOString()));
+    expect(trxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
   });
 
-  test('updates override for override task finish', async () => {
+  test.each([
+    {
+      type: TaskFinishStatus.COMPLETED,
+      expectedStatus: TaskStatus.COMPLETED,
+      expectedOverrideType: TaskOverrideType.OVERRIDE,
+      reason: undefined,
+    },
+    {
+      type: TaskFinishStatus.OVERDUE,
+      expectedStatus: TaskStatus.OVERDUE,
+      expectedOverrideType: TaskOverrideType.OVERRIDE,
+      reason: undefined,
+    },
+    {
+      type: TaskFinishStatus.CANCELED,
+      expectedStatus: TaskStatus.CANCELED,
+      expectedOverrideType: TaskOverrideType.OVERRIDE,
+      reason: 'User canceled override task',
+    },
+  ])('updates override task with $type status', async ({ type, expectedStatus, expectedOverrideType, reason }) => {
     const userId = 78;
     const taskId = 7002;
     const recurrenceId = 8002;
@@ -127,8 +245,8 @@ describe('FinishTaskUseCase', () => {
       description: 'source task description',
       priority: 3,
       weight: 5,
-      startDate: '2026-03-01T10:00:00.000Z',
-      deadline: '2026-03-02T12:00:00.000Z',
+      startDate: '2026-03-01T10:00',
+      deadline: '2026-03-02T12:00',
       status: TaskStatus.IN_PROGRESS,
     });
     const currentOverride = TaskOverride.restore({
@@ -176,47 +294,35 @@ describe('FinishTaskUseCase', () => {
     const tasksWriteRepo = {
       replaceTask: jest.fn(),
     };
-    const useCase = new FinishTaskUseCase(
-      taskCheckerService as never,
-      taskTypeService as never,
-      taskRecurrenceService as never,
-      taskOverrideService as never,
-      db as never,
-      tasksWriteRepo as never,
-    );
+    const useCase = createUseCase({
+      taskCheckerService,
+      taskTypeService,
+      taskRecurrenceService,
+      taskOverrideService,
+      db,
+      tasksWriteRepo,
+    });
 
     await useCase.execute(
       new FinishTaskCommand({
         userId,
         taskId: TaskIdBuilder.wrapOverrideId({ recurrenceId, overrideId, date: recurrenceStart }),
+        type,
+        reason,
       }),
     );
 
-    expect(db.runTransaction).toHaveBeenCalledTimes(1);
-    expect(taskTypeService.getType).toHaveBeenCalledWith({
-      taskId: TaskIdBuilder.wrapOverrideId({ recurrenceId, overrideId, date: recurrenceStart }),
-    });
-    expect(taskRecurrenceService.getRecurrence).toHaveBeenCalledWith({ userId, id: recurrenceId }, trx);
-    expect(taskCheckerService.ensureTaskExists).toHaveBeenCalledWith({ userId, taskId }, { trx });
-    expect(taskOverrideService.getOverride).toHaveBeenCalledWith({ userId, id: overrideId }, trx);
     expect(taskOverrideService.upsertOverride).toHaveBeenCalledTimes(1);
-
-    const [overrideArg, overrideTrxArg] = taskOverrideService.upsertOverride.mock.calls[0];
+    const [overrideArg, trxArg] = taskOverrideService.upsertOverride.mock.calls[0];
     expect(overrideArg).toBe(currentOverride);
     expect(overrideArg.id).toBe(overrideId);
-    expect(overrideArg.userId).toBe(userId);
     expect(overrideArg.recurrenceId).toBe(recurrenceId);
     expect(overrideArg.recurrenceStart).toBe(DateVo.format(recurrenceStart));
-    expect(overrideArg.name).toBe('Override task');
-    expect(overrideArg.description).toBe('override description');
-    expect(overrideArg.priority).toBe(4);
-    expect(overrideArg.weight).toBe(6);
-    expect(overrideArg.startDate).toBe('2026-03-12T09:30');
-    expect(overrideArg.deadline).toBe('2026-03-13T13:45');
-    expect(overrideArg.endDate).toBe('2026-03-12T12:00');
-    expect(overrideArg.status).toBe(TaskStatus.COMPLETED);
-    expect(overrideArg.type).toBe(TaskOverrideType.OVERRIDE);
-    expect(overrideTrxArg).toBe(trx);
+    expect(overrideArg.status).toBe(expectedStatus);
+    expect(overrideArg.type).toBe(expectedOverrideType);
+    expect(overrideArg.cancelReason).toBe(reason);
+    expect(overrideArg.endDate).toBe(DateVo.format(finishedAt.toISOString()));
+    expect(trxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
   });
 });

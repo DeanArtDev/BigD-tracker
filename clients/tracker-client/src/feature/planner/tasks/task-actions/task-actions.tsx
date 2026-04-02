@@ -39,6 +39,7 @@ function TaskActions({
     isLoading,
 
     confirmHolder,
+    finishDialogHolder,
 
     handleDelete,
     handleFinish,
@@ -78,6 +79,7 @@ function TaskActions({
       />
 
       {confirmHolder}
+      {finishDialogHolder}
 
       <AssignTaskToGroupDialog
         taskGroupId={groupId}

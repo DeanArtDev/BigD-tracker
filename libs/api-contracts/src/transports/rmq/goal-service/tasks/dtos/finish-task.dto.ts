@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { TaskFinishStatus } from '../types';
 
 class FinishFinishReqData {
   @IsInt()
@@ -7,6 +8,13 @@ class FinishFinishReqData {
 
   @IsString()
   taskId: string;
+
+  @IsOptional()
+  @IsString()
+  reason?: string;
+
+  @IsEnum(TaskFinishStatus)
+  type: TaskFinishStatus;
 }
 
 class FinishTaskReq {

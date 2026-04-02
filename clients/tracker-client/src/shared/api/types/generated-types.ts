@@ -1402,7 +1402,7 @@ export interface components {
              * @example NOT_STARTED
              * @enum {string}
              */
-            status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED" | "ARCHIVED" | "DELETED";
+            status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELED" | "ARCHIVED" | "DELETED";
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
@@ -1611,7 +1611,7 @@ export interface components {
              *       "NOT_STARTED"
              *     ]
              */
-            status?: ("NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELLED")[];
+            status?: ("NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE" | "CANCELED")[];
             /**
              * @description Начало диапазона (ISO 8601). Должно приходить вместе с filter.to
              * @example 2026-01-01T00:00:00.000Z
@@ -1726,6 +1726,23 @@ export interface components {
         CloneTaskRes: {
             /** @description Ответ сервера */
             data: components["schemas"]["TaskDto"];
+        };
+        FinishTaskReqData: {
+            /**
+             * @description Описание причины просрочки или отказа
+             * @example Не получилось
+             */
+            reason?: string;
+            /**
+             * @description Тип завершения дела
+             * @example COMPLETED
+             * @enum {string}
+             */
+            type: "OVERDUE" | "COMPLETED" | "CANCELED";
+        };
+        FinishTaskReq: {
+            /** @description Запрос сервера */
+            data: components["schemas"]["FinishTaskReqData"];
         };
         FinishTaskRes: {
             /** @description Ответ сервера */
@@ -2832,7 +2849,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinishTaskReq"];
+            };
+        };
         responses: {
             200: {
                 headers: {

@@ -217,7 +217,7 @@ class TaskRecurrenceQueryService {
 
   #isOverrideSkipped({ from, to }: { from: Date; to: Date }, override?: TaskOverride): boolean {
     if (override == null) return false;
-    if (override.isCancelled || override.isDeleted || override.isArchived || override.isMoved) {
+    if (override.isCanceled || override.isDeleted || override.isArchived || override.isMoved) {
       return true;
     }
 

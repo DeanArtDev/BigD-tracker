@@ -1,5 +1,5 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
-import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
+import { TaskFinishStatus, taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
 import { DateVo, timeAndDate } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskIdBuilder, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
 import { taskServiceAsserts } from './task-service-asserts';
@@ -63,7 +63,10 @@ class TaskVirtualService {
     };
   }
 
-  finish(input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence; timezone: string }) {
+  finish(
+    input: { taskId: string; sourceTask: Task; currentRecurrence: TaskRecurrence },
+    patch: { timezone: string; type: TaskFinishStatus; reason?: string },
+  ) {
     const { sourceTask, currentRecurrence } = input;
 
     const { virtualData } = this.#assertVirtualId(input);
@@ -83,7 +86,7 @@ class TaskVirtualService {
       deadline: deadline.toISOString(),
     });
 
-    const finishedTask = TaskFactory.finish(virtualTask, input.timezone);
+    const finishedTask = TaskFactory.finish(virtualTask, patch);
     const createdOverrideDraft = TaskOverrideFactory.create({
       task: finishedTask,
       type: taskStatusToOverrideTypeMap[finishedTask.status],

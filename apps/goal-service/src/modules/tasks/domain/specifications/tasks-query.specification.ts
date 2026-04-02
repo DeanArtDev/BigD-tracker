@@ -6,7 +6,7 @@ const tasksQuerySpec = {
     TaskStatus.IN_PROGRESS,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
   ],
   unavailableStatuses: [TaskStatus.ARCHIVED, TaskStatus.DELETED],
 };

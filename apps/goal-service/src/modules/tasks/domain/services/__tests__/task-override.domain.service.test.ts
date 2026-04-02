@@ -1,5 +1,6 @@
 import {
   RecurrenceFrequency,
+  TaskFinishStatus,
   TaskOverrideType,
   TaskRecurrenceStatus,
   TaskRecurrenceWeekday,
@@ -427,23 +428,28 @@ describe('TaskOverrideDomainService', () => {
 
     jest.useFakeTimers().setSystemTime(finishedAt);
 
-    const result = service.finish({
-      taskId: TaskIdBuilder.wrapOverrideId({
-        recurrenceId: 19,
-        overrideId: 31,
-        date: '2026-03-12T10:00',
-      }),
-      sourceTask: buildTask({
-        id: 11,
-        recurrenceId: 19,
-        startDate: '2026-03-01T10:00:00.000Z',
-        deadline: '2026-03-01T12:00:00.000Z',
-        status: TaskStatus.DELETED,
-      }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
-      override,
-      timezone: 'UTC',
-    });
+    const result = service.finish(
+      {
+        taskId: TaskIdBuilder.wrapOverrideId({
+          recurrenceId: 19,
+          overrideId: 31,
+          date: '2026-03-12T10:00',
+        }),
+        sourceTask: buildTask({
+          id: 11,
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+          deadline: '2026-03-01T12:00:00.000Z',
+          status: TaskStatus.DELETED,
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
+        override,
+      },
+      {
+        timezone: 'UTC',
+        type: TaskFinishStatus.COMPLETED,
+      },
+    );
 
     expect(result.override).toBe(override);
     expect(result.override.id).toBe(31);
@@ -471,23 +477,28 @@ describe('TaskOverrideDomainService', () => {
 
     jest.useFakeTimers().setSystemTime(finishedAt);
 
-    const result = service.finish({
-      taskId: TaskIdBuilder.wrapOverrideId({
-        recurrenceId: 19,
-        overrideId: 31,
-        date: '2026-03-12T10:00',
-      }),
-      sourceTask: buildTask({
-        id: 11,
-        recurrenceId: 19,
-        startDate: '2026-03-01T10:00:00.000Z',
-        deadline: '2026-03-01T12:00:00.000Z',
-        status: TaskStatus.DELETED,
-      }),
-      currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
-      override,
-      timezone: 'UTC',
-    });
+    const result = service.finish(
+      {
+        taskId: TaskIdBuilder.wrapOverrideId({
+          recurrenceId: 19,
+          overrideId: 31,
+          date: '2026-03-12T10:00',
+        }),
+        sourceTask: buildTask({
+          id: 11,
+          recurrenceId: 19,
+          startDate: '2026-03-01T10:00:00.000Z',
+          deadline: '2026-03-01T12:00:00.000Z',
+          status: TaskStatus.DELETED,
+        }),
+        currentRecurrence: buildRecurrence({ id: 19, taskId: 11, startDate: '2026-03-12T10:00' }),
+        override,
+      },
+      {
+        timezone: 'UTC',
+        type: TaskFinishStatus.OVERDUE,
+      },
+    );
 
     expect(result.override).toBe(override);
     expect(result.override.id).toBe(31);

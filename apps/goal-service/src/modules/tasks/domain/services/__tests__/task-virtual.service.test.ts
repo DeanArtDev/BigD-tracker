@@ -1,5 +1,6 @@
 import {
   RecurrenceFrequency,
+  TaskFinishStatus,
   TaskOverrideType,
   TaskRecurrenceStatus,
   TaskRecurrenceWeekday,
@@ -199,12 +200,17 @@ describe('TaskVirtualService', () => {
     const finishedAt = expectedStart.add(1, 'hour').toDate();
 
     jest.useFakeTimers().setSystemTime(finishedAt);
-    const result = service.finish({
-      taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
-      sourceTask,
-      currentRecurrence,
-      timezone: 'UTC',
-    });
+    const result = service.finish(
+      {
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
+        sourceTask,
+        currentRecurrence,
+      },
+      {
+        timezone: 'UTC',
+        type: TaskFinishStatus.COMPLETED,
+      },
+    );
 
     expect(result.override.id).toBeNaN();
     expect(result.override.userId).toBe(77);
@@ -236,12 +242,17 @@ describe('TaskVirtualService', () => {
     const finishedAt = expectedStart.add(1, 'hour').toDate();
 
     jest.useFakeTimers().setSystemTime(finishedAt);
-    const result = service.finish({
-      taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
-      sourceTask,
-      currentRecurrence,
-      timezone: 'UTC',
-    });
+    const result = service.finish(
+      {
+        taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId: currentRecurrence.id, date: virtualDate }),
+        sourceTask,
+        currentRecurrence,
+      },
+      {
+        timezone: 'UTC',
+        type: TaskFinishStatus.OVERDUE,
+      },
+    );
 
     expect(result.override.id).toBeNaN();
     expect(result.override.userId).toBe(77);

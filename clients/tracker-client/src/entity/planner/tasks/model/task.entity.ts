@@ -6,7 +6,7 @@ enum TaskStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   OVERDUE = 'OVERDUE',
-  CANCELLED = 'CANCELLED',
+  CANCELED = 'CANCELED',
   ARCHIVED = 'ARCHIVED',
   DELETED = 'DELETED',
 }
@@ -16,7 +16,13 @@ enum TaskQueryStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   OVERDUE = 'OVERDUE',
-  CANCELLED = 'CANCELLED',
+  CANCELED = 'CANCELED',
+}
+
+enum TaskFinishStatus {
+  OVERDUE = TaskStatus.OVERDUE,
+  COMPLETED = TaskStatus.COMPLETED,
+  CANCELED = TaskStatus.CANCELED,
 }
 
 enum TaskRecurrenceFrequency {
@@ -58,4 +64,12 @@ type OverrideStatus = Override<Omit<ApiSchemas['TaskDto'], 'userId'>, 'status', 
 type TaskEntity = Override<OverrideStatus, 'priority', TaskPriority> & { type: TaskType };
 
 export { type TaskEntity };
-export { TaskRecurrenceFrequency, TaskStatus, TaskQueryStatus, TaskRecurrenceWeekday, TaskType, TaskPriority };
+export {
+  TaskRecurrenceFrequency,
+  TaskStatus,
+  TaskQueryStatus,
+  TaskRecurrenceWeekday,
+  TaskType,
+  TaskPriority,
+  TaskFinishStatus,
+};

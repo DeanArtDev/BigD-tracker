@@ -75,15 +75,6 @@ const taskAsserts = {
   },
 };
 
-function assertHasCancelReason(input: { status: TaskStatus; reason?: string }): void {
-  if (input.status === TaskStatus.CANCELLED && input.reason == null) {
-    throw new ExceptionTaskDomainInvalidInvariant({
-      message: `cancelReason must not be empty`,
-      field: 'cancelReason',
-    });
-  }
-}
-
 function assertTaskReplace(input: { status: TaskStatus; endDate?: string }): void {
   const { status } = input;
 
@@ -115,4 +106,4 @@ function assertStartDateAndDeadlineAreRequired(input: DatesOptional): asserts in
   }
 }
 
-export { taskAsserts, assertHasCancelReason, assertTaskReplace, assertStartDateAndDeadlineAreRequired };
+export { taskAsserts, assertTaskReplace, assertStartDateAndDeadlineAreRequired };

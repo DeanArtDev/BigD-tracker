@@ -13,7 +13,7 @@ interface TaskStatusIndicationProps {
 const statusToHintMap: Record<TaskStatus, string> = {
   COMPLETED: 'Завершено',
   OVERDUE: 'Просрочено',
-  CANCELLED: 'Отменено',
+  CANCELED: 'Отменено',
   NOT_STARTED: 'Не начато',
   ARCHIVED: 'Архивное',
   DELETED: 'Удалено',
