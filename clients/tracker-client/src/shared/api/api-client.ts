@@ -7,12 +7,19 @@ import type { ApiPaths } from './types';
 
 const apiPublicClient = createClient<ApiPaths>({
   baseUrl: APP_CONFIG.API_BASE_URL,
-  credentials: 'include',
+  credentials: import.meta.env.DEV ? 'include' : 'same-origin',
+  referrerPolicy: 'strict-origin',
+  mode: import.meta.env.DEV ? 'cors' : 'same-origin',
+  redirect: 'error',
   fetch: customFetchFabric({ timeout: 5000 }),
 });
+
 const apiPrivateClient = createClient<ApiPaths>({
   baseUrl: APP_CONFIG.API_BASE_URL,
-  credentials: 'include',
+  credentials: import.meta.env.DEV ? 'include' : 'same-origin',
+  referrerPolicy: 'strict-origin',
+  mode: import.meta.env.DEV ? 'cors' : 'same-origin',
+  redirect: 'error',
   fetch: customFetchFabric({ timeout: 5000 }),
   querySerializer: (query) => qs.stringify(query, { addQueryPrefix: true }),
 });

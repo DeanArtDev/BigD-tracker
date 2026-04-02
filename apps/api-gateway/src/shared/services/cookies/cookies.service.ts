@@ -18,7 +18,7 @@ export class CookieService {
       res.clearCookie(REFRESH_TOKEN_FIELD, {
         httpOnly: true,
         secure: isProd,
-        sameSite: isProd ? 'strict' : 'lax',
+        sameSite: 'lax',
         path: '/api/auth/refresh',
         maxAge,
       });
@@ -28,7 +28,7 @@ export class CookieService {
     res.cookie(REFRESH_TOKEN_FIELD, token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
+      sameSite: 'lax',
       path: '/api/auth/refresh',
       maxAge,
     });
