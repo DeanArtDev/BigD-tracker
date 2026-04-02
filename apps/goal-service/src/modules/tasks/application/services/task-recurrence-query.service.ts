@@ -117,7 +117,10 @@ class TaskRecurrenceQueryService {
 
       for (const occurrence of rule.between(shiftedFrom, to, true)) {
         const occurrenceStart = this.createTimePoint(occurrence, sourceTask.startDate);
-        const startDate = timeAndDate(sourceTask.startDate).date(occurrenceStart.date());
+        const startDate = timeAndDate(sourceTask.startDate)
+          .year(occurrenceStart.year())
+          .month(occurrenceStart.month())
+          .date(occurrenceStart.date());
         const deadline = startDate.clone().add(sourceTaskDurationDelta, 'millisecond');
 
         if (startDate.toDate() > to || deadline.toDate() < from) continue;

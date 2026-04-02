@@ -1306,6 +1306,52 @@ describe('TaskRecurrenceQueryService', () => {
     ]);
   });
 
+  test('returns daily recurrence virtual task in february 2027 when series started in april 2026 without untilDate', async () => {
+    const recurrence = getTaskRecurrence({
+      id: 9801,
+      userId: 901,
+      taskId: 9801,
+      status: TaskRecurrenceStatus.ACTIVE,
+      timezone: 'UTC',
+      startDate: '2026-04-10T10:00:00.000Z',
+      untilDate: undefined,
+      frequency: RecurrenceFrequency.DAILY,
+      pattern: 'FREQ=DAILY;INTERVAL=1',
+      weekstart: TaskRecurrenceWeekday.MO,
+    });
+    const sourceTask = getTask({
+      id: 9801,
+      userId: 901,
+      startDate: '2026-04-10T10:00:00.000Z',
+      deadline: '2026-04-10T12:00:00.000Z',
+      status: TaskStatus.IN_PROGRESS,
+    });
+    const tasksOverridesRepository = {
+      getManyRecurrences: jest.fn().mockResolvedValue([recurrence]),
+      getManyOverrides: jest.fn().mockResolvedValue([]),
+    };
+    const taskCheckerService = {
+      ensureTaskExists: jest.fn().mockResolvedValue(sourceTask),
+    };
+    const service = new TaskRecurrenceQueryService(tasksOverridesRepository as never, taskCheckerService as never);
+    jest.spyOn(GoalServiceRequestContext, 'getStore').mockReturnValue(undefined);
+
+    const result = await calculateTasks(service, {
+      userId: 901,
+      from: '2027-02-15',
+      to: '2027-02-15',
+    });
+
+    expect(result.virtualViews).toHaveLength(1);
+    expect(result.virtualViews[0]).toMatchObject({
+      id: 'v::9801::2027-02-15T10:00',
+      startDate: '2027-02-15T10:00',
+      deadline: '2027-02-15T12:00',
+      status: TaskStatus.IN_PROGRESS,
+    });
+    expect(result.recurrences).toEqual([recurrence]);
+  });
+
   test('createTimePoint uses occurrence date with source task time', () => {
     const service = new TaskRecurrenceQueryService({} as never, {} as never);
 
