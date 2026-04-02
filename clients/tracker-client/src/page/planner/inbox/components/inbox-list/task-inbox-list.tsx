@@ -1,11 +1,6 @@
 import { useGetUserInbox, useInvalidateInbox } from '@/entity/planner/groups';
-import {
-  type TaskInboxEntity,
-  useDeleteTask,
-  useTaskFinish,
-  useInvalidateAllTasks,
-  type TaskEntity,
-} from '@/entity/planner/tasks';
+import { type TaskInboxEntity, useDeleteTask, useInvalidateAllTasks, type TaskEntity } from '@/entity/planner/tasks';
+import { useFinishDialogForm } from '@/feature/planner/tasks/task-actions';
 import { withLazy } from '@/shared/lib/react/with-lazy';
 import { useConfirmDialog, useIsMobile } from '@/shared/ui-kit/helpers';
 import { ScrollAreaNativeVertical } from '@/shared/ui-kit/ui/scroll-area-native-vertical';
@@ -46,11 +41,13 @@ function TaskInboxList() {
   };
 
   const { deleteTask, isPending: isDeletePending } = useDeleteTask();
-  const { finishTask, isPending: isFinishPending } = useTaskFinish();
-  const isLoading = isDeletePending || isFinishPending;
 
+  const { finishDialogHolder, isTaskFinishPending, openTaskFinishForm } = useFinishDialogForm();
   const handleFinish = (taskId: TaskEntity['id']) => {
-    finishTask({ params: { path: { taskId } } }, { onSuccess: invalidate });
+    openTaskFinishForm({
+      taskId,
+      onSuccess: invalidate,
+    });
   };
 
   const handleDelete = (taskId: TaskEntity['id']) => {
@@ -65,6 +62,7 @@ function TaskInboxList() {
   };
 
   const [swipedTaskId, setSwipedTaskId] = useState<string>();
+  const isLoading = isDeletePending || isTaskFinishPending;
 
   return (
     <ScrollAreaNativeVertical className="px-2 py-2 lg:py-4">
@@ -105,6 +103,7 @@ function TaskInboxList() {
         onSuccess={() => void setTask(undefined)}
       />
       {confirmHolder}
+      {finishDialogHolder}
     </ScrollAreaNativeVertical>
   );
 }

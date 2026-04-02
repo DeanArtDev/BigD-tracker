@@ -8,7 +8,7 @@ function getFieldRuleTypeByStatus(status: TaskStatus): 'editable' | 'readonly' {
 
     case TaskStatus.COMPLETED:
     case TaskStatus.OVERDUE:
-    case TaskStatus.CANCELLED:
+    case TaskStatus.CANCELED:
     case TaskStatus.ARCHIVED:
     case TaskStatus.DELETED:
       return 'readonly';

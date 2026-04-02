@@ -5,9 +5,15 @@ enum TaskStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   OVERDUE = 'OVERDUE',
-  CANCELLED = 'CANCELLED',
+  CANCELED = 'CANCELED',
   ARCHIVED = 'ARCHIVED',
   DELETED = 'DELETED',
+}
+
+enum TaskFinishStatus {
+  OVERDUE = TaskStatus.OVERDUE,
+  COMPLETED = TaskStatus.COMPLETED,
+  CANCELED = TaskStatus.CANCELED,
 }
 
 enum TaskRecurrenceStatus {
@@ -49,7 +55,7 @@ const taskStatusToOverrideTypeMap: Record<TaskStatus, TaskOverrideType> = {
   [TaskStatus.IN_PROGRESS]: TaskOverrideType.OVERRIDE,
   [TaskStatus.COMPLETED]: TaskOverrideType.OVERRIDE,
   [TaskStatus.OVERDUE]: TaskOverrideType.OVERRIDE,
-  [TaskStatus.CANCELLED]: TaskOverrideType.CANCELED,
+  [TaskStatus.CANCELED]: TaskOverrideType.CANCELED,
   [TaskStatus.ARCHIVED]: TaskOverrideType.ARCHIVED,
   [TaskStatus.DELETED]: TaskOverrideType.DELETED,
 };
@@ -73,4 +79,5 @@ export {
   numberToWeekdayMap,
   recurrenceFrequencyToKeyMap,
   taskStatusToOverrideTypeMap,
+  TaskFinishStatus,
 };

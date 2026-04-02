@@ -1,4 +1,4 @@
-import { TaskStatus } from '@big-d/api-contracts';
+import { TaskFinishStatus, TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { ExceptionTaskDomainInvalidInvariant } from '../../exceptions';
@@ -16,22 +16,8 @@ class Task extends AggregateRoot {
     this.#state = input;
   }
 
-  static calculateStatusByDates({
-    startDate,
-    endDate,
-    deadline,
-  }: {
-    startDate?: DateVo;
-    deadline?: DateVo;
-    endDate?: DateVo;
-  }): TaskStatus {
-    if (endDate != null) {
-      if (deadline == null) return TaskStatus.COMPLETED;
-
-      return deadline.isAfter(endDate.value) ? TaskStatus.COMPLETED : TaskStatus.OVERDUE;
-    }
-
-    if (startDate) return TaskStatus.IN_PROGRESS;
+  static calculateStatusByDates({ startDate }: { startDate?: DateVo }): TaskStatus {
+    if (startDate != null) return TaskStatus.IN_PROGRESS;
     return TaskStatus.NOT_STARTED;
   }
 
@@ -67,7 +53,7 @@ class Task extends AggregateRoot {
       weight: input.weight,
       startDate,
       deadline,
-      status: Task.calculateStatusByDates({ startDate, deadline }),
+      status: Task.calculateStatusByDates({ startDate }),
     });
   }
 
@@ -76,7 +62,7 @@ class Task extends AggregateRoot {
     const deadline = input.deadline;
 
     if (this.#isAllowTo('REPLACE_EVERYTHING')) {
-      this.#state.status = Task.calculateStatusByDates({ startDate, deadline });
+      this.#state.status = Task.calculateStatusByDates({ startDate });
       this.#state.name = input.name;
       this.#state.description = input.description;
       this.#state.priority = input.priority;
@@ -184,7 +170,6 @@ class Task extends AggregateRoot {
   public clone(): Task {
     if (this.#isAllowTo('CLONE')) {
       const startDate = this.#state.startDate;
-      const deadline = this.#state.deadline;
 
       return new Task({
         id: NaN,
@@ -194,9 +179,9 @@ class Task extends AggregateRoot {
         description: this.#state.description,
         priority: this.#state.priority,
         weight: this.#state.weight,
+        deadline: this.#state.deadline,
         startDate,
-        deadline,
-        status: Task.calculateStatusByDates({ startDate, deadline }),
+        status: Task.calculateStatusByDates({ startDate }),
       });
     }
 
@@ -207,21 +192,11 @@ class Task extends AggregateRoot {
     });
   }
 
-  public finish({ now }: { now: DateVo }) {
+  public finish({ now, reason, type }: { now: DateVo; type: TaskFinishStatus; reason?: string }) {
     if (this.#isAllowTo('FINISH')) {
-      const startDate = this.#state.startDate;
-      const deadline = this.#state.deadline;
-
       this.#state.endDate = now;
-
-      this.#setStatus(
-        Task.calculateStatusByDates({
-          startDate,
-          deadline,
-          endDate: this.#state.endDate,
-        }),
-      );
-
+      this.#state.cancelReason = reason;
+      this.#setStatus(TaskStatus[type]);
       return this;
     }
 

@@ -1,5 +1,5 @@
 import { Priority, TaskIdBuilder, Weight } from '@/modules/tasks/domain';
-import { taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
+import { TaskFinishStatus, taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskOverride, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
 import { ExceptionTaskDomainInvalidInvariant } from '../exceptions';
@@ -68,13 +68,15 @@ class TaskOverrideDomainService {
     };
   }
 
-  finish(input: {
-    taskId: string;
-    sourceTask: Task;
-    currentRecurrence: TaskRecurrence;
-    override: TaskOverride;
-    timezone: string;
-  }) {
+  finish(
+    input: {
+      taskId: string;
+      sourceTask: Task;
+      currentRecurrence: TaskRecurrence;
+      override: TaskOverride;
+    },
+    patch: { timezone: string; type: TaskFinishStatus; reason?: string },
+  ) {
     const { sourceTask, override, currentRecurrence } = input;
 
     const { overrideData } = this.#assertOverrideId(input);
@@ -88,7 +90,7 @@ class TaskOverrideDomainService {
     });
 
     const task = this.#restoreTaskFromOverride(override);
-    const finishedTask = TaskFactory.finish(task, input.timezone);
+    const finishedTask = TaskFactory.finish(task, patch);
     const finishedOverride = TaskOverrideFactory.finish(override, finishedTask);
 
     return {

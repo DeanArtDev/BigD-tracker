@@ -18,7 +18,7 @@ const actionToStatuesMap = {
     TaskStatus.IN_PROGRESS,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
     TaskStatus.ARCHIVED,
   ],
 
@@ -27,7 +27,7 @@ const actionToStatuesMap = {
     TaskStatus.IN_PROGRESS,
     TaskStatus.COMPLETED,
     TaskStatus.OVERDUE,
-    TaskStatus.CANCELLED,
+    TaskStatus.CANCELED,
     TaskStatus.ARCHIVED,
     TaskStatus.DELETED,
   ],
@@ -80,7 +80,7 @@ const allowIndicationStatusMap: Record<TaskStatus, boolean> = {
   [TaskStatus.IN_PROGRESS]: true,
   [TaskStatus.COMPLETED]: false,
   [TaskStatus.OVERDUE]: false,
-  [TaskStatus.CANCELLED]: false,
+  [TaskStatus.CANCELED]: false,
   [TaskStatus.ARCHIVED]: false,
   [TaskStatus.DELETED]: false,
 };

@@ -28,7 +28,7 @@ function mapRpsKindToHttpStatus(kind: RmqErrorKind): HttpStatus | 499 {
     case RmqErrorKind.RESOURCE_EXHAUSTED:
       return 429;
 
-    case RmqErrorKind.CANCELLED:
+    case RmqErrorKind.CANCELED:
       return 499;
 
     case RmqErrorKind.DEADLINE_EXCEEDED:

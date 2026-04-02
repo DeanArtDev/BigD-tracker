@@ -15,7 +15,7 @@ type AvailableStatusesMap = {
   [TaskQueryStatus.IN_PROGRESS]: boolean;
   [TaskQueryStatus.COMPLETED]: boolean;
   [TaskQueryStatus.OVERDUE]: boolean;
-  [TaskQueryStatus.CANCELLED]: boolean;
+  [TaskQueryStatus.CANCELED]: boolean;
 } & Record<string, boolean>;
 
 const humanizeStatusMap: Record<keyof AvailableStatusesMap, string> = {
@@ -23,7 +23,7 @@ const humanizeStatusMap: Record<keyof AvailableStatusesMap, string> = {
   [TaskQueryStatus.IN_PROGRESS]: 'Выполняются',
   [TaskQueryStatus.COMPLETED]: 'Завершенные',
   [TaskQueryStatus.OVERDUE]: 'Просроченные',
-  [TaskQueryStatus.CANCELLED]: 'Отмененные',
+  [TaskQueryStatus.CANCELED]: 'Отмененные',
 };
 
 interface FilterStatusListProps {
@@ -45,7 +45,7 @@ function FilterStatusList({ selectedStatuses, onFilterChange }: FilterStatusList
         [TaskQueryStatus.IN_PROGRESS]: false,
         [TaskQueryStatus.COMPLETED]: false,
         [TaskQueryStatus.OVERDUE]: false,
-        [TaskQueryStatus.CANCELLED]: false,
+        [TaskQueryStatus.CANCELED]: false,
       },
     );
   }, [selectedStatuses]);

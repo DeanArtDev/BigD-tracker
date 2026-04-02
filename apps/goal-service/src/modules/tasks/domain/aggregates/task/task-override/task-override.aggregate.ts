@@ -97,6 +97,7 @@ class TaskOverride {
   public finish({ task }: { task: Task }): TaskOverride {
     this.#state.type = TaskOverrideType.OVERRIDE;
 
+    this.#state.cancelReason = task.cancelReason;
     this.#state.status = task.status;
     this.#state.endDate = task.endDate;
 
@@ -155,7 +156,7 @@ class TaskOverride {
   get isArchived() {
     return this.type === TaskOverrideType.ARCHIVED;
   }
-  get isCancelled() {
+  get isCanceled() {
     return this.type === TaskOverrideType.CANCELED;
   }
   get isDeleted() {

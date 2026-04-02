@@ -1,5 +1,6 @@
 import {
   RecurrenceFrequency,
+  TaskFinishStatus,
   TaskOverrideType,
   TaskRecurrenceStatus,
   TaskRecurrenceWeekday,
@@ -201,15 +202,18 @@ describe('TaskWithRecurrenceService', () => {
 
   it('rejects finishing repeatable task directly', () => {
     expect(() =>
-      service.finish({
-        task: buildTask({
+      service.finish(
+        buildTask({
           recurrenceId: 19,
           startDate: '2023-01-01T01:00',
           deadline: '2023-01-01T05:00',
           status: TaskStatus.IN_PROGRESS,
         }),
-        timezone: 'UTC',
-      }),
+        {
+          timezone: 'UTC',
+          type: TaskFinishStatus.COMPLETED,
+        },
+      ),
     ).toThrow();
   });
 

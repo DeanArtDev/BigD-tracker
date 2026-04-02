@@ -25,7 +25,7 @@ const AllowedTaskStatuses = [
   TaskStatus.IN_PROGRESS,
   TaskStatus.COMPLETED,
   TaskStatus.OVERDUE,
-  TaskStatus.CANCELLED,
+  TaskStatus.CANCELED,
 ] as const;
 
 @ValidatorConstraint({ name: 'BothOrNothing', async: false })

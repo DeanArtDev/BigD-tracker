@@ -6,9 +6,9 @@ import {
   useDeleteTask,
   useInvalidateAllTasks,
   useTaskClone,
-  useTaskFinish,
   useTaskRecoveryTask,
 } from '@/entity/planner/tasks';
+import { useFinishDialogForm } from './actions/finish';
 import { useConfirmDialog } from '@/shared/ui-kit/helpers';
 import { toast } from 'sonner';
 
@@ -36,7 +36,6 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
 
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
 
-  const { finishTask, isPending: isTaskFinishPending } = useTaskFinish();
   const { cloneTask, isPending: isTaskClonePending } = useTaskClone();
   const { deleteTask, isPending: isDeletePending } = useDeleteTask();
   const { deleteCompleteTask, isPending: isDeleteCompletePending } = useDeleteCompleteTask();
@@ -49,14 +48,6 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     await invalidateTasks();
     await invalidateAllGroups();
   };
-
-  const isLoading =
-    isAssignTaskToGroupPending ||
-    isDeletePending ||
-    isTaskFinishPending ||
-    isDeleteCompletePending ||
-    isTaskClonePending ||
-    isTaskRecoveryPending;
 
   const handleDelete = (taskId: TaskEntity['id']) => {
     viaConfirmation({
@@ -98,17 +89,15 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     });
   };
 
+  const { finishDialogHolder, isTaskFinishPending, openTaskFinishForm } = useFinishDialogForm();
   const handleFinish = (taskId: TaskEntity['id']) => {
-    finishTask(
-      { params: { path: { taskId } } },
-      {
-        onSuccess: async () => {
-          await onFinishSuccess?.();
-          await invalidate();
-          toast.success('Дело завершено!');
-        },
+    openTaskFinishForm({
+      taskId,
+      onSuccess: async () => {
+        await onFinishSuccess?.();
+        await invalidate();
       },
-    );
+    });
   };
 
   const handleClone = (taskId: TaskEntity['id']) => {
@@ -153,10 +142,19 @@ function useTaskActionsHandlers(props: UseTaskActionsHandlersProps) {
     );
   };
 
+  const isLoading =
+    isAssignTaskToGroupPending ||
+    isDeletePending ||
+    isTaskFinishPending ||
+    isDeleteCompletePending ||
+    isTaskClonePending ||
+    isTaskRecoveryPending;
+
   return {
     isLoading,
 
     confirmHolder,
+    finishDialogHolder,
 
     handleDelete,
     handleFinish,
