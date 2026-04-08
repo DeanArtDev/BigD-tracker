@@ -29,6 +29,8 @@
     "build:services:all": "turbo build -F=@big-d/*-service",
     "build:clientes:all": "turbo build -F=@big-d/*-client",
     "===============================  TOOLS  ==========================": "",
+    "architecture:visualize": "sh ./tools/architecture/visualize.sh",
+    "architecture:visualize:stop": "sh ./tools/architecture/visualize-stop.sh",
     "migrate:all:v2": "turbo migrate -F=@big-d/goal-service -- lts",
     "migrate:all": "ts-node -r dotenv/config tools/data-base/migrator.ts dotenv_config_path=./.env.development dotenv_config_debug=true && pnpm migrate:all:v2",
     "seed:all:v2": "turbo seed -F=@big-d/goal-service",

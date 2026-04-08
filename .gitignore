@@ -30,3 +30,5 @@ apps/*storybook.log
 
 apps/**/.turbo
 dumps
+
+docs/architecture/c4/.structurizr
