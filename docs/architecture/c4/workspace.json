@@ -1,0 +1,390 @@
+{
+  "configuration" : { },
+  "description" : "C4 model for tracker-client and api-gateway based on the repository as the source of truth.",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedDate" : "2026-04-08T12:51:38Z",
+  "model" : {
+    "people" : [ {
+      "description" : "Работает с Planner и Gym через web-интерфейс.",
+      "id" : "1",
+      "name" : "Пользователь",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Использует интерфейс",
+        "destinationId" : "3",
+        "id" : "9",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Использует интерфейс",
+        "destinationId" : "2",
+        "id" : "10",
+        "linkedRelationshipId" : "9",
+        "sourceId" : "1",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "description" : "SPA-клиент для Planner и Gym. Источник истины: clients/tracker-client.",
+        "documentation" : { },
+        "id" : "3",
+        "name" : "tracker-client",
+        "properties" : {
+          "structurizr.dsl.identifier" : "tracker_client"
+        },
+        "relationships" : [ {
+          "description" : "Вызывает frontend-oriented API",
+          "destinationId" : "4",
+          "id" : "11",
+          "sourceId" : "3",
+          "tags" : "Relationship",
+          "technology" : "HTTP/JSON"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "React 19, TypeScript, Vite 7, React Router 7, TanStack Query"
+      }, {
+        "description" : "HTTP BFF для frontend. Публикует /api, выполняет auth и orchestration backend-вызовов. Источник истины: apps/api-gateway.",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "api-gateway (BFF)",
+        "properties" : {
+          "structurizr.dsl.identifier" : "api_gateway"
+        },
+        "relationships" : [ {
+          "description" : "Отправляет RPC-запросы",
+          "destinationId" : "5",
+          "id" : "12",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "Auth, sessions, me, referral token",
+          "destinationId" : "6",
+          "id" : "14",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "RPC over RabbitMQ"
+        }, {
+          "description" : "Planner use cases",
+          "destinationId" : "7",
+          "id" : "16",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "RPC over RabbitMQ"
+        }, {
+          "description" : "Gym use cases",
+          "destinationId" : "8",
+          "id" : "18",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "RPC over RabbitMQ"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "NestJS 11, Express adapter, Swagger, cookie-parser"
+      } ],
+      "description" : "Пользовательский контур платформы задач и тренировок.",
+      "documentation" : { },
+      "id" : "2",
+      "name" : "BigD Tracker",
+      "properties" : {
+        "structurizr.dsl.identifier" : "bigd"
+      },
+      "relationships" : [ {
+        "description" : "Отправляет RPC-запросы",
+        "destinationId" : "5",
+        "id" : "13",
+        "linkedRelationshipId" : "12",
+        "sourceId" : "2",
+        "technology" : "AMQP"
+      }, {
+        "description" : "Auth, sessions, me, referral token",
+        "destinationId" : "6",
+        "id" : "15",
+        "linkedRelationshipId" : "14",
+        "sourceId" : "2",
+        "technology" : "RPC over RabbitMQ"
+      }, {
+        "description" : "Planner use cases",
+        "destinationId" : "7",
+        "id" : "17",
+        "linkedRelationshipId" : "16",
+        "sourceId" : "2",
+        "technology" : "RPC over RabbitMQ"
+      }, {
+        "description" : "Gym use cases",
+        "destinationId" : "8",
+        "id" : "19",
+        "linkedRelationshipId" : "18",
+        "sourceId" : "2",
+        "technology" : "RPC over RabbitMQ"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Брокер сообщений для RPC между BFF и backend-сервисами.",
+      "documentation" : { },
+      "id" : "5",
+      "name" : "RabbitMQ",
+      "properties" : {
+        "structurizr.dsl.identifier" : "rabbitmq"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Сервис аккаунтов, сессий, refresh token и профиля пользователя.",
+      "documentation" : { },
+      "id" : "6",
+      "name" : "account-service",
+      "properties" : {
+        "structurizr.dsl.identifier" : "account_service"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Planner-домен: inbox, groups, tasks, diary.",
+      "documentation" : { },
+      "id" : "7",
+      "name" : "goal-service",
+      "properties" : {
+        "structurizr.dsl.identifier" : "goal_service"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Gym-домен: trainings, templates, exercises, repetitions.",
+      "documentation" : { },
+      "id" : "8",
+      "name" : "training-service",
+      "properties" : {
+        "structurizr.dsl.identifier" : "training_service"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "BigD Tracker - Frontend and BFF",
+  "properties" : {
+    "structurizr.inspection.error" : "3",
+    "structurizr.dsl" : "d29ya3NwYWNlICJCaWdEIFRyYWNrZXIgLSBGcm9udGVuZCBhbmQgQkZGIiAiQzQgbW9kZWwgZm9yIHRyYWNrZXItY2xpZW50IGFuZCBhcGktZ2F0ZXdheSBiYXNlZCBvbiB0aGUgcmVwb3NpdG9yeSBhcyB0aGUgc291cmNlIG9mIHRydXRoLiIgewogICAgbW9kZWwgewogICAgICAgIHVzZXIgPSBwZXJzb24gItCf0L7Qu9GM0LfQvtCy0LDRgtC10LvRjCIgItCg0LDQsdC+0YLQsNC10YIg0YEgUGxhbm5lciDQuCBHeW0g0YfQtdGA0LXQtyB3ZWIt0LjQvdGC0LXRgNGE0LXQudGBLiIKCiAgICAgICAgYmlnZCA9IHNvZnR3YXJlU3lzdGVtICJCaWdEIFRyYWNrZXIiICLQn9C+0LvRjNC30L7QstCw0YLQtdC70YzRgdC60LjQuSDQutC+0L3RgtGD0YAg0L/Qu9Cw0YLRhNC+0YDQvNGLINC30LDQtNCw0Ycg0Lgg0YLRgNC10L3QuNGA0L7QstC+0LouIiB7CiAgICAgICAgICAgIHRyYWNrZXJfY2xpZW50ID0gY29udGFpbmVyICJ0cmFja2VyLWNsaWVudCIgIlNQQS3QutC70LjQtdC90YIg0LTQu9GPIFBsYW5uZXIg0LggR3ltLiDQmNGB0YLQvtGH0L3QuNC6INC40YHRgtC40L3RizogY2xpZW50cy90cmFja2VyLWNsaWVudC4iICJSZWFjdCAxOSwgVHlwZVNjcmlwdCwgVml0ZSA3LCBSZWFjdCBSb3V0ZXIgNywgVGFuU3RhY2sgUXVlcnkiCiAgICAgICAgICAgIGFwaV9nYXRld2F5ID0gY29udGFpbmVyICJhcGktZ2F0ZXdheSAoQkZGKSIgIkhUVFAgQkZGINC00LvRjyBmcm9udGVuZC4g0J/Rg9Cx0LvQuNC60YPQtdGCIC9hcGksINCy0YvQv9C+0LvQvdGP0LXRgiBhdXRoINC4IG9yY2hlc3RyYXRpb24gYmFja2VuZC3QstGL0LfQvtCy0L7Qsi4g0JjRgdGC0L7Rh9C90LjQuiDQuNGB0YLQuNC90Ys6IGFwcHMvYXBpLWdhdGV3YXkuIiAiTmVzdEpTIDExLCBFeHByZXNzIGFkYXB0ZXIsIFN3YWdnZXIsIGNvb2tpZS1wYXJzZXIiCiAgICAgICAgfQoKICAgICAgICByYWJiaXRtcSA9IHNvZnR3YXJlU3lzdGVtICJSYWJiaXRNUSIgItCR0YDQvtC60LXRgCDRgdC+0L7QsdGJ0LXQvdC40Lkg0LTQu9GPIFJQQyDQvNC10LbQtNGDIEJGRiDQuCBiYWNrZW5kLdGB0LXRgNCy0LjRgdCw0LzQuC4iCiAgICAgICAgYWNjb3VudF9zZXJ2aWNlID0gc29mdHdhcmVTeXN0ZW0gImFjY291bnQtc2VydmljZSIgItCh0LXRgNCy0LjRgSDQsNC60LrQsNGD0L3RgtC+0LIsINGB0LXRgdGB0LjQuSwgcmVmcmVzaCB0b2tlbiDQuCDQv9GA0L7RhNC40LvRjyDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8uIgogICAgICAgIGdvYWxfc2VydmljZSA9IHNvZnR3YXJlU3lzdGVtICJnb2FsLXNlcnZpY2UiICJQbGFubmVyLdC00L7QvNC10L06IGluYm94LCBncm91cHMsIHRhc2tzLCBkaWFyeS4iCiAgICAgICAgdHJhaW5pbmdfc2VydmljZSA9IHNvZnR3YXJlU3lzdGVtICJ0cmFpbmluZy1zZXJ2aWNlIiAiR3ltLdC00L7QvNC10L06IHRyYWluaW5ncywgdGVtcGxhdGVzLCBleGVyY2lzZXMsIHJlcGV0aXRpb25zLiIKCiAgICAgICAgdXNlciAtPiB0cmFja2VyX2NsaWVudCAi0JjRgdC/0L7Qu9GM0LfRg9C10YIg0LjQvdGC0LXRgNGE0LXQudGBIiAiSFRUUFMiCiAgICAgICAgdHJhY2tlcl9jbGllbnQgLT4gYXBpX2dhdGV3YXkgItCS0YvQt9GL0LLQsNC10YIgZnJvbnRlbmQtb3JpZW50ZWQgQVBJIiAiSFRUUC9KU09OIgoKICAgICAgICBhcGlfZ2F0ZXdheSAtPiByYWJiaXRtcSAi0J7RgtC/0YDQsNCy0LvRj9C10YIgUlBDLdC30LDQv9GA0L7RgdGLIiAiQU1RUCIKICAgICAgICBhcGlfZ2F0ZXdheSAtPiBhY2NvdW50X3NlcnZpY2UgIkF1dGgsIHNlc3Npb25zLCBtZSwgcmVmZXJyYWwgdG9rZW4iICJSUEMgb3ZlciBSYWJiaXRNUSIKICAgICAgICBhcGlfZ2F0ZXdheSAtPiBnb2FsX3NlcnZpY2UgIlBsYW5uZXIgdXNlIGNhc2VzIiAiUlBDIG92ZXIgUmFiYml0TVEiCiAgICAgICAgYXBpX2dhdGV3YXkgLT4gdHJhaW5pbmdfc2VydmljZSAiR3ltIHVzZSBjYXNlcyIgIlJQQyBvdmVyIFJhYmJpdE1RIgogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IGJpZ2QgImZyb250ZW5kLWJmZi1zeXN0ZW0tY29udGV4dCIgewogICAgICAgICAgICBpbmNsdWRlIHVzZXIKICAgICAgICAgICAgaW5jbHVkZSBiaWdkCiAgICAgICAgICAgIGluY2x1ZGUgcmFiYml0bXEKICAgICAgICAgICAgaW5jbHVkZSBhY2NvdW50X3NlcnZpY2UKICAgICAgICAgICAgaW5jbHVkZSBnb2FsX3NlcnZpY2UKICAgICAgICAgICAgaW5jbHVkZSB0cmFpbmluZ19zZXJ2aWNlCgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgICAgIHRpdGxlICJCaWdEIFRyYWNrZXIgLSBTeXN0ZW0gQ29udGV4dCIKICAgICAgICAgICAgZGVzY3JpcHRpb24gItCf0L7Qu9GM0LfQvtCy0LDRgtC10LvRjNGB0LrQuNC5INC60L7QvdGC0YPRgDogZnJvbnRlbmQsIEJGRiDQuCBiYWNrZW5kLdGB0LXRgNCy0LjRgdGLLCDRgSDQutC+0YLQvtGA0YvQvNC4INGA0LXQsNC70YzQvdC+INGA0LDQsdC+0YLQsNC10YIgQkZGLiIKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBiaWdkICJmcm9udGVuZC1iZmYtY29udGFpbmVyIiB7CiAgICAgICAgICAgIGluY2x1ZGUgdXNlcgogICAgICAgICAgICBpbmNsdWRlIHRyYWNrZXJfY2xpZW50CiAgICAgICAgICAgIGluY2x1ZGUgYXBpX2dhdGV3YXkKICAgICAgICAgICAgaW5jbHVkZSByYWJiaXRtcQogICAgICAgICAgICBpbmNsdWRlIGFjY291bnRfc2VydmljZQogICAgICAgICAgICBpbmNsdWRlIGdvYWxfc2VydmljZQogICAgICAgICAgICBpbmNsdWRlIHRyYWluaW5nX3NlcnZpY2UKCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICAgICAgdGl0bGUgIkJpZ0QgVHJhY2tlciAtIENvbnRhaW5lciBWaWV3IgogICAgICAgICAgICBkZXNjcmlwdGlvbiAi0JrQvtC90YLQtdC50L3QtdGA0L3Ri9C5INGD0YDQvtCy0LXQvdGMINC00LvRjyB0cmFja2VyLWNsaWVudCwgYXBpLWdhdGV3YXkg0LggYmFja2VuZC3RgdC10YDQstC40YHQvtCyLiIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgYmlnZCAiZnJvbnRlbmQtYmZmLXJlZ2lzdHJhdGlvbi1zYWdhIiB7CiAgICAgICAgICAgIHRpdGxlICLQoNC10LPQuNGB0YLRgNCw0YbQuNGPINC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjyDRh9C10YDQtdC3IEJGRiBvcmNoZXN0cmF0aW9uIgogICAgICAgICAgICBkZXNjcmlwdGlvbiAi0KDQtdCw0LvRjNC90YvQuSBtdWx0aS1zZXJ2aWNlINGB0YbQtdC90LDRgNC40Lkg0LjQtyBhcHBzL2FwaS1nYXRld2F5L3NyYy9tb2R1bGVzL2F1dGgvYXBwbGljYXRpb24vc2FnZXMvcmVnaXN0ZXIuc2FnZS50cyIKCiAgICAgICAgICAgIHVzZXIgLT4gdHJhY2tlcl9jbGllbnQgIjEuINCe0YLQutGA0YvQstCw0LXRgiDRgNC10LPQuNGB0YLRgNCw0YbQuNGOINC4INC+0YLQv9GA0LDQstC70Y/QtdGCIGxvZ2luL3Bhc3N3b3JkIgogICAgICAgICAgICB0cmFja2VyX2NsaWVudCAtPiBhcGlfZ2F0ZXdheSAiMi4gUE9TVCAvYXBpL2F1dGgvcmVnaXN0ZXIiCiAgICAgICAgICAgIGFwaV9nYXRld2F5IC0+IGFjY291bnRfc2VydmljZSAiMy4gQWNjb3VudFJlZ2lzdGVyOiDRgdC+0LfQtNCw0YLRjCDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8sIGFjY2VzcyB0b2tlbiDQuCByZWZyZXNoIHRva2VuIgogICAgICAgICAgICBhY2NvdW50X3NlcnZpY2UgLT4gYXBpX2dhdGV3YXkgIjQuINCS0L7Qt9Cy0YDQsNGJ0LDQtdGCIGFjY2VzcyB0b2tlbiwgcmVmcmVzaCB0b2tlbiDQuCBtYXhBZ2UiCiAgICAgICAgICAgIGFwaV9nYXRld2F5IC0+IGdvYWxfc2VydmljZSAiNS4gR29hbENyZWF0ZUluYm94R3JvdXA6INGB0L7Qt9C00LDRgtGMIGluYm94INC00LvRjyDQvdC+0LLQvtCz0L4g0L/QvtC70YzQt9C+0LLQsNGC0LXQu9GPIgogICAgICAgICAgICBnb2FsX3NlcnZpY2UgLT4gYXBpX2dhdGV3YXkgIjYuINCf0L7QtNGC0LLQtdGA0LbQtNCw0LXRgiDRgdC+0LfQtNCw0L3QuNC1IGluYm94IgogICAgICAgICAgICBhcGlfZ2F0ZXdheSAtPiB0cmFja2VyX2NsaWVudCAiNy4g0JLQvtC30LLRgNCw0YnQsNC10YIgYWNjZXNzIHRva2VuINC4INGD0YHRgtCw0L3QsNCy0LvQuNCy0LDQtdGCIHJlZnJlc2ggdG9rZW4gY29va2llIgoKICAgICAgICAgICAgYXV0b2xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiRWxlbWVudCIgewogICAgICAgICAgICAgICAgY29sb3IgIiMxMTE4MjciCiAgICAgICAgICAgICAgICBmb250U2l6ZSAyNAogICAgICAgICAgICB9CgogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIiMwZjc2NmUiCiAgICAgICAgICAgICAgICBjb2xvciAiI2ZmZmZmZiIKICAgICAgICAgICAgICAgIHNoYXBlIFBlcnNvbgogICAgICAgICAgICB9CgogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIiNkYmVhZmUiCiAgICAgICAgICAgICAgICBjb2xvciAiIzExMTgyNyIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICIjZmZmZmZmIgogICAgICAgICAgICAgICAgY29sb3IgIiMxMTE4MjciCiAgICAgICAgICAgICAgICBzdHJva2UgIiM5NGEzYjgiCiAgICAgICAgICAgICAgICBzdHJva2VXaWR0aCAyCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIHJlbGF0aW9uc2hpcCAiUmVsYXRpb25zaGlwIiB7CiAgICAgICAgICAgICAgICBjb2xvciAiIzQ3NTU2OSIKICAgICAgICAgICAgICAgIGZvbnRTaXplIDIwCiAgICAgICAgICAgICAgICByb3V0aW5nIE9ydGhvZ29uYWwKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KfQ==",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "configuration" : {
+      "styles" : {
+        "elements" : [ {
+          "background" : "#ffffff",
+          "color" : "#111827",
+          "stroke" : "#94a3b8",
+          "strokeWidth" : 2,
+          "tag" : "Container"
+        }, {
+          "color" : "#111827",
+          "fontSize" : 24,
+          "tag" : "Element"
+        }, {
+          "background" : "#0f766e",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#dbeafe",
+          "color" : "#111827",
+          "tag" : "Software System"
+        } ],
+        "relationships" : [ {
+          "color" : "#475569",
+          "fontSize" : 20,
+          "routing" : "Orthogonal",
+          "tag" : "Relationship"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Контейнерный уровень для tracker-client, api-gateway и backend-сервисов.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "frontend-bff-container",
+      "name" : "Container View: BigD Tracker",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "16"
+      }, {
+        "id" : "18"
+      }, {
+        "id" : "9"
+      } ],
+      "softwareSystemId" : "2",
+      "title" : "BigD Tracker - Container View"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Реальный multi-service сценарий из apps/api-gateway/src/modules/auth/application/sages/register.sage.ts",
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "frontend-bff-registration-saga",
+      "name" : "Dynamic View: BigD Tracker",
+      "order" : 3,
+      "relationships" : [ {
+        "description" : "1. Открывает регистрацию и отправляет login/password",
+        "id" : "9",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "2. POST /api/auth/register",
+        "id" : "11",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "3. AccountRegister: создать пользователя, access token и refresh token",
+        "id" : "14",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "4. Возвращает access token, refresh token и maxAge",
+        "id" : "14",
+        "order" : "4",
+        "response" : true
+      }, {
+        "description" : "5. GoalCreateInboxGroup: создать inbox для нового пользователя",
+        "id" : "16",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "6. Подтверждает создание inbox",
+        "id" : "16",
+        "order" : "6",
+        "response" : true
+      }, {
+        "description" : "7. Возвращает access token и устанавливает refresh token cookie",
+        "id" : "11",
+        "order" : "7",
+        "response" : true
+      } ],
+      "title" : "Регистрация пользователя через BFF orchestration"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Пользовательский контур: frontend, BFF и backend-сервисы, с которыми реально работает BFF.",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "frontend-bff-system-context",
+      "name" : "System Context View: BigD Tracker",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "10"
+      }, {
+        "id" : "13"
+      }, {
+        "id" : "15"
+      }, {
+        "id" : "17"
+      }, {
+        "id" : "19"
+      } ],
+      "softwareSystemId" : "2",
+      "title" : "BigD Tracker - System Context"
+    } ]
+  }
+}
