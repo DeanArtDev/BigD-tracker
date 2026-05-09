@@ -15,7 +15,7 @@ function createUseCase(deps: {
 }) {
   return new FinishTaskUseCase(
     (deps.taskCheckerService ?? { ensureTaskExists: jest.fn() }) as never,
-    (deps.taskTypeService ?? { getType: jest.fn() }) as never,
+    deps.taskTypeService ?? { getType: jest.fn() },
     (deps.taskRecurrenceService ?? { getRecurrence: jest.fn() }) as never,
     (deps.taskOverrideService ?? { upsertOverride: jest.fn() }) as never,
     (deps.db ??

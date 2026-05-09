@@ -1,4 +1,5 @@
 import { APP_ENV, appConfigFactory } from '@/infrastructure/configs';
+import { PubSubModule } from '@/infrastructure/pubsub';
 import { SwaggerAuthModule } from '@/infrastructure/swagger-auth/swagger-auth.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { ExercisesModule } from '@/modules/exercises';
@@ -9,7 +10,11 @@ import { UsersModule } from '@/modules/users/users.module';
 import { ObservabilityModule, LoggerModuleOptions } from '@big-d/api-utils';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
 import { ApiGatewayRequestContext } from '@shared/request-context';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { join } from 'node:path';
 
 @Module({
   imports: [
@@ -25,6 +30,21 @@ import { ApiGatewayRequestContext } from '@shared/request-context';
     TrainingTemplatesModule,
     ExercisesModule,
     GoalServiceModule,
+    PubSubModule,
+
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(__dirname, './infrastructure/graphql/schema.gql'),
+      sortSchema: true,
+      context: ({ req }) => ({ req }),
+      playground: false,
+      path: '/graphql',
+      plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+      subscriptions: {
+        'graphql-ws': { path: '/graphql' },
+      },
+    }),
+
     ObservabilityModule.forRootAsync({
       global: true,
       requestContext: ApiGatewayRequestContext,

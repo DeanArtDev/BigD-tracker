@@ -21,7 +21,7 @@ class RequestContext<TDetails extends RequestContextInputState = RequestContextI
   constructor(state: TDetails) {
     this.#state = {
       ...state,
-      correlationId: state.correlationId ?? (randomUUID() as string),
+      correlationId: state.correlationId ?? randomUUID(),
       userTimezone: state.userTimezone ?? 'UTC',
     };
   }

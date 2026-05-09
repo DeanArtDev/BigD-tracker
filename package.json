@@ -66,14 +66,5 @@
   "engines": {
     "node": "^24.13",
     "pnpm": "10.10.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@nestjs/core",
-      "@scarf/scarf",
-      "@swc/core",
-      "esbuild",
-      "sharp"
-    ]
   }
 }
