@@ -1,0 +1,52 @@
+import { PUB_SUB } from '@/infrastructure/pubsub';
+import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
+import { Public } from '@/modules/auth/decorators';
+import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
+import { AccountGetMe } from '@big-d/api-contracts';
+import { Inject } from '@nestjs/common';
+import { Resolver, Query, ObjectType, ID, Field, Subscription } from '@nestjs/graphql';
+import { PubSub } from 'graphql-subscriptions';
+
+@ObjectType()
+export class MeRes {
+  @Field(() => ID)
+  id: number;
+
+  @Field()
+  email: string;
+}
+
+@Resolver()
+export class UserResolver {
+  constructor(
+    @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
+  ) {
+    setInterval(() => {
+      this.pubSub.publish('tick', { tick: Date.now() });
+    }, 1000);
+  }
+
+  @Public()
+  @Subscription(() => Number)
+  tick() {
+    return this.pubSub.asyncIterableIterator('tick');
+  }
+
+  @Public()
+  @Query(() => MeRes)
+  async me(): Promise<AccountGetMe.Response['data']> {
+    try {
+      const { data } = await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(
+        AccountGetMe.pattern,
+        {
+          data: { id: 1 },
+        },
+      );
+
+      return data;
+    } catch {
+      throw new ExceptionUnauthorized({ message: 'Пользователь не авторизован' });
+    }
+  }
+}

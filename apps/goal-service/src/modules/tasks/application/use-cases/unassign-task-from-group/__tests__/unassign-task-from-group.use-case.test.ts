@@ -44,7 +44,7 @@ describe('UnassignTaskFromGroupUseCase', () => {
     const useCase = new UnassignTaskFromGroupUseCase(
       taskCheckerService as never,
       groupCheckerService as never,
-      taskTypeService as never,
+      taskTypeService,
       taskOverrideService as never,
       tasksWriteRepo as never,
       db as never,
@@ -110,7 +110,7 @@ describe('UnassignTaskFromGroupUseCase', () => {
     const useCase = new UnassignTaskFromGroupUseCase(
       taskCheckerService as never,
       groupCheckerService as never,
-      taskTypeService as never,
+      taskTypeService,
       taskOverrideService as never,
       tasksWriteRepo as never,
       db as never,
@@ -178,7 +178,7 @@ describe('UnassignTaskFromGroupUseCase', () => {
     const useCase = new UnassignTaskFromGroupUseCase(
       taskCheckerService as never,
       groupCheckerService as never,
-      taskTypeService as never,
+      taskTypeService,
       taskOverrideService as never,
       tasksWriteRepo as never,
       db as never,

@@ -4,6 +4,14 @@ packages:
   - "libs/*"
   - "configs/**"
 
+ignoredBuiltDependencies:
+  - "unrs-resolver"
+  - "@nestjs/core"
+  - "@scarf/scarf"
+  - "@swc/core"
+  - "esbuild"
+  - "sharp"
+
 catalog:
   "rxjs": "^7.8.1"
   "@nestjs/common": "^11.1.1"

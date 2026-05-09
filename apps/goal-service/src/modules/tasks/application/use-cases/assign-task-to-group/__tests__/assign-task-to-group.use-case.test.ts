@@ -45,7 +45,7 @@ describe('AssignTaskToGroupUseCase', () => {
       taskCheckerService as never,
       taskOverrideService as never,
       groupCheckerService as never,
-      taskTypeService as never,
+      taskTypeService,
       tasksWriteRepo as never,
       db as never,
     );
@@ -116,7 +116,7 @@ describe('AssignTaskToGroupUseCase', () => {
       taskCheckerService as never,
       taskOverrideService as never,
       groupCheckerService as never,
-      taskTypeService as never,
+      taskTypeService,
       tasksWriteRepo as never,
       db as never,
     );
@@ -187,7 +187,7 @@ describe('AssignTaskToGroupUseCase', () => {
       taskCheckerService as never,
       taskOverrideService as never,
       groupCheckerService as never,
-      taskTypeService as never,
+      taskTypeService,
       tasksWriteRepo as never,
       db as never,
     );

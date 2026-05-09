@@ -19,6 +19,8 @@ async function bootstrap() {
     📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}
     ----------------------------------------------------------------
     📜 To get open api string schema at http://localhost:${port}/${SWAGGER_URL}
+    
+    📜 To get open graphql playground at http://localhost:${port}/graphql
     `);
     }
   });

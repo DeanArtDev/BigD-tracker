@@ -11,5 +11,10 @@
     - corepack prepare pnpm@10.10.0 --activate
     - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
     - pnpm install --frozen-lockfile
+
+    - cat "$CLIENT_TESTING_ENV" > clients/tracker-client/.env.test
+    - cat "$GOAL_SERVICE_TEST_ENV" > apps/goal-service/.env.test
+    - cat "$WEB_CLIENT_TESTING_ENV" > clients/web-client/.env.production
+
     - pnpm build:clientes:all --concurrency=1
     - pnpm build:services:all --concurrency=1
