@@ -19,7 +19,7 @@ export class MeRes {
 @Resolver()
 export class UserResolver {
   constructor(
-    @Inject(AUTH_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(AUTH_RMQ_SERVICE) private readonly authClient: AppRmqClient,
     @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {
     setInterval(() => {
@@ -37,7 +37,7 @@ export class UserResolver {
   @Query(() => MeRes)
   async me(): Promise<AuthGetMe.Response['data']> {
     try {
-      const { data } = await this.accountClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
+      const { data } = await this.authClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
         data: { id: 1 },
       });
 

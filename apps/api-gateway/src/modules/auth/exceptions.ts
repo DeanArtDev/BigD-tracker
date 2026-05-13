@@ -6,6 +6,12 @@ const AuthExceptionStateList = {
     code: exceptionCode.accountUnauthorized.code,
     details: exceptionCode.accountUnauthorized.details,
   }),
+
+  AuthInvalidToken: defineExceptionState({
+    key: 'AUTH_INVALID_TOKEN',
+    code: exceptionCode.authInvalidTokenFormat.code,
+    details: exceptionCode.authInvalidTokenFormat.details,
+  }),
 };
 
-export const { ExceptionUnauthorized } = generateExceptionClasses(AuthExceptionStateList);
+export const { ExceptionUnauthorized, ExceptionAuthInvalidToken } = generateExceptionClasses(AuthExceptionStateList);

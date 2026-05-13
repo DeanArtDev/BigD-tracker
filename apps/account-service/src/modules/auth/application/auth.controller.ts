@@ -92,7 +92,9 @@ export class AuthController {
     @Payload() { data }: AccountReferralToken.Request,
   ): Promise<AccountReferralToken.Response> {
     return {
-      data: await this.commandBus.execute(new ReferralTokenCommand({ userId: data.uid, sessionId: data.sid })),
+      data: await this.commandBus.execute(
+        new ReferralTokenCommand({ userId: data.uid, sessionId: data.sid.toString() }),
+      ),
     };
   }
 }

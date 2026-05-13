@@ -29,7 +29,7 @@ const meQuery = [GetMeQuery, GetMeHandler];
       imports: [ConfigModule.forFeature(authConfig)],
       useFactory: (configService: ConfigService) => {
         return {
-          privateKey: configService.get('auth.SECRET_KEY'),
+          privateKey: configService.get('auth.PRIVATE_AUTH_KEY'),
           signOptions: {
             issuer: 'auth-service',
             audience: 'api-gateway',

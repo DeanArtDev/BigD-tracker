@@ -1,10 +1,8 @@
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { APP_ENV } from '@/infrastructure/configs';
 import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 import { IS_PUBLIC_KEY, PAYLOAD_KEY } from '../decorators';
 import { AccessTokenPayload } from '../dto/access-token.dto';
 
@@ -12,7 +10,6 @@ import { AccessTokenPayload } from '../dto/access-token.dto';
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly configService: ConfigService<APP_ENV>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -37,9 +34,7 @@ export class AuthGuard implements CanActivate {
     const token = authHeader.split(' ')[1];
 
     try {
-      request[PAYLOAD_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(token, {
-        secret: this.configService.get('PUBLIC_SECRET_KEY'),
-      });
+      request[PAYLOAD_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(token);
 
       return true;
     } catch {

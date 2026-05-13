@@ -39,8 +39,6 @@ const envSchema = z.object({
   DB_USERNAME: z.string(),
   DB_PASSWORD: z.string(),
 
-  REFRESH_EXPIRE_TIME: z.string(),
-  ACCESS_EXPIRE_TIME: z.string(),
   LOG_PRETTY: z.string(),
 });
 
@@ -59,12 +57,21 @@ const dbConfig = registerAs('db', () => ({
   PASSWORD: process.env.DB_PASSWORD ?? '',
 }));
 
-const authConfig = registerAs('auth', () => ({
-  ACCESS_EXPIRE_TIME: process.env.ACCESS_EXPIRE_TIME ?? '15m',
-  REFRESH_EXPIRE_TIME: process.env.REFRESH_EXPIRE_TIME ?? '15d',
-  SECRET_KEY: readFileSync(join(process.cwd(), 'keys/private.pem'), 'utf8'),
-}));
-type AUTH_ENV = ReturnType<typeof authConfig>;
+const authSchema = z.object({
+  PRIVATE_AUTH_KEY: z.string(),
+  REFRESH_EXPIRE_TIME: z.string(),
+  ACCESS_EXPIRE_TIME: z.string(),
+});
+
+type AUTH_ENV = z.output<typeof authSchema>;
+const authConfig = registerAs<AUTH_ENV>('auth', () => {
+  const config = {
+    ACCESS_EXPIRE_TIME: process.env.ACCESS_EXPIRE_TIME ?? '15m',
+    REFRESH_EXPIRE_TIME: process.env.REFRESH_EXPIRE_TIME ?? '15d',
+    PRIVATE_AUTH_KEY: readFileSync(join(process.cwd(), 'keys/private.pem'), 'utf8'),
+  };
+  return authSchema.parse(config);
+});
 
 const appConfigFactory = (): AUTH_APP_ENV => {
   const rmq = rmqConfig();

@@ -13,7 +13,11 @@ const system = {
 } as const satisfies ExceptionConfig;
 
 const auth = {
-  // Domain
+  // Application
+  authInvalidTokenFormat: {
+    code: 'ASA-A-0001',
+    details: Details.Define<{ message: string; subjectId?: number | string }>(),
+  },
 } as const satisfies ExceptionConfig;
 
 const users = {

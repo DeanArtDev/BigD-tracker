@@ -63,7 +63,8 @@
     "reflect-metadata": "catalog:",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "validator": "catalog:"
+    "validator": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

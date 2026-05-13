@@ -1,5 +1,5 @@
-import { IsInt, IsString } from 'class-validator';
 import { Expose } from 'class-transformer';
+import { IsInt } from 'class-validator';
 
 class AccessTokenPayload {
   @Expose()
@@ -7,8 +7,8 @@ class AccessTokenPayload {
   uid: number;
 
   @Expose()
-  @IsString()
-  sid: string;
+  @IsInt()
+  sid: number;
 
   @Expose()
   @IsInt()

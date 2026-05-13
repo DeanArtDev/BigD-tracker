@@ -39,7 +39,7 @@ import { RefreshTokenGuard } from './guards/refresh-token.guard';
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(AUTH_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(AUTH_RMQ_SERVICE) private readonly authClient: AppRmqClient,
     private readonly cookieService: CookieService,
     private readonly registerSage: RegisterSage,
     private readonly jwtService: JwtService,
@@ -96,7 +96,7 @@ export class AuthController {
     @RefreshToken() refreshToken: string,
   ) {
     try {
-      const { data } = await this.accountClient.send<AccountRefresh.Response, AccountRefresh.Request>(
+      const { data } = await this.authClient.send<AccountRefresh.Response, AccountRefresh.Request>(
         AccountRefresh.pattern,
         { data: { ip, userAgent, refreshToken } },
       );
@@ -127,10 +127,9 @@ export class AuthController {
   ): Promise<LogoutResponse> {
     this.cookieService.setRefreshToken(res, { token: undefined });
 
-    const { data } = await this.accountClient.send<AccountLogout.Response, AccountLogout.Request>(
-      AccountLogout.pattern,
-      { data: { userAgent, userId: uid } },
-    );
+    const { data } = await this.authClient.send<AccountLogout.Response, AccountLogout.Request>(AccountLogout.pattern, {
+      data: { userAgent, userId: uid },
+    });
 
     return { data: Boolean(data.stats) };
   }
@@ -154,7 +153,7 @@ export class AuthController {
   ): Promise<LoginResponse> {
     const {
       data: { refreshToken, accessToken, maxAge },
-    } = await this.accountClient.send<AuthLogin.Response, AuthLogin.Request>(AuthLogin.pattern, {
+    } = await this.authClient.send<AuthLogin.Response, AuthLogin.Request>(AuthLogin.pattern, {
       data: { ip, userAgent, login: data.login, password: data.password },
     });
 
@@ -174,7 +173,7 @@ export class AuthController {
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @ValidateRpcResponse(ReferralTokenRes)
   async generateReferralToken(@TokenPayload() token: AccessTokenPayload): Promise<ReferralTokenRes> {
-    const { data } = await this.accountClient.send<AccountReferralToken.Response, AccountReferralToken.Request>(
+    const { data } = await this.authClient.send<AccountReferralToken.Response, AccountReferralToken.Request>(
       AccountReferralToken.pattern,
       {
         data: token,
