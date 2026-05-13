@@ -1,14 +1,7 @@
-import { Details } from './helpers';
-import { ExtractCodes, ValidationIssue } from './types';
+import { Details } from '../helpers';
+import { authService } from './auth-service';
+import { ExceptionConfig, ExtractCodes, ValidationIssue } from './types';
 
-interface ExceptionConfig {
-  [key: string]: {
-    readonly code: string;
-    readonly details?: Record<string, unknown>;
-  };
-}
-
-// Account service
 const account = {
   // Application
   accountUnauthorized: {
@@ -125,6 +118,7 @@ const system = {
 } as const satisfies ExceptionConfig;
 
 const exceptionCode = {
+  ...authService,
   ...tasks,
   ...groups,
   ...account,
@@ -133,4 +127,4 @@ const exceptionCode = {
 
 type ExceptionCodes = ExtractCodes<typeof exceptionCode>;
 
-export { exceptionCode, ExceptionCodes };
+export { exceptionCode, ExceptionCodes, ExceptionConfig };

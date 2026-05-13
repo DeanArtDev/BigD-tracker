@@ -18,6 +18,7 @@ npm-debug.log*
 apps/.env
 apps/.env.*
 apps/.env*
+apps/*/keys/
 
 .vscode
 

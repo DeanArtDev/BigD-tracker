@@ -1,23 +1,13 @@
-import { ACCOUNT_RMQ_SERVICE, AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
+import { AppRmqClient, AUTH_RMQ_SERVICE, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { RegisterRpcRes } from '@/modules/auth/dto/register.dto';
-import {
-  AccountDeleteUser,
-  AccountLogout,
-  AccountRegister,
-  GoalCreateInboxGroup,
-  RpcStatus,
-} from '@big-d/api-contracts';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { AccountDeleteUser, AccountLogout, AuthRegister, GoalCreateInboxGroup, RpcStatus } from '@big-d/api-contracts';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
 
 @Injectable()
 export class RegisterSage {
   constructor(
-    @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(AUTH_RMQ_SERVICE) private readonly authClient: AppRmqClient,
     @Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient,
     private readonly jwtService: JwtService,
   ) {}
@@ -30,23 +20,9 @@ export class RegisterSage {
   }): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
     const { ip, userAgent, login, password } = input;
 
-    const response = await this.accountClient.send<AccountRegister.Response, AccountRegister.Request>(
-      AccountRegister.pattern,
-      { data: { ip, userAgent, login, password } },
-    );
-
-    const instance = plainToInstance(RegisterRpcRes, response, {
-      excludeExtraneousValues: true,
+    const response = await this.authClient.send<AuthRegister.Response, AuthRegister.Request>(AuthRegister.pattern, {
+      data: { ip, userAgent, login, password },
     });
-
-    const issues = await validate(instance, {
-      whitelist: true,
-      forbidNonWhitelisted: false,
-    });
-
-    if (issues.length > 0) {
-      throw BaseHttpException.createFromBase(new ExceptionWrongRpcResponse({ issues }), HttpStatus.BAD_GATEWAY);
-    }
 
     const { uid } = this.jwtService.decode<AccessTokenPayload>(response.data.accessToken);
 
@@ -65,16 +41,15 @@ export class RegisterSage {
 
   async #compensation(input: { userId: number; userAgent?: string }) {
     const { userId, userAgent } = input;
-    const { data } = await this.accountClient.send<AccountLogout.Response, AccountLogout.Request>(
-      AccountLogout.pattern,
-      { data: { userAgent, userId } },
-    );
+    const { data } = await this.authClient.send<AccountLogout.Response, AccountLogout.Request>(AccountLogout.pattern, {
+      data: { userAgent, userId },
+    });
 
     if (data.stats === RpcStatus.FAILED) {
       // логнуть для чистки в будущем
     }
 
-    await this.accountClient.send<AccountDeleteUser.Response, AccountDeleteUser.Request>(AccountDeleteUser.pattern, {
+    await this.authClient.send<AccountDeleteUser.Response, AccountDeleteUser.Request>(AccountDeleteUser.pattern, {
       data: { id: userId },
     });
   }

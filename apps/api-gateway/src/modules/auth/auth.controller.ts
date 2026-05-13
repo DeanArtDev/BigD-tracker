@@ -1,9 +1,9 @@
-import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
+import { AUTH_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { RegisterSage } from '@/modules/auth/application';
 import { ValidateReferralTokenQuery } from '@/modules/auth/dto/referral-token-validation.dto';
 import { ReferralTokenRes } from '@/modules/auth/dto/referral-token.dto';
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
-import { AccountLogin, AccountLogout, AccountReferralToken, AccountRefresh } from '@big-d/api-contracts';
+import { AuthLogin, AccountLogout, AccountReferralToken, AccountRefresh } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -39,7 +39,7 @@ import { RefreshTokenGuard } from './guards/refresh-token.guard';
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(AUTH_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
     private readonly cookieService: CookieService,
     private readonly registerSage: RegisterSage,
     private readonly jwtService: JwtService,
@@ -154,7 +154,7 @@ export class AuthController {
   ): Promise<LoginResponse> {
     const {
       data: { refreshToken, accessToken, maxAge },
-    } = await this.accountClient.send<AccountLogin.Response, AccountLogin.Request>(AccountLogin.pattern, {
+    } = await this.accountClient.send<AuthLogin.Response, AuthLogin.Request>(AuthLogin.pattern, {
       data: { ip, userAgent, login: data.login, password: data.password },
     });
 
@@ -196,7 +196,7 @@ export class AuthController {
   async validateReferralToken(@Query() { token }: ValidateReferralTokenQuery): Promise<void> {
     try {
       await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get('AUTH_SECRET_KEY'),
+        secret: this.configService.get('PUBLIC_SECRET_KEY'),
       });
     } catch {
       throw new UnprocessableEntityException({ message: 'Токен просрочен или не валидный' });

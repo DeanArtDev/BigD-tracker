@@ -1,5 +1,5 @@
 import { PUB_SUB } from '@/infrastructure/pubsub';
-import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
+import { AUTH_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { Public } from '@/modules/auth/decorators';
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { AccountGetMe } from '@big-d/api-contracts';
@@ -19,7 +19,7 @@ export class MeRes {
 @Resolver()
 export class UserResolver {
   constructor(
-    @Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
+    @Inject(AUTH_RMQ_SERVICE) private readonly accountClient: AppRmqClient,
     @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {
     setInterval(() => {

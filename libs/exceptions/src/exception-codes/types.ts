@@ -23,4 +23,11 @@ type ExtractCodes<T> = T extends { readonly code: infer C }
       ? { [K in keyof T]: ExtractCodes<T[K]> }[keyof T]
       : never;
 
-export { ValidationIssue, ExtractCodes };
+interface ExceptionConfig {
+  [key: string]: {
+    readonly code: string;
+    readonly details?: Record<string, unknown>;
+  };
+}
+
+export { ValidationIssue, ExtractCodes, ExceptionConfig };

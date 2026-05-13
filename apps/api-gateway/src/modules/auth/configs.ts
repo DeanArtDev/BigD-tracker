@@ -6,8 +6,12 @@ const jwtConfigFabrica = (): JwtModuleAsyncOptions => ({
   inject: [ConfigService],
   useFactory: (configService: ConfigService<APP_ENV>) => {
     return {
-      global: true,
-      secret: configService.get('AUTH_SECRET_KEY'),
+      verifyOptions: {
+        algorithms: ['RS256'],
+        issuer: 'auth-service',
+        audience: 'api-gateway',
+      },
+      publicKey: configService.get('PUBLIC_SECRET_KEY'),
     };
   },
 });

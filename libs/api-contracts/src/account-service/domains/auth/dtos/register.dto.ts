@@ -1,23 +1,12 @@
 import { Type } from 'class-transformer';
-import {
-  IsEmail,
-  IsInt,
-  IsIP,
-  IsJWT,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsEmail, IsInt, IsIP, IsJWT, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class ReqData {
+class RegisterReqData {
   @IsEmail()
   @IsNotEmpty()
   @IsString()
   login: string;
 
-  @MinLength(6)
   @IsString()
   password: string;
 
@@ -33,11 +22,11 @@ class ReqData {
 
 class RegisterReq {
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => RegisterReqData)
+  data: RegisterReqData;
 }
 
-class ResData {
+class RegisterResData {
   @IsString()
   refreshToken: string;
 
@@ -51,8 +40,8 @@ class ResData {
 
 class RegisterRes {
   @ValidateNested()
-  @Type(() => ResData)
-  data: ResData;
+  @Type(() => RegisterResData)
+  data: RegisterResData;
 }
 
 export { RegisterReq, RegisterRes };
