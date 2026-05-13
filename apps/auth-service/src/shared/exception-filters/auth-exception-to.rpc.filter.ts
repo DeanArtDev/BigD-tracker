@@ -42,13 +42,13 @@ export class GoalExceptionToRpc implements ExceptionFilter {
         [
           exceptionCode.authDBFailed.code,
           exceptionCode.invalidRpcResponse.code,
-          exceptionCode.requestDateValidation.code,
+          exceptionCode.requestDataValidation.code,
         ].some((code) => code === exception.code)
       ) {
         return throwError(() => this.#toRpcException(exception, RmqErrorKind.INTERNAL, correlationId));
       }
 
-      if ([exceptionCode.requestDateValidation.code].some((code) => code === exception.code)) {
+      if ([exceptionCode.requestDataValidation.code].some((code) => code === exception.code)) {
         return throwError(() => this.#toRpcException(exception, RmqErrorKind.INVALID_ARGUMENT, correlationId));
       }
 

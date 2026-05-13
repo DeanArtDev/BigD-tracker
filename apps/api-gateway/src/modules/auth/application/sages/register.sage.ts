@@ -1,8 +1,8 @@
 import { AppRmqClient, AUTH_RMQ_SERVICE, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { AccountDeleteUser, AccountLogout, AuthRegister, GoalCreateInboxGroup, RpcStatus } from '@big-d/api-contracts';
+import { AccountDeleteUser, AuthRegister, GoalCreateInboxGroup } from '@big-d/api-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { AccessTokenPayload } from '../../dto/access-token.dto';
 
 @Injectable()
 export class RegisterSage {
@@ -39,15 +39,8 @@ export class RegisterSage {
     return response.data;
   }
 
-  async #compensation(input: { userId: number; userAgent?: string }) {
-    const { userId, userAgent } = input;
-    const { data } = await this.authClient.send<AccountLogout.Response, AccountLogout.Request>(AccountLogout.pattern, {
-      data: { userAgent, userId },
-    });
-
-    if (data.stats === RpcStatus.FAILED) {
-      // логнуть для чистки в будущем
-    }
+  async #compensation(input: { userId: number; userAgent?: string; ip?: string }) {
+    const { userId } = input;
 
     await this.authClient.send<AccountDeleteUser.Response, AccountDeleteUser.Request>(AccountDeleteUser.pattern, {
       data: { id: userId },

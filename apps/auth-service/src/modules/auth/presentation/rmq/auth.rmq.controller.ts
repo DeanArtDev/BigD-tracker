@@ -1,10 +1,12 @@
 import {
   UserLoginCommand,
   UserLoginHandler,
+  UserLogoutCommand,
+  UserLogoutHandler,
   UserRegistrationCommand,
   UserRegistrationHandler,
 } from '@/modules/auth/application/user-cases';
-import { AuthLogin, AuthRegister } from '@big-d/api-contracts';
+import { AuthLogin, AuthLogout, AuthRegister } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -31,7 +33,7 @@ export class AuthRmqController {
   }
 
   @MessagePattern(AuthLogin.pattern)
-  async logit(@Payload() { data }: AuthLogin.Request): Promise<AuthLogin.Response> {
+  async login(@Payload() { data }: AuthLogin.Request): Promise<AuthLogin.Response> {
     return {
       data: await this.commandBus.execute<UserLoginCommand, ReturnHandlerType<typeof UserLoginHandler>>(
         new UserLoginCommand({
@@ -39,6 +41,19 @@ export class AuthRmqController {
           userAgent: data.userAgent,
           ip: data.ip,
           password: data.password,
+        }),
+      ),
+    };
+  }
+
+  @MessagePattern(AuthLogout.pattern)
+  async logout(@Payload() { data }: AuthLogout.Request): Promise<AuthLogout.Response> {
+    return {
+      data: await this.commandBus.execute<UserLogoutCommand, ReturnHandlerType<typeof UserLogoutHandler>>(
+        new UserLogoutCommand({
+          userId: data.userId,
+          userAgent: data.userAgent,
+          ip: data.ip,
         }),
       ),
     };

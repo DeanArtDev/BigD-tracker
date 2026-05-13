@@ -1,12 +1,15 @@
 import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
 import { isBaseException, exceptionCode } from '@big-d/exceptions';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { BaseHttpException } from '@shared/exceptions';
 import { Response } from 'express';
 import { isHttpException, isHttpExceptionPlain, shapePlainToBaseHttpException } from './helpers';
 
 @Catch()
 export class GateWayExceptionFilter implements ExceptionFilter {
+  constructor(private readonly configService: ConfigService) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -51,9 +54,11 @@ export class GateWayExceptionFilter implements ExceptionFilter {
   }
 
   #defaultResponse(error: unknown, response: Response) {
+    const isDev = this.configService.get('IS_DEV');
     const err = new BaseHttpException(
       {
         message: error instanceof Error ? error.message : String(error),
+        devStack: isDev && error instanceof Error ? error.stack : undefined,
       },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );

@@ -1,5 +1,4 @@
 import { AppModule } from '@/app.module';
-import { APP_ENV } from '@/infrastructure/configs';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -33,10 +32,9 @@ const initApp = async (): Promise<INestApplication> => {
     }),
   );
 
+  const configService = app.get<ConfigService>(ConfigService);
   app.useGlobalFilters(new DomainErrorFilter());
-  app.useGlobalFilters(new GateWayExceptionFilter());
-
-  const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
+  app.useGlobalFilters(new GateWayExceptionFilter(configService));
 
   const httpAdapter = app.getHttpAdapter();
   httpAdapter.getInstance().set('trust proxy', true);

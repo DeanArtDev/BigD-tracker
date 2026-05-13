@@ -23,6 +23,10 @@ export class RpcResponseValidationInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map(async (data: unknown) => {
+        if (data == null) {
+          throw this.errorFactory({ issues: [], message: 'Response data is undefined' });
+        }
+
         const instance = plainToInstance<ClassConstructor<any>, any>(schema, data, {
           excludeExtraneousValues: true,
         });

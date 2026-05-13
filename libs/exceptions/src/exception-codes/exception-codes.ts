@@ -88,10 +88,10 @@ const system = {
 
   invalidRpcResponse: {
     code: 'S-GW-0002',
-    details: Details.Define<{ issues: ValidationIssue[] }>(),
+    details: Details.Define<{ issues: ValidationIssue[]; message?: string }>(),
   },
 
-  requestDateValidation: {
+  requestDataValidation: {
     code: 'S-GW-0003',
     details: Details.Define<{ message: string; issues: ValidationIssue[] }>(),
   },
@@ -114,6 +114,11 @@ const system = {
   invariantFailed: {
     code: 'S-GW-0006',
     details: Details.Define<{ message: string; field: string; subjectId?: number | string }>(),
+  },
+
+  internalGateway: {
+    code: 'S-AG-0001',
+    details: Details.Define<{ message: string; subjectId?: number | string }>(),
   },
 } as const satisfies ExceptionConfig;
 

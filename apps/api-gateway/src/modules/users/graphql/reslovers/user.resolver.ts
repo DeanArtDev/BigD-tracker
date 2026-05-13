@@ -1,10 +1,10 @@
 import { PUB_SUB } from '@/infrastructure/pubsub';
-import { AUTH_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
+import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { Public } from '@/modules/auth/decorators';
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { AuthGetMe } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Resolver, Query, ObjectType, ID, Field, Subscription } from '@nestjs/graphql';
+import { Field, ID, ObjectType, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
 @ObjectType()

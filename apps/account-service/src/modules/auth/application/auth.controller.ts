@@ -1,7 +1,7 @@
 import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
 import {
   AuthLogin,
-  AccountLogout,
+  AuthLogout,
   AccountReferralToken,
   AccountRefresh,
   AuthRegister,
@@ -77,14 +77,14 @@ export class AuthController {
     };
   }
 
-  @MessagePattern(AccountLogout.pattern)
-  async logout(@Payload() { data }: AccountLogout.Request): Promise<AccountLogout.Response> {
+  @MessagePattern(AuthLogout.pattern)
+  async logout(@Payload() { data }: AuthLogout.Request): Promise<AuthLogout.Response> {
     await this.logoutUseCase.execute({
       userId: data.userId,
       userAgent: data.userAgent,
     });
 
-    return { data: { stats: RpcStatus.SUCCESS } };
+    return { data: { status: RpcStatus.SUCCESS } };
   }
 
   @MessagePattern(AccountReferralToken.pattern)
