@@ -1,7 +1,7 @@
 import { LogoutRes, LogoutReq } from './dtos';
 
-export namespace AccountLogout {
-  export const pattern = 'account.logout.command';
+export namespace AuthLogout {
+  export const pattern = 'auth.logout.command';
 
   export class Request extends LogoutReq {}
 

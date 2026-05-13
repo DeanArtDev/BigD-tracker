@@ -8,13 +8,17 @@ class ReqData {
 
   @IsOptional()
   @IsString()
+  ip?: string;
+
+  @IsOptional()
+  @IsString()
   userAgent?: string;
 }
 
 class ResData {
   @IsEnum(RpcStatus)
   @Type(() => Number)
-  stats: RpcStatus;
+  status: RpcStatus;
 }
 
 class LogoutRes {

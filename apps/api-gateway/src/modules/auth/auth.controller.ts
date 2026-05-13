@@ -1,9 +1,5 @@
-import { AUTH_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
-import { RegisterSage } from '@/modules/auth/application';
-import { ValidateReferralTokenQuery } from '@/modules/auth/dto/referral-token-validation.dto';
-import { ReferralTokenRes } from '@/modules/auth/dto/referral-token.dto';
-import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
-import { AuthLogin, AccountLogout, AccountReferralToken, AccountRefresh } from '@big-d/api-contracts';
+import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
+import { AccountReferralToken, AccountRefresh, AuthLogin, AuthLogout } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -13,7 +9,6 @@ import {
   Inject,
   Post,
   Query,
-  Req,
   Res,
   UnprocessableEntityException,
   UseGuards,
@@ -24,18 +19,22 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
-import { CookieService, RefreshToken } from '@shared/services/cookies';
-import { Request, Response } from 'express';
+import { CookieService } from '@shared/services/cookies';
+import { Response } from 'express';
+import { RegisterSage } from './application';
 import { ACCESS_TOKEN_KEY } from './constants';
-import { Public, TokenPayload } from './decorators';
+import { Public, REFRESH_TOKEN_KEY, RefreshToken, TokenPayload } from './decorators';
 import { AccessTokenPayload } from './dto/access-token.dto';
-import { LoginRequest, LoginResponse } from './dto/login.dto';
+import { LoginRequest } from './dto/login.dto';
 import { LogoutResponse } from './dto/logout.dto';
+import { ValidateReferralTokenQuery } from './dto/referral-token-validation.dto';
+import { ReferralTokenRes } from './dto/referral-token.dto';
 import { RefreshResponse } from './dto/refresh.dto';
-import { RegisterRequest, RegisterResponse } from './dto/register.dto';
+import { RegisterRequest } from './dto/register.dto';
+import { ExceptionUnauthorized } from './exceptions';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
-@ApiTags('Account')
+@ApiTags('Authorization')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -50,19 +49,18 @@ export class AuthController {
   @Public()
   @ApiOperation({
     summary: 'Регистрация пользователя',
-    description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly) strict',
+    description: 'Устанавливает access-token и refresh-token в cookie (HttpOnly) strict',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Пользователь успешно зарегистрирован',
-    type: RegisterResponse,
   })
   async register(
     @Body() { data }: RegisterRequest,
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
-  ): Promise<RegisterResponse> {
+  ): Promise<void> {
     const { accessToken, refreshToken, maxAge } = await this.registerSage.execute({
       login: data.login,
       password: data.password,
@@ -70,8 +68,8 @@ export class AuthController {
       ip,
     });
 
-    this.cookieService.setRefreshToken(res, { token: refreshToken, maxAge });
-    return { data: { token: accessToken } };
+    this.cookieService.setRefreshTokenByKey(ACCESS_TOKEN_KEY, { token: accessToken, maxAge }, res);
+    this.cookieService.setRefreshTokenByKey(REFRESH_TOKEN_KEY, { token: refreshToken, maxAge }, res);
   }
 
   @Post('refresh')
@@ -89,7 +87,6 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @ValidateRpcResponse(RefreshResponse)
   async refresh(
-    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
@@ -100,10 +97,16 @@ export class AuthController {
         AccountRefresh.pattern,
         { data: { ip, userAgent, refreshToken } },
       );
-      this.cookieService.setRefreshToken(res, { token: data.refreshToken, maxAge: data.maxAge });
+
+      this.cookieService.setRefreshTokenByKey(
+        REFRESH_TOKEN_KEY,
+        { token: data.refreshToken, maxAge: data.maxAge },
+        res,
+      );
+
       return { data: { token: data.accessToken } };
     } catch {
-      this.cookieService.setRefreshToken(res, { token: undefined });
+      this.cookieService.dropTokens(res);
       throw new ExceptionUnauthorized({ message: 'Refresh token not found or invalid' });
     }
   }
@@ -124,14 +127,14 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @TokenPayload() { uid }: AccessTokenPayload,
     @UserAgent() userAgent: string,
+    @IpAddress() ip: string,
   ): Promise<LogoutResponse> {
-    this.cookieService.setRefreshToken(res, { token: undefined });
-
-    const { data } = await this.authClient.send<AccountLogout.Response, AccountLogout.Request>(AccountLogout.pattern, {
-      data: { userAgent, userId: uid },
+    const { data } = await this.authClient.send<AuthLogout.Response, AuthLogout.Request>(AuthLogout.pattern, {
+      data: { userAgent, userId: uid, ip },
     });
 
-    return { data: Boolean(data.stats) };
+    this.cookieService.dropTokens(res);
+    return { data: Boolean(data.status) };
   }
 
   @Post('login')
@@ -142,23 +145,21 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Вход совершен успешно',
-    type: LoginResponse,
   })
-  @ValidateRpcResponse(LoginResponse)
   async login(
     @Res({ passthrough: true }) res: Response,
     @Body() { data }: LoginRequest,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
-  ): Promise<LoginResponse> {
+  ): Promise<void> {
     const {
       data: { refreshToken, accessToken, maxAge },
     } = await this.authClient.send<AuthLogin.Response, AuthLogin.Request>(AuthLogin.pattern, {
       data: { ip, userAgent, login: data.login, password: data.password },
     });
 
-    this.cookieService.setRefreshToken(res, { token: refreshToken, maxAge });
-    return { data: { token: accessToken } };
+    this.cookieService.setRefreshTokenByKey(ACCESS_TOKEN_KEY, { token: accessToken, maxAge }, res);
+    this.cookieService.setRefreshTokenByKey(REFRESH_TOKEN_KEY, { token: refreshToken, maxAge }, res);
   }
 
   @Post('/referral-token')

@@ -21,7 +21,7 @@ function createHost() {
 
 describe('GateWayExceptionFilter', () => {
   test('adds correlationId to rpc error responses', () => {
-    const filter = new GateWayExceptionFilter();
+    const filter = new GateWayExceptionFilter({ get: () => false } as any);
     const { host, response } = createHost();
 
     ApiGatewayRequestContext.run(
@@ -58,7 +58,7 @@ describe('GateWayExceptionFilter', () => {
   });
 
   test('adds correlationId to plain http exception responses', () => {
-    const filter = new GateWayExceptionFilter();
+    const filter = new GateWayExceptionFilter({ get: () => false } as any);
     const { host, response } = createHost();
 
     ApiGatewayRequestContext.run(

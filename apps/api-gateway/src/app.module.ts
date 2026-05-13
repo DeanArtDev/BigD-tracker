@@ -8,12 +8,14 @@ import { TrainingTemplatesModule } from '@/modules/traning-templates';
 import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
 import { ObservabilityModule, LoggerModuleOptions } from '@big-d/api-utils';
-import { Module } from '@nestjs/common';
+import { HttpStatus, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
 import { ApiGatewayRequestContext } from '@shared/request-context';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
 import { join } from 'node:path';
 
 @Module({
@@ -32,6 +34,11 @@ import { join } from 'node:path';
     ExercisesModule,
     GoalServiceModule,
     PubSubModule,
+
+    RpcResponseValidationModule.forFeature({
+      useValue: ({ issues, message }) =>
+        BaseHttpException.createFromBase(new ExceptionWrongRpcResponse({ issues, message }), HttpStatus.BAD_GATEWAY),
+    }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

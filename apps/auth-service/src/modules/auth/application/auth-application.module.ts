@@ -12,11 +12,15 @@ import {
   UserRegistrationCommand,
   UserRegistrationHandler,
   UserRegistrationUseCase,
+  UserLogoutHandler,
+  UserLogoutCommand,
+  UserLogoutUseCase,
 } from './user-cases';
 
 /* USE CASES */
 const userRegistration = [UserRegistrationCommand, UserRegistrationHandler, UserRegistrationUseCase];
 const userLogin = [UserLoginCommand, UserLoginHandler, UserLoginUseCase];
+const userLogout = [UserLogoutHandler, UserLogoutCommand, UserLogoutUseCase];
 
 /* QUERIES */
 const meQuery = [GetMeQuery, GetMeHandler];
@@ -41,6 +45,14 @@ const meQuery = [GetMeQuery, GetMeHandler];
     }),
   ],
 
-  providers: [...userRegistration, ...userLogin, ...meQuery, UserPasswordService, SessionService, UserCheckerService],
+  providers: [
+    ...userRegistration,
+    ...userLogin,
+    ...userLogout,
+    ...meQuery,
+    UserPasswordService,
+    SessionService,
+    UserCheckerService,
+  ],
 })
 export class AuthApplicationModule {}

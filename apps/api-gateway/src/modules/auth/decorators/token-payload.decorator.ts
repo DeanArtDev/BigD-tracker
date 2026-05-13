@@ -1,22 +1,18 @@
-import { ExceptionAuthInvalidToken } from '@/modules/auth/exceptions';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { Request } from 'express';
+import { AccessTokenPayload } from '../dto/access-token.dto';
+import { ExceptionAuthInvalidToken } from '../exceptions';
+import { ACCESS_TOKEN_KEY } from '../constants';
 
-const PAYLOAD_KEY = 'tokenPayload';
+const getAccessToken = (req: Request): string | undefined => req.cookies[ACCESS_TOKEN_KEY];
 
-function tokenPayloadFactory(_: unknown, ctx: ExecutionContext): AccessTokenPayload | undefined {
-  const request = ctx.switchToHttp().getRequest<Request>();
+const TokenPayload = createParamDecorator((_data, ctx: ExecutionContext) => {
+  const req = ctx.switchToHttp().getRequest<Request>();
+  const accessToken = req[ACCESS_TOKEN_KEY];
 
-  return getTokenPayloadFromRequest(request);
-}
-
-const TokenPayload = createParamDecorator(tokenPayloadFactory);
-
-function getTokenPayloadFromRequest(request: Request): AccessTokenPayload | undefined {
-  const payload = plainToInstance(AccessTokenPayload, request[PAYLOAD_KEY], {
+  const payload = plainToInstance(AccessTokenPayload, accessToken, {
     excludeExtraneousValues: true,
   });
 
@@ -25,6 +21,6 @@ function getTokenPayloadFromRequest(request: Request): AccessTokenPayload | unde
   }
 
   return payload;
-}
+});
 
-export { TokenPayload, getTokenPayloadFromRequest, PAYLOAD_KEY };
+export { TokenPayload, getAccessToken };

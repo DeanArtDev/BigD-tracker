@@ -1,15 +1,18 @@
-import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
-import { IS_PUBLIC_KEY, PAYLOAD_KEY } from '../decorators';
+import { CookieService } from '@shared/services/cookies';
+import { Request, Response } from 'express';
+import { ACCESS_TOKEN_KEY } from '../constants';
+import { getAccessToken, IS_PUBLIC_KEY } from '../decorators';
 import { AccessTokenPayload } from '../dto/access-token.dto';
+import { ExceptionUnauthorized } from '../exceptions';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
+    private readonly cookieService: CookieService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -22,22 +25,20 @@ export class AuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
+    const response = context.switchToHttp().getResponse<Response>();
+    const accessToken = getAccessToken(request);
 
-    const authHeader = request.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new ExceptionUnauthorized({
-        message: 'Missing authorization token',
-      });
+    if (accessToken == null) {
+      this.cookieService.dropTokens(response);
+      throw new ExceptionUnauthorized({ message: 'Missing authorization token' });
     }
 
-    const token = authHeader.split(' ')[1];
-
     try {
-      request[PAYLOAD_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(token);
+      request[ACCESS_TOKEN_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(accessToken);
 
       return true;
     } catch {
+      this.cookieService.dropTokens(response);
       throw new ExceptionUnauthorized({ message: 'Invalid or expired access token' });
     }
   }

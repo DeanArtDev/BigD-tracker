@@ -9,8 +9,8 @@ const GateWayExceptionStateList = {
 
   RequestDataValidation: defineExceptionState({
     key: 'INVALID_REQUEST_DATA',
-    code: exceptionCode.requestDateValidation.code,
-    details: exceptionCode.requestDateValidation.details,
+    code: exceptionCode.requestDataValidation.code,
+    details: exceptionCode.requestDataValidation.details,
   }),
 };
 

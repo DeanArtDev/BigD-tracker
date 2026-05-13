@@ -1,7 +1,7 @@
-import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { getRefreshTokenCookie } from '@shared/services/cookies';
 import { Request } from 'express';
+import { getRefreshTokenCookie } from '../decorators';
+import { ExceptionUnauthorized } from '../exceptions';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {

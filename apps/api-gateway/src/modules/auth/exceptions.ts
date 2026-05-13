@@ -14,4 +14,15 @@ const AuthExceptionStateList = {
   }),
 };
 
-export const { ExceptionUnauthorized, ExceptionAuthInvalidToken } = generateExceptionClasses(AuthExceptionStateList);
+const SystemList = {
+  InternalGateway: defineExceptionState({
+    key: 'INTERNAL_GATEWAY',
+    code: exceptionCode.internalGateway.code,
+    details: exceptionCode.internalGateway.details,
+  }),
+};
+
+export const { ExceptionUnauthorized, ExceptionAuthInvalidToken, ExceptionInternalGateway } = generateExceptionClasses({
+  ...SystemList,
+  ...AuthExceptionStateList,
+});
