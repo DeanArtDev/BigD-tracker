@@ -4,7 +4,7 @@ import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { MeRes } from '@/modules/users/me.dto';
-import { AccountGetMe } from '@big-d/api-contracts';
+import { AuthGetMe } from '@big-d/api-contracts';
 import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
@@ -24,9 +24,9 @@ export class UsersController {
     type: MeRes,
   })
   @ValidateRpcResponse(MeRes)
-  async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AccountGetMe.Response> {
+  async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AuthGetMe.Response> {
     try {
-      return await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(AccountGetMe.pattern, {
+      return await this.accountClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
         data: { id: uid },
       });
     } catch {

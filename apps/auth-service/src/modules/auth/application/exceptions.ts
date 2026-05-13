@@ -12,6 +12,24 @@ const UserList = {
     code: exceptionCode.userAlreadyExist.code,
     details: exceptionCode.userAlreadyExist.details,
   }),
+
+  UserNotExist: defineExceptionState({
+    key: 'USER_NOT_EXIST',
+    code: exceptionCode.userNotExist.code,
+    details: exceptionCode.userNotExist.details,
+  }),
 };
 
-export const { ExceptionUserNotFound, ExceptionUserAlreadyExist } = generateExceptionClasses({ ...UserList });
+const AuthList = {
+  WrongLoginOrPassword: defineExceptionState({
+    key: 'USER_WRONG_LOGIN_OR_PASSWORD',
+    code: exceptionCode.userWrongLoginOrPassword.code,
+    details: exceptionCode.userWrongLoginOrPassword.details,
+  }),
+};
+
+export const { ExceptionUserNotFound, ExceptionUserAlreadyExist, ExceptionWrongLoginOrPassword } =
+  generateExceptionClasses({
+    ...UserList,
+    ...AuthList,
+  });

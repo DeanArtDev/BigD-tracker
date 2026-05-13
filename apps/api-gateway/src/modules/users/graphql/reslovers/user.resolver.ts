@@ -2,7 +2,7 @@ import { PUB_SUB } from '@/infrastructure/pubsub';
 import { AUTH_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { Public } from '@/modules/auth/decorators';
 import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
-import { AccountGetMe } from '@big-d/api-contracts';
+import { AuthGetMe } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Resolver, Query, ObjectType, ID, Field, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
@@ -35,14 +35,11 @@ export class UserResolver {
 
   @Public()
   @Query(() => MeRes)
-  async me(): Promise<AccountGetMe.Response['data']> {
+  async me(): Promise<AuthGetMe.Response['data']> {
     try {
-      const { data } = await this.accountClient.send<AccountGetMe.Response, AccountGetMe.Request>(
-        AccountGetMe.pattern,
-        {
-          data: { id: 1 },
-        },
-      );
+      const { data } = await this.accountClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
+        data: { id: 1 },
+      });
 
       return data;
     } catch {

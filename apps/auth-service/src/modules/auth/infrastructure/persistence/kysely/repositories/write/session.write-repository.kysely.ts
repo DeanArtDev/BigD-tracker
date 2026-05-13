@@ -1,4 +1,5 @@
 import { AuthDatabase, AuthTransaction, SessionWriteRepository } from '@/modules/auth/application/ports';
+import { AuthSpecification } from '@/modules/auth/application/specifications';
 import { Session } from '@/modules/auth/domain/aggreates';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -28,6 +29,29 @@ export class SessionWriteRepositoryKysely extends BaseTasksRepository implements
         .executeTakeFirstOrThrow();
 
       return SessionWriteKyselyMapper.fromRawToAgr(newSession);
+    });
+  }
+
+  async getMany(specifications: AuthSpecification, trx?: AuthTransaction): Promise<Session[]> {
+    return await this.errorCatcher('session.get-many-session', async () => {
+      const sessions = await this.db
+        .qb(trx)
+        .selectFrom('sessions')
+        .where((eb) => specifications.toExpr(eb))
+        .selectAll()
+        .execute();
+
+      return sessions.map(SessionWriteKyselyMapper.fromRawToAgr);
+    });
+  }
+
+  async delete(specifications: AuthSpecification, trx?: AuthTransaction): Promise<void> {
+    return await this.errorCatcher('session.delete-session', async () => {
+      await this.db
+        .qb(trx)
+        .deleteFrom('sessions')
+        .where((eb) => specifications.toExpr(eb))
+        .executeTakeFirst();
     });
   }
 }

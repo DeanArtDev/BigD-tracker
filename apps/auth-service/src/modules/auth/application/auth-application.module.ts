@@ -3,10 +3,23 @@ import { AuthInfrastructureModule } from '@/modules/auth/infrastructure/auth-inf
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { SessionTokenService, UserCheckerService, UserPasswordService } from './services';
-import { UserRegistrationCommand, UserRegistrationHandler, UserRegistrationUseCase } from './user-cases';
+import { GetMeHandler, GetMeQuery } from './queries';
+import { SessionService, UserCheckerService, UserPasswordService } from './services';
+import {
+  UserLoginCommand,
+  UserLoginHandler,
+  UserLoginUseCase,
+  UserRegistrationCommand,
+  UserRegistrationHandler,
+  UserRegistrationUseCase,
+} from './user-cases';
 
+/* USE CASES */
 const userRegistration = [UserRegistrationCommand, UserRegistrationHandler, UserRegistrationUseCase];
+const userLogin = [UserLoginCommand, UserLoginHandler, UserLoginUseCase];
+
+/* QUERIES */
+const meQuery = [GetMeQuery, GetMeHandler];
 
 @Module({
   imports: [
@@ -28,6 +41,6 @@ const userRegistration = [UserRegistrationCommand, UserRegistrationHandler, User
     }),
   ],
 
-  providers: [...userRegistration, UserPasswordService, SessionTokenService, UserCheckerService],
+  providers: [...userRegistration, ...userLogin, ...meQuery, UserPasswordService, SessionService, UserCheckerService],
 })
 export class AuthApplicationModule {}
