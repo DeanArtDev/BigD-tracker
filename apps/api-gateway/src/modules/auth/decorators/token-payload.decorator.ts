@@ -1,3 +1,4 @@
+import { ExceptionAuthInvalidToken } from '@/modules/auth/exceptions';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
@@ -8,6 +9,7 @@ const PAYLOAD_KEY = 'tokenPayload';
 
 function tokenPayloadFactory(_: unknown, ctx: ExecutionContext): AccessTokenPayload | undefined {
   const request = ctx.switchToHttp().getRequest<Request>();
+
   return getTokenPayloadFromRequest(request);
 }
 
@@ -19,7 +21,7 @@ function getTokenPayloadFromRequest(request: Request): AccessTokenPayload | unde
   });
 
   if (validateSync(payload).length > 0) {
-    return undefined;
+    throw new ExceptionAuthInvalidToken({ message: 'Invalid token', subjectId: payload?.sid ?? payload?.uid });
   }
 
   return payload;

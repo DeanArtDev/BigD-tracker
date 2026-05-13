@@ -1,4 +1,4 @@
-import { APP_ENV, appConfigFactory } from '@/infrastructure/configs';
+import { APP_ENV, appConfigFactory, envSchema } from '@/infrastructure/configs';
 import { PubSubModule } from '@/infrastructure/pubsub';
 import { SwaggerAuthModule } from '@/infrastructure/swagger-auth/swagger-auth.module';
 import { AuthModule } from '@/modules/auth/auth.module';
@@ -22,6 +22,7 @@ import { join } from 'node:path';
       isGlobal: true,
       load: [appConfigFactory],
       envFilePath: ['.env.production', '.env.development'],
+      validate: (config) => envSchema.parse(config),
     }),
     SwaggerAuthModule,
     UsersModule,

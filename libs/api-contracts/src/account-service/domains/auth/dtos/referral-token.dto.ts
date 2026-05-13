@@ -5,8 +5,8 @@ class ReferralTokenReqData {
   @IsInt()
   uid: number;
 
-  @IsString()
-  sid: string;
+  @IsInt()
+  sid: number;
 
   @IsInt()
   iat: number;

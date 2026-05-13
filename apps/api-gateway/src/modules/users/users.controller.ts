@@ -12,7 +12,7 @@ import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 @ApiTags('Account')
 @Controller('users')
 export class UsersController {
-  constructor(@Inject(AUTH_RMQ_SERVICE) private readonly accountClient: AppRmqClient) {}
+  constructor(@Inject(AUTH_RMQ_SERVICE) private readonly authClient: AppRmqClient) {}
 
   @Get('me')
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
@@ -26,7 +26,7 @@ export class UsersController {
   @ValidateRpcResponse(MeRes)
   async me(@TokenPayload() { uid }: AccessTokenPayload): Promise<AuthGetMe.Response> {
     try {
-      return await this.accountClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
+      return await this.authClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
         data: { id: uid },
       });
     } catch {
