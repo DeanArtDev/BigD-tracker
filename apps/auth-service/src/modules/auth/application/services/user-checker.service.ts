@@ -1,8 +1,8 @@
-import { UserById, usersCombinators } from '@/modules/auth/application/specifications';
 import { Inject, Injectable } from '@nestjs/common';
 import { UserView } from '../dto';
 import { ExceptionUserNotFound } from '../exceptions';
 import { AuthTransaction, UserReadRepository, USERS_READ_REPOSITORY } from '../ports';
+import { UserById, usersCombinators } from '../specifications';
 
 const { and } = usersCombinators;
 

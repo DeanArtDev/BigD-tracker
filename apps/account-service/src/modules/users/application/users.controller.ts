@@ -1,5 +1,5 @@
 import { DeleteUserCommand, DeleteUserHandler } from '@/modules/users/application/commands';
-import { AccountDeleteUser, AccountGetMe } from '@big-d/api-contracts';
+import { AccountDeleteUser, AuthGetMe } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, NotFoundException } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -15,8 +15,8 @@ export class UsersController {
     private readonly userMapper: UserMapper,
   ) {}
 
-  @MessagePattern(AccountGetMe.pattern)
-  async me(@Payload() { data }: AccountGetMe.Request): Promise<AccountGetMe.Response> {
+  @MessagePattern(AuthGetMe.pattern)
+  async me(@Payload() { data }: AuthGetMe.Request): Promise<AuthGetMe.Response> {
     const user = await this.queryBus.execute<GetUserQuery, ReturnHandlerType<typeof GetUserHandler>>(
       new GetUserQuery({ id: data.id }),
     );
