@@ -1,7 +1,7 @@
 import { LoginRes, LoginReq } from './dtos';
 
-export namespace AccountLogin {
-  export const pattern = 'account.login.command';
+export namespace AuthLogin {
+  export const pattern = 'auth.login.command';
 
   export class Request extends LoginReq {}
 

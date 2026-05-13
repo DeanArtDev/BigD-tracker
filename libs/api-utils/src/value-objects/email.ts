@@ -6,7 +6,6 @@ class Email implements BaseValueObject {
   #value: string;
   private constructor(email: string) {
     this.#value = email;
-    Object.freeze(this);
   }
 
   get value(): string {

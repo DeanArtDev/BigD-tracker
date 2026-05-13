@@ -1,4 +1,4 @@
-import { ACCOUNT_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
+import { AUTH_RMQ_SERVICE, AppRmqClient } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
@@ -12,7 +12,7 @@ import { ValidateRpcResponse } from '@shared/rpc-response-validation';
 @ApiTags('Account')
 @Controller('users')
 export class UsersController {
-  constructor(@Inject(ACCOUNT_RMQ_SERVICE) private readonly accountClient: AppRmqClient) {}
+  constructor(@Inject(AUTH_RMQ_SERVICE) private readonly accountClient: AppRmqClient) {}
 
   @Get('me')
   @ApiBearerAuth(ACCESS_TOKEN_KEY)

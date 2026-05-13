@@ -1,5 +1,5 @@
 import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
-import { ACCOUNT_SERVICE_RMQ_KEY, accountServiceRmqConfig } from '@big-d/api-contracts';
+import { AUTH_SERVICE_RMQ_KEY, authServiceRmqConfig } from '@big-d/api-contracts';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule } from '@nestjs/microservices';
@@ -9,11 +9,11 @@ import { ClientsModule } from '@nestjs/microservices';
   imports: [
     ClientsModule.registerAsync([
       {
-        name: ACCOUNT_SERVICE_RMQ_KEY,
+        name: AUTH_SERVICE_RMQ_KEY,
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (config: ConfigService<ACCOUNT_APP_ENV>) => {
-          return accountServiceRmqConfig({
+          return authServiceRmqConfig({
             host: config.get('RMQ_HOST'),
             port: config.get('RMQ_PORT'),
             user: config.get('RMQ_USER'),

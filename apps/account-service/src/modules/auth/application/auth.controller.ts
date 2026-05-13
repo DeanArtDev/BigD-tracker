@@ -1,10 +1,10 @@
 import { ACCOUNT_APP_ENV } from '@/infrastructure/configs';
 import {
-  AccountLogin,
+  AuthLogin,
   AccountLogout,
   AccountReferralToken,
   AccountRefresh,
-  AccountRegister,
+  AuthRegister,
   RpcStatus,
 } from '@big-d/api-contracts';
 import { Controller } from '@nestjs/common';
@@ -24,8 +24,8 @@ export class AuthController {
     private readonly config: ConfigService<ACCOUNT_APP_ENV>,
   ) {}
 
-  @MessagePattern(AccountRegister.pattern)
-  async register(@Payload() { data }: AccountRegister.Request): Promise<AccountRegister.Response> {
+  @MessagePattern(AuthRegister.pattern)
+  async register(@Payload() { data }: AuthRegister.Request): Promise<AuthRegister.Response> {
     const { sessionToken, accessToken } = await this.registerUseCase.execute({
       email: data.login,
       userAgent: data.userAgent,
@@ -59,8 +59,8 @@ export class AuthController {
     };
   }
 
-  @MessagePattern(AccountLogin.pattern)
-  async login(@Payload() { data }: AccountLogin.Request): Promise<AccountLogin.Response> {
+  @MessagePattern(AuthLogin.pattern)
+  async login(@Payload() { data }: AuthLogin.Request): Promise<AuthLogin.Response> {
     const { sessionToken, accessToken } = await this.loginUseCase.execute({
       login: data.login,
       password: data.password,

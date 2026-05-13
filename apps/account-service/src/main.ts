@@ -1,6 +1,6 @@
 import { appConfigFactory } from '@/infrastructure/configs';
 import { ApplicationExceptionsInterceptor } from '@/modules/auth/application/interceptors';
-import { accountServiceRmqConfig } from '@big-d/api-contracts';
+import { authServiceRmqConfig } from '@big-d/api-contracts';
 import { ErrorsToRpcExceptionInterceptor, RmqInboundLoggingInterceptor } from '@big-d/api-utils';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -14,7 +14,7 @@ async function bootstrap() {
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
-    accountServiceRmqConfig({
+    authServiceRmqConfig({
       host: config.RMQ_HOST,
       port: config.RMQ_PORT,
       user: config.RMQ_USER,
