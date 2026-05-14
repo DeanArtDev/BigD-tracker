@@ -23,7 +23,6 @@ class ReferralTokenUseCase {
     if (session == null) {
       throw new ExceptionSessionNotFound({
         userId: input.userId,
-        message: 'Пользователь без активной сессии не может создать реферальный токен',
       });
     }
     if (session.isExpired) {

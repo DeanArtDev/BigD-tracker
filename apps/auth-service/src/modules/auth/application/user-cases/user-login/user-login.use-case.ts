@@ -38,12 +38,12 @@ class UserLoginUseCase {
 
       await this.sessionService.deleteSessionByFingerprint({ userId: existedUser.id, userAgent }, trx);
 
-      const { accessToken, refreshToken, maxAge } = await this.sessionService.createSession(
+      const { accessToken, refreshToken } = await this.sessionService.createSession(
         { userId: existedUser.id, userAgent, ip },
         trx,
       );
 
-      return { accessToken, refreshToken, maxAge };
+      return { accessToken, refreshToken, maxAge: this.sessionService.getSessionMaxAge().valueOf() };
     });
   }
 }

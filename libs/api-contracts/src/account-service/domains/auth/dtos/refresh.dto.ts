@@ -1,7 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsIP, IsJWT, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class ReqData {
+class RefreshReqData {
+  @IsInt()
+  sessionId: number;
+
+  @IsInt()
+  userId: number;
+
   @IsOptional()
   @IsString()
   userAgent?: string;
@@ -15,13 +21,10 @@ class ReqData {
   refreshToken: string;
 }
 
-class ResData {
+class RefreshResData {
   @IsString()
   @IsJWT()
   accessToken: string;
-
-  @IsString()
-  refreshToken: string;
 
   @IsInt()
   maxAge: number;
@@ -29,14 +32,14 @@ class ResData {
 
 class RefreshRes {
   @ValidateNested()
-  @Type(() => ResData)
-  data: ResData;
+  @Type(() => RefreshResData)
+  data: RefreshResData;
 }
 
 class RefreshReq {
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => RefreshReqData)
+  data: RefreshReqData;
 }
 
 export { RefreshRes, RefreshReq };

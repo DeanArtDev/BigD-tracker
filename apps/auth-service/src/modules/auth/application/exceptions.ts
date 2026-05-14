@@ -12,12 +12,6 @@ const UserList = {
     code: exceptionCode.userAlreadyExist.code,
     details: exceptionCode.userAlreadyExist.details,
   }),
-
-  UserNotExist: defineExceptionState({
-    key: 'USER_NOT_EXIST',
-    code: exceptionCode.userNotExist.code,
-    details: exceptionCode.userNotExist.details,
-  }),
 };
 
 const AuthList = {
@@ -26,10 +20,27 @@ const AuthList = {
     code: exceptionCode.userWrongLoginOrPassword.code,
     details: exceptionCode.userWrongLoginOrPassword.details,
   }),
+
+  InvalidSession: defineExceptionState({
+    key: 'INVALID_SESSION',
+    code: exceptionCode.sessionInvalid.code,
+    details: exceptionCode.sessionInvalid.details,
+  }),
+
+  SessionNotFound: defineExceptionState({
+    key: 'SESSION_NOT_FOUND',
+    code: exceptionCode.sessionNotFound.code,
+    details: exceptionCode.sessionNotFound.details,
+  }),
 };
 
-export const { ExceptionUserNotFound, ExceptionUserAlreadyExist, ExceptionWrongLoginOrPassword } =
-  generateExceptionClasses({
-    ...UserList,
-    ...AuthList,
-  });
+export const {
+  ExceptionUserNotFound,
+  ExceptionUserAlreadyExist,
+  ExceptionWrongLoginOrPassword,
+  ExceptionInvalidSession,
+  ExceptionSessionNotFound,
+} = generateExceptionClasses({
+  ...UserList,
+  ...AuthList,
+});
