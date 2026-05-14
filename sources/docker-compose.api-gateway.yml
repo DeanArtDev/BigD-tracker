@@ -6,6 +6,7 @@ services:
     restart: always
     volumes:
       - .env:/usr/src/app/apps/api-gateway/.env
+      - ./public.pem:/usr/src/app/apps/api-gateway/keys/public.pem:ro
     env_file:
       - .env
     ports:

@@ -16,7 +16,7 @@ RUN apt-get update && \
 WORKDIR /usr/src/app
 COPY package.json pnpm-lock.yaml* ./
 COPY . .
-RUN turbo prune --scope=@big-d/goal-service --docker
+RUN turbo prune --scope=@big-d/auth-service --docker
 
 
 FROM base AS installer
@@ -27,7 +27,7 @@ COPY --from=builder /usr/src/app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=builder /usr/src/app/out/full/ .
 COPY turbo.json turbo.json
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo run build --filter=@big-d/goal-service
+RUN pnpm turbo run build --filter=@big-d/auth-service
 
 
 FROM node:24.13-slim AS runner
@@ -48,9 +48,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/package.json ./package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/node_modules ./node_modules
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/goal-service/package.json ./apps/goal-service/package.json
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/goal-service/dist ./apps/goal-service/dist
-COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/goal-service/node_modules ./apps/goal-service/node_modules
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/auth-service/package.json ./apps/auth-service/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/auth-service/dist ./apps/auth-service/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/apps/auth-service/node_modules ./apps/auth-service/node_modules
 
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/dist ./libs/exceptions/dist
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/exceptions/package.json ./libs/exceptions/package.json
@@ -73,5 +73,5 @@ ENV API_PORT=${API_PORT}
 EXPOSE ${API_PORT}
 
 USER nodejs
-WORKDIR /usr/src/app/apps/goal-service
+WORKDIR /usr/src/app/apps/auth-service
 CMD node dist/src/main.js

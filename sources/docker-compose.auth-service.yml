@@ -1,0 +1,18 @@
+# файл вызывается в /apps
+
+services:
+  auth-service:
+    image: $CI_REGISTRY_IMAGE:auth-service-sha-${CI_COMMIT_SHORT_SHA}
+    restart: always
+    volumes:
+      - .env:/usr/src/app/apps/auth-service/.env
+      - ./private.pem:/usr/src/app/apps/auth-service/keys/private.pem:ro
+    env_file:
+      - .env
+    networks:
+      - tracker_net
+
+networks:
+  tracker_net:
+    external: true
+    name: tracker_net

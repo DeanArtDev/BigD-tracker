@@ -14,6 +14,21 @@ services:
     networks:
       - tracker_net
 
+  auth_service:
+    container_name: auth_service
+    image: auth_service_image:lts
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+    env_file:
+      - .env
+    environment:
+      API_PORT: ${ACCOUNT_SERVICE_PORT}
+    ports:
+      - ${ACCOUNT_SERVICE_PORT}:${ACCOUNT_SERVICE_PORT}
+    networks:
+      - tracker_net
+
   training_service:
     container_name: training_service
     image: training_service_image:lts
