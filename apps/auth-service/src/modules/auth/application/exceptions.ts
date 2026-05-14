@@ -12,6 +12,12 @@ const UserList = {
     code: exceptionCode.userAlreadyExist.code,
     details: exceptionCode.userAlreadyExist.details,
   }),
+
+  UserNotDeleted: defineExceptionState({
+    key: 'USER_NOT_DELETED',
+    code: exceptionCode.userNotDeleted.code,
+    details: exceptionCode.userNotDeleted.details,
+  }),
 };
 
 const AuthList = {
@@ -40,6 +46,7 @@ export const {
   ExceptionWrongLoginOrPassword,
   ExceptionInvalidSession,
   ExceptionSessionNotFound,
+  ExceptionUserNotDeleted,
 } = generateExceptionClasses({
   ...UserList,
   ...AuthList,

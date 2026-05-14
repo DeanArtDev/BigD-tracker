@@ -7,7 +7,7 @@ import {
   UserRegistrationHandler,
   UserTokenRefreshCommand,
   UserTokenRefreshHandler,
-} from '@/modules/auth/application/user-cases';
+} from '../../application/use-cases';
 import { AuthLogin, AuthLogout, AuthRefresh, AuthRegister } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';

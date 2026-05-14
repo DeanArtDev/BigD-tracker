@@ -6,6 +6,7 @@ const USERS_WRITE_REPOSITORY = Symbol.for('USERS_WRITE_REPOSITORY');
 
 interface UserWriteRepository {
   create(input: { email: string; passwordHash: string }, trx?: AuthTransaction): Promise<User>;
+  delete(specifications: AuthSpecification, trx?: AuthTransaction): Promise<number>;
   getOneUser(specifications: AuthSpecification, trx?: AuthTransaction): Promise<User | null>;
 }
 

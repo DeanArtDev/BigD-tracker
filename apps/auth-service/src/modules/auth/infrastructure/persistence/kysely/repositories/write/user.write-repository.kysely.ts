@@ -48,4 +48,17 @@ export class UsersWriteRepositoryKysely extends BaseTasksRepository implements U
       return UserWriteKyselyMapper.fromRawToAgr(user);
     });
   }
+
+  async delete(specifications: AuthSpecification, trx?: AuthTransaction): Promise<number> {
+    return await this.errorCatcher('users.write.delete-user', async () => {
+      const response = await this.db
+        .qb(trx)
+        .deleteFrom('users')
+        .where((eb) => specifications.toExpr(eb))
+        .returning(['id'])
+        .execute();
+
+      return Number(response.length);
+    });
+  }
 }

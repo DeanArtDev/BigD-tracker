@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthServiceRequestContext, RequestContextInterceptor } from '@shared/request-context';
-import { appConfigFactory, dbConfigFactory, envSchema } from './infrastructure/configs';
+import { appConfigFactory, dbConfigFactory, authConfigSchema } from './infrastructure/configs';
 import { RmqClientsModule } from './infrastructure/rmq-clients';
 
 @Module({
@@ -20,7 +20,7 @@ import { RmqClientsModule } from './infrastructure/rmq-clients';
       isGlobal: true,
       load: [appConfigFactory],
       envFilePath: ['.env.production', '.env.development', '.env.test'],
-      validate: (config) => envSchema.parse(config),
+      validate: (config) => authConfigSchema.parse(config),
     }),
     ObservabilityModule.forRootAsync({
       global: true,

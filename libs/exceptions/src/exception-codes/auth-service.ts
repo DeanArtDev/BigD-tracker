@@ -39,6 +39,7 @@ const users = {
     code: 'ASU-A-0004',
     details: Details.Define<{ message: string }>(),
   },
+  userNotDeleted: { code: 'ASU-A-0004', details: Details.Define<{ userId?: string | number; message?: string }>() },
 } as const satisfies ExceptionConfig;
 
 const authService = { ...auth, ...sessions, ...users, ...system };
