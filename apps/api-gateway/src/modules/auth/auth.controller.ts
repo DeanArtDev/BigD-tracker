@@ -1,5 +1,5 @@
 import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { AccountReferralToken, AccountRefresh, AuthLogin, AuthLogout } from '@big-d/api-contracts';
+import { AccountReferralToken, AuthRefresh, AuthLogin, AuthLogout } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -13,7 +13,6 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IpAddress } from '@shared/decorators/ip.decorator';
@@ -42,7 +41,6 @@ export class AuthController {
     private readonly cookieService: CookieService,
     private readonly registerSage: RegisterSage,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
   ) {}
 
   @Post('register')
@@ -73,7 +71,6 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @Public()
   @ApiOperation({
     summary: 'Обновление токена пользователя',
     description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
@@ -85,29 +82,27 @@ export class AuthController {
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
   @UseGuards(RefreshTokenGuard)
-  @ValidateRpcResponse(RefreshResponse)
   async refresh(
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
+    @TokenPayload() { uid, sid }: AccessTokenPayload,
     @RefreshToken() refreshToken: string,
-  ) {
+  ): Promise<void> {
+    if (refreshToken == null) {
+      this.cookieService.dropTokens(res);
+      throw new ExceptionUnauthorized({ message: 'Рефреш токен просрочен или не валидный' });
+    }
+
     try {
-      const { data } = await this.authClient.send<AccountRefresh.Response, AccountRefresh.Request>(
-        AccountRefresh.pattern,
-        { data: { ip, userAgent, refreshToken } },
-      );
-
-      this.cookieService.setRefreshTokenByKey(
-        REFRESH_TOKEN_KEY,
-        { token: data.refreshToken, maxAge: data.maxAge },
-        res,
-      );
-
-      return { data: { token: data.accessToken } };
+      const { data } = await this.authClient.send<AuthRefresh.Response, AuthRefresh.Request>(AuthRefresh.pattern, {
+        data: { ip, userAgent, refreshToken, sessionId: sid, userId: uid },
+      });
+      const { accessToken, maxAge } = data;
+      this.cookieService.setRefreshTokenByKey(ACCESS_TOKEN_KEY, { token: accessToken, maxAge }, res);
     } catch {
       this.cookieService.dropTokens(res);
-      throw new ExceptionUnauthorized({ message: 'Refresh token not found or invalid' });
+      throw new ExceptionUnauthorized({ message: 'Рефреш токен просрочен или не валидный' });
     }
   }
 
@@ -195,9 +190,7 @@ export class AuthController {
   @Public()
   async validateReferralToken(@Query() { token }: ValidateReferralTokenQuery): Promise<void> {
     try {
-      await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get('PUBLIC_SECRET_KEY'),
-      });
+      await this.jwtService.verifyAsync(token);
     } catch {
       throw new UnprocessableEntityException({ message: 'Токен просрочен или не валидный' });
     }

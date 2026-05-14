@@ -19,11 +19,6 @@ const account = {
     details: Details.Define<{ userId: number }>(),
   },
 
-  sessionNotFound: {
-    code: 'AC-S-0001',
-    details: Details.Define<{ userId: number; message?: string }>(),
-  },
-
   sessionExpired: {
     code: 'AC-S-0002',
     details: Details.Define<{ userId: number; message?: string }>(),

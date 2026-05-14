@@ -20,6 +20,16 @@ const auth = {
   },
 } as const satisfies ExceptionConfig;
 
+const sessions = {
+  // Application
+  sessionNotFound: { code: 'ASS-A-0001', details: Details.Define<{ sessionId?: number; userId?: string | number }>() },
+
+  sessionInvalid: {
+    code: 'ASS-A-0002',
+    details: Details.Define<{ message: string; sessionId?: number; userId: number }>(),
+  },
+} as const satisfies ExceptionConfig;
+
 const users = {
   // Application
   userNotFound: { code: 'ASU-A-0001', details: Details.Define<{ userId?: string | number }>() },
@@ -31,6 +41,6 @@ const users = {
   },
 } as const satisfies ExceptionConfig;
 
-const authService = { ...auth, ...users, ...system };
+const authService = { ...auth, ...sessions, ...users, ...system };
 
 export { authService };

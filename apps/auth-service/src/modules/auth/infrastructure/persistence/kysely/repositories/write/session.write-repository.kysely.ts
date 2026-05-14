@@ -45,6 +45,20 @@ export class SessionWriteRepositoryKysely extends BaseTasksRepository implements
     });
   }
 
+  async getOne(specifications: AuthSpecification, trx?: AuthTransaction): Promise<Session | null> {
+    return await this.errorCatcher('session.get-one-session', async () => {
+      const session = await this.db
+        .qb(trx)
+        .selectFrom('sessions')
+        .where((eb) => specifications.toExpr(eb))
+        .selectAll()
+        .executeTakeFirst();
+      if (session == null) return null;
+
+      return SessionWriteKyselyMapper.fromRawToAgr(session);
+    });
+  }
+
   async delete(specifications: AuthSpecification, trx?: AuthTransaction): Promise<void> {
     return await this.errorCatcher('session.delete-session', async () => {
       await this.db

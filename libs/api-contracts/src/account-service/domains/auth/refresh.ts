@@ -1,7 +1,7 @@
 import { RefreshReq, RefreshRes } from './dtos';
 
-export namespace AccountRefresh {
-  export const pattern = 'account.refresh.command';
+export namespace AuthRefresh {
+  export const pattern = 'auth.refresh.command';
 
   export class Request extends RefreshReq {}
 

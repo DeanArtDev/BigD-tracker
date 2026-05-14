@@ -3,7 +3,7 @@ import {
   AuthLogin,
   AuthLogout,
   AccountReferralToken,
-  AccountRefresh,
+  AuthRefresh,
   AuthRegister,
   RpcStatus,
 } from '@big-d/api-contracts';
@@ -42,9 +42,9 @@ export class AuthController {
     };
   }
 
-  @MessagePattern(AccountRefresh.pattern)
-  async refreshToken(@Payload() { data }: AccountRefresh.Request): Promise<AccountRefresh.Response> {
-    const { sessionToken, accessToken } = await this.refreshUseCase.execute({
+  @MessagePattern(AuthRefresh.pattern)
+  async refreshToken(@Payload() { data }: AuthRefresh.Request): Promise<AuthRefresh.Response> {
+    const { accessToken } = await this.refreshUseCase.execute({
       sessionToken: data.refreshToken,
       ip: data.ip,
       userAgent: data.userAgent,
@@ -52,7 +52,6 @@ export class AuthController {
 
     return {
       data: {
-        refreshToken: sessionToken,
         accessToken,
         maxAge: this.config.get<number>('SESSION_REFRESH_TIME', 0),
       },

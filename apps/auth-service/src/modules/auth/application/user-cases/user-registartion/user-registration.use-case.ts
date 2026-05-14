@@ -41,12 +41,12 @@ class UserRegistrationUseCase {
       const userDraft = UserFactory.create({ email, passwordHash });
       const newUser = await this.userWriteRepository.create(userDraft, trx);
 
-      const { accessToken, refreshToken, maxAge } = await this.sessionService.createSession(
+      const { accessToken, refreshToken } = await this.sessionService.createSession(
         { userId: newUser.id, userAgent, ip },
         trx,
       );
 
-      return { accessToken, refreshToken, maxAge };
+      return { accessToken, refreshToken, maxAge: this.sessionService.getSessionMaxAge().valueOf() };
     });
   }
 }

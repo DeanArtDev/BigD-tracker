@@ -15,12 +15,16 @@ import {
   UserLogoutHandler,
   UserLogoutCommand,
   UserLogoutUseCase,
+  UserTokenRefreshUseCase,
+  UserTokenRefreshCommand,
+  UserTokenRefreshHandler,
 } from './user-cases';
 
 /* USE CASES */
 const userRegistration = [UserRegistrationCommand, UserRegistrationHandler, UserRegistrationUseCase];
 const userLogin = [UserLoginCommand, UserLoginHandler, UserLoginUseCase];
 const userLogout = [UserLogoutHandler, UserLogoutCommand, UserLogoutUseCase];
+const userTokenRefresh = [UserTokenRefreshUseCase, UserTokenRefreshCommand, UserTokenRefreshHandler];
 
 /* QUERIES */
 const meQuery = [GetMeQuery, GetMeHandler];
@@ -49,6 +53,7 @@ const meQuery = [GetMeQuery, GetMeHandler];
     ...userRegistration,
     ...userLogin,
     ...userLogout,
+    ...userTokenRefresh,
     ...meQuery,
     UserPasswordService,
     SessionService,

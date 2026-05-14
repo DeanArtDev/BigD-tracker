@@ -1,5 +1,5 @@
-import { SessionFactory } from '@/modules/auth/domain/aggreates';
-import { DateVo, timeAndDate } from '@big-d/api-utils';
+import { Session, SessionFactory } from '@/modules/auth/domain/aggreates';
+import { DateVo, TimeAndDate, timeAndDate } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -32,7 +32,7 @@ class SessionService {
     return SessionTokenHash.create(hash);
   }
 
-  async compareAsync(hash: SessionTokenHash, token: string): Promise<boolean> {
+  async compareHashAsync(hash: SessionTokenHash, token: string): Promise<boolean> {
     return await bcrypt.compare(token, hash.value);
   }
 
@@ -62,26 +62,42 @@ class SessionService {
 
     const token = crypto.randomUUID();
     const tokenHash = await this.createHashAsync(token);
-    const maxAge = timeAndDate()
-      .add(ms(this.configService.getOrThrow('auth.REFRESH_EXPIRE_TIME')), 'milliseconds')
-      .toISOString();
 
     const sessionDraft = SessionFactory.create({
       ip,
       userAgent,
       tokenHash,
       userId,
-      expiresAt: DateVo.format(maxAge),
+      expiresAt: DateVo.format(this.getSessionMaxAge().toISOString()),
     });
     const session = await this.sessionWriteRepositoryKysely.create(sessionDraft, trx);
 
+    const { accessToken } = await this.createAccessToken({ userId, sessionId: session.id });
+
+    return { accessToken, refreshToken: token, session };
+  }
+
+  async getSessionById(input: { userId: number; sessionId: number }, trx?: AuthTransaction): Promise<Session | null> {
+    return await this.sessionWriteRepositoryKysely.getOne(
+      and(SessionById(input.sessionId), SessionByUserId(input.userId)),
+      trx,
+    );
+  }
+
+  async createAccessToken(input: { userId: number; sessionId: number }): Promise<{ accessToken: string }> {
+    const { userId, sessionId } = input;
+
     const accessToken = await this.jwtService.signAsync({
       uid: userId,
-      sid: session.id,
+      sid: sessionId,
       expiresAt: this.configService.getOrThrow('auth.ACCESS_EXPIRE_TIME'),
     });
 
-    return { accessToken, refreshToken: token, session, maxAge: timeAndDate(maxAge).valueOf() };
+    return { accessToken };
+  }
+
+  getSessionMaxAge(): TimeAndDate {
+    return timeAndDate().add(ms(this.configService.getOrThrow('auth.REFRESH_EXPIRE_TIME')), 'milliseconds');
   }
 }
 

@@ -5,8 +5,10 @@ import {
   UserLogoutHandler,
   UserRegistrationCommand,
   UserRegistrationHandler,
+  UserTokenRefreshCommand,
+  UserTokenRefreshHandler,
 } from '@/modules/auth/application/user-cases';
-import { AuthLogin, AuthLogout, AuthRegister } from '@big-d/api-contracts';
+import { AuthLogin, AuthLogout, AuthRefresh, AuthRegister } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -52,6 +54,21 @@ export class AuthRmqController {
       data: await this.commandBus.execute<UserLogoutCommand, ReturnHandlerType<typeof UserLogoutHandler>>(
         new UserLogoutCommand({
           userId: data.userId,
+          userAgent: data.userAgent,
+          ip: data.ip,
+        }),
+      ),
+    };
+  }
+
+  @MessagePattern(AuthRefresh.pattern)
+  async refreshToken(@Payload() { data }: AuthRefresh.Request): Promise<AuthRefresh.Response> {
+    return {
+      data: await this.commandBus.execute<UserTokenRefreshCommand, ReturnHandlerType<typeof UserTokenRefreshHandler>>(
+        new UserTokenRefreshCommand({
+          userId: data.userId,
+          sessionId: data.sessionId,
+          refreshToken: data.refreshToken,
           userAgent: data.userAgent,
           ip: data.ip,
         }),

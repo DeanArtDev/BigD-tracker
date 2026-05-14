@@ -63,6 +63,10 @@ class Session extends AggregateRoot {
     });
   }
 
+  isExpired(now: DateVo): boolean {
+    return this.#state.expiresAt.equals(now) || this.#state.expiresAt.isBefore(now.value);
+  }
+
   get id() {
     return this.#state.id;
   }

@@ -30,8 +30,20 @@ export class GoalExceptionToRpc implements ExceptionFilter {
     }
 
     if (isBaseException(exception)) {
-      if ([exceptionCode.userNotFound.code, exceptionCode.userNotExist.code].some((code) => code === exception.code)) {
+      if (
+        [exceptionCode.userNotFound.code, exceptionCode.userNotExist.code, exceptionCode.sessionNotFound].some(
+          (code) => code === exception.code,
+        )
+      ) {
         return throwError(() => this.#toRpcException(exception, RmqErrorKind.NOT_FOUND, correlationId));
+      }
+
+      if (
+        [exceptionCode.sessionInvalid.code, exceptionCode.sessionExpired.code].some((code) => code === exception.code)
+      ) {
+        return throwError(() =>
+          this.#toRpcException(exception, RmqErrorKind.DOMAIN_INVARIANT_VIOLATION, correlationId),
+        );
       }
 
       if ([exceptionCode.userAlreadyExist.code].some((code) => code === exception.code)) {
