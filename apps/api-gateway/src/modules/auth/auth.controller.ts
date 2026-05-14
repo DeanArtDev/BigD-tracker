@@ -1,8 +1,9 @@
 import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { AccountReferralToken, AuthRefresh, AuthLogin, AuthLogout } from '@big-d/api-contracts';
+import { AccountReferralToken, AuthRefresh, AuthLogin, AuthLogout, AuthDeleteUser } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -22,7 +23,7 @@ import { CookieService } from '@shared/services/cookies';
 import { Response } from 'express';
 import { RegisterSage } from './application';
 import { ACCESS_TOKEN_KEY } from './constants';
-import { Public, REFRESH_TOKEN_KEY, RefreshToken, TokenPayload } from './decorators';
+import { AuthErrorSkip, Public, REFRESH_TOKEN_KEY, RefreshToken, TokenPayload } from './decorators';
 import { AccessTokenPayload } from './dto/access-token.dto';
 import { LoginRequest } from './dto/login.dto';
 import { LogoutResponse } from './dto/logout.dto';
@@ -81,14 +82,19 @@ export class AuthController {
     type: RefreshResponse,
   })
   @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  @AuthErrorSkip()
   @UseGuards(RefreshTokenGuard)
   async refresh(
     @Res({ passthrough: true }) res: Response,
     @IpAddress() ip: string,
     @UserAgent() userAgent: string,
-    @TokenPayload() { uid, sid }: AccessTokenPayload,
-    @RefreshToken() refreshToken: string,
+    @TokenPayload() accessTokenPayload?: AccessTokenPayload,
+    @RefreshToken() refreshToken?: string,
   ): Promise<void> {
+    if (accessTokenPayload == null) {
+      throw new ExceptionUnauthorized({ message: 'Токен доступа отсутствует' });
+    }
+
     if (refreshToken == null) {
       this.cookieService.dropTokens(res);
       throw new ExceptionUnauthorized({ message: 'Рефреш токен просрочен или не валидный' });
@@ -96,7 +102,7 @@ export class AuthController {
 
     try {
       const { data } = await this.authClient.send<AuthRefresh.Response, AuthRefresh.Request>(AuthRefresh.pattern, {
-        data: { ip, userAgent, refreshToken, sessionId: sid, userId: uid },
+        data: { ip, userAgent, refreshToken, sessionId: accessTokenPayload.sid, userId: accessTokenPayload.uid },
       });
       const { accessToken, maxAge } = data;
       this.cookieService.setRefreshTokenByKey(ACCESS_TOKEN_KEY, { token: accessToken, maxAge }, res);
@@ -196,5 +202,25 @@ export class AuthController {
     }
 
     return undefined;
+  }
+
+  @Delete('users')
+  @ApiOperation({
+    summary: 'Вход пользователя в систему',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Вход совершен успешно',
+  })
+  async delete(
+    @IpAddress() ip: string,
+    @UserAgent() userAgent: string,
+    @TokenPayload() token: AccessTokenPayload,
+  ): Promise<{ id: number }> {
+    const data = await this.authClient.send<AuthDeleteUser.Response, AuthDeleteUser.Request>(AuthDeleteUser.pattern, {
+      data: { ip, userAgent, id: token.uid },
+    });
+
+    return data.data;
   }
 }

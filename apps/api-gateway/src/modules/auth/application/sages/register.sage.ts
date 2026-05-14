@@ -1,5 +1,5 @@
 import { AppRmqClient, AUTH_RMQ_SERVICE, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { AccountDeleteUser, AuthRegister, GoalCreateInboxGroup } from '@big-d/api-contracts';
+import { AuthDeleteUser, AuthRegister, GoalCreateInboxGroup } from '@big-d/api-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenPayload } from '../../dto/access-token.dto';
@@ -40,10 +40,10 @@ export class RegisterSage {
   }
 
   async #compensation(input: { userId: number; userAgent?: string; ip?: string }) {
-    const { userId } = input;
+    const { userId, userAgent, ip } = input;
 
-    await this.authClient.send<AccountDeleteUser.Response, AccountDeleteUser.Request>(AccountDeleteUser.pattern, {
-      data: { id: userId },
+    await this.authClient.send<AuthDeleteUser.Response, AuthDeleteUser.Request>(AuthDeleteUser.pattern, {
+      data: { id: userId, userAgent, ip },
     });
   }
 }

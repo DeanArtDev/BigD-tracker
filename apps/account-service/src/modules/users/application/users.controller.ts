@@ -1,5 +1,5 @@
 import { DeleteUserCommand, DeleteUserHandler } from '@/modules/users/application/commands';
-import { AccountDeleteUser, AuthGetMe } from '@big-d/api-contracts';
+import { AuthDeleteUser, AuthGetMe } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, NotFoundException } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -30,8 +30,8 @@ export class UsersController {
     };
   }
 
-  @MessagePattern(AccountDeleteUser.pattern)
-  async deleteUser(@Payload() { data }: AccountDeleteUser.Request): Promise<AccountDeleteUser.Response> {
+  @MessagePattern(AuthDeleteUser.pattern)
+  async deleteUser(@Payload() { data }: AuthDeleteUser.Request): Promise<AuthDeleteUser.Response> {
     const { id } = await this.commandBus.execute<DeleteUserCommand, ReturnHandlerType<typeof DeleteUserHandler>>(
       new DeleteUserCommand(data.id),
     );

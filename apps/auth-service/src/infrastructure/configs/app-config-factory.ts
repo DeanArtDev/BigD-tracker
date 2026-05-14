@@ -65,12 +65,11 @@ const authSchema = z.object({
 
 type AUTH_ENV = z.output<typeof authSchema>;
 const authConfig = registerAs<AUTH_ENV>('auth', () => {
-  const config = {
-    ACCESS_EXPIRE_TIME: process.env.ACCESS_EXPIRE_TIME ?? '15m',
-    REFRESH_EXPIRE_TIME: process.env.REFRESH_EXPIRE_TIME ?? '15d',
+  return {
+    ACCESS_EXPIRE_TIME: process.env.ACCESS_EXPIRE_TIME!,
+    REFRESH_EXPIRE_TIME: process.env.REFRESH_EXPIRE_TIME!,
     PRIVATE_AUTH_KEY: readFileSync(join(process.cwd(), 'keys/private.pem'), 'utf8'),
   };
-  return authSchema.parse(config);
 });
 
 const appConfigFactory = (): AUTH_APP_ENV => {
@@ -96,4 +95,6 @@ const appConfigFactory = (): AUTH_APP_ENV => {
   };
 };
 
-export { appConfigFactory, rmqConfig, dbConfig, authConfig, envSchema, AUTH_ENV };
+const authConfigSchema = envSchema.extend({ ...authSchema.shape });
+
+export { appConfigFactory, rmqConfig, dbConfig, authConfig, authConfigSchema, AUTH_ENV };

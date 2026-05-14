@@ -18,13 +18,17 @@ import {
   UserTokenRefreshUseCase,
   UserTokenRefreshCommand,
   UserTokenRefreshHandler,
-} from './user-cases';
+  UserDeleteCommand,
+  UserDeleteHandler,
+  UserDeleteUseCase,
+} from './use-cases';
 
 /* USE CASES */
 const userRegistration = [UserRegistrationCommand, UserRegistrationHandler, UserRegistrationUseCase];
 const userLogin = [UserLoginCommand, UserLoginHandler, UserLoginUseCase];
 const userLogout = [UserLogoutHandler, UserLogoutCommand, UserLogoutUseCase];
 const userTokenRefresh = [UserTokenRefreshUseCase, UserTokenRefreshCommand, UserTokenRefreshHandler];
+const userDelete = [UserDeleteCommand, UserDeleteHandler, UserDeleteUseCase];
 
 /* QUERIES */
 const meQuery = [GetMeQuery, GetMeHandler];
@@ -54,6 +58,8 @@ const meQuery = [GetMeQuery, GetMeHandler];
     ...userLogin,
     ...userLogout,
     ...userTokenRefresh,
+    ...userDelete,
+
     ...meQuery,
     UserPasswordService,
     SessionService,

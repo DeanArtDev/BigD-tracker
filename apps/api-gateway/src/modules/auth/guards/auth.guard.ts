@@ -3,10 +3,10 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { CookieService } from '@shared/services/cookies';
 import { Request, Response } from 'express';
-import { ACCESS_TOKEN_KEY } from '../constants';
-import { getAccessToken, IS_PUBLIC_KEY } from '../decorators';
+import { getAccessToken, IS_AUTH_ERROR_THROW_SKIP, IS_PUBLIC_KEY } from '../decorators';
 import { AccessTokenPayload } from '../dto/access-token.dto';
 import { ExceptionUnauthorized } from '../exceptions';
+import { ACCESS_TOKEN_KEY } from '../constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,6 +18,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    const isSkip = this.reflector.getAllAndOverride<boolean>(IS_AUTH_ERROR_THROW_SKIP, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -34,11 +39,12 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      request[ACCESS_TOKEN_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(accessToken);
+      request[ACCESS_TOKEN_KEY] = await this.jwtService.verifyAsync<AccessTokenPayload>(accessToken, {
+        ignoreExpiration: isSkip,
+      });
 
       return true;
     } catch {
-      this.cookieService.dropTokens(response);
       throw new ExceptionUnauthorized({ message: 'Invalid or expired access token' });
     }
   }

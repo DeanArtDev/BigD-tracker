@@ -1,30 +1,34 @@
-import { Expose, Type } from 'class-transformer';
-import { IsInt, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class ReqData {
-  @Expose()
+class DeleteUserReqData {
   @IsInt()
   id: number;
+
+  @IsOptional()
+  @IsString()
+  userAgent?: string;
+
+  @IsOptional()
+  @IsString()
+  ip?: string;
 }
 
 class DeleteUserReq {
-  @Expose()
   @ValidateNested()
-  @Type(() => ReqData)
-  data: ReqData;
+  @Type(() => DeleteUserReqData)
+  data: DeleteUserReqData;
 }
 
-class ResData {
-  @Expose()
+class DeleteUserResData {
   @IsInt()
   id: number;
 }
 
 class DeleteUserRes {
-  @Expose()
   @ValidateNested()
-  @Type(() => ResData)
-  data: ResData;
+  @Type(() => DeleteUserResData)
+  data: DeleteUserResData;
 }
 
 export { DeleteUserReq, DeleteUserRes };

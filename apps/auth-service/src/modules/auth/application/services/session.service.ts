@@ -84,6 +84,10 @@ class SessionService {
     );
   }
 
+  async getSessionsByUserId(input: { userId: number }, trx?: AuthTransaction): Promise<Session[]> {
+    return await this.sessionWriteRepositoryKysely.getMany(and(SessionByUserId(input.userId)), trx);
+  }
+
   async createAccessToken(input: { userId: number; sessionId: number }): Promise<{ accessToken: string }> {
     const { userId, sessionId } = input;
 
