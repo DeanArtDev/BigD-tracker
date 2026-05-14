@@ -111,9 +111,9 @@ stages:
   tags: [registry, dind]
   before_script:
     - *ssh-prepare
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p ${REMOTE_DIR}"
 
   script:
-    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p ${REMOTE_DIR}"
     - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/docker-compose.yml"
     - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/.env"
     - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "touch ${REMOTE_DIR}/docker-compose.yml"
@@ -170,6 +170,13 @@ account-service:build:
   variables:
     APP_NAME: 'account-service'
 
+auth-service:build:
+  stage: docker-build
+  when: manual
+  extends: .app-build-template
+  variables:
+    APP_NAME: 'auth-service'
+
 goal-service:build:
   stage: docker-build
   when: manual
@@ -214,6 +221,8 @@ api-gateway:deploy:dev:
 
   before_script:
     - !reference [.app-deploy-template, before_script]
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/public.pem"
+    - scp "$AUTH_PUBLIC_KEY_DEV" "${DEPLOY_USER}@${DEPLOY_HOST}:${REMOTE_DIR}/public.pem"
     - envsubst '${CI_REGISTRY_IMAGE} ${CI_COMMIT_SHORT_SHA}' < sources/docker-compose.api-gateway.yml > docker-compose.yml
 
   variables:
@@ -239,6 +248,26 @@ account-service:deploy:dev:
     DEPLOY_HOST: '$DEV_STAGE_HOST'
     DEPLOY_USER: '$DEV_STAGE_DEPLOY_USER'
     REMOTE_DIR: '$DEV_STAGE_REMOTE_APP_DIR/account-service'
+
+auth-service:deploy:dev:
+  stage: deploy-dev-stage
+  when: manual
+  extends: .app-deploy-template
+  needs:
+    - job: auth-service:build
+      optional: false
+
+  before_script:
+    - !reference [.app-deploy-template, before_script]
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/private.pem"
+    - scp "$AUTH_PRIVATE_KEY_DEV" "${DEPLOY_USER}@${DEPLOY_HOST}:${REMOTE_DIR}/private.pem"
+    - envsubst '${CI_REGISTRY_IMAGE} ${CI_COMMIT_SHORT_SHA}' < sources/docker-compose.auth-service.yml > docker-compose.yml
+
+  variables:
+    ENV: '$AUTH_SERVICE_ENV'
+    DEPLOY_HOST: '$DEV_STAGE_HOST'
+    DEPLOY_USER: '$DEV_STAGE_DEPLOY_USER'
+    REMOTE_DIR: '$DEV_STAGE_REMOTE_APP_DIR/auth-service'
 
 goal-service:deploy:dev:
   stage: deploy-dev-stage
