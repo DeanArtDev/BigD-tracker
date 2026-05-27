@@ -11,10 +11,17 @@ function isUnauthorized(error: unknown): ApiError | null {
 }
 
 function isRequestTimeout(error: unknown): boolean {
+  if (error instanceof ApiError) {
+    return error.code === exceptionCode.requestTimeout.code;
+  }
   if (CombinedGraphQLErrors.is(error)) {
     return fromApolloError(error).some((e) => e.code === exceptionCode.requestTimeout.code);
   }
   return false;
 }
 
-export { isUnauthorized, isRequestTimeout };
+function isApiError(error: unknown): error is ApiError {
+  return error instanceof ApiError;
+}
+
+export { isUnauthorized, isRequestTimeout, isApiError };

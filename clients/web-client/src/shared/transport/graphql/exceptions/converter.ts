@@ -11,17 +11,22 @@ function unknownAppError(message: string, key: ApiError['key'] = 'UNKNOWN'): Api
   });
 }
 
-function isAppError(error: unknown): error is ApiError {
+function isApiPlainError(error: unknown): error is ApiError {
   return isBaseException(error) && 'message' in error && 'correlationId' in error;
 }
 
 function fromApolloError(error: ErrorLike | undefined): ApiError[] {
   if (!error) return [];
 
-  // Прикладные ошибки из errors[] ответа GraphQL
+  // Ошибка уже нормализована выше по цепочке (например, http-link при таймауте
+  // выбрасывает ApiError напрямую) — пробрасываем как есть, не теряя key/code/correlationId.
+  if (error instanceof ApiError) {
+    return [error];
+  }
+
   if (CombinedGraphQLErrors.is(error)) {
     return error.errors.map((e) => {
-      if (isAppError(e.extensions)) {
+      if (isApiPlainError(e.extensions)) {
         const { key, code, message, correlationId, ...rest } = e.extensions;
 
         return new ApiError({
@@ -62,4 +67,4 @@ function fromApolloError(error: ErrorLike | undefined): ApiError[] {
   return [unknownAppError(error.message || 'Network error')];
 }
 
-export { fromApolloError, isAppError };
+export { fromApolloError };
