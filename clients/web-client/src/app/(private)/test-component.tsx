@@ -18,8 +18,6 @@ function TestComponent() {
     context: { endpoint: 'public-cookies-include' },
   });
 
-  console.log('test component', { error });
-
   return (
     <div>
       <Button variant="outline" onClick={() => refetch()}>

@@ -1,6 +1,5 @@
-import { CombinedGraphQLErrors, ServerError } from '@apollo/client';
+import { ServerError } from '@apollo/client';
 import { RetryLink } from '@apollo/client/link/retry';
-import { isRequestTimeout } from '@/shared/transport/graphql';
 
 const retryLink = new RetryLink({
   delay: {
@@ -12,10 +11,6 @@ const retryLink = new RetryLink({
   attempts: {
     max: 3,
     retryIf: (error) => {
-      if (CombinedGraphQLErrors.is(error)) {
-        if (isRequestTimeout(error)) return true;
-      }
-
       if (ServerError.is(error)) {
         return error.statusCode >= 500 || error.statusCode === 429;
       }
