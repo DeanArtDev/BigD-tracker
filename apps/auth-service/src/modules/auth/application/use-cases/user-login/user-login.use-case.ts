@@ -19,7 +19,7 @@ class UserLoginUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase,
   ) {}
 
-  async execute({ input }: UserLoginCommand): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
+  execute({ input }: UserLoginCommand): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
     return this.db.runTransaction(async (trx) => {
       const { userAgent, ip, password, email } = input;
 

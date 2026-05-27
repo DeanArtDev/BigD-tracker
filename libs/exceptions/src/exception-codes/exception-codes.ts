@@ -76,6 +76,11 @@ const groups = {
 
 // SYSTEM
 const system = {
+  unknown: {
+    code: 'XX-X-0000',
+    details: Details.Any,
+  },
+
   requestTimeout: {
     code: 'S-GW-0001',
     details: Details.Define<{ message?: string }>(),

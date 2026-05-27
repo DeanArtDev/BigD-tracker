@@ -1,12 +1,12 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "radix-mira",
+  "style": "radix-nova",
   "rsc": true,
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "src/app/styles/globals.css",
-    "baseColor": "taupe",
+    "css": "src/app/styles/global.css",
+    "baseColor": "olive",
     "cssVariables": true,
     "prefix": ""
   },

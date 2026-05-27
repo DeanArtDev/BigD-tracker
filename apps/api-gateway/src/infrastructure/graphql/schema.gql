@@ -1,0 +1,26 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+type MeRes {
+  avatar: String
+  email: String!
+  id: ID!
+  screenName: String
+}
+
+type Mutation {
+  refresh: Boolean!
+
+  """Логин по email/паролю. Выставляет httpOnly cookies access/refresh."""
+  userLogin(input: LoginUserInput!): Boolean!
+}
+
+type Query {
+  me: MeRes!
+}

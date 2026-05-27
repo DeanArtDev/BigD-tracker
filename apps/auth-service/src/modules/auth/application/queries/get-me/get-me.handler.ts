@@ -14,7 +14,7 @@ export class GetMeHandler implements IQueryHandler<GetMeQuery> {
     @Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase,
   ) {}
 
-  async execute({ input }: GetMeQuery): Promise<UserView> {
+  execute({ input }: GetMeQuery): Promise<UserView> {
     return this.db.runTransaction(async (trx) => {
       return await this.userCheckerService.ensureUserExists({ userId: input.userId }, { trx });
     });

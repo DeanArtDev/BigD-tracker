@@ -15,7 +15,7 @@ class UserTokenRefreshUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase,
   ) {}
 
-  async execute({ input }: UserTokenRefreshCommand): Promise<{ accessToken: string; maxAge: number }> {
+  execute({ input }: UserTokenRefreshCommand): Promise<{ accessToken: string; maxAge: number }> {
     return this.db.runTransaction(async (trx) => {
       const { userAgent, userId, refreshToken, sessionId } = input;
 

@@ -1,4 +1,4 @@
-import { TaskRecurrencyDto } from '@transports/rmq/goal-service/tasks/dtos';
+import { TaskRecurrencyDto } from '@/transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsNumber, IsObject, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { GroupResSingle } from './group-response.dto';
