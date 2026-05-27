@@ -9,6 +9,7 @@
     "dev": "pnpm build --watch",
     "=== BUILD ===": "",
     "build": "tsc --build && tsc-alias",
+    "build:watch": "tsc --build && tsc-alias",
     "=== LINK ===": "",
     "test": "echo \"Error: no test specified , just skip\" && exit 0",
     "format": "npx prettier . --check",

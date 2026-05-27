@@ -3,7 +3,7 @@ import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { ExceptionInvalidSession, ExceptionUserNotDeleted, ExceptionUserNotFound } from '../../exceptions';
 import { AuthDatabase, USERS_WRITE_REPOSITORY, UserWriteRepository } from '../../ports';
-import { SessionService, UserPasswordService } from '../../services';
+import { SessionService } from '../../services';
 import { UserById, usersCombinators } from '../../specifications';
 import { UserDeleteCommand } from './user-delete.command';
 
@@ -12,14 +12,13 @@ const { and } = usersCombinators;
 @Injectable()
 class UserDeleteUseCase {
   constructor(
-    private readonly userPasswordService: UserPasswordService,
     private readonly sessionService: SessionService,
 
     @Inject(USERS_WRITE_REPOSITORY) private readonly userWriteRepo: UserWriteRepository,
     @Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase,
   ) {}
 
-  async execute({ input }: UserDeleteCommand): Promise<{ id: number }> {
+  execute({ input }: UserDeleteCommand): Promise<{ id: number }> {
     return this.db.runTransaction(async (trx) => {
       const { userId, userAgent } = input;
 

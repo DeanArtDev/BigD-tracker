@@ -1,25 +1,14 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextFetchEvent, NextResponse } from 'next/server';
+import { chain, refreshToken } from '@/middlewares';
 
-const PUBLIC_ONLY_ROUTES = ['/login', '/signup'];
+// Порядок имеет значение: snaps wrapping order, как в Express.
+const handlers = chain([refreshToken]);
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // const token = request.cookies.get('sid')?.value;
-  // const isAuthenticated = Boolean(token);
-  //
-  // if (isAuthenticated && PUBLIC_ONLY_ROUTES.some((route) => pathname.startsWith(route))) {
-  //   return NextResponse.redirect(new URL('/', request.url));
-  // }
-  //
-  // if (!isAuthenticated && !PUBLIC_ONLY_ROUTES.some((route) => pathname.startsWith(route))) {
-  //   return NextResponse.redirect(new URL('/login', request.url));
-  // }
-
-  return NextResponse.next();
+export function proxy(req: NextRequest, event: NextFetchEvent) {
+  return handlers(req, event, NextResponse.next());
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 };

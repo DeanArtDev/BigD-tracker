@@ -1,4 +1,4 @@
-import { TaskDto } from '@transports/rmq/goal-service/tasks/dtos';
+import { TaskDto } from '@/transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsString, ValidateNested } from 'class-validator';
 

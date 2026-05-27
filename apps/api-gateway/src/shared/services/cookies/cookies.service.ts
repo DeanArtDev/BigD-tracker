@@ -9,7 +9,7 @@ export const REFRESH_TOKEN_FIELD = 'refresh_token';
 
 const tokenPath = {
   [ACCESS_TOKEN_KEY]: '/',
-  [REFRESH_TOKEN_KEY]: '/api/auth/refresh',
+  [REFRESH_TOKEN_KEY]: '/',
 };
 
 @Injectable()

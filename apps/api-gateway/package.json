@@ -45,6 +45,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "catalog:",
     "class-validator": "catalog:",
+    "cookie": "1.1.1",
     "cookie-parser": "^1.4.7",
     "date-fns": "catalog:",
     "express": "5.0.1",

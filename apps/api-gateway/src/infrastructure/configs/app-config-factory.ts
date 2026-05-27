@@ -18,6 +18,11 @@ interface APP_ENV {
   readonly SWAGGER_PASSWORD?: string;
   readonly LOG_PRETTY?: string;
   readonly NODE_ENV?: string;
+
+  readonly APP_ENV?: string;
+  readonly IS_PROD_STAGE: boolean;
+  readonly IS_DEV_STAGE: boolean;
+  readonly IS_LOCAL_STAGE: boolean;
 }
 
 const authSchema = z.object({ AUTH_PUBLIC_KEY: z.string() });
@@ -34,6 +39,7 @@ const envSchema = z.object({
   API_PORT: z.coerce.number(),
   TZ: z.string(),
   NODE_ENV: z.union([z.literal('production'), z.literal('development'), z.literal('test')]),
+  APP_ENV: z.enum(['local', 'staging', 'production']),
 
   RMQ_USER: z.string(),
   RMQ_PASSWORD: z.string(),
@@ -53,6 +59,12 @@ const appConfigFactory = (): APP_ENV => {
     API_PORT: parseInt(process.env.API_PORT ?? '', 10) || 4022,
     IS_DEV: process.env.NODE_ENV === 'development',
     IS_PROD: process.env.NODE_ENV === 'production',
+
+    APP_ENV: process.env.APP_ENV,
+    IS_PROD_STAGE: process.env.APP_ENV === 'production',
+    IS_DEV_STAGE: process.env.APP_ENV === 'staging',
+    IS_LOCAL_STAGE: process.env.APP_ENV === 'local',
+
     ORIGIN: process.env.ORIGIN ?? '',
 
     RMQ_USER: process.env.RMQ_USER ?? '',

@@ -1,5 +1,4 @@
 import { SortDirection } from '@/shared';
-import { PaginationQueryDto } from '@transports/rmq/shared';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -16,6 +15,7 @@ import {
 } from 'class-validator';
 import { TaskStatus } from '../types';
 import { TaskDto } from './task.dto';
+import { PaginationQueryDto } from '@/transports/rmq/shared/dto';
 
 class GetTasksSortDto {
   @IsOptional()

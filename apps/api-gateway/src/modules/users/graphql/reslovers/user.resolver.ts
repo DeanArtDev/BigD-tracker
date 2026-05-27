@@ -1,49 +1,35 @@
-import { PUB_SUB } from '@/infrastructure/pubsub';
 import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { Public } from '@/modules/auth/decorators';
-import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
+import { TokenPayload } from '@/modules/auth/decorators';
+import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { AuthGetMe } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Field, ID, ObjectType, Query, Resolver, Subscription } from '@nestjs/graphql';
-import { PubSub } from 'graphql-subscriptions';
+import { Field, ID, ObjectType, Query, Resolver } from '@nestjs/graphql';
 
 @ObjectType()
 export class MeRes {
   @Field(() => ID)
   id: number;
 
-  @Field()
+  @Field(() => String)
   email: string;
+
+  @Field(() => String, { nullable: true })
+  screenName?: string;
+
+  @Field(() => String, { nullable: true })
+  avatar?: string;
 }
 
 @Resolver()
 export class UserResolver {
-  constructor(
-    @Inject(AUTH_RMQ_SERVICE) private readonly authClient: AppRmqClient,
-    @Inject(PUB_SUB) private readonly pubSub: PubSub,
-  ) {
-    setInterval(() => {
-      this.pubSub.publish('tick', { tick: Date.now() });
-    }, 1000);
-  }
+  constructor(@Inject(AUTH_RMQ_SERVICE) private readonly authClient: AppRmqClient) {}
 
-  @Public()
-  @Subscription(() => Number)
-  tick() {
-    return this.pubSub.asyncIterableIterator('tick');
-  }
-
-  @Public()
   @Query(() => MeRes)
-  async me(): Promise<AuthGetMe.Response['data']> {
-    try {
-      const { data } = await this.authClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
-        data: { id: 1 },
-      });
+  async me(@TokenPayload() accessTokenPayload: AccessTokenPayload): Promise<AuthGetMe.Response['data']> {
+    const { data } = await this.authClient.send<AuthGetMe.Response, AuthGetMe.Request>(AuthGetMe.pattern, {
+      data: { id: accessTokenPayload?.uid },
+    });
 
-      return data;
-    } catch {
-      throw new ExceptionUnauthorized({ message: 'Пользователь не авторизован' });
-    }
+    return data;
   }
 }

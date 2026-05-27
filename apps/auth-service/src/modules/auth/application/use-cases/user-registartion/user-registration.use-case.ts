@@ -26,9 +26,7 @@ class UserRegistrationUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase,
   ) {}
 
-  async execute({
-    input,
-  }: UserRegistrationCommand): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
+  execute({ input }: UserRegistrationCommand): Promise<{ accessToken: string; refreshToken: string; maxAge: number }> {
     return this.db.runTransaction(async (trx) => {
       const { userAgent, ip, password, email } = input;
 

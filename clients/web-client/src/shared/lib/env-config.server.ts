@@ -1,12 +1,16 @@
 import { z } from 'zod';
+import { environmentSchema, environmentConfig } from './enviroument';
 
-const envServerSchema = z.object({
-  API_URL: z.string().min(4),
-});
+const envServerSchema = z
+  .object({
+    HTTP_API: z.url(),
+  })
+  .extend({ ...environmentSchema.shape });
 
-function getEnvConfigServer() {
+function getEnvConfigServer(): z.output<typeof envServerSchema> {
   return envServerSchema.parse({
-    API_URL: process.env.API_URL,
+    HTTP_API: process.env.HTTP_API,
+    ...environmentConfig,
   });
 }
 

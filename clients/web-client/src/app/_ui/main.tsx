@@ -6,7 +6,7 @@ interface MainProps {
 }
 
 function Main({ children, className }: PropsWithChildren<MainProps>) {
-  return <main className={cn('min-h-dvh min-w-dvw', className)}>{children}</main>;
+  return <main className={cn('grid min-h-dvh min-w-dvw contain-content', className)}>{children}</main>;
 }
 
 export { Main, type MainProps };

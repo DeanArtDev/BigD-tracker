@@ -1,7 +1,7 @@
-import { CursorPaginationQueryDto } from '@transports/rmq/shared';
-import { GroupDto } from './group.dto';
+import { CursorPaginationQueryDto } from '@/transports/rmq/shared/dto';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { GroupDto } from './group.dto';
 
 class GetUserGroupsReqData extends CursorPaginationQueryDto {
   @IsInt()

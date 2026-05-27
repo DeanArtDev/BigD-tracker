@@ -18,7 +18,7 @@ class UserLogoutUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase,
   ) {}
 
-  async execute({ input }: UserLogoutCommand): Promise<{ status: RpcStatus }> {
+  execute({ input }: UserLogoutCommand): Promise<{ status: RpcStatus }> {
     return this.db.runTransaction(async (trx) => {
       const { userAgent, userId } = input;
 

@@ -12,16 +12,15 @@ async function bootstrap() {
 
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
   const port = configService.getOrThrow<number>('API_PORT');
-  const isDev = configService.getOrThrow<boolean>('IS_DEV');
-  const isProd = configService.getOrThrow<boolean>('IS_PROD');
+  const isProdStage = configService.getOrThrow<boolean>('IS_PROD_STAGE');
 
-  if (isProd) {
+  if (isProdStage) {
     app.use(passport.initialize());
     app.use([`/${GRAPHQL_URL}`], passport.authenticate('swagger', { session: false }));
   }
 
   await app.listen(port, '0.0.0.0', () => {
-    if (isDev) {
+    if (!isProdStage) {
       console.log(`
     🚀 Application is running at port http://localhost:${port}
     ----------------------------------------------------------------

@@ -1,14 +1,18 @@
 import { z } from 'zod';
+import { environmentConfig, environmentSchema } from './enviroument';
 
-const envClientSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.string().min(4),
-  NEXT_PUBLIC_WS_URL: z.string().min(4),
-});
+const envClientSchema = z
+  .object({
+    NEXT_PUBLIC_HTTP_API_URL: z.string().min(4),
+    NEXT_PUBLIC_WS_API_URL: z.string().min(4),
+  })
+  .extend({ ...environmentSchema.shape });
 
-function getEnvConfigClient() {
+function getEnvConfigClient(): z.output<typeof envClientSchema> {
   return envClientSchema.parse({
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+    ...environmentConfig,
+    NEXT_PUBLIC_HTTP_API_URL: process.env.NEXT_PUBLIC_HTTP_API_URL,
+    NEXT_PUBLIC_WS_API_URL: process.env.NEXT_PUBLIC_WS_API_URL,
   });
 }
 

@@ -1,12 +1,11 @@
-import { DB } from '@/infrastructure/types';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { GoalStatus, GroupStatus } from '@big-d/api-contracts';
-import { databaseToken, IKyselyPostgresDB } from '@big-d/database';
+import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { groupBy } from 'lodash';
 import { GroupInfoView } from '../../dto';
-import { GoalTransaction, GroupsReadRepository, TaskTransaction } from '../../ports';
+import { GoalTransaction, GroupsReadRepository, TaskDatabase } from '../../ports';
 import { GoalPublicService } from '../../services';
 import { GroupByStatus, GroupByUserId, groupsCombinators } from '../../specifications';
 import { GetAssignableGroupsQuery } from './get-assignable-groups.query';
@@ -17,23 +16,24 @@ const { and, not } = groupsCombinators;
 export class GetAssignableGroupsHandler implements IQueryHandler<GetAssignableGroupsQuery> {
   constructor(
     @Inject(GroupsToken.READ_REPOSITORY) private readonly groupsReadRepo: GroupsReadRepository,
-    @Inject(databaseToken.CONNECTION) private readonly db: IKyselyPostgresDB<DB>,
+    @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
     private readonly goalPublicService: GoalPublicService,
   ) {}
 
-  async execute({ input }: GetAssignableGroupsQuery): Promise<GroupInfoView[]> {
+  execute({ input }: GetAssignableGroupsQuery): Promise<GroupInfoView[]> {
     return this.db.runTransaction(async (trx) => {
       const infoGroups = await this.groupsReadRepo.getInfoGroups(
         and(GroupByUserId(input.userId), not(GroupByStatus([GroupStatus.DONE]))),
-        trx as unknown as TaskTransaction,
+        trx,
       );
 
+      const t = trx as unknown as GoalTransaction;
       const statusInfo = await this.goalPublicService.getGoalInfoByChildGroups(
         {
           groupIds: infoGroups.map((i) => i.id),
           userId: input.userId,
         },
-        trx as unknown as GoalTransaction,
+        t,
       );
 
       /**
