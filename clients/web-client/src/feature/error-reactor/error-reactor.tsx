@@ -2,21 +2,17 @@
 
 import { useApolloClient } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
-import { Wifi } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
-import { ExternalToast, toast } from 'sonner';
-import { useOnlineStatus } from '@/shared/lib/application-status';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { routes } from '@/shared/routes';
+import { toastConfig } from './config';
 import { useReactorStore } from './store';
-
-const toastConfig: ExternalToast = {
-  closeButton: true,
-  position: 'top-center',
-};
+import { useNetworkReactor } from './use-network-reactor';
 
 function ErrorReactor() {
-  const isOnline = useOnlineStatus();
+  useNetworkReactor();
+
   const router = useRouter();
   const apolloClient = useApolloClient();
 
@@ -33,35 +29,8 @@ function ErrorReactor() {
       return void toast.error('Превышен таймаут запроса, попробуйте позже', toastConfig);
     }
 
-    return clear;
+    return () => void apolloClient.clearStore().then(() => void clear());
   }, [apolloClient, clear, error, router]);
-
-  const firstNotify = useRef(false);
-  const toastId = useRef<string | number | undefined>(undefined);
-  useEffect(() => {
-    if (isOnline && firstNotify.current) {
-      toast.dismiss(toastId.current);
-      toastId.current = toast.success('Интернет соединение восстановлено!', {
-        ...toastConfig,
-        icon: <Wifi />,
-        style: {
-          gap: 14,
-        },
-      });
-    }
-
-    if (!isOnline && !firstNotify.current) {
-      firstNotify.current = true;
-      toast.dismiss(toastId.current);
-      toastId.current = toast.error('Интернет соединение потеряно!', {
-        ...toastConfig,
-        icon: <Wifi />,
-        style: {
-          gap: 14,
-        },
-      });
-    }
-  }, [isOnline]);
 
   return null;
 }

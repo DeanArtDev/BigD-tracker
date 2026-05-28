@@ -1,27 +1,22 @@
 'use client';
 
-import { Suspense } from 'react';
-import { Spinner } from '@/shared/ui-kit';
-import { TestComponent } from './test-component';
-import { Header } from '../_ui/header';
-import { Main } from '../_ui/main';
+import { Header } from '@/app/_ui/header';
+import { Main } from '@/app/_ui/main';
+import { routes } from '@/shared/routes';
+import { ApplicationButton } from './_ui/application-button';
 
 export default function ApplicationsPage() {
   return (
-    <>
+    <div className="grid min-h-screen grid-rows-[64px_1fr]">
       <Header />
 
-      <Main>
-        <Suspense
-          fallback={
-            <div className="m-auto">
-              <Spinner className="size-20 stroke-primary" />
-            </div>
-          }
-        >
-          <TestComponent />
-        </Suspense>
+      <Main className="p-10">
+        <ul className="grid mx-auto grid-cols-[repeat(auto-fit,80px)] justify-center max-w-[600px] h-fit gap-10">
+          <li className="flex flex-col items-center justify-between gap-2">
+            <ApplicationButton route={routes.planner.path} name="Планировщик" />
+          </li>
+        </ul>
       </Main>
-    </>
+    </div>
   );
 }
