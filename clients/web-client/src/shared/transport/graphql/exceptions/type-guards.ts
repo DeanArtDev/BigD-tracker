@@ -4,20 +4,26 @@ import { ApiError } from './api-error';
 import { fromApolloError } from './converter';
 
 function isUnauthorized(error: unknown): ApiError | null {
+  if (isApiError(error) && error.code === exceptionCode.accountUnauthorized.code) {
+    return error;
+  }
+
   if (CombinedGraphQLErrors.is(error)) {
     return fromApolloError(error).find((e) => e.code === exceptionCode.accountUnauthorized.code) ?? null;
   }
   return null;
 }
 
-function isRequestTimeout(error: unknown): boolean {
-  if (error instanceof ApiError) {
-    return error.code === exceptionCode.requestTimeout.code;
+function isRequestTimeout(error: unknown): ApiError | null {
+  if (isApiError(error) && error.code === exceptionCode.requestTimeout.code) {
+    return error;
   }
+
   if (CombinedGraphQLErrors.is(error)) {
-    return fromApolloError(error).some((e) => e.code === exceptionCode.requestTimeout.code);
+    return fromApolloError(error).find((e) => e.code === exceptionCode.requestTimeout.code) ?? null;
   }
-  return false;
+
+  return null;
 }
 
 function isApiError(error: unknown): error is ApiError {

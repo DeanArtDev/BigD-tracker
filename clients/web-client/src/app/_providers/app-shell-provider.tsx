@@ -9,7 +9,7 @@ const roboto = appFonts.Roboto;
 function AppShellProvider({ children }: PropsWithChildren) {
   return (
     <html lang="ru" className={cn('h-full', 'antialiased', 'font-sans', roboto.variable)}>
-      <body className="grid min-h-dvh min-w-dvw">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

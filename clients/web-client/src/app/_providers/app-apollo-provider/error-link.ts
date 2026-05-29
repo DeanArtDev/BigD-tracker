@@ -40,7 +40,7 @@ const reactorErrorLink = new ErrorLink(({ error, operation, forward }) => {
 
   const [apiError] = fromApolloError(error);
   if (apiError != null) {
-    if (isRequestTimeout(apiError)) report(apiError);
+    if (isRequestTimeout(apiError) != null) report(apiError);
     return throwError(() => apiError);
   }
 });
