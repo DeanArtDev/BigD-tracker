@@ -1,2 +1,2 @@
-pnpm format:all:fix;
-pnpm lint:all:fix;
+pnpm format:all;
+pnpm lint:all;

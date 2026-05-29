@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { AppApolloProvider, AppShellProvider } from '@/app/_providers';
 import { GlobalErrorListener } from '@/shared/error-handling';
 import { Toaster } from '@/shared/ui-kit';
+import { TooltipProvider } from '@/shared/ui-kit/ui/tooltip';
 
 import './_styles/index.css';
 
@@ -18,9 +19,12 @@ export default function RootLayout({
   return (
     <AppShellProvider>
       <AppApolloProvider>
-        {children}
-        <Toaster />
-        <GlobalErrorListener />
+        <TooltipProvider>
+          {children}
+
+          <Toaster />
+          <GlobalErrorListener />
+        </TooltipProvider>
       </AppApolloProvider>
     </AppShellProvider>
   );

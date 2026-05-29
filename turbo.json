@@ -10,13 +10,11 @@
     "dev": {
       "dependsOn": ["^build"],
       "persistent": true,
-      "interruptible": true,
-      "cache": false
+      "interruptible": true
     },
 
     "build": {
       "dependsOn": ["^build"],
-      "cache": false,
       "outputs": ["dist/**"]
     },
 
@@ -39,29 +37,16 @@
 
     "db:typegen": {},
 
-    "test": {
-      "cache": false
-    },
+    "test": {},
 
-    "test:e2e": {
-      "cache": false
-    },
+    "test:e2e": {},
 
     "format": {},
 
-    "format:fix": {
-      "cache": false
-    },
+    "format:fix": {},
 
     "lint": {},
 
-    "lint:fix": {
-      "cache": false
-    },
-
-    "clean": {
-      "persistent": true,
-      "cache": false
-    }
+    "lint:fix": {}
   }
 }

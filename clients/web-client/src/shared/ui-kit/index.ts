@@ -9,5 +9,7 @@ export * from './ui/collapsible';
 export * from './ui/badge';
 export * from './ui/scroll-area';
 export * from './ui/card';
+export * from './ui/sidebar';
+export * from './ui/tooltip';
 
 export * from './lib/utils';
