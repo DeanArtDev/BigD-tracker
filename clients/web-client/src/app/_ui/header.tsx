@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { PropsWithChildren, ReactNode } from 'react';
-import { Separator } from '@/shared/ui-kit';
+import { routes } from '@/shared/routes';
 import { cn } from '@/shared/ui-kit/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 
@@ -12,12 +12,10 @@ interface HeaderProps {
 
 function Header({ className, content }: PropsWithChildren<HeaderProps>) {
   return (
-    <header className={cn('flex items-center py-2 px-4 gap-4 border @container/header', className)}>
-      <Link href="/">
-        <Image className="border rounded" src="/big-d-logo.svg" width={38} height={38} alt="Logo" loading="eager" />
+    <header className={cn('flex items-center py-2 px-4 gap-4 border @container/header h-(--header-height)', className)}>
+      <Link href={routes.home.path}>
+        <Image src="/big-d-logo.png" width={60} height={28} alt="Logo" loading="eager" />
       </Link>
-
-      <Separator orientation="vertical" />
 
       {content}
 

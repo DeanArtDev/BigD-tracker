@@ -14,7 +14,6 @@ async function InitDataPrefetcher({ children }: PropsWithChildren) {
   });
 
   if (isUnauthorized(error) != null) redirect(routes.login.path);
-  // TODO: FIXME: redirect to technical problems page!
   if (error != null) throw error;
 
   return <MeCacheHydrator data={data}>{children}</MeCacheHydrator>;
