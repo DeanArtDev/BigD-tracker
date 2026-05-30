@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { NextFetchEvent, NextResponse } from 'next/server';
-import { chain, refreshToken } from '@/middlewares';
+import { chain, mobilePlaceholder, refreshTokenProxy } from '@/middlewares';
 
 // Порядок имеет значение: snaps wrapping order, как в Express.
-const handlers = chain([refreshToken]);
+const handlers = chain([refreshTokenProxy, mobilePlaceholder]);
 
 export function proxy(req: NextRequest, event: NextFetchEvent) {
   return handlers(req, event, NextResponse.next());
