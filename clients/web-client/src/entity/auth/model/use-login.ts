@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client';
 import { exceptionCode } from '@big-d/exceptions';
 import { useAppMutation } from '@/shared/transport/graphql';
+import { UserLoginDocument, UserLoginMutation } from './schemas/queries.generated';
 
 export type LoginVariables = {
   input: {
@@ -9,14 +9,8 @@ export type LoginVariables = {
   };
 };
 
-export const USER_LOGIN_MUTATION = gql`
-  mutation UserLogin($input: LoginUserInput!) {
-    userLogin(input: $input)
-  }
-`;
-
 function useLogin() {
-  const [login, { loading, hasError }] = useAppMutation<{ userLogin: boolean }, LoginVariables>(USER_LOGIN_MUTATION, {
+  const [login, { loading, hasError }] = useAppMutation<UserLoginMutation, LoginVariables>(UserLoginDocument, {
     endpoint: 'public-cookies-include',
   });
 

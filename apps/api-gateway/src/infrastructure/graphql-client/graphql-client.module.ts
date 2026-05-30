@@ -14,7 +14,7 @@ import { AppGraphQLContext } from './types';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService): ApolloDriverConfig => {
-        const isProd = config.get<string>('IS_PROD');
+        const isProd = config.get<boolean>('IS_PROD');
 
         return {
           autoSchemaFile: join(process.cwd(), './src/infrastructure/graphql/schema.gql'),

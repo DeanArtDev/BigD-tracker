@@ -10,7 +10,8 @@
     "lint:fix": "eslint --fix",
     "format": "prettier \"src/**/*.{ts,tsx}\" --check",
     "format:fix": "prettier \"src/**/*.{ts,tsx}\" --write",
-    "===============================  TOOLS  ==========================": ""
+    "===============================  TOOLS  ==========================": "",
+    "codegen": "graphql-codegen && pnpm format:fix && pnpm lint:fix"
   },
   "dependencies": {
     "@apollo/client": "4.1.9",
@@ -43,6 +44,11 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^7.1.0",
+    "@graphql-codegen/near-operation-file-preset": "^5.2.1",
+    "@graphql-codegen/typed-document-node": "^7.0.2",
+    "@graphql-codegen/typescript": "^6.0.2",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@tailwindcss/postcss": "^4",
     "@types/lodash-es": "catalog:",
     "@types/node": "^20",
@@ -55,6 +61,7 @@
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "catalog:",
+    "i": "^0.3.7",
     "prettier": "catalog:",
     "tailwindcss": "^4",
     "typescript": "^5"
