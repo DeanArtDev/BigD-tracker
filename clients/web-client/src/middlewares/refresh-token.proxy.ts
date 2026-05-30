@@ -5,7 +5,7 @@ import { routes } from '@/shared/routes';
 import { fetchRefreshToken } from '@/shared/transport/graphql';
 import { ProxyFactory } from './helpers';
 
-const refreshToken: ProxyFactory = (next) => async (req, event, res) => {
+const refreshTokenProxy: ProxyFactory = (next) => async (req, event, res) => {
   const access = req.cookies.get('access_token')?.value;
   const refresh = req.cookies.get('refresh_token')?.value;
 
@@ -74,4 +74,4 @@ function isExpiringSoon(token: string, bufferSec: number): boolean {
   }
 }
 
-export { refreshToken };
+export { refreshTokenProxy };
