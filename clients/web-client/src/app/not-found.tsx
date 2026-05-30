@@ -13,15 +13,7 @@ export default function NotFound() {
     <main className={cn('grid min-h-dvh place-items-center px-6 py-12')}>
       <section className="flex w-full max-w-[560px] flex-col items-center gap-6 text-center">
         <Link href="/" aria-label="На главную">
-          <Image
-            className="rounded-lg border"
-            src="/big-d-logo.svg"
-            width={56}
-            height={56}
-            alt=""
-            loading="eager"
-            priority
-          />
+          <Image className="rounded-lg" src="/big-d-logo.png" width={60} height={28} alt="" loading="eager" priority />
         </Link>
 
         <p

@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { Header } from '@/app/_ui/header';
+import { PlannerHeader } from '@/app/(private)/planner/_ui';
 import { SIDEBAR_COOKIE_NAME, Typography } from '@/shared/ui-kit';
 import { PlannerSidebar } from './_ui/planner-sidebar';
 
@@ -9,7 +9,7 @@ export default async function PlannerPage() {
   return (
     <PlannerSidebar
       defaultOpen={open}
-      headerSlot={<Header />}
+      headerSlot={<PlannerHeader />}
       content={
         <div className="flex flex-col items-center justify-center grow">
           <Typography.H2>В разработке 🏗️</Typography.H2>

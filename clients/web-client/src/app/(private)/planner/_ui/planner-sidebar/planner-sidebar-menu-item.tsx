@@ -1,20 +1,16 @@
 import Link from 'next/link';
-import { ReactNode } from 'react';
-import { RoutePaths } from '@/shared/routes';
 import { SidebarMenuButton, SidebarMenuItem } from '@/shared/ui-kit';
+import { PlannerSidebarNavPath } from './planner-sidebar-nav-paths';
 
-interface PlannerSidebarMenuItemProps {
-  readonly href: RoutePaths;
-  readonly icon: ReactNode;
-  readonly title: ReactNode;
+interface PlannerSidebarMenuItemProps extends PlannerSidebarNavPath {
   readonly active: boolean;
 }
 
-function PlannerSidebarMenuItem({ icon, href, title, active }: PlannerSidebarMenuItemProps) {
+function PlannerSidebarMenuItem({ icon, path, title, active }: PlannerSidebarMenuItemProps) {
   return (
     <SidebarMenuItem className="flex justify-center items-center">
       <SidebarMenuButton asChild isActive={active} tooltip={{ children: title }}>
-        <Link href={href}>
+        <Link href={path}>
           {icon}
 
           {title}
