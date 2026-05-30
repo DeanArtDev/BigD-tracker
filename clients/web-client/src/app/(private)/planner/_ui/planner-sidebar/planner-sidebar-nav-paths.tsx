@@ -3,13 +3,13 @@ import { ReactNode } from 'react';
 import { RoutePaths, routes } from '@/shared/routes';
 import { Badge, Typography } from '@/shared/ui-kit';
 
-interface PlannerPath {
+interface PlannerSidebarNavPath {
   readonly path: RoutePaths;
   readonly icon: ReactNode;
   readonly title: ReactNode;
 }
 
-const plannerPaths: PlannerPath[] = [
+const plannerSidebarNavPaths: PlannerSidebarNavPath[] = [
   {
     title: (
       <>
@@ -19,9 +19,9 @@ const plannerPaths: PlannerPath[] = [
         </Badge>
       </>
     ),
-    icon: <Inbox className="size-10" />,
+    icon: <Inbox />,
     path: routes.plannerInBox.path,
   },
 ];
 
-export { plannerPaths };
+export { plannerSidebarNavPaths, type PlannerSidebarNavPath };

@@ -11,5 +11,6 @@ export * from './ui/scroll-area';
 export * from './ui/card';
 export * from './ui/sidebar';
 export * from './ui/tooltip';
+export * from './ui/popover';
 
 export * from './lib/utils';

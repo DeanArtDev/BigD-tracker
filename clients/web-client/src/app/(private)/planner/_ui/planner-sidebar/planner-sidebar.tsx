@@ -12,8 +12,8 @@ import {
   SidebarProvider,
   SidebarSeparator,
 } from '@/shared/ui-kit';
-import { plannerPaths } from './config';
 import { PlannerSidebarMenuItem } from './planner-sidebar-menu-item';
+import { plannerSidebarNavPaths } from './planner-sidebar-nav-paths';
 import { PlannerSidebarTrigger } from './planner-sidebar-trigger';
 
 function PlannerSidebar({
@@ -36,10 +36,10 @@ function PlannerSidebar({
           <SidebarContent>
             <SidebarGroup>
               <SidebarMenu>
-                {plannerPaths.map((p) => (
+                {plannerSidebarNavPaths.map((p) => (
                   <PlannerSidebarMenuItem
                     key={p.path}
-                    href={p.path}
+                    path={p.path}
                     title={p.title}
                     icon={p.icon}
                     active={pathname.includes(p.path)}
