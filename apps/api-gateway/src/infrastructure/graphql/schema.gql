@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type GetInboxResponse {
+  id: ID!
+  name: String!
+  tasks: [TaskSchema]!
+}
+
 input LoginUserInput {
   email: String!
   password: String!
@@ -22,5 +28,33 @@ type Mutation {
 }
 
 type Query {
+  getInbox: GetInboxResponse!
   me: MeRes!
+}
+
+"""Дело"""
+type TaskSchema {
+  cancelReason: String
+  deadline: String
+  description: String
+  endDate: String
+  groupId: Float
+  id: ID!
+  name: String!
+  priority: Float!
+  startDate: String
+  status: TaskStatus!
+  userId: Float!
+  weight: Float!
+}
+
+"""Статусы дела"""
+enum TaskStatus {
+  ARCHIVED
+  CANCELED
+  COMPLETED
+  DELETED
+  IN_PROGRESS
+  NOT_STARTED
+  OVERDUE
 }
