@@ -6,7 +6,7 @@ import { ApiError, ApiErrorCode, fromApolloError } from './exceptions';
 import { GraphQLRequestContext } from './request-context';
 
 type AppQueryResult<TData, TVariables extends OperationVariables = OperationVariables> = Omit<
-  useQuery.Result<TData, TVariables>,
+  useQuery.Result<TData, TVariables, 'empty' | 'complete' | 'streaming', Partial<TVariables>>,
   'error'
 > & {
   errors: ApiError[];

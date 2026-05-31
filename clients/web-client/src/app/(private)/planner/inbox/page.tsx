@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { PlannerHeader, PlannerSidebar } from '@/app/(private)/planner/_ui';
+import { List } from '@/app/(private)/planner/inbox/list';
 import { SIDEBAR_COOKIE_NAME, Typography } from '@/shared/ui-kit';
 
 export default async function InboxPage() {
@@ -12,6 +13,7 @@ export default async function InboxPage() {
       content={
         <div className="flex flex-col items-center justify-center grow">
           <Typography.H2>INBOX</Typography.H2>
+          <List />
         </div>
       }
     />

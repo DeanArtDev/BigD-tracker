@@ -79,6 +79,11 @@
   --sidebar-ring: oklch(0.714 0.014 41.2);
   --sidebar-width: 280px;
   --sidebar-width-icon: 60px;
+
+  --priority-1: var(--color-red-500);
+  --priority-2: oklch(0.828 0.189 84.429);
+  --priority-3: var(--primary);
+  --priority-4: oklch(0.706 0.014 286.025);
 }
 
 .dark {

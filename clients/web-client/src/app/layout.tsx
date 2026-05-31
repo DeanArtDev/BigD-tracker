@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
-import { AppApolloProvider, AppShellProvider } from '@/app/_providers';
+import { AppApolloProvider, AppShellProvider, InitClientProvider } from '@/app/_providers';
 import { GlobalErrorListener } from '@/shared/error-handling';
 import { Toaster } from '@/shared/ui-kit';
 import { TooltipProvider } from '@/shared/ui-kit/ui/tooltip';
@@ -24,6 +24,7 @@ export default function RootLayout({
 
           <Toaster />
           <GlobalErrorListener />
+          <InitClientProvider />
         </TooltipProvider>
       </AppApolloProvider>
     </AppShellProvider>
