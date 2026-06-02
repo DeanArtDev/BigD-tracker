@@ -25,6 +25,9 @@ type Mutation {
 
   """Логин по email/паролю. Выставляет httpOnly cookies access/refresh."""
   userLogin(input: LoginUserInput!): Boolean!
+
+  """Выход пользователя из системы на одном устройстве"""
+  userLogout: Boolean!
 }
 
 type Query {

@@ -12,6 +12,12 @@ const AuthExceptionStateList = {
     code: exceptionCode.authInvalidTokenFormat.code,
     details: exceptionCode.authInvalidTokenFormat.details,
   }),
+
+  LogoutFailed: defineExceptionState({
+    key: 'LOGOUT_FAILED',
+    code: exceptionCode.logoutFailed.code,
+    details: exceptionCode.logoutFailed.details,
+  }),
 };
 
 const SystemList = {
@@ -22,7 +28,8 @@ const SystemList = {
   }),
 };
 
-export const { ExceptionUnauthorized, ExceptionAuthInvalidToken, ExceptionInternalGateway } = generateExceptionClasses({
-  ...SystemList,
-  ...AuthExceptionStateList,
-});
+export const { ExceptionUnauthorized, ExceptionAuthInvalidToken, ExceptionInternalGateway, ExceptionLogoutFailed } =
+  generateExceptionClasses({
+    ...SystemList,
+    ...AuthExceptionStateList,
+  });

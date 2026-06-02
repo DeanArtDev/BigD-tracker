@@ -1,6 +1,6 @@
 import { exceptionCode } from '@big-d/exceptions';
 import { useAppMutation } from '@/shared/transport/graphql';
-import { UserLoginDocument, UserLoginMutation } from './schemas/queries.generated';
+import { UserLoginDocument, UserLoginMutation } from './schemas/schema.generated';
 
 export type LoginVariables = {
   input: {

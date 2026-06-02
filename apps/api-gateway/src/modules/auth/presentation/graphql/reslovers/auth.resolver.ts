@@ -3,26 +3,14 @@ import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { AuthErrorSkip, Public, REFRESH_TOKEN_KEY, RefreshToken, TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { ExceptionUnauthorized } from '@/modules/auth/exceptions';
-import { AuthLogin, AuthRefresh } from '@big-d/api-contracts';
+import { ExceptionLogoutFailed, ExceptionUnauthorized } from '@/modules/auth/exceptions';
+import { AuthLogin, AuthLogout, AuthRefresh, RpcStatus } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Args, Context, Field, InputType, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
 import { CookieService } from '@shared/services/cookies';
-import { IsEmail, IsString, MinLength } from 'class-validator';
-
-@InputType()
-export class LoginUserInput {
-  @Field(() => String)
-  @IsEmail()
-  email: string;
-
-  @Field(() => String)
-  @IsString()
-  @MinLength(6)
-  password: string;
-}
+import { LoginUserInput } from './schemas';
 
 @Resolver()
 export class AuthResolver {
@@ -83,6 +71,29 @@ export class AuthResolver {
       throw new ExceptionUnauthorized({ message: 'Рефреш токен просрочен или не валидный' });
     }
 
+    return true;
+  }
+
+  @Mutation(() => Boolean, {
+    description: 'Выход пользователя из системы на одном устройстве',
+  })
+  async userLogout(
+    @IpAddress() ip: string,
+    @UserAgent() userAgent: string,
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Context() ctx: AppGraphQLContext,
+  ): Promise<boolean> {
+    const {
+      data: { status },
+    } = await this.authClient.send<AuthLogout.Response, AuthLogout.Request>(AuthLogout.pattern, {
+      data: { ip, userAgent, userId: uid },
+    });
+
+    if (status === RpcStatus.FAILED) {
+      throw new ExceptionLogoutFailed({ message: 'Logout failed', userId: uid });
+    }
+
+    this.cookieService.dropTokens(ctx.response);
     return true;
   }
 }

@@ -18,6 +18,11 @@ const auth = {
     code: 'ASA-A-0001',
     details: Details.Define<{ message: string; subjectId?: number | string }>(),
   },
+
+  logoutFailed: {
+    code: 'ASA-A-0002',
+    details: Details.Define<{ message: string; userId: number }>(),
+  },
 } as const satisfies ExceptionConfig;
 
 const sessions = {
