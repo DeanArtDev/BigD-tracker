@@ -1,7 +1,7 @@
 'use client';
 
 import { useInboxQuery } from '@/entity/planner/inbox';
-import { TaskCard } from '@/entity/planner/tasks/ui/task-card/task-card';
+import { TaskCard } from '@/entity/planner/tasks';
 
 function List() {
   const { data, loading } = useInboxQuery();

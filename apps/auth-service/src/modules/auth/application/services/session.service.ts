@@ -46,15 +46,18 @@ class SessionService {
     return print1 === print2;
   }
 
-  async deleteSessionByFingerprint(input: Fingerprint & { userId: number }, trx?: AuthTransaction): Promise<void> {
+  async deleteSessionByFingerprint(input: Fingerprint & { userId: number }, trx?: AuthTransaction): Promise<boolean> {
     const userSessions = await this.sessionWriteRepositoryKysely.getMany(and(SessionByUserId(input.userId)), trx);
 
     for (const session of userSessions) {
       const isTheSame = this.compareFingerprints({ userAgent: input.userAgent }, { userAgent: session.userAgent });
       if (isTheSame) {
         await this.sessionWriteRepositoryKysely.delete(and(SessionById(session.id)), trx);
+        return true;
       }
     }
+
+    return false;
   }
 
   async createSession(input: { userId: number; ip?: string; userAgent?: string }, trx?: AuthTransaction) {

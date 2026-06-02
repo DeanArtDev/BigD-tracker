@@ -6,4 +6,10 @@ const USER_LOGIN_MUTATION = gql`
   }
 `;
 
-export { USER_LOGIN_MUTATION };
+const USER_LOGOUT_MUTATION = gql`
+  mutation UserLogout {
+    userLogout
+  }
+`;
+
+export { USER_LOGIN_MUTATION, USER_LOGOUT_MUTATION };

@@ -10,6 +10,7 @@ import { Button, cn, PopoverHeader, Separator, Typography } from '@/shared/ui-ki
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui-kit';
 
 interface ApplicationSelectorProps {
+  readonly className?: string;
   readonly items: {
     readonly disabled?: boolean;
     readonly path: RoutePaths;
@@ -18,14 +19,14 @@ interface ApplicationSelectorProps {
   }[];
 }
 
-function ApplicationSelector({ items }: ApplicationSelectorProps) {
+function ApplicationSelector({ items, className }: ApplicationSelectorProps) {
   const pathname = usePathname();
   const current = useMemo(() => items.find((p) => pathname.startsWith(p.path)), [pathname, items]);
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="flex gap-2" variant="outline">
+        <Button className={cn('flex gap-2', className)} variant="outline">
           {current != null ? (
             <>
               {current.icon}

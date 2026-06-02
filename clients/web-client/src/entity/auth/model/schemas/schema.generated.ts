@@ -16,6 +16,10 @@ export type UserLoginMutationVariables = Exact<{
 
 export type UserLoginMutation = { userLogin: boolean };
 
+export type UserLogoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UserLogoutMutation = { userLogout: boolean };
+
 export const UserLoginDocument = {
   kind: 'Document',
   definitions: [
@@ -49,3 +53,17 @@ export const UserLoginDocument = {
     },
   ],
 } as unknown as DocumentNode<UserLoginMutation, UserLoginMutationVariables>;
+export const UserLogoutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UserLogout' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'userLogout' } }],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserLogoutMutation, UserLogoutMutationVariables>;

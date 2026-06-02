@@ -12,5 +12,7 @@ export * from './ui/card';
 export * from './ui/sidebar';
 export * from './ui/tooltip';
 export * from './ui/popover';
+export * from './ui/avatar';
+export * from './ui/dropdown-menu';
 
 export * from './lib/utils';

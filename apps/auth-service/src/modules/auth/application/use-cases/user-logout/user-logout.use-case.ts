@@ -27,9 +27,9 @@ class UserLogoutUseCase {
         throw new ExceptionUserNotFound({ userId });
       }
 
-      await this.sessionService.deleteSessionByFingerprint({ userId: user.id, userAgent }, trx);
+      const isDeleted = await this.sessionService.deleteSessionByFingerprint({ userId: user.id, userAgent }, trx);
 
-      return { status: RpcStatus.SUCCESS };
+      return { status: isDeleted ? RpcStatus.SUCCESS : RpcStatus.FAILED };
     });
   }
 }

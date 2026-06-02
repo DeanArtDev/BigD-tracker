@@ -34,6 +34,8 @@ export type Mutation = {
   refresh: Scalars['Boolean']['output'];
   /** Логин по email/паролю. Выставляет httpOnly cookies access/refresh. */
   userLogin: Scalars['Boolean']['output'];
+  /** Выход пользователя из системы на одном устройстве */
+  userLogout: Scalars['Boolean']['output'];
 };
 
 export type MutationUserLoginArgs = {

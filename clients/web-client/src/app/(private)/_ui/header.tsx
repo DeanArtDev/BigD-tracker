@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { PropsWithChildren, ReactNode } from 'react';
 import { routes } from '@/shared/routes';
 import { cn } from '@/shared/ui-kit/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui-kit/ui/avatar';
 
 interface HeaderProps {
   readonly className?: string;
@@ -18,11 +17,6 @@ function Header({ className, content }: PropsWithChildren<HeaderProps>) {
       </Link>
 
       {content}
-
-      <Avatar className="ml-auto">
-        <AvatarImage src={undefined} alt={'Какое то имя'} />
-        <AvatarFallback>UN</AvatarFallback>
-      </Avatar>
     </header>
   );
 }
