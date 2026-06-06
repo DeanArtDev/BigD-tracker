@@ -4,7 +4,7 @@ import { taskActionByStatusesAvailability } from './maps/task-action-to-status-a
 import { taskIndicationByStatus, taskIndicationByType } from './maps/task-indication-availability';
 import { taskTypeToActionAvailability } from './maps/task-type-to-action-availability';
 import { TaskIdParser } from './taks-id-parser';
-import { TaskActionType, TaskId, TaskType } from './task.entity';
+import { TaskActionType, TaskId, TaskType } from './task';
 
 class TaskDomain {
   static dateToTaskStandard = (date: string): string => {

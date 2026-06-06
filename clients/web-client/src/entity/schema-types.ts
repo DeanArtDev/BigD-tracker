@@ -13,6 +13,7 @@ export type GetInboxResponse = {
   __typename?: 'GetInboxResponse';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  taskCount: Scalars['Float']['output'];
   tasks: Array<Maybe<TaskSchema>>;
 };
 

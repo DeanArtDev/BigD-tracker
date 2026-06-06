@@ -1,7 +1,10 @@
 import { cookies } from 'next/headers';
-import { PlannerHeader, PlannerSidebar } from '@/app/(private)/planner/_ui';
-import { List } from '@/app/(private)/planner/inbox/list';
+import { InboxPrefetcher } from '@/app/(private)/_prefetches';
+import { PlannerHeader } from '@/app/(private)/planner/_ui';
 import { SIDEBAR_COOKIE_NAME, Typography } from '@/shared/ui-kit';
+import { Input } from '@/shared/ui-kit/ui/input';
+import { PlannerSidebar } from '@/widget/planner/planner-sidebar';
+import { InboxTaskList } from './inbox-task-list';
 
 export default async function InboxPage() {
   const open = (await cookies()).get(SIDEBAR_COOKIE_NAME)?.value === 'true';
@@ -11,10 +14,17 @@ export default async function InboxPage() {
       defaultOpen={open}
       headerSlot={<PlannerHeader />}
       content={
-        <div className="flex flex-col items-center justify-center grow">
-          <Typography.H2>INBOX</Typography.H2>
-          <List />
-        </div>
+        <InboxPrefetcher>
+          <div className="grow grid grid-rows-[min-content_max-content_1fr] min-h-0 min-w-0 gap-3 px-8 py-5">
+            <div>
+              <Typography.H2>INBOX</Typography.H2>
+            </div>
+
+            <Input />
+
+            <InboxTaskList />
+          </div>
+        </InboxPrefetcher>
       }
     />
   );

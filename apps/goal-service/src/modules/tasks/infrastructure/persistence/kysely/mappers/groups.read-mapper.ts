@@ -30,7 +30,7 @@ interface RawInboxGroup {
   readonly id: number;
   readonly name: string;
   readonly user_id: number;
-  readonly tasks: TaskView[];
+  readonly task_count: number;
 }
 
 class GroupReadKyselyMapper {
@@ -85,7 +85,7 @@ class GroupReadKyselyMapper {
       id: raw.id,
       name: raw.name,
       userId: raw.user_id,
-      tasks: raw.tasks,
+      taskCount: raw.task_count,
     });
   }
 }

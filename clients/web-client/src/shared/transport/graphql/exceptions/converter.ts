@@ -12,7 +12,7 @@ function unknownAppError(message: string, key: ApiError['key'] = 'UNKNOWN'): Api
 }
 
 function isApiPlainError(error: unknown): error is ApiError {
-  return isBaseException(error) && 'message' in error && 'correlationId' in error;
+  return isBaseException(error) && 'correlationId' in error;
 }
 
 function fromApolloError(error: ErrorLike | undefined): ApiError[] {
@@ -32,7 +32,7 @@ function fromApolloError(error: ErrorLike | undefined): ApiError[] {
         return new ApiError({
           key: key ?? 'INTERNAL',
           code: code ?? 'XX-X-0000',
-          message: message ?? e.message,
+          message: message ?? e.message ?? 'There is no message',
           correlationId: correlationId ?? 'n/a',
           path: e.path,
           details: rest,

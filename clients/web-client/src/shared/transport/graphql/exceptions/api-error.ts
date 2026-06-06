@@ -14,7 +14,7 @@ class ApiError<Details extends Record<string, unknown> = Record<string, unknown>
   #state: ApiErrorState<Details>;
 
   constructor(input: ApiErrorState<Details>) {
-    super(`${input.message} code: ${input.code}`);
+    super(`${input.message}, code: ${input.code}`);
     this.#state = input;
   }
 

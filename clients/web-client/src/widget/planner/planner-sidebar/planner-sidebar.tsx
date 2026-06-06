@@ -12,9 +12,10 @@ import {
   SidebarProvider,
   SidebarSeparator,
 } from '@/shared/ui-kit';
+import { useSidebarInfoQuerySuspense } from './model/use-sidebar-info';
 import { PlannerSidebarMenuItem } from './planner-sidebar-menu-item';
-import { plannerSidebarNavPaths } from './planner-sidebar-nav-paths';
 import { PlannerSidebarTrigger } from './planner-sidebar-trigger';
+import { useNavItems } from './view-model/use-nav-items';
 
 function PlannerSidebar({
   content,
@@ -27,16 +28,25 @@ function PlannerSidebar({
 }) {
   const pathname = usePathname();
 
+  const {
+    data: { inboxCount },
+  } = useSidebarInfoQuerySuspense();
+  const navItems = useNavItems({ inboxCount });
+
   return (
-    <SidebarProvider className="flex flex-col" defaultOpen={defaultOpen}>
+    <SidebarProvider className="flex flex-col h-screen overscroll-y-auto" defaultOpen={defaultOpen}>
       {headerSlot}
 
-      <div className="flex flex-1">
-        <Sidebar className="top-(--header-height) h-[calc(100svh-var(--header-height))]" collapsible="icon">
+      <div className="grid grow grid-cols-[min-content_1fr] min-h-0">
+        <Sidebar
+          className="top-(--header-height) h-[calc(100svh-var(--header-height))]"
+          collapsible="icon"
+          variant="floating"
+        >
           <SidebarContent>
             <SidebarGroup>
               <SidebarMenu>
-                {plannerSidebarNavPaths.map((p) => (
+                {navItems.map((p) => (
                   <PlannerSidebarMenuItem
                     key={p.path}
                     path={p.path}
@@ -55,7 +65,7 @@ function PlannerSidebar({
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset>{content}</SidebarInset>
+        <SidebarInset className="grow min-h-0">{content}</SidebarInset>
       </div>
     </SidebarProvider>
   );

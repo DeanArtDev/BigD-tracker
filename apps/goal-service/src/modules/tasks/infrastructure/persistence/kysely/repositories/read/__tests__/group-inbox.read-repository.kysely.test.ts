@@ -7,7 +7,7 @@ describe('GroupInboxReadRepositoryKysely', () => {
     await withRepository<TasksDB, GroupInboxReadRepositoryKysely>(
       (db) => new GroupInboxReadRepositoryKysely(db),
       async ({ repository, recorder }) => {
-        await repository.getInboxWithTasksByUserId({ userId: 77 });
+        await repository.getInboxByUserId({ userId: 77 });
 
         expect(recorder.queries).toHaveLength(1);
         expectSqlQuery(recorder.queries[0], {

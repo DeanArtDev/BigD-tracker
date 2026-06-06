@@ -1,6 +1,6 @@
 import { AppGraphQLContext } from '@/infrastructure/graphql-client/types';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 
 const REFRESH_TOKEN_KEY = 'refresh_token';
@@ -9,7 +9,9 @@ const getRefreshTokenCookie = (request: Request) => request.cookies[REFRESH_TOKE
 
 const RefreshToken = createParamDecorator((_data, ctx: ExecutionContext) => {
   const req =
-    ctx.switchToHttp().getRequest<Request>() ?? GqlExecutionContext.create(ctx).getContext<AppGraphQLContext>().request;
+    ctx.getType<GqlContextType>() === 'graphql'
+      ? GqlExecutionContext.create(ctx).getContext<AppGraphQLContext>().request
+      : ctx.switchToHttp().getRequest<Request>();
 
   return req?.cookies[REFRESH_TOKEN_KEY];
 });

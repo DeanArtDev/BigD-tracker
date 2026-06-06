@@ -1,7 +1,6 @@
-import { TaskDto } from '@/modules/goal-service/tasks';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsArray, IsInt, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsString, ValidateNested } from 'class-validator';
 
 class GetInBoxResData {
   @ApiProperty({
@@ -15,17 +14,6 @@ class GetInBoxResData {
   @Expose()
   @IsString()
   name: string;
-
-  @ApiProperty({
-    description: 'Список дел',
-    type: TaskDto,
-    isArray: true,
-  })
-  @Expose()
-  @ValidateNested({ each: true })
-  @IsArray()
-  @Type(() => TaskDto)
-  tasks: TaskDto[];
 }
 
 class GetInBoxRes {

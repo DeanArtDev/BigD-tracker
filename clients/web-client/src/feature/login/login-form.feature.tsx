@@ -8,7 +8,7 @@ import { routes } from '@/shared/routes';
 
 function LoginFormFeature() {
   const router = useRouter();
-  const { login, isPending, isWrongPassOrLoginError } = useLogin();
+  const { login, loading, isWrongPassOrLoginError } = useLogin();
 
   useEffect(() => {
     let id: string | number | undefined = undefined;
@@ -22,7 +22,7 @@ function LoginFormFeature() {
 
   return (
     <LoginForm
-      loadingButton={isPending}
+      loadingButton={loading}
       onSubmit={(data) => {
         login({
           variables: { input: data },

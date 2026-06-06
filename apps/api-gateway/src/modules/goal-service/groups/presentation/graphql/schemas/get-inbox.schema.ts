@@ -1,16 +1,15 @@
-import { TaskSchema } from './task.schema';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 class GetInboxResponse {
   @Field(() => ID)
-  id: string;
+  id: number;
 
   @Field()
   name: string;
 
-  @Field(() => [TaskSchema], { nullable: 'items' })
-  tasks: TaskSchema[];
+  @Field(() => Number)
+  taskCount: number;
 }
 
 export { GetInboxResponse };

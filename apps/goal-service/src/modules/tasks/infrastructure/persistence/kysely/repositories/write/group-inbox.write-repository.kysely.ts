@@ -37,7 +37,7 @@ export class GroupInboxWriteRepositoryKysely extends BaseTasksRepository impleme
         id: result.id,
         name: result.name,
         user_id: result.user_id,
-        tasks: [],
+        task_count: 0,
       });
     });
   }

@@ -1,5 +1,5 @@
 import { TaskStatus } from '@/entity/schema-types';
-import { TaskActionType } from '../task.entity';
+import { TaskActionType } from '../task';
 
 const taskActionByStatusesAvailability = {
   [TaskActionType.Delete]: [

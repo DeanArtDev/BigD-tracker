@@ -1,5 +1,5 @@
 import { TaskStatus } from '@/entity/schema-types';
-import { TaskType } from '../task.entity';
+import { TaskType } from '../task';
 
 const taskIndicationByStatus: Record<TaskStatus, boolean> = {
   [TaskStatus.NotStarted]: true,

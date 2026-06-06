@@ -1,4 +1,4 @@
-import { TaskActionType, TaskType } from '../task.entity';
+import { TaskActionType, TaskType } from '../task';
 
 const taskTypeToActionAvailability: Record<TaskType, TaskActionType[]> = {
   [TaskType.Original]: [

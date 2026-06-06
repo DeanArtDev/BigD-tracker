@@ -18,7 +18,7 @@ export class GetGroupUserInboxHandler implements IQueryHandler<GetInboxByUserIdQ
 
   async execute({ input }: GetInboxByUserIdQuery): Promise<GroupInboxView> {
     return this.db.runTransaction(async (trx) => {
-      const inbox = await this.inboxReadRepo.getInboxWithTasksByUserId({ userId: input.userId }, trx);
+      const inbox = await this.inboxReadRepo.getInboxByUserId({ userId: input.userId }, trx);
 
       if (inbox == null) {
         throw new ExceptionInboxNotExist({});
