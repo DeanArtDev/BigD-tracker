@@ -3,8 +3,8 @@ import {
   GetInboxByUserIdQuery,
   GetDetailedGroupsHandler,
   GetDetailedGroupsQuery,
-  GetTasksQuery,
-  GetTasksHandler,
+  GetTasksByRangeQuery,
+  GetTasksByRangeHandler,
   GetAssignableTasksQuery,
   GetAssignableTasksHandler,
   GetUserGroupsQuery,
@@ -13,6 +13,8 @@ import {
   GetAssignableGroupsHandler,
   GetDiaryTasksQuery,
   GetDiaryTasksHandler,
+  GetTasksQuery,
+  GetTasksHandler,
 } from './queries';
 import {
   GroupCheckerService,
@@ -80,11 +82,12 @@ import {
 const queries = [
   GetInboxByUserIdQuery,
   GetDetailedGroupsQuery,
-  GetTasksQuery,
+  GetTasksByRangeQuery,
   GetAssignableTasksQuery,
   GetUserGroupsQuery,
   GetAssignableGroupsQuery,
   GetDiaryTasksQuery,
+  GetTasksQuery,
 ];
 const commands = [
   CreateTaskCommand,
@@ -118,7 +121,7 @@ const handlers = [
   CreateGroupHandler,
   DeleteGroupHandler,
   GetDetailedGroupsHandler,
-  GetTasksHandler,
+  GetTasksByRangeHandler,
   GetAssignableTasksHandler,
   FinishTaskHandler,
   CompleteDeleteTaskHandler,
@@ -126,6 +129,7 @@ const handlers = [
   GetUserGroupsHandler,
   GetAssignableGroupsHandler,
   GetDiaryTasksHandler,
+  GetTasksHandler,
 ];
 const useCases = [
   CreateTaskUseCase,

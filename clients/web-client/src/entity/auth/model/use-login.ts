@@ -1,5 +1,6 @@
+import { useMutation } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
-import { useAppMutation } from '@/shared/transport/graphql';
+import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { UserLoginDocument, UserLoginMutation } from './schemas/schema.generated';
 
 export type LoginVariables = {
@@ -10,13 +11,17 @@ export type LoginVariables = {
 };
 
 function useLogin() {
-  const [login, { loading, hasError }] = useAppMutation<UserLoginMutation, LoginVariables>(UserLoginDocument, {
-    endpoint: 'public-cookies-include',
+  const [login, rest] = useMutation<UserLoginMutation, LoginVariables>(UserLoginDocument, {
+    context: {
+      endpoint: 'public-cookies-include',
+    },
   });
+
+  const { hasError, ...errorRest } = useExtendApolloErrorResult(rest.error);
 
   const isWrongPassOrLoginError = hasError({ code: exceptionCode.userWrongLoginOrPassword.code });
 
-  return { login, isWrongPassOrLoginError, isPending: loading };
+  return { login, ...rest, isWrongPassOrLoginError, hasError, ...errorRest };
 }
 
 export { useLogin };

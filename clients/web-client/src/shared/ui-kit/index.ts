@@ -14,5 +14,8 @@ export * from './ui/tooltip';
 export * from './ui/popover';
 export * from './ui/avatar';
 export * from './ui/dropdown-menu';
+export * from './ui/data-loader';
+export * from './ui/scroll-area-native-vertical';
+export * from './ui/scroll-area-native-horizontal';
 
 export * from './lib/utils';

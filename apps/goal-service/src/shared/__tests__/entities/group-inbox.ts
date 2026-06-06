@@ -13,7 +13,7 @@ const getGroupInboxView = (
     id: data.id ?? 1,
     userId: data.userId ?? 1,
     name: data.name ?? 'Inbox',
-    tasks: data.tasks ?? [],
+    taskCount: 0,
   });
 };
 

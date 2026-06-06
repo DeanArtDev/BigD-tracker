@@ -13,5 +13,6 @@ export * from './finish-task';
 export * from './complete-delete-task';
 export * from './task-recovery';
 export * from './get-diary-tasks';
+export * from './get-tasks-by-range';
 
 export * from './types';

@@ -1,83 +1,20 @@
-import { SortDirection } from '@/shared';
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsISO8601,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-import { TaskStatus } from '../types';
+import { IsArray, IsInt, IsOptional, ValidateNested } from 'class-validator';
 import { TaskDto } from './task.dto';
-import { PaginationQueryDto } from '@/transports/rmq/shared/dto';
 
-class GetTasksSortDto {
-  @IsOptional()
-  @IsEnum(SortDirection)
-  priority?: SortDirection;
-
-  @IsOptional()
-  @IsEnum(SortDirection)
-  deadline?: SortDirection;
-
-  @IsOptional()
-  @IsEnum(SortDirection)
-  startDate?: SortDirection;
-}
-
-class GetTasksFilterDto {
-  @IsOptional()
-  @Type(() => Number)
-  @Min(1)
-  @Max(4)
-  @IsInt()
-  priority?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsArray()
-  @IsInt({ each: true })
-  group?: number[];
-
-  @IsOptional()
-  @Type(() => String)
-  @IsArray()
-  @IsEnum(TaskStatus, { each: true })
-  status?: TaskStatus[];
-
-  @IsOptional()
-  @IsISO8601()
-  from?: string;
-
-  @IsOptional()
-  @IsISO8601()
-  to?: string;
-}
-
-class GetTasksReqData extends PaginationQueryDto {
+class GetTasksReqData {
   @IsInt()
   userId: number;
 
+  @Type(() => Number)
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  search?: string;
+  @IsArray()
+  groupIds?: number[];
 
+  @Type(() => String)
   @IsOptional()
-  @ValidateNested()
-  @Type(() => GetTasksSortDto)
-  sort?: GetTasksSortDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => GetTasksFilterDto)
-  filter?: GetTasksFilterDto;
+  @IsArray()
+  ids?: string[];
 }
 
 class GetTasksReq {
@@ -86,20 +23,11 @@ class GetTasksReq {
   data: GetTasksReqData;
 }
 
-class GetTasksResMeta {
-  @IsBoolean()
-  nextPage: boolean;
-}
-
 class GetTasksResData {
   @Type(() => TaskDto)
   @ValidateNested({ each: true })
   @IsArray()
   items: TaskDto[];
-
-  @ValidateNested()
-  @Type(() => GetTasksResMeta)
-  meta: GetTasksResMeta;
 }
 
 class GetTasksRes {

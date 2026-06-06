@@ -8,7 +8,7 @@ const roboto = appFonts.Roboto;
 
 function AppShellProvider({ children }: PropsWithChildren) {
   return (
-    <html lang="ru" className={cn('h-full', 'antialiased', 'font-sans', roboto.variable)}>
+    <html lang="ru" className={cn('antialiased', 'font-sans', roboto.variable)}>
       <body>{children}</body>
     </html>
   );

@@ -5,6 +5,7 @@
 type GetInboxResponse {
   id: ID!
   name: String!
+  taskCount: Float!
   tasks: [TaskSchema]!
 }
 

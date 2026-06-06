@@ -2,6 +2,8 @@ import {
   GetAssignableTasksQuery,
   GetDiaryTasksHandler,
   GetDiaryTasksQuery,
+  GetTasksByRangeHandler,
+  GetTasksByRangeQuery,
   GetTasksHandler,
   GetTasksQuery,
 } from '@/modules/tasks/application/queries';
@@ -30,6 +32,7 @@ import {
   GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
+import { GoalGetTasksByRange } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -155,10 +158,31 @@ export class TasksRmqController {
 
   @MessagePattern(GoalGetTasks.pattern)
   async getTasks(@Payload() { data: payload }: GoalGetTasks.Request): Promise<GoalGetTasks.Response> {
-    const { userId, search, filter, sort, page, perPage } = payload;
+    const { userId, ids, groupIds } = payload;
 
     const tasks = await this.queryBus.execute<GetTasksQuery, ReturnHandlerType<typeof GetTasksHandler>>(
       new GetTasksQuery({
+        userId,
+        ids,
+        groupIds,
+      }),
+    );
+
+    return {
+      data: {
+        items: tasks,
+      },
+    };
+  }
+
+  @MessagePattern(GoalGetTasksByRange.pattern)
+  async getTasksByRange(
+    @Payload() { data: payload }: GoalGetTasksByRange.Request,
+  ): Promise<GoalGetTasksByRange.Response> {
+    const { userId, search, filter, sort, page, perPage } = payload;
+
+    const tasks = await this.queryBus.execute<GetTasksByRangeQuery, ReturnHandlerType<typeof GetTasksByRangeHandler>>(
+      new GetTasksByRangeQuery({
         userId,
         meta: { search, filter, sort, page, perPage },
       }),

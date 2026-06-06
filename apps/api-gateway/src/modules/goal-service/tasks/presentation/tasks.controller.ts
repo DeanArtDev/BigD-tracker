@@ -12,7 +12,7 @@ import {
   GoalFinishTask,
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
-  GoalGetTasks,
+  GoalGetTasksByRange,
   GoalReplaceTask,
   GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
@@ -84,16 +84,19 @@ export class TasksController {
     const status = query.filter?.status?.filter((i) => availableStatuses.includes(i)) ?? availableStatuses;
     const filter = { ...(query?.filter ?? {}), status };
 
-    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: {
-        userId: uid,
-        search: query.search,
-        sort: query.sort,
-        filter,
-        page: query.page,
-        perPage: query.perPage,
+    return await this.goalClient.send<GoalGetTasksByRange.Response, GoalGetTasksByRange.Request>(
+      GoalGetTasksByRange.pattern,
+      {
+        data: {
+          userId: uid,
+          search: query.search,
+          sort: query.sort,
+          filter,
+          page: query.page,
+          perPage: query.perPage,
+        },
       },
-    });
+    );
   }
 
   @Get('/diary')
@@ -131,14 +134,17 @@ export class TasksController {
     @Query() query: GetDeletedTasksQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<GetDeletedTasksRes> {
-    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: {
-        userId: uid,
-        filter: { status: [TaskStatus.DELETED] },
-        page: query.page,
-        perPage: query.perPage,
+    return await this.goalClient.send<GoalGetTasksByRange.Response, GoalGetTasksByRange.Request>(
+      GoalGetTasksByRange.pattern,
+      {
+        data: {
+          userId: uid,
+          filter: { status: [TaskStatus.DELETED] },
+          page: query.page,
+          perPage: query.perPage,
+        },
       },
-    });
+    );
   }
 
   @Get('/archived')
@@ -153,14 +159,17 @@ export class TasksController {
     @Query() query: GetArchivedTasksQuery,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<GetArchivedTasksRes> {
-    return await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: {
-        userId: uid,
-        filter: { status: [TaskStatus.ARCHIVED] },
-        page: query.page,
-        perPage: query.perPage,
+    return await this.goalClient.send<GoalGetTasksByRange.Response, GoalGetTasksByRange.Request>(
+      GoalGetTasksByRange.pattern,
+      {
+        data: {
+          userId: uid,
+          filter: { status: [TaskStatus.ARCHIVED] },
+          page: query.page,
+          perPage: query.perPage,
+        },
       },
-    });
+    );
   }
 
   @Get('/assignable')

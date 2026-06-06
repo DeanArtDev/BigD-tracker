@@ -2,7 +2,7 @@ import { Brand, DeepReadonly } from '@/shared/lib';
 
 type TaskId = Brand<string, 'TaskId'>;
 
-type TaskEntity<TData extends Record<string, unknown>> = Omit<DeepReadonly<TData>, 'id'> & {
+type BrandTask<TData extends Record<string, unknown>> = Omit<DeepReadonly<TData>, 'id'> & {
   readonly id: TaskId;
 };
 
@@ -32,4 +32,4 @@ enum TaskPriority {
 }
 
 export { TaskType, TaskActionType, TaskPriority };
-export type { TaskId, TaskEntity };
+export type { TaskId, BrandTask };

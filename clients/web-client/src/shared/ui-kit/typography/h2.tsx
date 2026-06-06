@@ -6,7 +6,7 @@ function H2({
   ...props
 }: PropsWithChildren<DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>>) {
   return (
-    <h2 className={cn('pb-2 text-xl md:text-3xl font-semibold tracking-tight wrap-break-word', className)} {...props} />
+    <h2 className={cn('text-xl md:text-3xl font-semibold tracking-tight wrap-break-word', className)} {...props} />
   );
 }
 
