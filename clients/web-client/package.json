@@ -20,10 +20,13 @@
   "dependencies": {
     "@apollo/client": "4.1.9",
     "@apollo/client-integration-nextjs": "0.14.5",
+    "@base-ui/react": "^1.4.1",
     "@big-d/exceptions": "workspace:*",
     "@hookform/resolvers": "^5.4.0",
+    "@tanstack/react-virtual": "3.14.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "dayjs": "catalog:",
     "graphql": "16.14.0",
     "graphql-ws": "6.0.8",

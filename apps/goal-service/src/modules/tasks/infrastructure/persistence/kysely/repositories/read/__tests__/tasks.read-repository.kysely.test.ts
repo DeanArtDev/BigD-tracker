@@ -163,7 +163,7 @@ describe('TasksReadRepositoryKysely', () => {
       async ({ repository, recorder }) => {
         const spec = tasksCombinators.and(TaskByUserId(9), TaskByStatus([TaskStatus.NOT_STARTED]));
 
-        await repository.getMany(spec);
+        await repository.getMany(spec, { limit: 10000 });
 
         expect(recorder.queries).toHaveLength(1);
         expectSqlQuery(recorder.queries[0], {
@@ -207,8 +207,9 @@ describe('TasksReadRepositoryKysely', () => {
           where
             ("tasks"."user_id" = $1 and "task_statuses"."name" in ($2))
           order by "id" asc
+          limit $3
         `,
-          parameters: [9, TaskStatus.NOT_STARTED],
+          parameters: [9, TaskStatus.NOT_STARTED, 10000],
         });
       },
     );

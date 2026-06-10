@@ -31,17 +31,19 @@ export class GroupsRmqController {
 
   @MessagePattern(GoalGetUserGroups.pattern)
   async getUserGroups(@Payload() { data: payload }: GoalGetUserGroups.Request): Promise<GoalGetUserGroups.Response> {
-    const { userId, cursor, sort, search, filter, limit } = payload;
+    const { userId, cursor, sort, search, limit } = payload;
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
 
+    const lastId = !Number.isNaN(parseInt(requestCursorPayload?.lastId?.toString() ?? '', 16))
+      ? Number(requestCursorPayload?.lastId)
+      : undefined;
     const groups = await this.queryBus.execute<GetUserGroupsQuery, GroupWithTasksView[]>(
-      new GetUserGroupsQuery({ userId }, { sort, search, filter, limit, lasiId: requestCursorPayload?.lastId }),
+      new GetUserGroupsQuery({ userId }, { sort, search, limit, lastId }),
     );
 
-    const { nextCursor } = this.cursorPaginationService.getNextCursor(cursor, {
+    const { nextCursor, hasNext } = this.cursorPaginationService.getNextCursor({
       sort,
       search,
-      filter,
       limit,
       lastId: groups.at(-1)?.id,
       currentPartLength: groups.length,
@@ -50,7 +52,7 @@ export class GroupsRmqController {
     return {
       data: {
         items: groups.map(GroupViewRmqMapper.fromViewToDtoWithTasks),
-        meta: { cursor: nextCursor },
+        meta: { endCursor: nextCursor, hasNextPage: hasNext },
       },
     };
   }

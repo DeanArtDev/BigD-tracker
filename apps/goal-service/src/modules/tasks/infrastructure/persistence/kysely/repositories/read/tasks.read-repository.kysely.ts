@@ -125,11 +125,19 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     });
   }
 
-  async getMany(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]> {
+  async getMany(
+    specifications: TasksSpecification,
+    params: { limit: number; sort?: SortDirection },
+    trx?: TaskTransaction,
+  ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-many.read', async () => {
       const tasks = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .where((eb) => specifications.toExpr(eb))
-        .orderBy('id', 'asc')
+        .limit(params.limit)
+        .orderBy('id', (ob) => {
+          if (params.sort === SortDirection.DESC) return ob.desc();
+          return ob.asc();
+        })
         .execute();
 
       return tasks.map((task) => {

@@ -1,6 +1,6 @@
 import { CursorPaginationQueryDto } from '@/transports/rmq/shared/dto';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { GroupDto } from './group.dto';
 
 class GetUserGroupsReqData extends CursorPaginationQueryDto {
@@ -31,7 +31,10 @@ class GetUserGroupsReq {
 class GetUserGroupsResMeta {
   @IsOptional()
   @IsString()
-  cursor?: string;
+  endCursor?: string;
+
+  @IsBoolean()
+  hasNextPage: boolean;
 }
 
 class GetUserGroupsResData {

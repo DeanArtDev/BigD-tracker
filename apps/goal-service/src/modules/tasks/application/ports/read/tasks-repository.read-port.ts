@@ -10,7 +10,11 @@ interface TasksSorting {
 }
 
 interface TasksReadRepository {
-  getMany(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskView[]>;
+  getMany(
+    specifications: TasksSpecification,
+    params: { limit: number; sort?: SortDirection },
+    trx?: TaskTransaction,
+  ): Promise<TaskView[]>;
 
   getByRange(
     specifications: TasksSpecification,

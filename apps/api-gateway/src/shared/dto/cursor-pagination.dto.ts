@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 
 class CursorPaginationQueryDto {
   @ApiPropertyOptional({
@@ -30,7 +30,11 @@ class CursorPaginationResDto {
   @Expose()
   @IsOptional()
   @IsString()
-  cursor?: string;
+  endCursor?: string;
+
+  @Expose()
+  @IsBoolean()
+  hasNextPage: boolean;
 }
 
 export { CursorPaginationQueryDto, CursorPaginationResDto };

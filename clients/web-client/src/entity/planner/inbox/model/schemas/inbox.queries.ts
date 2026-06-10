@@ -1,21 +1,27 @@
 import { gql } from '@apollo/client';
 
 const GET_INBOX_QUERY = gql`
-  query GetInbox {
+  query GetInbox($input: GetInboxTasksInput) {
     getInbox {
       id
       name
-      tasks {
-        cancelReason
-        deadline
-        description
-        endDate
-        id
-        name
-        priority
-        startDate
-        status
-        weight
+      tasks(input: $input) {
+        meta {
+          endCursor
+          hasNextPage
+        }
+        items {
+          cancelReason
+          deadline
+          description
+          endDate
+          id
+          name
+          priority
+          startDate
+          status
+          weight
+        }
       }
     }
   }

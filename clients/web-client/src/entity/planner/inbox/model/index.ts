@@ -1,3 +1,10 @@
-export { type TaskStatus, GetInboxDocument, type GetInboxQuery } from './schemas/inbox.queries.generated';
+export {
+  type TaskStatus,
+  GetInboxDocument,
+  type GetInboxQuery,
+  type GetInboxTasksInput,
+  type GetInboxQueryVariables,
+} from './schemas/inbox.queries.generated';
+export * from './inbox-initial-request-variables';
 
-export * from './use-inbox.query-suspense';
+export * from './use-inbox.query';

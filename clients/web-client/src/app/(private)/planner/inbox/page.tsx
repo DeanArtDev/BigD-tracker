@@ -1,12 +1,19 @@
 import { cookies } from 'next/headers';
+import { z } from 'zod';
 import { InboxPrefetcher } from '@/app/(private)/_prefetches';
 import { PlannerHeader } from '@/app/(private)/planner/_ui';
-import { SIDEBAR_COOKIE_NAME, Typography } from '@/shared/ui-kit';
-import { Input } from '@/shared/ui-kit/ui/input';
+import { inboxInitialRequestVariables } from '@/entity/planner/inbox';
+import { withValidatedUrlData } from '@/shared/lib/url';
+import { SIDEBAR_COOKIE_NAME } from '@/shared/ui-kit';
 import { PlannerSidebar } from '@/widget/planner/planner-sidebar';
-import { InboxTaskList } from './inbox-task-list';
+import { inboxUrlQuerySchema } from './_model/use-inbox-url-query';
+import { InboxPageWrapper } from './_ui/inbox-page-wrapper';
 
-export default async function InboxPage() {
+const pageParamsSchema = {
+  searchParams: inboxUrlQuerySchema,
+};
+
+async function Page({ searchParams }: { searchParams?: z.infer<typeof pageParamsSchema.searchParams> }) {
   const open = (await cookies()).get(SIDEBAR_COOKIE_NAME)?.value === 'true';
 
   return (
@@ -14,18 +21,20 @@ export default async function InboxPage() {
       defaultOpen={open}
       headerSlot={<PlannerHeader />}
       content={
-        <InboxPrefetcher>
-          <div className="grow grid grid-rows-[min-content_max-content_1fr] min-h-0 min-w-0 gap-3 px-8 py-5">
-            <div>
-              <Typography.H2>INBOX</Typography.H2>
-            </div>
-
-            <Input />
-
-            <InboxTaskList />
-          </div>
+        <InboxPrefetcher
+          variables={{
+            ...inboxInitialRequestVariables,
+            search: searchParams?.search,
+            status: searchParams?.status,
+            priority: searchParams?.priority?.map(Number),
+          }}
+        >
+          <InboxPageWrapper />
         </InboxPrefetcher>
       }
     />
   );
 }
+
+const InboxPage = withValidatedUrlData(pageParamsSchema, Page);
+export default InboxPage;

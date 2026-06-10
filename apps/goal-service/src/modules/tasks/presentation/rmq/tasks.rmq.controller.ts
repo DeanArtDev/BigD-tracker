@@ -37,6 +37,7 @@ import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CursorPaginationService } from '@shared/cursor-pagination';
 import { RequestContextPayloadGuard } from '@shared/request-context';
 
 @Controller()
@@ -45,6 +46,7 @@ export class TasksRmqController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly cursorPaginationService: CursorPaginationService,
   ) {}
 
   @MessagePattern(GoalCreateTask.pattern)
@@ -158,19 +160,39 @@ export class TasksRmqController {
 
   @MessagePattern(GoalGetTasks.pattern)
   async getTasks(@Payload() { data: payload }: GoalGetTasks.Request): Promise<GoalGetTasks.Response> {
-    const { userId, ids, groupIds } = payload;
+    const { userId, filter, search } = payload;
+    const { ids, groupIds, priority, status, limit, cursor } = filter ?? {};
+    const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
+
+    const requestFilter = {
+      ids,
+      groupIds,
+      priority,
+      status,
+      lastId: requestCursorPayload?.lastId?.toString(),
+    };
 
     const tasks = await this.queryBus.execute<GetTasksQuery, ReturnHandlerType<typeof GetTasksHandler>>(
       new GetTasksQuery({
         userId,
-        ids,
-        groupIds,
+        search,
+        limit,
+        filter: requestFilter,
       }),
     );
+
+    const { nextCursor, hasNext } = this.cursorPaginationService.getNextCursor({
+      search,
+      filter: requestFilter,
+      limit,
+      lastId: tasks.at(-1)?.id.toString(),
+      currentPartLength: tasks.length,
+    });
 
     return {
       data: {
         items: tasks,
+        meta: { endCursor: nextCursor, hasNextPage: hasNext },
       },
     };
   }

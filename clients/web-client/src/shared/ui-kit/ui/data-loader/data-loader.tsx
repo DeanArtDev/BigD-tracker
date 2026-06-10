@@ -1,3 +1,5 @@
+'use client';
+
 import { type PropsWithChildren, type ReactNode } from 'react';
 import { cn } from '@/shared/ui-kit';
 import { DataLoadingElement } from './data-loading-element';

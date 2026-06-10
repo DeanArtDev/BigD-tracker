@@ -1,5 +1,7 @@
+'use client';
+
 import { Repeat2, Timer } from 'lucide-react';
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode, Ref } from 'react';
 import { TaskDomain, TaskId } from '@/entity/planner/tasks';
 import { TaskStatus } from '@/entity/schema-types';
 import { TimeHelper } from '@/shared/lib/time';
@@ -17,6 +19,8 @@ interface TaskCardProps {
   readonly repeatable?: boolean;
 
   readonly afterHeaderSlot?: ReactNode;
+  readonly ref?: Ref<HTMLDivElement>;
+  readonly style?: CSSProperties;
 
   readonly onHeaderClick?: () => void;
   readonly onContentClick?: () => void;
@@ -27,6 +31,8 @@ function TaskCard(props: TaskCardProps) {
     id,
     name,
     priority,
+    style,
+    ref,
     status,
     repeatable = false,
     deadline,
@@ -42,6 +48,8 @@ function TaskCard(props: TaskCardProps) {
 
   return (
     <Card
+      ref={ref}
+      style={style}
       className="task-card p-3 relative hover:shadow"
       onClick={(evt) => {
         if (onContentClick != null) {
