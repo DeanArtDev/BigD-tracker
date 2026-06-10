@@ -31,5 +31,25 @@ enum TaskPriority {
   DELETE = 4, // Неважно и Несрочно → Удали
 }
 
-export { TaskType, TaskActionType, TaskPriority };
+enum TaskRecurrenceFrequency {
+  YEARLY = 0,
+  MONTHLY = 1,
+  WEEKLY = 2,
+  DAILY = 3,
+  HOURLY = 4,
+  MINUTELY = 5,
+  SECONDLY = 6,
+}
+
+enum TaskRecurrenceWeekday {
+  MO = 0,
+  TU = 1,
+  WE = 2,
+  TH = 3,
+  FR = 4,
+  SA = 5,
+  SU = 6,
+}
+
+export { TaskType, TaskActionType, TaskPriority, TaskRecurrenceWeekday, TaskRecurrenceFrequency };
 export type { TaskId, BrandTask };

@@ -75,6 +75,13 @@ const TaskBySearch = (search: string) =>
       }),
   });
 
+const TaskBeforeId = (taskId: number) =>
+  leaf({
+    key: 'tasks.beforeId',
+    purpose: 'filter',
+    toExpr: (eb) => eb('tasks.id', '<', taskId),
+  });
+
 export {
   TaskByIds,
   TaskByUserId,
@@ -83,6 +90,7 @@ export {
   TaskBySearch,
   TaskByStatus,
   TaskInGroup,
+  TaskBeforeId,
   TaskByStartDateLessOrEqual,
   TaskByDeadlineGreaterOrEqual,
 };

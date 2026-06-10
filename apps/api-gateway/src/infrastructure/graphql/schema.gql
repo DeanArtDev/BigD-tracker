@@ -2,11 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type GetInboxMeta {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
 type GetInboxResponse {
   id: ID!
   name: String!
   taskCount: Float!
-  tasks: [TaskSchema]!
+  tasks(input: GetInboxTasksInput): TasksConnection!
+}
+
+input GetInboxTasksInput {
+  cursor: String
+  limit: Float!
+  priority: [Float!]
+  search: String
+  status: [TaskStatus!]
 }
 
 input LoginUserInput {
@@ -52,7 +65,7 @@ type TaskSchema {
   weight: Float!
 }
 
-"""Статусы дела"""
+"""Статус задачи"""
 enum TaskStatus {
   ARCHIVED
   CANCELED
@@ -61,4 +74,9 @@ enum TaskStatus {
   IN_PROGRESS
   NOT_STARTED
   OVERDUE
+}
+
+type TasksConnection {
+  items: [TaskSchema!]!
+  meta: GetInboxMeta!
 }

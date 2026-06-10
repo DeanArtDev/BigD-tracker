@@ -34,7 +34,7 @@ export class GetAssignableTasksHandler implements IQueryHandler<GetAssignableTas
         TaskBySearch(search),
       );
 
-      return this.tasksReadRepository.getMany(specifications, trx);
+      return this.tasksReadRepository.getMany(specifications, { limit: 10000 }, trx);
     });
   }
 }

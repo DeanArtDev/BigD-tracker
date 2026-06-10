@@ -2,6 +2,7 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
+
 import { cn } from '@/shared/ui-kit/lib/utils';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Input } from '@/shared/ui-kit/ui/input';

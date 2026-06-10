@@ -9,12 +9,30 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export type GetInboxMeta = {
+  __typename?: 'GetInboxMeta';
+  endCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+};
+
 export type GetInboxResponse = {
   __typename?: 'GetInboxResponse';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   taskCount: Scalars['Float']['output'];
-  tasks: Array<Maybe<TaskSchema>>;
+  tasks: TasksConnection;
+};
+
+export type GetInboxResponseTasksArgs = {
+  input?: InputMaybe<GetInboxTasksInput>;
+};
+
+export type GetInboxTasksInput = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit: Scalars['Float']['input'];
+  priority?: InputMaybe<Array<Scalars['Float']['input']>>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Array<TaskStatus>>;
 };
 
 export type LoginUserInput = {
@@ -66,7 +84,7 @@ export type TaskSchema = {
   weight: Scalars['Float']['output'];
 };
 
-/** Статусы дела */
+/** Статус задачи */
 export enum TaskStatus {
   Archived = 'ARCHIVED',
   Canceled = 'CANCELED',
@@ -76,3 +94,9 @@ export enum TaskStatus {
   NotStarted = 'NOT_STARTED',
   Overdue = 'OVERDUE',
 }
+
+export type TasksConnection = {
+  __typename?: 'TasksConnection';
+  items: Array<TaskSchema>;
+  meta: GetInboxMeta;
+};

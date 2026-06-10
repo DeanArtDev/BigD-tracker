@@ -1,11 +1,10 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { TaskSchema } from '@/modules/goal-service/tasks';
 import { GoalGetGroupInBox, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Query, Resolver, ResolveField, Parent } from '@nestjs/graphql';
-import { GetInboxResponse } from '../schemas';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { GetInboxResponse, GetInboxTasksInput, TasksConnection } from '../schemas';
 
 @Resolver(() => GetInboxResponse)
 export class GroupsResolver {
@@ -21,11 +20,30 @@ export class GroupsResolver {
     return data;
   }
 
-  @ResolveField(() => [TaskSchema], { nullable: 'items' })
-  async tasks(@TokenPayload() { uid }: AccessTokenPayload, @Parent() inboxResponse: GetInboxResponse) {
+  @ResolveField(() => TasksConnection)
+  async tasks(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Parent() inboxResponse: GetInboxResponse,
+    @Args('input', { nullable: true }) input?: GetInboxTasksInput,
+  ): Promise<TasksConnection> {
+    const { status, limit = 10000, cursor, search, priority } = input ?? {};
+
     const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: { userId: uid, groupIds: [inboxResponse.id] },
+      data: {
+        userId: uid,
+        search,
+        filter: {
+          groupIds: [inboxResponse.id],
+          limit,
+          cursor,
+          status,
+          priority,
+        },
+      },
     });
-    return data.items;
+    return {
+      items: data.items,
+      meta: data.meta,
+    };
   }
 }

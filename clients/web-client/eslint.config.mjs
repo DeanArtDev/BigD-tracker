@@ -15,9 +15,6 @@ export default defineConfig([
         'error',
         {
           groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-
-          // ВАЖНО: убираем отдельную группу type
-
           pathGroups: [
             {
               pattern: '@/**',
@@ -39,5 +36,5 @@ export default defineConfig([
     },
   },
 
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'src/**/*.generated.ts']),
 ]);

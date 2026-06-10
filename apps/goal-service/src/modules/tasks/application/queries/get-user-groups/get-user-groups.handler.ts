@@ -32,7 +32,7 @@ export class GetUserGroupsHandler implements IQueryHandler<GetUserGroupsQuery> {
           ...compact([
             GroupByUserId(input.userId),
             meta?.search && GroupBySearch(meta.search),
-            meta?.lasiId && GroupAfterId(meta.lasiId),
+            meta?.lastId && GroupAfterId(meta.lastId),
             groupsCombinators.not(GroupInbox()),
           ]),
         ),
