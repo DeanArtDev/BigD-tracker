@@ -16,6 +16,7 @@ function ToasterProvider() {
       <Toaster
         className="app-toaster z-51 pointer-events-auto"
         richColors
+        toastOptions={{ closeButton: true }}
         position={isMobile ? 'bottom-center' : 'top-center'}
       />
     </DismissableLayerBranch>,

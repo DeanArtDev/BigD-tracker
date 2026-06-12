@@ -10,20 +10,44 @@ function TaskFormErrorReactor() {
   const { subscribe } = useFormContext<TaskFormData>();
 
   useEffect(() => {
-    return subscribe({
+    const toastIds = new Map<string, string | number>();
+
+    const unsubscribe = subscribe({
       formState: { errors: true },
       callback: (data) => {
-        const err = Array.from(Object.values(data.errors ?? {})).find((e) => e.message != null);
+        const errors = Array.from(Object.values(data.errors ?? {})).filter((e) => e.message != null);
 
-        if (!isEmpty(err)) {
-          toast.warning(err.message, {
-            position: 'top-center',
-            duration: 15000,
-            closeButton: true,
-          });
+        for (const error of errors) {
+          if (!isEmpty(error)) {
+            if (toastIds.get(error.message ?? '') != null) return;
+
+            const currentId = toast.warning(error.message, {
+              duration: 10000,
+              onAutoClose: () => {
+                const exist = toastIds.get(error.message ?? '');
+                toast.dismiss(exist);
+                toastIds.delete(error.message ?? '');
+              },
+
+              onDismiss: () => {
+                const exist = toastIds.get(error.message ?? '');
+                toast.dismiss(exist);
+                toastIds.delete(error.message ?? '');
+              },
+            });
+            toastIds.set(error.message ?? '', currentId);
+          }
         }
       },
     });
+
+    return () => {
+      toastIds.entries().forEach(([, toastId]) => {
+        toast.dismiss(+toastId);
+      });
+      toastIds.clear();
+      unsubscribe();
+    };
   }, [subscribe]);
 
   return null;

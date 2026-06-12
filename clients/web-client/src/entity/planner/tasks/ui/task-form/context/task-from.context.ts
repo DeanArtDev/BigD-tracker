@@ -6,6 +6,7 @@ import { TaskFormData, TaskSubmitFormData } from './task-form-schema';
 
 interface TaskFromContext {
   readonly formId: string;
+  readonly resetToInit: () => void;
   readonly fieldVisibility?: {
     readonly groupSelection?: boolean;
   };

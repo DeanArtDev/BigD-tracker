@@ -41,7 +41,6 @@ function InfinityScroll({
       trackVisibility: true,
       delay: 100,
       rootMargin: `0px 0px ${bottomGap}px 0px`,
-      // eslint-disable-next-line react-hooks/refs
       root: rootRef.current,
     },
   );

@@ -11,10 +11,11 @@ import { TaskDomain } from '../../../model';
 const taskFormSchema = z
   .object({
     name: z
-      .string({ error: 'Обязательное поле' })
-      .min(3, { error: 'Не меньше 3 символов' })
+      .string({ error: 'Имя обязательное поле' })
+      .min(3, { error: 'Имя должно иметь не меньше 3 символов' })
       .max(254, { error: 'Слишком длинное имя' }),
 
+    isDescriptionDirty: z.boolean(),
     description: z.string().optional().transform(transformToPlaceholder.optional),
 
     priority: z

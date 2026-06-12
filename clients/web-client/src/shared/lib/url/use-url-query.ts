@@ -89,7 +89,6 @@ function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(
     }
   }, [pathname, queryString]);
 
-  // eslint-disable-next-line react-hooks/refs
   const withDefault = firstResponse.current ? defaultInitRef.current : currentQuery;
   return defaultInit == null ? currentQuery : withDefault;
 }
