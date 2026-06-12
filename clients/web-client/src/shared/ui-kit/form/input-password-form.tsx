@@ -3,6 +3,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { ComponentProps, ReactNode, useState } from 'react';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
+import { formElementsValues } from './form-schema-utils';
 import { Button } from '../ui/button';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
@@ -14,6 +15,7 @@ interface InputPasswordFormProps<FormValues extends FieldValues = FieldValues> e
 > {
   readonly name: Path<FormValues>;
   readonly required?: boolean;
+  readonly isErrorMessage?: boolean;
   readonly label?: ReactNode;
   readonly classNames?: {
     readonly label?: string;
@@ -23,7 +25,7 @@ interface InputPasswordFormProps<FormValues extends FieldValues = FieldValues> e
 }
 
 function InputPasswordForm<FormValues extends FieldValues = FieldValues>(props: InputPasswordFormProps<FormValues>) {
-  const { name, label, classNames, ...inputProps } = props;
+  const { name, label, classNames, isErrorMessage, ...inputProps } = props;
   const [visible, setVisible] = useState(false);
   const context = useFormContext<FormValues>();
 
@@ -44,8 +46,9 @@ function InputPasswordForm<FormValues extends FieldValues = FieldValues>(props: 
               aria-invalid={fieldState.invalid}
               className={classNames?.input}
               {...context.register(name, {
-                setValueAs: (v) => (v == '' || v == null ? undefined : v),
-                onChange: (evt) => (evt.target.value.trim() === '' ? null : evt.target.value),
+                setValueAs: (v) => (v == '' || v == null ? formElementsValues.inputPassword.value : v),
+                onChange: (evt) =>
+                  evt.target.value.trim() === '' ? formElementsValues.inputPassword.changeResult : evt.target.value,
               })}
             />
 
@@ -64,7 +67,7 @@ function InputPasswordForm<FormValues extends FieldValues = FieldValues>(props: 
             </InputGroupAddon>
           </InputGroup>
 
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          {isErrorMessage && <FieldError errors={[fieldState.error]} />}
         </Field>
       )}
     />

@@ -3,8 +3,8 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Slot } from 'radix-ui';
 import * as React from 'react';
+import { useIsMobile } from '@/shared/lib/application-status';
 
-import { useIsMobile } from '@/shared/ui-kit/hooks/use-mobile';
 import { cn } from '@/shared/ui-kit/lib/utils';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { Input } from '@/shared/ui-kit/ui/input';

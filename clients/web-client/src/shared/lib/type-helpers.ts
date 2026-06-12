@@ -2,6 +2,8 @@ type Override<T, TOverrides> = Omit<T, keyof TOverrides> & TOverrides;
 
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+type MaybePromise<T> = T | Promise<T>;
+
 type ValueOf<Type> = Type[keyof Type];
 
 type DeepPartial<T> = {
@@ -28,4 +30,4 @@ type Brand<T, TBrand extends string> = T & {
   readonly __brand: TBrand;
 };
 
-export type { HasId, Override, ValueOf, Nullable, DeepPartial, MakeOptional, DeepReadonly, Brand };
+export type { HasId, Override, ValueOf, Nullable, DeepPartial, MakeOptional, DeepReadonly, Brand, MaybePromise };

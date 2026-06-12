@@ -1,8 +1,11 @@
+'use client';
+
 import { Header } from '@/app/(private)/_ui/header';
-import { applicationNavPaths } from '@/app/(private)/planner/_model';
 import { ApplicationSelector } from '@/shared/project-ui';
 import { Separator } from '@/shared/ui-kit';
 import { UserSettings } from '@/widget/user-settings';
+import { applicationNavPaths } from '../_model';
+import { TaskCreationDialog } from '../inbox/_ui/task-creation-dialog';
 
 function PlannerHeader() {
   return (
@@ -12,6 +15,7 @@ function PlannerHeader() {
           <Separator orientation="vertical" />
           <ApplicationSelector className="mr-auto" items={applicationNavPaths} />
 
+          <TaskCreationDialog />
           <UserSettings />
         </div>
       }

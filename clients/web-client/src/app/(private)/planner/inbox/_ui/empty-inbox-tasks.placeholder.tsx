@@ -1,6 +1,8 @@
+'use client';
+
 import { Inbox } from 'lucide-react';
 import { ReactNode } from 'react';
-import { Typography } from '@/shared/ui-kit';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui-kit';
 
 type EmptyTasksPlaceholderProps = {
   readonly title?: string;
@@ -15,13 +17,15 @@ function EmptyTasksPlaceholder({
 }: EmptyTasksPlaceholderProps) {
   return (
     <div className="flex min-h-[460px] w-full items-center justify-center px-4">
-      <div className="flex flex-col items-center text-center">
-        <div className="mb-4 flex size-[70px] items-center justify-center rounded-full bg-muted">{icon}</div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia className="size-15 rounded-xl bg-muted">{icon}</EmptyMedia>
 
-        <Typography.H3>{title}</Typography.H3>
+          <EmptyTitle>{title}</EmptyTitle>
 
-        <Typography.Muted className="mt-4 max-w-[280px]">{description}</Typography.Muted>
-      </div>
+          <EmptyDescription className="max-w-[280px] text-pretty">{description}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     </div>
   );
 }
