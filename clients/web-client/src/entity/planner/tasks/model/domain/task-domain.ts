@@ -7,7 +7,7 @@ import { TaskIdParser } from './taks-id-parser';
 import { TaskActionType, TaskId, TaskType } from './task';
 
 class TaskDomain {
-  static dateToTaskStandard = (date: string): string => {
+  static dateToTaskStandard = (date: string | Date): string => {
     return timeAndDate(date).format('YYYY-MM-DDTHH:mm');
   };
 

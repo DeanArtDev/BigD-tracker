@@ -2,6 +2,7 @@
 
 import type { ComponentProps } from 'react';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
+import { formElementsValues } from './form-schema-utils';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 
@@ -11,6 +12,7 @@ interface InputFormProps<FormValues extends FieldValues = FieldValues> extends O
 > {
   readonly name: Path<FormValues>;
   readonly label?: string;
+  readonly isErrorMessage?: boolean;
   readonly classNames?: {
     readonly label?: string;
     readonly wrapper?: string;
@@ -19,7 +21,7 @@ interface InputFormProps<FormValues extends FieldValues = FieldValues> extends O
 }
 
 function InputForm<FormValues extends FieldValues = FieldValues>(props: InputFormProps<FormValues>) {
-  const { name, label, classNames, ...inputProps } = props;
+  const { name, label, classNames, isErrorMessage, ...inputProps } = props;
 
   const context = useFormContext<FormValues>();
 
@@ -37,11 +39,12 @@ function InputForm<FormValues extends FieldValues = FieldValues>(props: InputFor
             aria-invalid={fieldState.invalid}
             className={classNames?.input}
             {...context.register(name, {
-              setValueAs: (v) => (v == '' || v == null ? undefined : v),
-              onChange: (evt) => (evt.target.value.trim() === '' ? null : evt.target.value),
+              setValueAs: (v) => (v == '' || v == null ? formElementsValues.inputText.value : v),
+              onChange: (evt) =>
+                evt.target.value.trim() === '' ? formElementsValues.inputText.changeResult : evt.target.value,
             })}
           />
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          {isErrorMessage && <FieldError errors={[fieldState.error]} />}
         </Field>
       )}
     />

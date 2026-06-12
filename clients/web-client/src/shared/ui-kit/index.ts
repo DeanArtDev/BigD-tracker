@@ -26,5 +26,12 @@ export * from './ui/multi-select';
 export * from './ui/toggle-group';
 export * from './ui/input';
 export * from './ui/input-group';
+export * from './ui/dialog';
+export * from './ui/field';
+export * from './ui/textarea';
+export * from './ui/empty';
+export * from './ui/calendar';
+export * from './ui/select';
+export * from './ui/alert-dialog';
 
 export * from './lib/utils';

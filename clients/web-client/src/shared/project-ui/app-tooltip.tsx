@@ -1,6 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react';
-import { cn } from '@/shared/ui-kit';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit/ui/tooltip';
+import { cn, Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit';
 
 interface AppTooltipProps extends ComponentProps<typeof Tooltip> {
   readonly asChild?: boolean;
