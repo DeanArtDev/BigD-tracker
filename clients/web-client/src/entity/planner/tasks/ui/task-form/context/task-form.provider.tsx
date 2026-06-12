@@ -7,11 +7,16 @@ import { TaskFormData, TaskPriority } from '@/entity/planner/tasks';
 import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
 
+const defaultVisibility: TaskFromContext['fieldVisibility'] = {
+  groupSelection: true,
+};
+
 type TaskFormProviderProps = PropsWithChildren<{
   readonly loading?: boolean;
+  readonly fieldVisibility?: TaskFromContext['fieldVisibility'];
 }>;
 
-function TaskFormProvider({ loading, children }: TaskFormProviderProps) {
+function TaskFormProvider({ loading, fieldVisibility = {}, children }: TaskFormProviderProps) {
   const formId = useId();
 
   const form = useForm<TaskFormData, unknown, TaskSubmitFormData>({
@@ -29,7 +34,12 @@ function TaskFormProvider({ loading, children }: TaskFormProviderProps) {
     },
   });
 
-  const value = useMemo<TaskFromContext>(() => ({ formId }), [formId]);
+  const { groupSelection = defaultVisibility?.groupSelection } = fieldVisibility;
+
+  const value = useMemo<TaskFromContext>(
+    () => ({ formId, fieldVisibility: { groupSelection } }),
+    [formId, groupSelection],
+  );
 
   return (
     <FormProvider {...form}>

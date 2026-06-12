@@ -4,7 +4,9 @@ export {
   type GetInboxQuery,
   type GetInboxTasksInput,
   type GetInboxQueryVariables,
-} from './schemas/inbox.queries.generated';
+} from './schemas/inbox.schema.generated';
 export * from './inbox-initial-request-variables';
+
+export * from './invalidators/invalidate-inbox-tasks';
 
 export * from './use-inbox.query';

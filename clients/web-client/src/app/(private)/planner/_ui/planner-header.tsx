@@ -1,13 +1,13 @@
 'use client';
 
+import { ReactNode } from 'react';
 import { Header } from '@/app/(private)/_ui/header';
 import { ApplicationSelector } from '@/shared/project-ui';
 import { Separator } from '@/shared/ui-kit';
 import { UserSettings } from '@/widget/user-settings';
 import { applicationNavPaths } from '../_model';
-import { TaskCreationDialog } from '../inbox/_ui/task-creation-dialog';
 
-function PlannerHeader() {
+function PlannerHeader({ content }: { content?: ReactNode }) {
   return (
     <Header
       content={
@@ -15,7 +15,7 @@ function PlannerHeader() {
           <Separator orientation="vertical" />
           <ApplicationSelector className="mr-auto" items={applicationNavPaths} />
 
-          <TaskCreationDialog />
+          {content}
           <UserSettings />
         </div>
       }

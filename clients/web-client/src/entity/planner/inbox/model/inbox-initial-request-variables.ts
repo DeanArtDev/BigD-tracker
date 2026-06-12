@@ -1,4 +1,4 @@
-import { GetInboxQueryVariables } from './schemas/inbox.queries.generated';
+import { GetInboxQueryVariables } from './schemas/inbox.schema.generated';
 
 const inboxInitialRequestVariables: {
   limit: NonNullable<GetInboxQueryVariables['input']>['limit'];

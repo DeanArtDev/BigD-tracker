@@ -5,13 +5,13 @@ import { GetSidebarInfoQueryDocument, GetSidebarInfoQueryQuery } from './schemas
 function useSidebarInfoQuerySuspense() {
   const result = useSuspenseQuery<GetSidebarInfoQueryQuery>(GetSidebarInfoQueryDocument, {
     context: { endpoint: 'private' },
-    errorPolicy: 'ignore',
   });
 
   return {
     ...result,
     data: {
-      inboxCount: result.data?.getInbox.taskCount,
+      id: result.data.getInbox?.id,
+      inboxCount: result.data.getInbox.taskCount,
     },
     ...useExtendApolloErrorResult(result.error),
   };

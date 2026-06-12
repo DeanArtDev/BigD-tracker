@@ -17,7 +17,12 @@ const taskFormSchema = z
 
     description: z.string().optional().transform(transformToPlaceholder.optional),
 
-    priority: z.enum(taskPriorityEnumSchema).transform(transformPrimitive.toNumber),
+    priority: z
+      .enum(taskPriorityEnumSchema)
+      .transform((value) => parseInt(value, 10))
+      .refine((value) => !Number.isNaN(value), {
+        error: `Невалидное значение приоритета`,
+      }),
 
     groupId: z.coerce
       .number()

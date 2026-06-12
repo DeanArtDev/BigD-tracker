@@ -6,9 +6,9 @@ interface ButtonLoadingProps extends ComponentProps<typeof Button> {
   readonly loading: boolean;
 }
 
-function ButtonLoading({ loading, children, ...props }: ButtonLoadingProps) {
+function ButtonLoading({ loading, children, disabled, ...props }: ButtonLoadingProps) {
   return (
-    <Button {...props} disabled={loading}>
+    <Button {...props} disabled={loading || disabled}>
       {loading && <Spinner data-icon="inline-start" />}
       {children}
     </Button>

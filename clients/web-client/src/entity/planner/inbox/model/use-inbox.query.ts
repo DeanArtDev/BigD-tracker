@@ -5,7 +5,7 @@ import { BrandTask, TaskPriority } from '@/entity/planner/tasks';
 import { TaskStatus } from '@/entity/schema-types';
 import { Override } from '@/shared/lib';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
-import { GetInboxDocument, GetInboxQuery, GetInboxQueryVariables } from './schemas/inbox.queries.generated';
+import { GetInboxDocument, GetInboxQuery, GetInboxQueryVariables } from './schemas/inbox.schema.generated';
 
 type InboxTaskDto = NonNullable<NonNullable<GetInboxQuery['getInbox']['tasks']>['items'][number]>;
 type InboxTask = BrandTask<Override<InboxTaskDto, { priority: TaskPriority }>>;
@@ -28,7 +28,7 @@ type GetInboxResponse = Override<
   }
 >;
 
-function useInboxQuery(params: {
+function useInboxQuery(params?: {
   search?: string;
   filter?: {
     status?: TaskStatus[];
@@ -40,9 +40,9 @@ function useInboxQuery(params: {
     variables: {
       input: {
         ...inboxInitialRequestVariables,
-        search: params.search,
-        status: params.filter?.status,
-        priority: params.filter?.priority,
+        search: params?.search,
+        status: params?.filter?.status,
+        priority: params?.filter?.priority,
       },
     },
     errorPolicy: 'all',
