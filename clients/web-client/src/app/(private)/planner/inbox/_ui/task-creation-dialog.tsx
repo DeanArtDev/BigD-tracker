@@ -21,8 +21,14 @@ function Component({ onSubmit }: ComponentProps) {
   const [open, setOpen] = useState(false);
   const { confirmHolder, viaConfirmation } = useConfirmDialog();
   const {
+    resetToInit,
     formState: { isDirty },
   } = useTaskFromContext();
+
+  const close = () => {
+    setOpen(false);
+    resetToInit();
+  };
 
   return (
     <>
@@ -35,22 +41,17 @@ function Component({ onSubmit }: ComponentProps) {
             Создать
           </Button>
         }
-        content={
-          <TaskForm
-            className="px-4 py-2"
-            onSubmit={(taskFormData) => void onSubmit(taskFormData, () => void setOpen(false))}
-          />
-        }
+        content={<TaskForm className="px-4 py-2" onSubmit={(taskFormData) => void onSubmit(taskFormData, close)} />}
         footer={<Footer />}
         onOpenChange={(value) => {
           if (!value && isDirty) {
             viaConfirmation({
               isNeedConfirm: () => isDirty,
-              callback: () => void setOpen(value),
+              callback: close,
               dialog: { title: 'Закрыть?', content: 'Не сохраненные данные будут потеряны!' },
             });
           } else {
-            setOpen(value);
+            value ? setOpen(true) : close();
           }
         }}
       />
@@ -67,8 +68,10 @@ function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePro
     <TaskFormProvider loading={loading} fieldVisibility={{ groupSelection: false }}>
       <Component
         onSubmit={async (taskFormData, close) => {
+          const { name, description, deadline, startDate, priority } = taskFormData;
+
           await createTask({
-            variables: { input: { ...taskFormData, groupId: props.groupId } },
+            variables: { input: { name, description, deadline, startDate, priority, groupId: props.groupId } },
             async onCompleted() {
               await props.onSuccess();
               close();

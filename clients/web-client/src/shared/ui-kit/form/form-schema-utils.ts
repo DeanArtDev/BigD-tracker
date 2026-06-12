@@ -14,6 +14,7 @@ const formElementsValues = {
   toggleGroups: { value: '', changeResult: null },
   toggleGroupsMulti: { value: [], changeResult: [] },
   datePicker: { value: null, changeResult: null },
+  wysiwyg: { value: undefined, changeResult: undefined },
   select: { value: '' },
 };
 

@@ -1,14 +1,24 @@
 'use client';
 
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
-import { type PropsWithChildren, useId, useMemo } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { type PropsWithChildren, useCallback, useId, useMemo } from 'react';
+import { DefaultValues, FormProvider, useForm } from 'react-hook-form';
 import { TaskFormData, TaskPriority } from '@/entity/planner/tasks';
 import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
 
 const defaultVisibility: TaskFromContext['fieldVisibility'] = {
   groupSelection: true,
+};
+
+const defaultValues: DefaultValues<TaskFormData> = {
+  name: undefined,
+  priority: TaskPriority.DELETE.toString(),
+  description: undefined,
+  deadline: undefined,
+  startDate: undefined,
+  groupId: undefined,
+  isDescriptionDirty: false,
 };
 
 type TaskFormProviderProps = PropsWithChildren<{
@@ -24,21 +34,22 @@ function TaskFormProvider({ loading, fieldVisibility = {}, children }: TaskFormP
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     disabled: loading,
-    defaultValues: {
-      name: undefined,
-      priority: TaskPriority.DELETE.toString(),
-      description: undefined,
-      deadline: undefined,
-      startDate: undefined,
-      groupId: undefined,
-    },
+    defaultValues,
   });
 
   const { groupSelection = defaultVisibility?.groupSelection } = fieldVisibility;
+  const resetToInit = useCallback(() => {
+    void form.reset(undefined, {
+      keepDirty: false,
+      keepValues: false,
+      keepErrors: false,
+      keepDirtyValues: false,
+    });
+  }, [form]);
 
   const value = useMemo<TaskFromContext>(
-    () => ({ formId, fieldVisibility: { groupSelection } }),
-    [formId, groupSelection],
+    () => ({ formId, resetToInit, fieldVisibility: { groupSelection } }),
+    [formId, groupSelection, resetToInit],
   );
 
   return (
@@ -48,4 +59,4 @@ function TaskFormProvider({ loading, fieldVisibility = {}, children }: TaskFormP
   );
 }
 
-export { TaskFormProvider, type TaskFormProviderProps };
+export { TaskFormProvider, type TaskFormProviderProps, defaultValues };

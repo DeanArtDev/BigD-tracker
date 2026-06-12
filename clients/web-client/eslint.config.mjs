@@ -11,6 +11,7 @@ export default defineConfig([
 
   {
     rules: {
+      'react-hooks/refs': 'off',
       'import/order': [
         'error',
         {

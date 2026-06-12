@@ -2,8 +2,10 @@
 
 import { useTaskFromContext } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
+import { useWysiwygController } from '@/shared/project-ui';
+import { WysiwygForm } from '@/shared/project-ui/form';
 import { cn } from '@/shared/ui-kit';
-import { InputForm, TextareaForm } from '@/shared/ui-kit/form';
+import { InputForm } from '@/shared/ui-kit/form';
 import { TaskFormErrorReactor } from './components/task-form-error-reactor';
 import { TaskFormParamsSettings } from './components/task-form-params-settings';
 import { TaskFormData, TaskSubmitFormData } from './context/task-form-schema';
@@ -14,7 +16,8 @@ interface TaskFormProps {
 }
 
 function TaskForm({ className, onSubmit }: TaskFormProps) {
-  const { formId, handleSubmit } = useTaskFromContext();
+  const { formId, handleSubmit, setValue } = useTaskFromContext();
+  const { wysiwygController } = useWysiwygController();
 
   return (
     <>
@@ -27,17 +30,21 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
           evt.stopPropagation();
 
           handleSubmit(async (formData) => {
-            await onSubmit(formData);
+            const description = wysiwygController.current?.getStateAsString?.();
+            await onSubmit({ ...formData, description });
           })(evt);
         }}
       >
         <InputForm name="name" label="Имя" placeholder="Например, 10 раз отжаться!" isErrorMessage={false} />
 
-        <TextareaForm
+        <WysiwygForm
           name="description"
-          label="Описание"
-          classNames={{ textarea: 'resize-none h-75' }}
+          classNames={{ wrapper: 'border rounded-xl h-120' }}
           placeholder="Добавь детали, контекст и ожидаемый результат."
+          wysiwygController={wysiwygController}
+          onDirtyChange={(isDirty) => {
+            setValue('isDescriptionDirty', isDirty, { shouldDirty: true });
+          }}
         />
 
         <TaskFormParamsSettings />
