@@ -27,8 +27,10 @@ const inboxTasksItemsPolicy: FieldPolicy<
     const hasCache = existing?.items != null;
 
     return {
+      ...incoming,
       items,
       meta: {
+        ...incoming.meta,
         hasNextPage: isInitialRequest && hasCache ? existing.meta.hasNextPage : incoming.meta.hasNextPage,
         endCursor: isInitialRequest && hasCache ? existing.meta.endCursor : incoming.meta.endCursor,
       },

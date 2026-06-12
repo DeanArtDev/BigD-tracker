@@ -2,13 +2,19 @@
 
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { TaskForm, TaskFormProvider, TaskSubmitFormData, useTaskFromContext } from '@/entity/planner/tasks';
+import {
+  TaskForm,
+  TaskFormProvider,
+  TaskSubmitFormData,
+  useTaskCreate,
+  useTaskFromContext,
+} from '@/entity/planner/tasks';
 import { MaybePromise, useConfirmDialog } from '@/shared/lib';
 import { AppDialog } from '@/shared/project-ui';
-import { Button } from '@/shared/ui-kit';
+import { Button, ButtonLoading } from '@/shared/ui-kit';
 
 interface ComponentProps {
-  readonly onSubmit: (taskFormData: TaskSubmitFormData) => MaybePromise<void>;
+  readonly onSubmit: (taskFormData: TaskSubmitFormData, close: () => void) => MaybePromise<void>;
 }
 
 function Component({ onSubmit }: ComponentProps) {
@@ -29,7 +35,12 @@ function Component({ onSubmit }: ComponentProps) {
             Создать
           </Button>
         }
-        content={<TaskForm className="px-4 py-2" onSubmit={console.log} />}
+        content={
+          <TaskForm
+            className="px-4 py-2"
+            onSubmit={(taskFormData) => void onSubmit(taskFormData, () => void setOpen(false))}
+          />
+        }
         footer={<Footer />}
         onOpenChange={(value) => {
           if (!value && isDirty) {
@@ -49,22 +60,34 @@ function Component({ onSubmit }: ComponentProps) {
   );
 }
 
-function TaskCreationDialog() {
+function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePromise<void> }) {
+  const { loading, createTask } = useTaskCreate();
+
   return (
-    <TaskFormProvider>
-      <Component onSubmit={console.log} />
+    <TaskFormProvider loading={loading} fieldVisibility={{ groupSelection: false }}>
+      <Component
+        onSubmit={async (taskFormData, close) => {
+          await createTask({
+            variables: { input: { ...taskFormData, groupId: props.groupId } },
+            async onCompleted() {
+              await props.onSuccess();
+              close();
+            },
+          });
+        }}
+      />
     </TaskFormProvider>
   );
 }
 
 function Footer() {
-  const { formId } = useTaskFromContext();
+  const { formId, formState } = useTaskFromContext();
 
   return (
     <div>
-      <Button form={formId} type="submit">
+      <ButtonLoading form={formId} loading={formState.isLoading} disabled={formState.disabled} type="submit">
         Сохранить
-      </Button>
+      </ButtonLoading>
     </div>
   );
 }

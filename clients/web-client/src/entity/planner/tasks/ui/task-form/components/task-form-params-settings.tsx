@@ -2,6 +2,7 @@
 
 import { ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
+import { useTaskFromContext } from '@/entity/planner/tasks';
 import { Button, cn, Collapsible, CollapsibleContent, CollapsibleTrigger, Typography } from '@/shared/ui-kit';
 import { DateAndTimePicker } from './date-and-time-picker';
 import { Group } from './group';
@@ -9,9 +10,15 @@ import { Priority } from './priority';
 
 function TaskFormParamsSettings() {
   const [isOpen, setIsOpen] = useState(false);
+  const { formState } = useTaskFromContext();
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="flex flex-col bg-muted rounded-md">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      disabled={formState.disabled}
+      className="flex flex-col bg-muted rounded-md"
+    >
       <CollapsibleTrigger asChild>
         <Button className="justify-between" variant="ghost">
           <Typography.Muted className="text-xs">Параметры</Typography.Muted>

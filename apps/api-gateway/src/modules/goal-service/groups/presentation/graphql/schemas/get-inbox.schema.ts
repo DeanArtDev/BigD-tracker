@@ -1,16 +1,11 @@
 import { TaskSchema } from '@/modules/goal-service/tasks';
 import { TaskStatus } from '@big-d/api-contracts';
-import { Field, ID, InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, Int, InputType, ObjectType } from '@nestjs/graphql';
 import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
-
-registerEnumType(TaskStatus, {
-  name: 'TaskStatus',
-  description: 'Статус задачи',
-});
 
 @ObjectType()
 class GetInboxResponse {
-  @Field(() => ID)
+  @Field(() => Int)
   id: number;
 
   @Field()

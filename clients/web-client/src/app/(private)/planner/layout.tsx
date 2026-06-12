@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
-import { SidebarPrefetcher } from '@/widget/planner/planner-sidebar';
+import { SidebarPrefetcher } from '@/widget/planner/planner-sidebar/server';
 
 export const metadata: Metadata = {
   title: 'Планировщик',

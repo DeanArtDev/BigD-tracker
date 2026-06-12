@@ -2,9 +2,9 @@
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import * as Types from '@/entity/schema-types';
 
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type GetInboxTasksInput = {
   cursor?: string | null | undefined;
   limit: number;
@@ -13,7 +13,7 @@ export type GetInboxTasksInput = {
   status?: Array<TaskStatus> | null | undefined;
 };
 
-/** Статус задачи */
+/** Статусы дела */
 export type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
 
 export type GetInboxQueryVariables = Exact<{
@@ -22,7 +22,7 @@ export type GetInboxQueryVariables = Exact<{
 
 export type GetInboxQuery = {
   getInbox: {
-    id: string;
+    id: number;
     name: string;
     tasks: {
       meta: { endCursor: string | null; hasNextPage: boolean };
@@ -36,7 +36,6 @@ export type GetInboxQuery = {
         priority: number;
         startDate: string | null;
         status: Types.TaskStatus;
-        weight: number;
       }>;
     };
   };
@@ -106,7 +105,6 @@ export const GetInboxDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
                           ],
                         },
                       },

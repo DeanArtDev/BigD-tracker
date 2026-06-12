@@ -20,7 +20,6 @@ const GET_INBOX_QUERY = gql`
           priority
           startDate
           status
-          weight
         }
       }
     }

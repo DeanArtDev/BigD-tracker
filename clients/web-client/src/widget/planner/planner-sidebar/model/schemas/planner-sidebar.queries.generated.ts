@@ -2,12 +2,12 @@
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import * as Types from '@/entity/schema-types';
 
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type GetSidebarInfoQueryQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetSidebarInfoQueryQuery = { getInbox: { id: string; taskCount: number } };
+export type GetSidebarInfoQueryQuery = { getInbox: { id: number; taskCount: number } };
 
 export const GetSidebarInfoQueryDocument = {
   kind: 'Document',

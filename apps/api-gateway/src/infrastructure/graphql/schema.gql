@@ -8,7 +8,7 @@ type GetInboxMeta {
 }
 
 type GetInboxResponse {
-  id: ID!
+  id: Int!
   name: String!
   taskCount: Float!
   tasks(input: GetInboxTasksInput): TasksConnection!
@@ -35,6 +35,12 @@ type MeRes {
 }
 
 type Mutation {
+  """Выход пользователя из системы на одном устройстве"""
+  createTask(input: TaskCreateInput!): TaskSchema!
+
+  """
+  Продление токена сессии, необходимы access и refresh токены одновременно
+  """
   refresh: Boolean!
 
   """Логин по email/паролю. Выставляет httpOnly cookies access/refresh."""
@@ -47,6 +53,15 @@ type Mutation {
 type Query {
   getInbox: GetInboxResponse!
   me: MeRes!
+}
+
+input TaskCreateInput {
+  deadline: String
+  description: String
+  groupId: Float
+  name: String!
+  priority: Float!
+  startDate: String
 }
 
 """Дело"""
@@ -65,7 +80,7 @@ type TaskSchema {
   weight: Float!
 }
 
-"""Статус задачи"""
+"""Статусы дела"""
 enum TaskStatus {
   ARCHIVED
   CANCELED

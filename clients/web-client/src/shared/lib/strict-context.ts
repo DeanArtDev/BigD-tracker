@@ -8,8 +8,8 @@ function useStrictContext<T>(context: Context<T | null>) {
   return value as T;
 }
 
-function createStrictContext<T>() {
-  return createContext<T | null>(null);
+function createStrictContext<T>(defaultValue?: T): Context<T | null> {
+  return createContext<T | null>(defaultValue ?? null);
 }
 
 export { createStrictContext, useStrictContext };

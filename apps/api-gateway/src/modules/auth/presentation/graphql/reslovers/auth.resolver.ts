@@ -43,7 +43,9 @@ export class AuthResolver {
   }
 
   @AuthErrorSkip()
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {
+    description: 'Продление токена сессии, необходимы access и refresh токены одновременно',
+  })
   async refresh(
     @Context() ctx: AppGraphQLContext,
     @IpAddress() ip: string,

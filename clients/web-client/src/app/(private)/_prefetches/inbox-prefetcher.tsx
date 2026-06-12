@@ -14,15 +14,7 @@ function InboxPrefetcher({ variables, children }: InboxPrefetcher) {
       context={{ endpoint: 'private' }}
       variables={{ input: variables }}
     >
-      <Suspense
-        fallback={
-          <div>
-            1 <DataLoadingElement />
-          </div>
-        }
-      >
-        {children}
-      </Suspense>
+      <Suspense fallback={<DataLoadingElement />}>{children}</Suspense>
     </PreloadQuery>
   );
 }

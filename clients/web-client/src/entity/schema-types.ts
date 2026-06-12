@@ -17,7 +17,7 @@ export type GetInboxMeta = {
 
 export type GetInboxResponse = {
   __typename?: 'GetInboxResponse';
-  id: Scalars['ID']['output'];
+  id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   taskCount: Scalars['Float']['output'];
   tasks: TasksConnection;
@@ -50,11 +50,18 @@ export type MeRes = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Выход пользователя из системы на одном устройстве */
+  createTask: TaskSchema;
+  /** Продление токена сессии, необходимы access и refresh токены одновременно */
   refresh: Scalars['Boolean']['output'];
   /** Логин по email/паролю. Выставляет httpOnly cookies access/refresh. */
   userLogin: Scalars['Boolean']['output'];
   /** Выход пользователя из системы на одном устройстве */
   userLogout: Scalars['Boolean']['output'];
+};
+
+export type MutationCreateTaskArgs = {
+  input: TaskCreateInput;
 };
 
 export type MutationUserLoginArgs = {
@@ -65,6 +72,15 @@ export type Query = {
   __typename?: 'Query';
   getInbox: GetInboxResponse;
   me: MeRes;
+};
+
+export type TaskCreateInput = {
+  deadline?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  groupId?: InputMaybe<Scalars['Float']['input']>;
+  name: Scalars['String']['input'];
+  priority: Scalars['Float']['input'];
+  startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Дело */
@@ -84,7 +100,7 @@ export type TaskSchema = {
   weight: Scalars['Float']['output'];
 };
 
-/** Статус задачи */
+/** Статусы дела */
 export enum TaskStatus {
   Archived = 'ARCHIVED',
   Canceled = 'CANCELED',
