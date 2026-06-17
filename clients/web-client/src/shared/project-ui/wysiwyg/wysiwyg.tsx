@@ -1,12 +1,11 @@
 'use client';
 
+import { HorizontalRuleNode } from '@lexical/extension';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 import { type InitialConfigType, LexicalComposer } from '@lexical/react/LexicalComposer';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
-import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { noop } from 'lodash-es';
@@ -18,7 +17,9 @@ import { WysiwygProvider } from './context/provider';
 import {
   ContentEditable,
   DirtyTrackingPlugin,
+  HorizontalRulePlugin,
   LexicalErrorBoundary,
+  MarkdownShortcutPlugin,
   RichTextPlugin,
   TabIndentationPlugin,
   ToolbarPlugin,
@@ -107,6 +108,7 @@ function Component({
         <CheckListPlugin />
         <TabIndentationPlugin />
         <HorizontalRulePlugin />
+        <MarkdownShortcutPlugin />
       </WysiwygProvider>
     </div>
   );
