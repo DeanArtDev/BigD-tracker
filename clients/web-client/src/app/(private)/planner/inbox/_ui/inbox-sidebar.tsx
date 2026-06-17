@@ -1,13 +1,14 @@
+import { ReactNode } from 'react';
 import { PlannerSidebar } from '@/widget/planner/planner-sidebar';
 import { InboxPageHeader } from './inbox-page-header';
-import { InboxPageWrapper } from './inbox-page-wrapper';
 
 interface InboxSidebarProps {
   readonly open: boolean;
+  readonly content: ReactNode;
 }
 
-function InboxSidebar({ open }: InboxSidebarProps) {
-  return <PlannerSidebar defaultOpen={open} headerSlot={<InboxPageHeader />} content={<InboxPageWrapper />} />;
+function InboxSidebar({ open, content }: InboxSidebarProps) {
+  return <PlannerSidebar defaultOpen={open} headerSlot={<InboxPageHeader />} content={content} />;
 }
 
 export { InboxSidebar, type InboxSidebarProps };

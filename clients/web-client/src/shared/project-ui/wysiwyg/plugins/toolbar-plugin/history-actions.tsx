@@ -5,6 +5,7 @@ import { mergeRegister } from '@lexical/utils';
 import { CAN_REDO_COMMAND, CAN_UNDO_COMMAND, COMMAND_PRIORITY_LOW, REDO_COMMAND, UNDO_COMMAND } from 'lexical';
 import { Redo, Undo } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ButtonGroup } from '@/shared/ui-kit';
 import { useWysiwygContext } from '../../context/context';
 import { ToolbarAction } from '../../ui/toolbar-action';
 
@@ -40,11 +41,14 @@ function HistoryActions({ disabled }: { disabled: boolean }) {
   }, [editor]);
 
   return (
-    <div className="flex shrink-0">
+    <ButtonGroup className="shrink-0">
       <ToolbarAction
         ariaLabel="Undo"
         icon={<Undo />}
         disabled={!isEditable || !canUndo || disabled}
+        size="icon"
+        variant="outline"
+        className="min-w-10"
         onClick={() => {
           editor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
@@ -54,11 +58,14 @@ function HistoryActions({ disabled }: { disabled: boolean }) {
         ariaLabel="Redo"
         icon={<Redo />}
         disabled={!isEditable || !canRedo || disabled}
+        size="icon"
+        variant="outline"
+        className="min-w-10"
         onClick={() => {
           editor.dispatchCommand(REDO_COMMAND, undefined);
         }}
       />
-    </div>
+    </ButtonGroup>
   );
 }
 

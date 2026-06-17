@@ -36,7 +36,7 @@ function WysiwygForm<FormValues extends FieldValues = FieldValues>({
       name={name}
       render={({ field, fieldState }) => {
         return (
-          <Field className={cn('flex grow', classNames?.wrapper)}>
+          <Field className={cn('flex grow min-h-0 min-w-0', classNames?.wrapper)}>
             {label && <FieldLabel className={classNames?.label}>{label}</FieldLabel>}
 
             <WysiwygEditor

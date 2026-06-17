@@ -16,7 +16,6 @@ import type { MakeOptional } from '@/shared/lib/type-helpers';
 import { cn, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { WysiwygProvider } from './context/provider';
 import {
-  ComponentPickerPlugin,
   ContentEditable,
   DirtyTrackingPlugin,
   LexicalErrorBoundary,
@@ -66,14 +65,13 @@ function Component({
   });
 
   return (
-    <div className="wysiwyg-editor relative flex flex-col w-full min-h-0 min-w-0 grow">
+    <div className="wysiwyg-editor relative grid grid-rows-[max-content_1fr] w-full min-h-0 min-w-0 grow">
       <WysiwygProvider>
         <HistoryPlugin key={historyKey} />
         <ToolbarPlugin disabled={disabled} />
 
         <InitialStatePlugin state={state} onStateSet={() => void setHistoryKey((prev) => prev + 1)} />
         <DirtyTrackingPlugin initialStateString={state} onDirtyChange={onDirtyChange} />
-        <ComponentPickerPlugin disabled={disabled} />
 
         <ScrollAreaNativeVertical className="wysiwyg-editor-scroller relative">
           {beforeSlot}

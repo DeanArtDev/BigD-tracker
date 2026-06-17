@@ -5,9 +5,9 @@ import { mergeRegister } from '@lexical/utils';
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from 'lexical';
 import { Bold, Italic, Strikethrough, Underline } from 'lucide-react';
 import { useEffect, useEffectEvent, useState } from 'react';
+import { ToggleGroup, ToggleGroupItem } from '@/shared/ui-kit/ui/toggle-group';
 import { dispatchFormatTextCommand } from './helpers';
 import { useWysiwygContext } from '../../context';
-import { ToolbarAction } from '../../ui/toolbar-action';
 
 function TextFormatActions({ disabled }: { disabled: boolean }) {
   const [editor] = useLexicalComposerContext();
@@ -45,48 +45,66 @@ function TextFormatActions({ disabled }: { disabled: boolean }) {
     );
   }, [editor]);
 
+  const value = [
+    ...(isBold ? ['bold'] : []),
+    ...(isItalic ? ['italic'] : []),
+    ...(isUnderline ? ['underline'] : []),
+    ...(isStrikethrough ? ['strikethrough'] : []),
+  ];
+
   return (
-    <div className="flex gap-1 shrink-0">
-      <ToolbarAction
-        ariaLabel="Bold"
-        active={isBold}
-        icon={<Bold />}
-        disabled={!isEditable || disabled}
+    <ToggleGroup
+      type="multiple"
+      value={value}
+      disabled={!isEditable || disabled}
+      variant="outline"
+      className="shrink-0"
+      spacing={0}
+    >
+      <ToggleGroupItem
+        value="bold"
+        aria-label="Bold"
+        className="min-w-10"
         onClick={() => {
           dispatchFormatTextCommand(editor, 'bold');
         }}
-      />
+      >
+        <Bold />
+      </ToggleGroupItem>
 
-      <ToolbarAction
-        ariaLabel="Italic"
-        active={isItalic}
-        icon={<Italic />}
-        disabled={!isEditable || disabled}
+      <ToggleGroupItem
+        value="italic"
+        aria-label="Italic"
+        className="min-w-10"
         onClick={() => {
           dispatchFormatTextCommand(editor, 'italic');
         }}
-      />
+      >
+        <Italic />
+      </ToggleGroupItem>
 
-      <ToolbarAction
-        ariaLabel="Underline"
-        active={isUnderline}
-        icon={<Underline />}
-        disabled={!isEditable || disabled}
+      <ToggleGroupItem
+        value="underline"
+        aria-label="Underline"
+        className="min-w-10"
         onClick={() => {
           dispatchFormatTextCommand(editor, 'underline');
         }}
-      />
+      >
+        <Underline />
+      </ToggleGroupItem>
 
-      <ToolbarAction
-        ariaLabel="Strikethrough"
-        active={isStrikethrough}
-        icon={<Strikethrough />}
-        disabled={!isEditable || disabled}
+      <ToggleGroupItem
+        value="strikethrough"
+        aria-label="Strikethrough"
+        className="min-w-10"
         onClick={() => {
           dispatchFormatTextCommand(editor, 'strikethrough');
         }}
-      />
-    </div>
+      >
+        <Strikethrough />
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }
 

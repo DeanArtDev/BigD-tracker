@@ -5,11 +5,11 @@ function ScrollAreaNativeHorizontal({ className, children }: PropsWithChildren<{
   return (
     <div
       className={cn(
-        'native-horizontal-scroll-area w-full overflow-y-hidden overflow-x-auto touch-pan-x overscroll-x-contain',
+        'native-horizontal-scroll-area w-full min-w-0 max-w-full overflow-y-hidden overflow-x-auto touch-pan-x overscroll-x-contain',
         className,
       )}
     >
-      <div className="inline-flex w-max flex-nowrap">{children}</div>
+      <div className="inline-flex w-max min-w-max flex-nowrap">{children}</div>
     </div>
   );
 }
