@@ -84,7 +84,7 @@ function TaskCard(props: TaskCardProps) {
         {afterHeaderSlot}
       </CardTitle>
 
-      <CardContent className="flex flex-wrap gap-3 p-0 items-center">
+      <CardContent className="flex flex-wrap gap-3 p-0 pr-2 items-center">
         {deadline != null && (
           <Badge variant={isDeadlineSoon && showIndications ? 'destructive' : 'outline'}>
             <Timer />
@@ -98,7 +98,7 @@ function TaskCard(props: TaskCardProps) {
           </Badge>
         )}
 
-        <TaskStatusIndication status={status} size="sm" />
+        <TaskStatusIndication className="ml-auto" status={status} size="md" />
       </CardContent>
     </Card>
   );
