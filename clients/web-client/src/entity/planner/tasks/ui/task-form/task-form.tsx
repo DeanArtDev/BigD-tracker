@@ -24,7 +24,7 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
       <form
         id={formId}
         noValidate
-        className={cn('flex grow flex-col gap-2', className)}
+        className={cn('flex grow flex-col gap-2 min-w-0', className)}
         onSubmit={(evt) => {
           evt.preventDefault();
           evt.stopPropagation();

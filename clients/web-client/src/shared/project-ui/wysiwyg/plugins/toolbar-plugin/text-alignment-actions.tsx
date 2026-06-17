@@ -57,27 +57,28 @@ function TextAlignmentActions({ disabled }: { disabled: boolean }) {
 
   return (
     <ToggleGroup
-      size="sm"
       type="single"
       value={elementFormat}
       disabled={!isEditable || disabled}
       variant="outline"
       className="flex shrink-0"
-      spacing={1}
+      spacing={0}
       onValueChange={(value: ElementFormatType) => {
+        if (!value) return;
+
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, value);
       }}
     >
-      <ToggleGroupItem value="left" aria-label="Left Align">
+      <ToggleGroupItem value="left" aria-label="Left Align" className="min-w-10">
         <TextAlignStart />
       </ToggleGroupItem>
-      <ToggleGroupItem value="center" aria-label="Center Align">
+      <ToggleGroupItem value="center" aria-label="Center Align" className="min-w-10">
         <TextAlignCenter />
       </ToggleGroupItem>
-      <ToggleGroupItem value="right" aria-label="Right Align">
+      <ToggleGroupItem value="right" aria-label="Right Align" className="min-w-10">
         <TextAlignEnd />
       </ToggleGroupItem>
-      <ToggleGroupItem value="justify" aria-label="Justify">
+      <ToggleGroupItem value="justify" aria-label="Justify" className="min-w-10">
         <TextAlignJustify />
       </ToggleGroupItem>
     </ToggleGroup>

@@ -15,7 +15,7 @@ function Container({ className, children, style, ref }: ScrollAreaNativeVertical
       ref={ref}
       style={style}
       className={cn(
-        'native-vertical-scroll-area w-full overflow-x-hidden overflow-y-auto touch-pan-y overscroll-y-contain',
+        'native-vertical-scroll-area min-h-0 max-h-full w-full overflow-x-hidden overflow-y-auto touch-pan-y overscroll-y-contain',
         className,
       )}
     >
@@ -27,7 +27,7 @@ function Container({ className, children, style, ref }: ScrollAreaNativeVertical
 function ScrollAreaNativeVertical({ className, children, style, ref }: ScrollAreaNativeVerticalProps) {
   return (
     <Container className={className} ref={ref} style={style}>
-      <div className="inline-flex w-full flex-nowrap">{children}</div>
+      <div className="inline-flex h-max min-h-max w-full flex-nowrap">{children}</div>
     </Container>
   );
 }

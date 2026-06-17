@@ -1,5 +1,5 @@
 import { InboxTask } from '@/entity/planner/inbox';
-import { TaskCard } from '@/entity/planner/tasks';
+import { TaskActionsDropdown, TaskCard, TaskDomain } from '@/entity/planner/tasks';
 import {
   DataErrorElement,
   DataLoader,
@@ -50,6 +50,13 @@ function TaskList({
               priority={task.priority}
               status={task.status}
               deadline={task.deadline ?? undefined}
+              afterHeaderSlot={
+                <TaskActionsDropdown
+                  loading={false}
+                  taskStatus={task.status}
+                  taskType={TaskDomain.parseId(task.id).type}
+                />
+              }
               onContentClick={() => void onTaskContentClick?.(task)}
               onHeaderClick={() => void onTaskHeaderClick?.(task)}
             />

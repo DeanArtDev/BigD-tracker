@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { InboxPrefetcher } from '@/app/(private)/_prefetches';
+import { InboxPageWrapper } from '@/app/(private)/planner/inbox/_ui/inbox-page-wrapper';
 import { inboxInitialRequestVariables } from '@/entity/planner/inbox';
 import { withValidatedUrlData } from '@/shared/lib/url';
 import { SIDEBAR_COOKIE_NAME } from '@/shared/ui-kit';
@@ -15,16 +16,21 @@ async function Page({ searchParams }: { searchParams?: z.infer<typeof pageParams
   const open = (await cookies()).get(SIDEBAR_COOKIE_NAME)?.value === 'true';
 
   return (
-    <InboxPrefetcher
-      variables={{
-        ...inboxInitialRequestVariables,
-        search: searchParams?.search,
-        status: searchParams?.status,
-        priority: searchParams?.priority?.map(Number),
-      }}
-    >
-      <InboxSidebar open={open} />
-    </InboxPrefetcher>
+    <InboxSidebar
+      open={open}
+      content={
+        <InboxPrefetcher
+          variables={{
+            ...inboxInitialRequestVariables,
+            search: searchParams?.search,
+            status: searchParams?.status,
+            priority: searchParams?.priority?.map(Number),
+          }}
+        >
+          <InboxPageWrapper />
+        </InboxPrefetcher>
+      }
+    />
   );
 }
 
