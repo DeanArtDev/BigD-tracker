@@ -1,7 +1,7 @@
 'use client';
 
+import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/extension';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
 import { Minus } from 'lucide-react';
 import { useWysiwygContext } from '../../context';
 import { ToolbarAction } from '../../ui/toolbar-action';
