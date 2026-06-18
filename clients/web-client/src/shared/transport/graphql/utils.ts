@@ -7,6 +7,7 @@ function useExtendApolloErrorResult(error: ErrorLike | undefined) {
 
   return {
     isError: appErrors.length > 0,
+    appErrors,
     hasError: useCallback(({ code }: { code: ApiErrorCode }) => appErrors.some((e) => e.code === code), [appErrors]),
     firstError: useCallback(({ code }: { code: ApiErrorCode }) => appErrors.find((e) => e.code === code), [appErrors]),
   };

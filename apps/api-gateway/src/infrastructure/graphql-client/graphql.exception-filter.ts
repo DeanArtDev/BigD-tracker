@@ -1,6 +1,6 @@
 import { AppGraphQLError } from '@/infrastructure/graphql-client/exceptions';
 import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
-import { isBaseException } from '@big-d/exceptions';
+import { exceptionCode, isBaseException } from '@big-d/exceptions';
 import { Catch, HttpException } from '@nestjs/common';
 import { GqlExceptionFilter } from '@nestjs/graphql';
 import { ApiGatewayRequestContext } from '@shared/request-context';
@@ -49,7 +49,7 @@ export class GraphQLExceptionFilter implements GqlExceptionFilter {
     if (exception instanceof HttpException) {
       return new AppGraphQLError({
         key: 'HTTP_EXCEPTION',
-        code: 'XX-X-0000',
+        code: exceptionCode.unknown.code,
         message: String(exception),
         correlationId: this.#getCorrelationId(),
         details: {
@@ -61,7 +61,7 @@ export class GraphQLExceptionFilter implements GqlExceptionFilter {
 
     return new AppGraphQLError({
       key: 'INTERNAL',
-      code: 'XX-X-0000',
+      code: exceptionCode.unknown.code,
       message: 'Internal server error',
       correlationId: this.#getCorrelationId(),
       details: {},

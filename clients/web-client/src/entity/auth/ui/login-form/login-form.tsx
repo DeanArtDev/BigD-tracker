@@ -26,6 +26,7 @@ function LoginForm(props: LoginFormProps) {
   const form = useForm<LoginFormData, never, LoginSubmitData>({
     resolver: standardSchemaResolver(validationSchema),
     mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     disabled: disabledFields,
     values: {
       email: '',

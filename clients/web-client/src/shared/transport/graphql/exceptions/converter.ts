@@ -1,11 +1,11 @@
 import { CombinedGraphQLErrors, ErrorLike, ServerError, ServerParseError, UnconventionalError } from '@apollo/client';
-import { isBaseException } from '@big-d/exceptions';
+import { exceptionCode, isBaseException } from '@big-d/exceptions';
 import { ApiError } from './api-error';
 
 function unknownAppError(message: string, key: ApiError['key'] = 'UNKNOWN'): ApiError {
   return new ApiError({
     key,
-    code: 'XX-X-0000',
+    code: exceptionCode.unknown.code,
     message,
     correlationId: 'n/a',
   });
@@ -31,7 +31,7 @@ function fromApolloError(error: ErrorLike | undefined): ApiError[] {
 
         return new ApiError({
           key: key ?? 'INTERNAL',
-          code: code ?? 'XX-X-0000',
+          code: code ?? exceptionCode.unknown.code,
           message: message ?? e.message ?? 'There is no message',
           correlationId: correlationId ?? 'n/a',
           path: e.path,
@@ -41,7 +41,7 @@ function fromApolloError(error: ErrorLike | undefined): ApiError[] {
 
       return new ApiError({
         key: 'UNKNOWN',
-        code: 'XX-X-0000',
+        code: exceptionCode.unknown.code,
         message: 'Unknown error',
         correlationId: 'n/a',
       });

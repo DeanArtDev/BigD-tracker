@@ -1,19 +1,25 @@
 import { ApiErrorCode, ApiErrorKey } from '@/shared/transport/graphql';
 
-interface ApiErrorState<Details extends Record<string, unknown> = Record<string, unknown>> {
+interface ApiErrorState<
+  TCode extends ApiErrorCode = ApiErrorCode,
+  Details extends Record<string, unknown> = Record<string, unknown>,
+> {
   readonly key: ApiErrorKey;
-  readonly code: ApiErrorCode;
+  readonly code: TCode;
   readonly message: string;
   readonly correlationId: string;
   readonly path?: ReadonlyArray<string | number>;
   readonly details?: Details;
 }
 
-class ApiError<Details extends Record<string, unknown> = Record<string, unknown>> extends Error {
+class ApiError<
+  TCode extends ApiErrorCode = ApiErrorCode,
+  Details extends Record<string, unknown> = Record<string, unknown>,
+> extends Error {
   #brand = 'ApiError';
-  #state: ApiErrorState<Details>;
+  #state: ApiErrorState<TCode, Details>;
 
-  constructor(input: ApiErrorState<Details>) {
+  constructor(input: ApiErrorState<TCode, Details>) {
     super(`${input.message}, code: ${input.code}`);
     this.#state = input;
   }

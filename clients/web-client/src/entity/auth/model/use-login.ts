@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
+import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { UserLoginDocument, UserLoginMutation, UserLoginMutationVariables } from './schemas/auth.schema.generated';
 
@@ -10,11 +11,15 @@ function useLogin() {
     },
   });
 
-  const { hasError, ...errorRest } = useExtendApolloErrorResult(rest.error);
+  const { appErrors } = useExtendApolloErrorResult(rest.error);
+  useExceptionNotificator({
+    exception: appErrors.at(-1),
+    messageHandlers: {
+      [exceptionCode.userWrongLoginOrPassword.code]: () => 'Неверный логин или пароль',
+    },
+  });
 
-  const isWrongPassOrLoginError = hasError({ code: exceptionCode.userWrongLoginOrPassword.code });
-
-  return { login, ...rest, isWrongPassOrLoginError, hasError, ...errorRest };
+  return { login, ...rest };
 }
 
 export { useLogin };

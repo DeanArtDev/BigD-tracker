@@ -1,24 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { toast } from 'sonner';
 import { LoginForm, useLogin } from '@/entity/auth';
 import { routes } from '@/shared/routes';
 
 function LoginFormFeature() {
   const router = useRouter();
-  const { login, loading, isWrongPassOrLoginError } = useLogin();
-
-  useEffect(() => {
-    let id: string | number | undefined = undefined;
-    if (isWrongPassOrLoginError) {
-      toast.dismiss(id);
-      id = toast.error('Неверный логин или пароль', { closeButton: true, position: 'top-center' });
-    }
-
-    return () => void toast.dismiss(id);
-  }, [isWrongPassOrLoginError]);
+  const { login, loading } = useLogin();
 
   return (
     <LoginForm
