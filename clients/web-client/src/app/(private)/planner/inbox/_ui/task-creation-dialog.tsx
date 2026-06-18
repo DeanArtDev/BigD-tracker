@@ -9,8 +9,8 @@ import {
   useTaskCreate,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
-import { MaybePromise, useConfirmDialog } from '@/shared/lib';
-import { AppDialog } from '@/shared/project-ui';
+import { MaybePromise } from '@/shared/lib';
+import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
 import { Button, ButtonLoading } from '@/shared/ui-kit';
 
 interface ComponentProps {
@@ -19,7 +19,7 @@ interface ComponentProps {
 
 function Component({ onSubmit }: ComponentProps) {
   const [open, setOpen] = useState(false);
-  const { confirmHolder, viaConfirmation } = useConfirmDialog();
+  const { viaConfirmation } = useConfirmDialog();
   const {
     resetToInit,
     formState: { isDirty },
@@ -31,33 +31,29 @@ function Component({ onSubmit }: ComponentProps) {
   };
 
   return (
-    <>
-      <AppDialog
-        open={open}
-        title="Создание дела"
-        trigger={
-          <Button type="button">
-            <Plus />
-            Создать
-          </Button>
+    <AppDialog
+      open={open}
+      title="Создание дела"
+      trigger={
+        <Button type="button">
+          <Plus />
+          Создать
+        </Button>
+      }
+      content={<TaskForm className="px-4 py-2" onSubmit={(taskFormData) => void onSubmit(taskFormData, close)} />}
+      footer={<Footer />}
+      onOpenChange={(value) => {
+        if (!value && isDirty) {
+          viaConfirmation({
+            isNeedConfirm: () => isDirty,
+            callback: close,
+            dialog: { title: 'Закрыть?', content: 'Не сохраненные данные будут потеряны!' },
+          });
+        } else {
+          value ? setOpen(true) : close();
         }
-        content={<TaskForm className="px-4 py-2" onSubmit={(taskFormData) => void onSubmit(taskFormData, close)} />}
-        footer={<Footer />}
-        onOpenChange={(value) => {
-          if (!value && isDirty) {
-            viaConfirmation({
-              isNeedConfirm: () => isDirty,
-              callback: close,
-              dialog: { title: 'Закрыть?', content: 'Не сохраненные данные будут потеряны!' },
-            });
-          } else {
-            value ? setOpen(true) : close();
-          }
-        }}
-      />
-
-      {confirmHolder}
-    </>
+      }}
+    />
   );
 }
 

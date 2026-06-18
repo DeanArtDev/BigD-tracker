@@ -52,6 +52,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Выход пользователя из системы на одном устройстве */
   createTask: TaskSchema;
+  /** Выход пользователя из системы на одном устройстве */
+  deleteTask: TaskSchema;
   /** Продление токена сессии, необходимы access и refresh токены одновременно */
   refresh: Scalars['Boolean']['output'];
   /** Логин по email/паролю. Выставляет httpOnly cookies access/refresh. */
@@ -62,6 +64,10 @@ export type Mutation = {
 
 export type MutationCreateTaskArgs = {
   input: TaskCreateInput;
+};
+
+export type MutationDeleteTaskArgs = {
+  input: TaskDeleteInput;
 };
 
 export type MutationUserLoginArgs = {
@@ -81,6 +87,10 @@ export type TaskCreateInput = {
   name: Scalars['String']['input'];
   priority: Scalars['Float']['input'];
   startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TaskDeleteInput = {
+  id: Scalars['String']['input'];
 };
 
 /** Дело */

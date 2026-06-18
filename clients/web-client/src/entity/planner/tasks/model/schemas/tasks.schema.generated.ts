@@ -14,6 +14,10 @@ export type TaskCreateInput = {
   startDate?: string | null | undefined;
 };
 
+export type TaskDeleteInput = {
+  id: string;
+};
+
 /** Статусы дела */
 export type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
 
@@ -34,6 +38,12 @@ export type CreateTaskMutation = {
     cancelReason: string | null;
   };
 };
+
+export type DeleteTaskMutationVariables = Exact<{
+  input: Types.TaskDeleteInput;
+}>;
+
+export type DeleteTaskMutation = { deleteTask: { id: string } };
 
 export const CreateTaskDocument = {
   kind: 'Document',
@@ -82,3 +92,40 @@ export const CreateTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
+export const DeleteTaskDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteTask' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskDeleteInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteTask' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteTaskMutation, DeleteTaskMutationVariables>;
