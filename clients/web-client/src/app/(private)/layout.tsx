@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 import { ErrorReactor } from '@/feature/error-reactor';
 import { ConfirmDialogProvider } from '@/shared/project-ui';
 import { InitDataPrefetcher } from './_prefetches';
-import { InitDataLoader } from './_ui/init-data-loader';
 
 import '../_styles/index.css';
 
@@ -19,9 +18,7 @@ export default function PrivateRoutesLayout({
   return (
     <>
       <InitDataPrefetcher>
-        <InitDataLoader>
-          <ConfirmDialogProvider>{children}</ConfirmDialogProvider>
-        </InitDataLoader>
+        <ConfirmDialogProvider>{children}</ConfirmDialogProvider>
       </InitDataPrefetcher>
 
       <ErrorReactor />

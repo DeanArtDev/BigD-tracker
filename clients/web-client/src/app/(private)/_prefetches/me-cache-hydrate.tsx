@@ -12,7 +12,7 @@ function MeCacheHydrator({ data, children }: { data: MeQuery | undefined; childr
     client.writeQuery({ query: MeDocument, data });
     written.current = true;
   }
-  return <>{children}</>;
+  return children;
 }
 
 export { MeCacheHydrator };

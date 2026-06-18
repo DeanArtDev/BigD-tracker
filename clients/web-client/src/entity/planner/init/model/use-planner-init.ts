@@ -16,7 +16,7 @@ function usePlannerInit() {
     notifyOnNetworkStatusChange: true,
   });
 
-  const initialLoading = result.networkStatus === 1;
+  const initialLoading = result.networkStatus === 1 && result.data == null;
 
   return {
     ...result,

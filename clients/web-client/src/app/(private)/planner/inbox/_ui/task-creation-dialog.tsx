@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { useInboxQuery } from '@/entity/planner/inbox';
+import { usePlannerInit } from '@/entity/planner/init';
 import {
   TaskForm,
   TaskFormProvider,
@@ -25,7 +25,7 @@ function Component({ onSubmit }: ComponentProps) {
     resetToInit,
     formState: { isDirty },
   } = useTaskFromContext();
-  const { data } = useInboxQuery();
+  const { data } = usePlannerInit();
 
   const close = () => {
     setOpen(false);
@@ -37,7 +37,7 @@ function Component({ onSubmit }: ComponentProps) {
       open={open}
       title="Создание дела"
       trigger={
-        <Button type="button" disabled={data.id == null}>
+        <Button type="button" disabled={data.inbox.id == null}>
           <Plus />
           Создать
         </Button>
