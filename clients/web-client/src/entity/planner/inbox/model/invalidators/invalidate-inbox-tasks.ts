@@ -1,7 +1,8 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
+import { GroupId } from '@/entity/planner/groups';
 import { GetInboxResponse } from '@/entity/schema-types';
 
-async function invalidateInboxTasks(client: ApolloClient, inboxId: number) {
+async function invalidateInboxTasks(client: ApolloClient, inboxId: GroupId) {
   return client.refetchQueries({
     include: ['GetInbox'],
 

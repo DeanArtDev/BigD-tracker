@@ -35,6 +35,12 @@ export type GetInboxTasksInput = {
   status?: InputMaybe<Array<TaskStatus>>;
 };
 
+export type GetPlannerInit = {
+  __typename?: 'GetPlannerInit';
+  inboxId: Scalars['Int']['output'];
+  inboxTaskCount: Scalars['Int']['output'];
+};
+
 export type LoginUserInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -77,6 +83,7 @@ export type MutationUserLoginArgs = {
 export type Query = {
   __typename?: 'Query';
   getInbox: GetInboxResponse;
+  getPlannerInit: GetPlannerInit;
   me: MeRes;
 };
 

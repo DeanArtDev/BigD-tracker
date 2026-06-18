@@ -2,6 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import { useInboxQuery } from '@/entity/planner/inbox';
 import {
   TaskForm,
   TaskFormProvider,
@@ -24,6 +25,7 @@ function Component({ onSubmit }: ComponentProps) {
     resetToInit,
     formState: { isDirty },
   } = useTaskFromContext();
+  const { data } = useInboxQuery();
 
   const close = () => {
     setOpen(false);
@@ -35,7 +37,7 @@ function Component({ onSubmit }: ComponentProps) {
       open={open}
       title="Создание дела"
       trigger={
-        <Button type="button">
+        <Button type="button" disabled={data.id == null}>
           <Plus />
           Создать
         </Button>
@@ -50,7 +52,11 @@ function Component({ onSubmit }: ComponentProps) {
             dialog: { title: 'Закрыть?', content: 'Не сохраненные данные будут потеряны!' },
           });
         } else {
-          value ? setOpen(true) : close();
+          if (value) {
+            setOpen(true);
+          } else {
+            close();
+          }
         }
       }}
     />

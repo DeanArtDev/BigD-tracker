@@ -1,15 +1,7 @@
 import { TaskSchema } from '@/modules/goal-service/tasks';
-import { TaskStatus } from '@big-d/api-contracts';
+import { AvailableInboxTasksStatuses, TaskStatus } from '@big-d/api-contracts';
 import { Field, Int, InputType, ObjectType } from '@nestjs/graphql';
 import { IsArray, IsBoolean, IsEnum, IsIn, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
-
-const InboxTasksStatuses: TaskStatus[] = [
-  TaskStatus.NOT_STARTED,
-  TaskStatus.IN_PROGRESS,
-  TaskStatus.COMPLETED,
-  TaskStatus.OVERDUE,
-  TaskStatus.CANCELED,
-];
 
 @ObjectType()
 class GetInboxResponse {
@@ -67,7 +59,7 @@ class GetInboxTasksInput {
 
   @Field(() => [TaskStatus], { nullable: true })
   @IsOptional()
-  @IsIn(InboxTasksStatuses, { each: true })
+  @IsIn(AvailableInboxTasksStatuses, { each: true })
   @IsArray()
   @IsEnum(TaskStatus, { each: true })
   status?: TaskStatus[];
@@ -78,4 +70,4 @@ class GetInboxTasksInput {
   cursor?: string;
 }
 
-export { GetInboxResponse, GetInboxTasksInput, TasksConnection, InboxTasksStatuses };
+export { GetInboxResponse, GetInboxTasksInput, TasksConnection };

@@ -1,10 +1,10 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalGetGroupInBox, GoalGetTasks } from '@big-d/api-contracts';
+import { AvailableInboxTasksStatuses, GoalGetGroupInBox, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GetInboxResponse, GetInboxTasksInput, InboxTasksStatuses, TasksConnection } from '../schemas';
+import { GetInboxResponse, GetInboxTasksInput, TasksConnection } from '../schemas';
 
 @Resolver(() => GetInboxResponse)
 export class GroupsResolver {
@@ -28,7 +28,7 @@ export class GroupsResolver {
   ): Promise<TasksConnection> {
     const { status, limit = 10000, cursor, search, priority } = input ?? {};
 
-    const s = status?.filter((i) => InboxTasksStatuses.includes(i)) ?? InboxTasksStatuses;
+    const s = status?.filter((i) => AvailableInboxTasksStatuses.includes(i)) ?? AvailableInboxTasksStatuses;
 
     const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
       data: {

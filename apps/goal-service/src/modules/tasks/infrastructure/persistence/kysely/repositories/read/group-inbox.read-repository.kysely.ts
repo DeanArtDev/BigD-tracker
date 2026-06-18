@@ -1,5 +1,6 @@
 import { GroupInboxView } from '@/modules/tasks/application/dto';
 import { GroupInboxReadRepository, TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
+import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
@@ -12,7 +13,10 @@ export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implemen
     super();
   }
 
-  async getInboxByUserId(input: { userId: number }, trx?: TaskTransaction): Promise<GroupInboxView | null> {
+  async getInboxByUserId(
+    input: { userId: number; taskStatuses?: TaskStatus[] },
+    trx?: TaskTransaction,
+  ): Promise<GroupInboxView | null> {
     return await this.errorCatcher('inbox-group.get-inbox-by-user-id-with-tasks', async () => {
       const inbox = await getInboxByUserIdQuery(this.db, input, trx).executeTakeFirst();
       if (inbox == null) return null;
@@ -20,8 +24,10 @@ export class GroupInboxReadRepositoryKysely extends BaseTasksRepository implemen
       const tasksData = await this.db
         .qb(trx)
         .selectFrom('tasks')
-        .select((eb) => eb.fn.count<number>('id').as('count'))
-        .where('group_id', '=', inbox.id)
+        .innerJoin('task_statuses as ts', 'tasks.status_id', 'ts.id')
+        .select((eb) => eb.fn.count<number>('tasks.id').as('count'))
+        .where('tasks.group_id', '=', inbox.id)
+        .where('ts.name', 'in', input.taskStatuses ?? [])
         .executeTakeFirst();
 
       return GroupReadKyselyMapper.fromRawToInboxView({

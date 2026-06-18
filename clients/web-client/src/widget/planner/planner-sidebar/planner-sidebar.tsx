@@ -10,7 +10,6 @@ import {
   SidebarProvider,
   SidebarSeparator,
 } from '@/shared/ui-kit';
-import { useSidebarInfoQuerySuspense } from './model/use-sidebar-info';
 import { PlannerSidebarNavList } from './planner-sidebar-nav-list';
 import { PlannerSidebarTrigger } from './planner-sidebar-trigger';
 
@@ -23,10 +22,6 @@ function PlannerSidebar({
   content: ReactNode;
   defaultOpen?: boolean;
 }) {
-  const {
-    data: { inboxCount },
-  } = useSidebarInfoQuerySuspense();
-
   return (
     <SidebarProvider className="flex flex-col h-screen overscroll-y-auto" defaultOpen={defaultOpen}>
       {headerSlot}
@@ -39,7 +34,7 @@ function PlannerSidebar({
         >
           <SidebarContent>
             <SidebarGroup>
-              <PlannerSidebarNavList inboxCount={inboxCount} />
+              <PlannerSidebarNavList />
             </SidebarGroup>
           </SidebarContent>
 

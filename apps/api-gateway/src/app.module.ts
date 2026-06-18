@@ -4,6 +4,7 @@ import { SwaggerAuthModule } from '@/infrastructure/swagger-auth/swagger-auth.mo
 import { AuthModule } from '@/modules/auth/auth.module';
 import { ExercisesModule } from '@/modules/exercises';
 import { GoalServiceModule } from '@/modules/goal-service';
+import { PlannerModule } from '@/modules/planner/planner.module';
 import { TrainingTemplatesModule } from '@/modules/traning-templates';
 import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
@@ -29,6 +30,7 @@ import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
     TrainingTemplatesModule,
     ExercisesModule,
     GoalServiceModule,
+    PlannerModule,
 
     RpcResponseValidationModule.forFeature({
       useValue: ({ issues, message }) =>
