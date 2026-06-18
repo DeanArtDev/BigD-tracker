@@ -1,5 +1,6 @@
 import { InboxTask } from '@/entity/planner/inbox';
 import { TaskActionsDropdown, TaskCard, TaskDomain } from '@/entity/planner/tasks';
+import { MaybePromise } from '@/shared/lib';
 import {
   DataErrorElement,
   DataLoader,
@@ -11,20 +12,27 @@ import { DataLoaderProps } from '@/shared/ui-kit';
 
 type Task = InboxTask;
 
-interface TaskListProps {
+type TaskListProps = {
   readonly tasks: Task[];
   readonly virtualizerProps: Omit<VirtualizedInfinityScrollProps, 'renderItem'>;
   readonly dataLoaderProps?: DataLoaderProps;
 
+  readonly dropdownProps?: {
+    readonly loading?: boolean;
+    readonly onDelete?: (task: Task) => MaybePromise<void>;
+  };
+
   readonly onRetry?: () => void;
   readonly onTaskContentClick?: (task: Task) => void;
   readonly onTaskHeaderClick?: (task: Task) => void;
-}
+};
 
 function TaskList({
   tasks,
   virtualizerProps,
   dataLoaderProps = {},
+  dropdownProps,
+
   onRetry,
   onTaskHeaderClick,
   onTaskContentClick,
@@ -52,9 +60,10 @@ function TaskList({
               deadline={task.deadline ?? undefined}
               afterHeaderSlot={
                 <TaskActionsDropdown
-                  loading={false}
                   taskStatus={task.status}
+                  loading={dropdownProps?.loading ?? false}
                   taskType={TaskDomain.parseId(task.id).type}
+                  onDelete={() => void dropdownProps?.onDelete?.(task)}
                 />
               }
               onContentClick={() => void onTaskContentClick?.(task)}

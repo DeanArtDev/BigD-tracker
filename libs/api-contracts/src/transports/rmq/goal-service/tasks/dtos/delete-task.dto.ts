@@ -16,8 +16,8 @@ class DeleteTaskReq {
 }
 
 class DeleteTaskResData {
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 }
 
 class DeleteTaskRes {

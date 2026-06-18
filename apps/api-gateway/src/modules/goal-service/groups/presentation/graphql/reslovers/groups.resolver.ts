@@ -4,7 +4,7 @@ import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { GoalGetGroupInBox, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GetInboxResponse, GetInboxTasksInput, TasksConnection } from '../schemas';
+import { GetInboxResponse, GetInboxTasksInput, InboxTasksStatuses, TasksConnection } from '../schemas';
 
 @Resolver(() => GetInboxResponse)
 export class GroupsResolver {
@@ -28,6 +28,8 @@ export class GroupsResolver {
   ): Promise<TasksConnection> {
     const { status, limit = 10000, cursor, search, priority } = input ?? {};
 
+    const s = status?.filter((i) => InboxTasksStatuses.includes(i)) ?? InboxTasksStatuses;
+
     const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
       data: {
         userId: uid,
@@ -36,7 +38,7 @@ export class GroupsResolver {
           groupIds: [inboxResponse.id],
           limit,
           cursor,
-          status,
+          status: s,
           priority,
         },
       },

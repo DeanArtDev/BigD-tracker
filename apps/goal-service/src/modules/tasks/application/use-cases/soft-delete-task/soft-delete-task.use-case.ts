@@ -1,4 +1,5 @@
 import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
+import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -27,7 +28,7 @@ class SoftDeleteTaskUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute({ input }: SoftDeleteTaskCommand): Promise<{ id: number }> {
+  async execute({ input }: SoftDeleteTaskCommand): Promise<{ id: string }> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, userId } = input;
 
@@ -51,7 +52,13 @@ class SoftDeleteTaskUseCase {
         });
         const newOverride = await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
 
-        return { id: newOverride.id };
+        return {
+          id: TaskIdBuilder.wrapOverrideId({
+            overrideId: newOverride.id,
+            recurrenceId: newOverride.recurrenceId,
+            date: newOverride.recurrenceStart,
+          }),
+        };
       }
 
       if (isOverride) {
@@ -81,7 +88,13 @@ class SoftDeleteTaskUseCase {
           await this.taskRecurrenceService.deleteRecurrence({ id: recurrence.id }, trx);
         }
 
-        return { id: updatedOverride.id };
+        return {
+          id: TaskIdBuilder.wrapOverrideId({
+            overrideId: updatedOverride.id,
+            recurrenceId: updatedOverride.recurrenceId,
+            date: updatedOverride.recurrenceStart,
+          }),
+        };
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

@@ -1,46 +1,51 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+'use client';
+
+import { PropsWithChildren, ReactNode, useState } from 'react';
+import { MaybePromise } from '@/shared/lib';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  ButtonLoading,
 } from '@/shared/ui-kit';
 
 interface AlertConfirmDialogProps {
-  readonly skip?: boolean;
   readonly open?: boolean;
   readonly title: ReactNode;
   readonly content?: ReactNode;
-  readonly onConfirm: () => void;
+  readonly onConfirm: () => MaybePromise<void>;
   readonly onOpenChange?: (open: boolean) => void;
   readonly onDecline?: () => void;
 }
 
 function AlertConfirmDialog({
   open,
-  skip = false,
   title,
   content,
-  children,
   onConfirm,
   onDecline,
   onOpenChange,
 }: PropsWithChildren<AlertConfirmDialogProps>) {
-  return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      {skip ? (
-        <AlertDialogAction asChild onClick={onConfirm}>
-          {children}
-        </AlertDialogAction>
-      ) : (
-        <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      )}
+  const [_open, _setOpen] = useState(open);
+  const [loading, setLoading] = useState(false);
 
+  const handleClose = () => {
+    _setOpen(false);
+    onOpenChange?.(false);
+  };
+
+  return (
+    <AlertDialog
+      open={_open}
+      onOpenChange={(value) => {
+        if (loading) return;
+        if (!value) handleClose();
+      }}
+    >
       <AlertDialogContent className="gap-2 p-5" size="sm">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -50,22 +55,31 @@ function AlertConfirmDialog({
 
         <AlertDialogFooter>
           <AlertDialogCancel
+            disabled={loading}
             onClick={(evt) => {
               evt.stopPropagation();
               onDecline?.();
+              handleClose();
             }}
           >
             Нет
           </AlertDialogCancel>
-          <AlertDialogAction
-            autoFocus
-            onClick={(evt) => {
+
+          <ButtonLoading
+            loading={loading}
+            onClick={async (evt) => {
               evt.stopPropagation();
-              onConfirm?.();
+              try {
+                setLoading(true);
+                await onConfirm?.();
+                handleClose();
+              } finally {
+                setLoading(false);
+              }
             }}
           >
             Да
-          </AlertDialogAction>
+          </ButtonLoading>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

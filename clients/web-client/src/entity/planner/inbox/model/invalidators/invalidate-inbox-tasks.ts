@@ -1,12 +1,14 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
+import { GetInboxResponse } from '@/entity/schema-types';
 
 async function invalidateInboxTasks(client: ApolloClient, inboxId: number) {
   return client.refetchQueries({
     include: ['GetInbox'],
 
     updateCache(cache: ApolloCache) {
+      const __typename: GetInboxResponse['__typename'] = 'GetInboxResponse';
       const inboxCacheId = cache.identify({
-        __typename: 'GetInboxResponse',
+        __typename,
         id: inboxId,
       });
 

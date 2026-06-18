@@ -38,6 +38,9 @@ type Mutation {
   """Выход пользователя из системы на одном устройстве"""
   createTask(input: TaskCreateInput!): TaskSchema!
 
+  """Выход пользователя из системы на одном устройстве"""
+  deleteTask(input: TaskDeleteInput!): TaskSchema!
+
   """
   Продление токена сессии, необходимы access и refresh токены одновременно
   """
@@ -62,6 +65,10 @@ input TaskCreateInput {
   name: String!
   priority: Float!
   startDate: String
+}
+
+input TaskDeleteInput {
+  id: String!
 }
 
 """Дело"""

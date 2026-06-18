@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
 import { ErrorReactor } from '@/feature/error-reactor';
+import { ConfirmDialogProvider } from '@/shared/project-ui';
 import { InitDataPrefetcher } from './_prefetches';
 import { InitDataLoader } from './_ui/init-data-loader';
 
@@ -18,7 +19,9 @@ export default function PrivateRoutesLayout({
   return (
     <>
       <InitDataPrefetcher>
-        <InitDataLoader>{children}</InitDataLoader>
+        <InitDataLoader>
+          <ConfirmDialogProvider>{children}</ConfirmDialogProvider>
+        </InitDataLoader>
       </InitDataPrefetcher>
 
       <ErrorReactor />

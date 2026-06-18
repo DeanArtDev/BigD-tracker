@@ -1,4 +1,4 @@
-import { Task, TaskFactory, TaskRecurrence } from '@/modules/tasks/domain';
+import { Task, TaskFactory, TaskIdBuilder, TaskRecurrence } from '@/modules/tasks/domain';
 import { TaskWithRecurrenceService } from '@/modules/tasks/domain/services';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { TimezoneVo } from '@big-d/api-utils';
@@ -64,14 +64,14 @@ class TaskService {
     return await this.tasksWriteRepo.createTask(TaskFactory.clone(task), trx);
   }
 
-  async softDeleteTask(input: DeleteTaskInput, trx?: TaskTransaction): Promise<{ id: number }> {
+  async softDeleteTask(input: DeleteTaskInput, trx?: TaskTransaction): Promise<{ id: string }> {
     const task = await this.taskCheckerService.ensureTaskExists(
       { taskId: input.taskId, userId: input.userId },
       { trx },
     );
     const { taskToDelete } = this.taskWithRecurrenceService.softDelete({ task });
     const replacedTask = await this.tasksWriteRepo.replaceTask(taskToDelete, trx);
-    return { id: replacedTask.id };
+    return { id: TaskIdBuilder.wrapOriginId(replacedTask.id) };
   }
 
   async replaceTask(

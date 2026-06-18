@@ -1,6 +1,7 @@
 import { capitalize } from 'lodash-es';
 import { EllipsisVertical } from 'lucide-react';
 import { TaskStatus } from '@/entity/schema-types';
+import { MaybePromise } from '@/shared/lib';
 import { AppDropdown } from '@/shared/project-ui';
 import { cn } from '@/shared/ui-kit';
 import { Button } from '@/shared/ui-kit/ui/button';
@@ -13,12 +14,12 @@ interface TaskActionsDropdownProps {
   readonly triggerClassName?: string;
   readonly taskStatus: TaskStatus;
   readonly taskType: TaskType;
-  readonly onAssign?: () => void;
-  readonly onFinish?: () => void;
-  readonly onRecover?: () => void;
-  readonly onDelete?: () => void;
-  readonly onDeleteComplete?: () => void;
-  readonly onClone?: () => void;
+  readonly onAssign?: () => MaybePromise<void>;
+  readonly onFinish?: () => MaybePromise<void>;
+  readonly onRecover?: () => MaybePromise<void>;
+  readonly onDelete?: () => MaybePromise<void>;
+  readonly onDeleteComplete?: () => MaybePromise<void>;
+  readonly onClone?: () => MaybePromise<void>;
 }
 
 function TaskActionsDropdown({
@@ -124,4 +125,4 @@ function TaskActionsDropdown({
   );
 }
 
-export { TaskActionsDropdown };
+export { TaskActionsDropdown, type TaskActionsDropdownProps };
