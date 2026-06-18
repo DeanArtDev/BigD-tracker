@@ -3,9 +3,9 @@ import { SidebarMenu } from '@/shared/ui-kit';
 import { PlannerSidebarMenuItem } from './planner-sidebar-menu-item';
 import { useNavItems } from './view-model/use-nav-items';
 
-function PlannerSidebarNavList({ inboxCount }: { inboxCount?: number }) {
+function PlannerSidebarNavList() {
   const pathname = usePathname();
-  const navItems = useNavItems({ inboxCount });
+  const navItems = useNavItems();
 
   return (
     <SidebarMenu>
