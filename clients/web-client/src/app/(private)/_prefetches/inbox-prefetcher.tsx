@@ -7,15 +7,17 @@ interface InboxPrefetcher extends PropsWithChildren {
   readonly variables: GetInboxQueryVariables['input'];
 }
 
-function InboxPrefetcher({ variables, children }: InboxPrefetcher) {
+async function InboxPrefetcher({ variables, children }: InboxPrefetcher) {
   return (
-    <PreloadQuery<undefined, GetInboxQueryVariables>
-      query={GetInboxDocument}
-      context={{ endpoint: 'private' }}
-      variables={{ input: variables }}
-    >
-      <Suspense fallback={<DataLoadingElement />}>{children}</Suspense>
-    </PreloadQuery>
+    <Suspense fallback={<DataLoadingElement />}>
+      <PreloadQuery<undefined, GetInboxQueryVariables>
+        query={GetInboxDocument}
+        context={{ endpoint: 'private' }}
+        variables={{ input: variables }}
+      >
+        {children}
+      </PreloadQuery>
+    </Suspense>
   );
 }
 

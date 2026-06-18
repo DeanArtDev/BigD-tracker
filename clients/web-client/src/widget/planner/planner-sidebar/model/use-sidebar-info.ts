@@ -1,7 +1,7 @@
 import { usePlannerInit } from '@/entity/planner/init';
 
-function useSidebarInfoQuerySuspense() {
+function useSidebarInfoQuery() {
   return usePlannerInit();
 }
 
-export { useSidebarInfoQuerySuspense };
+export { useSidebarInfoQuery };

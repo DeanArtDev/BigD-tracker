@@ -2,23 +2,23 @@
 
 import { useApolloClient } from '@apollo/client/react';
 import { PlannerHeader } from '@/app/(private)/planner/_ui/planner-header';
-import { invalidateInboxTasks, useInboxQuery } from '@/entity/planner/inbox';
-import { invalidatePlannerInit } from '@/entity/planner/init';
+import { invalidateInboxTasks } from '@/entity/planner/inbox';
+import { invalidatePlannerInit, usePlannerInit } from '@/entity/planner/init';
 import { TaskCreationDialog } from './task-creation-dialog';
 
 function InboxPageHeader() {
-  const { data } = useInboxQuery();
+  const { data } = usePlannerInit();
   const client = useApolloClient();
 
   return (
     <PlannerHeader
       content={
         <TaskCreationDialog
-          groupId={data.id}
+          groupId={data.inbox.id}
           onSuccess={async () => {
             await invalidatePlannerInit(client.cache);
-            if (data.id == null) return;
-            await invalidateInboxTasks(client, data.id);
+            if (data.inbox.id == null) return;
+            await invalidateInboxTasks(client, data.inbox.id);
           }}
         />
       }

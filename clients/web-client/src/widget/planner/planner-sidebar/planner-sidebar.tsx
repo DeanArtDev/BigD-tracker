@@ -44,7 +44,7 @@ function PlannerSidebar({
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset className="grow min-h-0">{content}</SidebarInset>
+        <SidebarInset className="grow min-h-0 pt-(--header-height)">{content}</SidebarInset>
       </div>
     </SidebarProvider>
   );

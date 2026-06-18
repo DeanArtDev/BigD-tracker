@@ -4,7 +4,7 @@ import { Inbox } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
 import { RoutePaths, routes } from '@/shared/routes';
 import { Badge, DataLoader, DataLoadingElement, Typography, useSidebar } from '@/shared/ui-kit';
-import { useSidebarInfoQuerySuspense } from '@/widget/planner/planner-sidebar';
+import { useSidebarInfoQuery } from '@/widget/planner/planner-sidebar';
 
 interface PlannerSidebarNavPath {
   readonly path: RoutePaths;
@@ -14,7 +14,7 @@ interface PlannerSidebarNavPath {
 
 function useNavItems(): PlannerSidebarNavPath[] {
   const { open } = useSidebar();
-  const { data, loading } = useSidebarInfoQuerySuspense();
+  const { data, loading } = useSidebarInfoQuery();
   const inboxTaskCount = data.inbox.taskCount;
 
   return useMemo(

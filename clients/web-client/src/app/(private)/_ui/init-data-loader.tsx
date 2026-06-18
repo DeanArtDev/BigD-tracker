@@ -7,6 +7,7 @@ function InitDataLoader({ children }: PropsWithChildren) {
       fallback={
         <div className="min-h-dvh min-w-dvw flex items-center justify-center">
           <Spinner className="size-20 stroke-primary" />
+          111
         </div>
       }
     >
