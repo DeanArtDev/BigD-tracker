@@ -27,6 +27,11 @@ type GetPlannerInit {
   inboxTaskCount: Int!
 }
 
+type GroupInfoDto {
+  id: Int!
+  name: String!
+}
+
 input LoginUserInput {
   email: String!
   password: String!
@@ -40,6 +45,9 @@ type MeRes {
 }
 
 type Mutation {
+  """Добавить дело в группу"""
+  assignTaskToGroup(input: TaskAssignInput!): Boolean!
+
   """Выход пользователя из системы на одном устройстве"""
   createTask(input: TaskCreateInput!): TaskSchema!
 
@@ -51,6 +59,9 @@ type Mutation {
   """
   refresh: Boolean!
 
+  """Удалить дело из группы"""
+  unassignTaskToGroup(input: TaskUnassignInput!): Boolean!
+
   """Логин по email/паролю. Выставляет httpOnly cookies access/refresh."""
   userLogin(input: LoginUserInput!): Boolean!
 
@@ -59,9 +70,15 @@ type Mutation {
 }
 
 type Query {
+  getAssignableGroups: [GroupInfoDto!]!
   getInbox: GetInboxResponse!
   getPlannerInit: GetPlannerInit!
   me: MeRes!
+}
+
+input TaskAssignInput {
+  groupId: Int!
+  taskId: String!
 }
 
 input TaskCreateInput {
@@ -102,6 +119,11 @@ enum TaskStatus {
   IN_PROGRESS
   NOT_STARTED
   OVERDUE
+}
+
+input TaskUnassignInput {
+  groupId: Int!
+  taskId: String!
 }
 
 type TasksConnection {

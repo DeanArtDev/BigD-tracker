@@ -33,5 +33,6 @@ export * from './ui/empty';
 export * from './ui/calendar';
 export * from './ui/select';
 export * from './ui/alert-dialog';
+export * from './ui/drawer';
 
 export * from './lib/utils';

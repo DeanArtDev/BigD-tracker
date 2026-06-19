@@ -6,3 +6,4 @@ export * from './toaster.provider';
 export * from './wysiwyg';
 export * from './app-dropdown';
 export * from './confirm-dialog';
+export * from './app-drawer';

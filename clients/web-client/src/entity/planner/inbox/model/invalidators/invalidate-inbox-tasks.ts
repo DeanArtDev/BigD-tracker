@@ -13,16 +13,9 @@ async function invalidateInboxTasks(client: ApolloClient, inboxId: GroupId) {
         id: inboxId,
       });
 
-      if (!inboxCacheId) {
-        return;
+      if (inboxCacheId != null) {
+        cache.evict({ id: inboxCacheId, fieldName: 'tasks' });
       }
-
-      cache.evict({
-        id: inboxCacheId,
-        fieldName: 'tasks',
-      });
-
-      cache.gc();
     },
   });
 }

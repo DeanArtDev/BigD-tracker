@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
+import { GroupListDrawerProvider } from '@/entity/planner/groups';
 import { ErrorReactor } from '@/feature/error-reactor';
 import { ConfirmDialogProvider } from '@/shared/project-ui';
 import { InitDataPrefetcher } from './_prefetches';
@@ -18,7 +19,9 @@ export default function PrivateRoutesLayout({
   return (
     <>
       <InitDataPrefetcher>
-        <ConfirmDialogProvider>{children}</ConfirmDialogProvider>
+        <ConfirmDialogProvider>
+          <GroupListDrawerProvider>{children}</GroupListDrawerProvider>
+        </ConfirmDialogProvider>
       </InitDataPrefetcher>
 
       <ErrorReactor />

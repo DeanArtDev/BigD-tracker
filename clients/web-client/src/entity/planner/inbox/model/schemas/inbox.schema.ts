@@ -15,6 +15,7 @@ const GET_INBOX_QUERY = gql`
           deadline
           description
           endDate
+          groupId
           id
           name
           priority

@@ -8,7 +8,7 @@ import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { GetInboxDocument, GetInboxQuery, GetInboxQueryVariables } from './schemas/inbox.schema.generated';
 
 type InboxTaskDto = NonNullable<NonNullable<GetInboxQuery['getInbox']['tasks']>['items'][number]>;
-type InboxTask = BrandTask<Override<InboxTaskDto, { priority: TaskPriority }>>;
+type InboxTask = BrandTask<Override<InboxTaskDto, { priority: TaskPriority; groupId?: GroupId }>>;
 
 type GetInboxResponse = Override<
   GetInboxQuery,
