@@ -1,3 +1,5 @@
+import { GroupId } from '@/entity/planner/groups';
+import { TaskStatus } from '@/entity/schema-types';
 import { Brand, DeepReadonly } from '@/shared/lib';
 
 type TaskId = Brand<string, 'TaskId'>;
@@ -5,6 +7,19 @@ type TaskId = Brand<string, 'TaskId'>;
 type BrandTask<TData extends Record<string, unknown>> = Omit<DeepReadonly<TData>, 'id'> & {
   readonly id: TaskId;
 };
+
+interface Task {
+  readonly id: TaskId;
+  readonly name: string;
+  readonly description?: string | null;
+  readonly groupId?: GroupId;
+  readonly priority: TaskPriority;
+  readonly cancelReason?: string | null;
+  readonly startDate?: string | null;
+  readonly deadline?: string | null;
+  readonly endDate?: string | null;
+  readonly status: TaskStatus;
+}
 
 enum TaskType {
   Original = 'ORIGINAL',
@@ -52,4 +67,4 @@ enum TaskRecurrenceWeekday {
 }
 
 export { TaskType, TaskActionType, TaskPriority, TaskRecurrenceWeekday, TaskRecurrenceFrequency };
-export type { TaskId, BrandTask };
+export type { TaskId, BrandTask, Task };

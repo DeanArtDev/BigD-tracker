@@ -1,12 +1,12 @@
 import { GoalServiceClientModule } from '@/infrastructure/rmq-clients/clients';
 import { Module } from '@nestjs/common';
 import { GroupsController } from './groups';
-import { GroupsResolver } from './groups/presentation/graphql';
+import { GroupInboxResolver, GroupsResolver } from './groups/presentation/graphql';
 import { TasksController, TasksInboxController } from './tasks';
 import { TasksResolver } from './tasks/presentation/graphql';
 
 @Module({
-  providers: [GroupsResolver, TasksResolver],
+  providers: [GroupInboxResolver, TasksResolver, GroupsResolver],
   imports: [GoalServiceClientModule],
   controllers: [GroupsController, TasksController, TasksInboxController],
 })

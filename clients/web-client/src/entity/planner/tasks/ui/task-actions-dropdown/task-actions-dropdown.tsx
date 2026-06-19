@@ -3,7 +3,7 @@ import { EllipsisVertical } from 'lucide-react';
 import { TaskStatus } from '@/entity/schema-types';
 import { MaybePromise } from '@/shared/lib';
 import { AppDropdown } from '@/shared/project-ui';
-import { cn } from '@/shared/ui-kit';
+import { cn, DropdownMenuSeparator } from '@/shared/ui-kit';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { TaskAction } from './task-action';
 import { taskActionToHumanize } from '../../lib/maps';
@@ -12,9 +12,11 @@ import { TaskActionType, TaskDomain, TaskType } from '../../model';
 interface TaskActionsDropdownProps {
   readonly loading: boolean;
   readonly triggerClassName?: string;
+  readonly hasGroup?: boolean;
   readonly taskStatus: TaskStatus;
   readonly taskType: TaskType;
   readonly onAssign?: () => MaybePromise<void>;
+  readonly onUnassign?: () => MaybePromise<void>;
   readonly onFinish?: () => MaybePromise<void>;
   readonly onRecover?: () => MaybePromise<void>;
   readonly onDelete?: () => MaybePromise<void>;
@@ -27,12 +29,14 @@ function TaskActionsDropdown({
   taskType,
   triggerClassName,
   loading,
+  hasGroup,
 
   onFinish,
   onDelete,
   onRecover,
   onClone,
   onAssign,
+  onUnassign,
   onDeleteComplete,
 }: TaskActionsDropdownProps) {
   const actions = [
@@ -65,12 +69,23 @@ function TaskActionsDropdown({
 
     {
       element: (
+        <TaskAction action={TaskActionType.Unassign} loading={loading} key="unassign" onClick={onUnassign}>
+          {capitalize(taskActionToHumanize[TaskActionType.Unassign])}
+        </TaskAction>
+      ),
+      allow: TaskDomain.isAllowTaskAction(TaskActionType.Unassign, taskStatus, taskType) && hasGroup,
+    },
+
+    {
+      element: (
         <TaskAction action={TaskActionType.Assign} loading={loading} key="assign" onClick={onAssign}>
           {capitalize(taskActionToHumanize[TaskActionType.Assign])}
         </TaskAction>
       ),
       allow: TaskDomain.isAllowTaskAction(TaskActionType.Assign, taskStatus, taskType),
     },
+
+    { element: <DropdownMenuSeparator key="separator-1" />, allow: true },
 
     {
       element: (
@@ -101,7 +116,7 @@ function TaskActionsDropdown({
       ),
       allow: TaskDomain.isAllowTaskAction(TaskActionType.Delete, taskStatus, taskType),
     },
-  ].filter((i) => i.allow);
+  ];
 
   const isEmpty = actions.length === 0;
   if (isEmpty) return null;
@@ -120,7 +135,7 @@ function TaskActionsDropdown({
         </Button>
       }
     >
-      {actions.map((action) => action.element)}
+      {actions.map((action) => (action.allow ? action.element : null))}
     </AppDropdown>
   );
 }

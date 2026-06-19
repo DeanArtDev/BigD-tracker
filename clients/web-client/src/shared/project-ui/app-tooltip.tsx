@@ -24,7 +24,7 @@ function AppTooltip({
         <span className={cn('inline-block w-fit h-fit', wrapperClassName)}>{children}</span>
       </TooltipTrigger>
 
-      <TooltipContent>{content}</TooltipContent>
+      <TooltipContent side="left">{content}</TooltipContent>
     </Tooltip>
   );
 }

@@ -1,6 +1,6 @@
 import { TaskSchema } from '@/modules/goal-service/tasks';
 import { AvailableInboxTasksStatuses, TaskStatus } from '@big-d/api-contracts';
-import { Field, Int, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { IsArray, IsBoolean, IsEnum, IsIn, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
 @ObjectType()

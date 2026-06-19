@@ -4,8 +4,8 @@ const taskActionToHumanize: Record<TaskActionType, string> = {
   FINISH: 'завершить',
   DELETE: 'удалить',
   CLONE: 'дублировать',
-  ASSIGN: 'переместить',
-  UNASSIGN: 'открепить',
+  ASSIGN: 'в группу',
+  UNASSIGN: 'убрать из группы',
   RECOVER: 'восстановить',
   DELETE_COMPLETE: 'удалить полностью',
 };

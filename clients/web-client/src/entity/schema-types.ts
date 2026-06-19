@@ -41,6 +41,12 @@ export type GetPlannerInit = {
   inboxTaskCount: Scalars['Int']['output'];
 };
 
+export type GroupInfoDto = {
+  __typename?: 'GroupInfoDto';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type LoginUserInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -56,16 +62,24 @@ export type MeRes = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Добавить дело в группу */
+  assignTaskToGroup: Scalars['Boolean']['output'];
   /** Выход пользователя из системы на одном устройстве */
   createTask: TaskSchema;
   /** Выход пользователя из системы на одном устройстве */
   deleteTask: TaskSchema;
   /** Продление токена сессии, необходимы access и refresh токены одновременно */
   refresh: Scalars['Boolean']['output'];
+  /** Удалить дело из группы */
+  unassignTaskToGroup: Scalars['Boolean']['output'];
   /** Логин по email/паролю. Выставляет httpOnly cookies access/refresh. */
   userLogin: Scalars['Boolean']['output'];
   /** Выход пользователя из системы на одном устройстве */
   userLogout: Scalars['Boolean']['output'];
+};
+
+export type MutationAssignTaskToGroupArgs = {
+  input: TaskAssignInput;
 };
 
 export type MutationCreateTaskArgs = {
@@ -76,15 +90,25 @@ export type MutationDeleteTaskArgs = {
   input: TaskDeleteInput;
 };
 
+export type MutationUnassignTaskToGroupArgs = {
+  input: TaskUnassignInput;
+};
+
 export type MutationUserLoginArgs = {
   input: LoginUserInput;
 };
 
 export type Query = {
   __typename?: 'Query';
+  getAssignableGroups: Array<GroupInfoDto>;
   getInbox: GetInboxResponse;
   getPlannerInit: GetPlannerInit;
   me: MeRes;
+};
+
+export type TaskAssignInput = {
+  groupId: Scalars['Int']['input'];
+  taskId: Scalars['String']['input'];
 };
 
 export type TaskCreateInput = {
@@ -127,6 +151,11 @@ export enum TaskStatus {
   NotStarted = 'NOT_STARTED',
   Overdue = 'OVERDUE',
 }
+
+export type TaskUnassignInput = {
+  groupId: Scalars['Int']['input'];
+  taskId: Scalars['String']['input'];
+};
 
 export type TasksConnection = {
   __typename?: 'TasksConnection';

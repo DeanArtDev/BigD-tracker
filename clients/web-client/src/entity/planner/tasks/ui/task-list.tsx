@@ -1,5 +1,3 @@
-import { InboxTask } from '@/entity/planner/inbox';
-import { TaskActionsDropdown, TaskCard, TaskDomain } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import {
   DataErrorElement,
@@ -9,8 +7,9 @@ import {
   VirtualizedInfinityScrollProps,
 } from '@/shared/ui-kit';
 import { DataLoaderProps } from '@/shared/ui-kit';
-
-type Task = InboxTask;
+import { Task, TaskDomain } from '../model';
+import { TaskActionsDropdown } from './task-actions-dropdown';
+import { TaskCard } from './task-card';
 
 type TaskListProps = {
   readonly tasks: Task[];
@@ -20,6 +19,8 @@ type TaskListProps = {
   readonly dropdownProps?: {
     readonly loading?: boolean;
     readonly onDelete?: (task: Task) => MaybePromise<void>;
+    readonly onAssign?: (task: Task) => MaybePromise<void>;
+    readonly onUnassign?: (task: Task) => MaybePromise<void>;
   };
 
   readonly onRetry?: () => void;
@@ -61,9 +62,12 @@ function TaskList({
               afterHeaderSlot={
                 <TaskActionsDropdown
                   taskStatus={task.status}
+                  hasGroup={task.groupId != null}
                   loading={dropdownProps?.loading ?? false}
                   taskType={TaskDomain.parseId(task.id).type}
                   onDelete={() => void dropdownProps?.onDelete?.(task)}
+                  onAssign={() => void dropdownProps?.onAssign?.(task)}
+                  onUnassign={() => void dropdownProps?.onUnassign?.(task)}
                 />
               }
               onContentClick={() => void onTaskContentClick?.(task)}

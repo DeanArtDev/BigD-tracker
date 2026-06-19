@@ -20,6 +20,9 @@ import {
 export class TasksInboxController {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
+  /**
+   * @deprecated
+   * */
   @Post('/in-box')
   @ApiOperation({ summary: 'Создание дела в IN BOX' })
   @ApiResponse({
@@ -48,6 +51,9 @@ export class TasksInboxController {
     );
   }
 
+  /**
+   * @deprecated
+   * */
   @Put('/:taskId/inbox')
   @ApiOperation({ summary: 'Редактирование дела в IN BOX' })
   @ApiResponse({

@@ -5,6 +5,11 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 import * as Types from '@/entity/schema-types';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type TaskAssignInput = {
+  groupId: number;
+  taskId: string;
+};
+
 export type TaskCreateInput = {
   deadline?: string | null | undefined;
   description?: string | null | undefined;
@@ -20,6 +25,11 @@ export type TaskDeleteInput = {
 
 /** Статусы дела */
 export type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
+
+export type TaskUnassignInput = {
+  groupId: number;
+  taskId: string;
+};
 
 export type CreateTaskMutationVariables = Exact<{
   input: Types.TaskCreateInput;
@@ -44,6 +54,18 @@ export type DeleteTaskMutationVariables = Exact<{
 }>;
 
 export type DeleteTaskMutation = { deleteTask: { id: string } };
+
+export type TaskAssignMutationVariables = Exact<{
+  input: Types.TaskAssignInput;
+}>;
+
+export type TaskAssignMutation = { assignTaskToGroup: boolean };
+
+export type TaskUnassignMutationVariables = Exact<{
+  input: Types.TaskUnassignInput;
+}>;
+
+export type TaskUnassignMutation = { unassignTaskToGroup: boolean };
 
 export const CreateTaskDocument = {
   kind: 'Document',
@@ -129,3 +151,72 @@ export const DeleteTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<DeleteTaskMutation, DeleteTaskMutationVariables>;
+export const TaskAssignDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'TaskAssign' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskAssignInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'assignTaskToGroup' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TaskAssignMutation, TaskAssignMutationVariables>;
+export const TaskUnassignDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'TaskUnassign' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskUnassignInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'unassignTaskToGroup' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TaskUnassignMutation, TaskUnassignMutationVariables>;

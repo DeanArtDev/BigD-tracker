@@ -7,14 +7,26 @@ import { Button } from '../button';
 interface ErrorPlaceholderProps {
   readonly message?: string;
   readonly className?: string;
+  readonly variant?: 'transparent' | 'default';
+  readonly size?: 'full' | 'default';
   readonly onRetry?: () => void;
 }
 
-function DataErrorElement({ message = 'Что-то пошло не так 😕', className, onRetry }: ErrorPlaceholderProps) {
+function DataErrorElement({
+  variant = 'default',
+  size = 'default',
+  message = 'Что-то пошло не так 😕',
+  className,
+  onRetry,
+}: ErrorPlaceholderProps) {
   return (
     <div
       className={cn(
         'flex flex-col items-center justify-center p-8 bg-gray-50 dark:bg-gray-900 rounded-md shadow-md space-y-4 text-center',
+        {
+          'bg-transparent': variant === 'transparent',
+          'grow w-full h-full': size === 'full',
+        },
         className,
       )}
     >
