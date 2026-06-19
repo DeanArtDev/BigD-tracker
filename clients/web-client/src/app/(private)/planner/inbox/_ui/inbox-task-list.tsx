@@ -7,6 +7,7 @@ import { TaskList } from '@/entity/planner/tasks';
 import { useTaskAssignToGroup } from '@/feature/planner/task-assign-to-group';
 import { useTaskDeleteFeature } from '@/feature/planner/task-delete';
 import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
+import { useNotify } from '@/shared/lib';
 import { EmptyTasksPlaceholder } from './empty-inbox-tasks.placeholder';
 import { useInboxQueryByUrlQuery } from '../_model/use-inbox-query-by-url-query';
 
@@ -22,9 +23,10 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
   } = useInboxQueryByUrlQuery();
 
   const { deleteTask, loading: isTaskDeleteLoading } = useTaskDeleteFeature();
-  const { assignToGroup } = useTaskAssignToGroup();
-  const { unassignTaskFromGroup } = useTaskUnassignFromGroup();
+  const { assignToGroup, loading: isTaskAssignLoading } = useTaskAssignToGroup();
+  const { unassignTaskFromGroup, loading: isTaskUnassignLoading } = useTaskUnassignFromGroup();
 
+  const { promise } = useNotify();
   const { openGroupList } = useGroupListDrawerContext();
 
   const tasks = data.tasks ?? [];
@@ -35,11 +37,16 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
     <TaskList
       tasks={tasks}
       dropdownProps={{
-        loading: isTaskDeleteLoading,
+        onAssign: (task, groupInfo) => {
+          promise(assignToGroup({ groupId: groupInfo.id, taskId: task.id }));
+        },
+      }}
+      menuProps={{
+        loading: isTaskDeleteLoading || isTaskUnassignLoading || isTaskAssignLoading,
         onDelete: async (task) => void deleteTask(task.id),
         onUnassign: async (task) => {
           if (task.groupId != null) {
-            await unassignTaskFromGroup({ groupId: task.groupId, taskId: task.id });
+            promise(unassignTaskFromGroup({ groupId: task.groupId, taskId: task.id }));
           }
         },
         onAssign: (task) => {
@@ -47,7 +54,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
             selectedGroupIds: data.id != null ? [data.id] : [],
             cb: async (group) => {
               if (task.groupId != group.id) {
-                await assignToGroup({ groupId: group.id, taskId: task.id });
+                promise(assignToGroup({ groupId: group.id, taskId: task.id }));
               }
             },
           });

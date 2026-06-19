@@ -40,8 +40,8 @@ function AppDrawer({
     <Drawer modal={modal} open={open} onOpenChange={onOpenChange} direction={direction}>
       {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
-      <DrawerContent className={cn(className)}>
-        <DrawerHeader>
+      <DrawerContent className={cn('min-h-0 min-w-0', className)} draggable={false}>
+        <DrawerHeader className="border-b shadow-sm">
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>

@@ -2,7 +2,7 @@
 
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { useNotify } from '@/shared/lib';
 import { Button } from '@/shared/ui-kit';
 
 interface Props {
@@ -11,15 +11,16 @@ interface Props {
 
 function CopyCorrelationIdButton({ correlationId }: Props) {
   const [copied, setCopied] = useState(false);
+  const { error, success } = useNotify();
 
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(correlationId);
       setCopied(true);
-      toast.success('ID запроса скопирован');
+      success({ message: 'ID запроса скопирован' });
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      toast.error('Не удалось скопировать ID запроса');
+      error({ message: 'Не удалось скопировать ID запроса' });
     }
   }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect, useEffectEvent } from 'react';
-import { toast } from 'sonner';
+import { useNotify } from '@/shared/lib/use-notify';
 import { ApiError, ApiErrorCode } from '@/shared/transport/graphql';
 
 type ExceptionMessageHandlers = Partial<{
@@ -16,7 +16,7 @@ interface ExceptionNotificatorProps {
 function handleExceptionMessage<Code extends ApiErrorCode>(
   exception: ApiError<Code>,
   messageHandlers: ExceptionMessageHandlers | undefined,
-) {
+): ReactNode {
   const handler = messageHandlers?.[exception.code] as ((exception: ApiError<Code>) => ReactNode) | undefined;
 
   return handler?.(exception);
@@ -24,13 +24,14 @@ function handleExceptionMessage<Code extends ApiErrorCode>(
 
 function useExceptionNotificator({ exception, messageHandlers }: ExceptionNotificatorProps) {
   const messageHandlersRef = useEffectEvent(() => messageHandlers);
+  const { error } = useNotify();
 
   useEffect(() => {
     if (exception == null) return;
     const handlers = messageHandlersRef();
 
-    toast.error(handleExceptionMessage(exception, handlers) ?? 'Непредвиденная ошибка!');
-  }, [exception]);
+    error({ message: handleExceptionMessage(exception, handlers) ?? 'Непредвиденная ошибка!' });
+  }, [exception, error]);
 }
 
 export { useExceptionNotificator, type ExceptionMessageHandlers, type ExceptionNotificatorProps };

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { invalidateInboxTasks } from '@/entity/planner/inbox';
 import { invalidatePlannerInit } from '@/entity/planner/init';
@@ -6,18 +6,21 @@ import { TaskId, useTaskUnassign } from '@/entity/planner/tasks';
 
 function useTaskUnassignFromGroup() {
   const { unassignTask, client, ...rest } = useTaskUnassign();
+  const [loading, setLoading] = useState(false);
 
   const unassignTaskFromGroup = useCallback(
-    ({ groupId, taskId }: { taskId: TaskId; groupId: GroupId }) => {
-      return unassignTask({
+    async ({ groupId, taskId }: { taskId: TaskId; groupId: GroupId }) => {
+      setLoading(true);
+      const result = await unassignTask({
         variables: { input: { groupId, taskId } },
-
-        async onCompleted(data) {
-          if (!data.unassignTaskToGroup) return;
-          await invalidateInboxTasks(client, groupId);
-          await invalidatePlannerInit(client.cache);
-        },
+        awaitRefetchQueries: true,
       });
+
+      if (result.data?.unassignTaskToGroup) {
+        await invalidateInboxTasks(client, groupId);
+        await invalidatePlannerInit(client.cache);
+      }
+      setLoading(false);
     },
     [client, unassignTask],
   );
@@ -25,6 +28,7 @@ function useTaskUnassignFromGroup() {
   return {
     unassignTaskFromGroup,
     ...rest,
+    loading: loading || rest.loading,
   };
 }
 

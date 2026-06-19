@@ -3,9 +3,9 @@
 import { DismissableLayerBranch } from '@radix-ui/react-dismissable-layer';
 import { createPortal } from 'react-dom';
 import { useIsMobile, useIsMounted } from '@/shared/lib/application-status';
-import { Toaster } from '@/shared/ui-kit/ui/sonner';
+import { Toaster } from '@/shared/ui-kit';
 
-function ToasterProvider() {
+function AppToasterProvider() {
   const isMobile = useIsMobile();
 
   const isMounted = useIsMounted();
@@ -16,8 +16,8 @@ function ToasterProvider() {
       <Toaster
         className="app-toaster z-51 pointer-events-auto"
         richColors
-        toastOptions={{ closeButton: true }}
-        position={isMobile ? 'bottom-center' : 'top-center'}
+        toastOptions={{ closeButton: true, duration: 5000 }}
+        position={isMobile ? 'bottom-center' : 'bottom-right'}
       />
     </DismissableLayerBranch>,
     document.body,
@@ -29,4 +29,4 @@ function isToasterClosest(evt: CustomEvent) {
   return target?.closest('.app-toaster');
 }
 
-export { ToasterProvider, isToasterClosest };
+export { AppToasterProvider, isToasterClosest };

@@ -1,5 +1,9 @@
+import { FolderOutput } from 'lucide-react';
+import { GroupInfo, GroupListDropdown } from '@/entity/planner/groups';
 import { MaybePromise } from '@/shared/lib';
+import { AppTooltip } from '@/shared/project-ui';
 import {
+  Button,
   DataErrorElement,
   DataLoader,
   DataLoadingElement,
@@ -16,11 +20,15 @@ type TaskListProps = {
   readonly virtualizerProps: Omit<VirtualizedInfinityScrollProps, 'renderItem'>;
   readonly dataLoaderProps?: DataLoaderProps;
 
-  readonly dropdownProps?: {
+  readonly menuProps?: {
     readonly loading?: boolean;
     readonly onDelete?: (task: Task) => MaybePromise<void>;
     readonly onAssign?: (task: Task) => MaybePromise<void>;
     readonly onUnassign?: (task: Task) => MaybePromise<void>;
+  };
+
+  readonly dropdownProps?: {
+    readonly onAssign?: (task: Task, groupInfo: GroupInfo) => MaybePromise<void>;
   };
 
   readonly onRetry?: () => void;
@@ -32,6 +40,7 @@ function TaskList({
   tasks,
   virtualizerProps,
   dataLoaderProps = {},
+  menuProps,
   dropdownProps,
 
   onRetry,
@@ -60,15 +69,28 @@ function TaskList({
               status={task.status}
               deadline={task.deadline ?? undefined}
               afterHeaderSlot={
-                <TaskActionsDropdown
-                  taskStatus={task.status}
-                  hasGroup={task.groupId != null}
-                  loading={dropdownProps?.loading ?? false}
-                  taskType={TaskDomain.parseId(task.id).type}
-                  onDelete={() => void dropdownProps?.onDelete?.(task)}
-                  onAssign={() => void dropdownProps?.onAssign?.(task)}
-                  onUnassign={() => void dropdownProps?.onUnassign?.(task)}
-                />
+                <div className="flex gap-1">
+                  <GroupListDropdown
+                    selectedGroupId={task.groupId}
+                    trigger={
+                      <Button size="icon-sm" variant="ghost" disabled={menuProps?.loading}>
+                        <AppTooltip content="Переместить в группу" asChild>
+                          <FolderOutput />
+                        </AppTooltip>
+                      </Button>
+                    }
+                    onSelect={(groupInfo) => void dropdownProps?.onAssign?.(task, groupInfo)}
+                  />
+                  <TaskActionsDropdown
+                    taskStatus={task.status}
+                    hasGroup={task.groupId != null}
+                    loading={menuProps?.loading ?? false}
+                    taskType={TaskDomain.parseId(task.id).type}
+                    onDelete={() => void menuProps?.onDelete?.(task)}
+                    onAssign={() => void menuProps?.onAssign?.(task)}
+                    onUnassign={() => void menuProps?.onUnassign?.(task)}
+                  />
+                </div>
               }
               onContentClick={() => void onTaskContentClick?.(task)}
               onHeaderClick={() => void onTaskHeaderClick?.(task)}

@@ -40,6 +40,12 @@ function GroupListDrawerProvider({ children }: { children: ReactNode }) {
       <AppDrawer
         className="sm:data-[vaul-drawer-direction=right]:max-w-[40vw] sm:data-[vaul-drawer-direction=right]:min-w-[30vw]"
         open={open}
+        onOpenChange={(value) => {
+          if (!value) {
+            consumerParams.current = null;
+          }
+          setOpen(value);
+        }}
         title="Выбор группы"
         content={
           <GroupListLazy
