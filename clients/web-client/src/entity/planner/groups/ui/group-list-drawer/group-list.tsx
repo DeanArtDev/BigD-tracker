@@ -30,7 +30,7 @@ function GroupList({ selectedGroupIds = [], onAccept, onCancel }: GroupListProps
       isLoading={isGetAssignableGroupsLoading}
       errorElement={<DataErrorElement size="full" variant="transparent" onRetry={refetch} />}
     >
-      <div className="flex flex-col grow gap-2">
+      <div className="flex flex-col grow gap-2 min-h-0">
         <ScrollAreaNativeVertical className="grow">
           <GroupInfoList
             groups={groups}

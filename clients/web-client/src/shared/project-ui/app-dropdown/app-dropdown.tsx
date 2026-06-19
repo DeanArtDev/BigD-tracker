@@ -3,7 +3,6 @@ import { cn, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/sh
 import { DropdownItem, type DropdownItemProps } from './dropdown-item';
 
 type TaskActionsProps = {
-  readonly disabled?: boolean;
   readonly trigger?: ReactNode;
   readonly items?: (DropdownItemProps & { key: string })[];
   readonly className?: string;

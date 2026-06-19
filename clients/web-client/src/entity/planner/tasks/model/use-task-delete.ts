@@ -1,6 +1,4 @@
 import { useMutation } from '@apollo/client/react';
-import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
-import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { DeleteTaskMutationVariables, DeleteTaskMutation, DeleteTaskDocument } from './schemas/tasks.schema.generated';
 
 function useTaskDelete() {
@@ -9,9 +7,6 @@ function useTaskDelete() {
       endpoint: 'private',
     },
   });
-
-  const { appErrors } = useExtendApolloErrorResult(rest.error);
-  useExceptionNotificator({ exception: appErrors.at(-1) });
 
   return { deleteTask, ...rest };
 }

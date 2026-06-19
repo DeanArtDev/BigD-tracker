@@ -3,11 +3,12 @@
 import { isEmpty } from 'lodash-es';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { toast } from 'sonner';
+import { useNotify } from '@/shared/lib';
 import { TaskFormData } from '../task-form';
 
 function TaskFormErrorReactor() {
   const { subscribe } = useFormContext<TaskFormData>();
+  const { dismiss, warning } = useNotify();
 
   useEffect(() => {
     const toastIds = new Map<string, string | number>();
@@ -21,17 +22,18 @@ function TaskFormErrorReactor() {
           if (!isEmpty(error)) {
             if (toastIds.get(error.message ?? '') != null) return;
 
-            const currentId = toast.warning(error.message, {
+            const currentId = warning({
+              message: error.message,
               duration: 10000,
               onAutoClose: () => {
                 const exist = toastIds.get(error.message ?? '');
-                toast.dismiss(exist);
+                dismiss(exist);
                 toastIds.delete(error.message ?? '');
               },
 
               onDismiss: () => {
                 const exist = toastIds.get(error.message ?? '');
-                toast.dismiss(exist);
+                dismiss(exist);
                 toastIds.delete(error.message ?? '');
               },
             });
@@ -43,12 +45,12 @@ function TaskFormErrorReactor() {
 
     return () => {
       toastIds.entries().forEach(([, toastId]) => {
-        toast.dismiss(+toastId);
+        dismiss(+toastId);
       });
       toastIds.clear();
       unsubscribe();
     };
-  }, [subscribe]);
+  }, [dismiss, subscribe, warning]);
 
   return null;
 }

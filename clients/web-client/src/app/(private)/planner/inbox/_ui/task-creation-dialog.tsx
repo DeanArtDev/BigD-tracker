@@ -10,7 +10,7 @@ import {
   useTaskCreate,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
-import { MaybePromise } from '@/shared/lib';
+import { MaybePromise, useNotify } from '@/shared/lib';
 import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
 import { Button, ButtonLoading } from '@/shared/ui-kit';
 
@@ -65,6 +65,7 @@ function Component({ onSubmit }: ComponentProps) {
 
 function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePromise<void> }) {
   const { loading, createTask } = useTaskCreate();
+  const { promise } = useNotify();
 
   return (
     <TaskFormProvider loading={loading} fieldVisibility={{ groupSelection: false }}>
@@ -72,12 +73,15 @@ function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePro
         onSubmit={async (taskFormData, close) => {
           const { name, description, deadline, startDate, priority } = taskFormData;
 
-          await createTask({
-            variables: { input: { name, description, deadline, startDate, priority, groupId: props.groupId } },
-            async onCompleted() {
-              await props.onSuccess();
-              close();
-            },
+          promise(async () => {
+            const response = await createTask({
+              variables: { input: { name, description, deadline, startDate, priority, groupId: props.groupId } },
+            });
+
+            close();
+            if (response.data?.createTask != null) {
+              props.onSuccess();
+            }
           });
         }}
       />
@@ -89,11 +93,9 @@ function Footer() {
   const { formId, formState } = useTaskFromContext();
 
   return (
-    <div>
-      <ButtonLoading form={formId} loading={formState.isLoading} disabled={formState.disabled} type="submit">
-        Сохранить
-      </ButtonLoading>
-    </div>
+    <ButtonLoading form={formId} loading={formState.isLoading} disabled={formState.disabled} type="submit">
+      Сохранить
+    </ButtonLoading>
   );
 }
 

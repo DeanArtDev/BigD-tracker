@@ -11,7 +11,7 @@ import {
   DialogTrigger,
   ScrollAreaNativeVertical,
 } from '@/shared/ui-kit';
-import { isToasterClosest } from '../toaster.provider';
+import { isToasterClosest } from '../app-toaster.provider';
 
 interface AppDialogProps {
   readonly title: string;

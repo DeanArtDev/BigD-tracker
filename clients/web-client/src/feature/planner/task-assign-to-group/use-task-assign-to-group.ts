@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { invalidateInboxTasks } from '@/entity/planner/inbox';
 import { invalidatePlannerInit } from '@/entity/planner/init';
@@ -6,18 +6,18 @@ import { TaskId, useTaskAssign } from '@/entity/planner/tasks';
 
 function useTaskAssignToGroup() {
   const { assignTask, client, ...rest } = useTaskAssign();
+  const [loading, setLoading] = useState(false);
 
   const assignToGroup = useCallback(
-    ({ groupId, taskId }: { taskId: TaskId; groupId: GroupId }) => {
-      return assignTask({
+    async ({ groupId, taskId }: { taskId: TaskId; groupId: GroupId }) => {
+      setLoading(true);
+      const response = await assignTask({
         variables: { input: { groupId, taskId } },
-
-        async onCompleted(data) {
-          if (!data.assignTaskToGroup) return;
-          await invalidateInboxTasks(client, groupId);
-          await invalidatePlannerInit(client.cache);
-        },
       });
+      if (!response.data?.assignTaskToGroup) return;
+      await invalidateInboxTasks(client, groupId);
+      await invalidatePlannerInit(client.cache);
+      setLoading(false);
     },
     [assignTask, client],
   );
@@ -25,6 +25,7 @@ function useTaskAssignToGroup() {
   return {
     assignToGroup,
     ...rest,
+    loading: loading || rest.loading,
   };
 }
 
