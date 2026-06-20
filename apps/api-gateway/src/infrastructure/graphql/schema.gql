@@ -48,6 +48,12 @@ type Mutation {
   """Добавить дело в группу"""
   assignTaskToGroup(input: TaskAssignInput!): Boolean!
 
+  """Полное удаление дела"""
+  completeDeleteTask(input: TaskCompleteDeleteInput!): Int!
+
+  """Копирование дела"""
+  copyTask(input: TaskCopyInput!): TaskSchema!
+
   """Выход пользователя из системы на одном устройстве"""
   createTask(input: TaskCreateInput!): TaskSchema!
 
@@ -79,6 +85,14 @@ type Query {
 input TaskAssignInput {
   groupId: Int!
   taskId: String!
+}
+
+input TaskCompleteDeleteInput {
+  id: String!
+}
+
+input TaskCopyInput {
+  id: String!
 }
 
 input TaskCreateInput {

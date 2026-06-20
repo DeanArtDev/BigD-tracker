@@ -2,10 +2,24 @@ import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { TaskSchema } from '@/modules/goal-service/tasks';
-import { GoalAssignTaskToGroup, GoalCreateTask, GoalDeleteTask, GoalUnassignTaskFromGroup } from '@big-d/api-contracts';
+import {
+  GoalAssignTaskToGroup,
+  GoalCloneTask,
+  GoalCompleteDeleteTask,
+  GoalCreateTask,
+  GoalDeleteTask,
+  GoalUnassignTaskFromGroup,
+} from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { TaskAssignInput, TaskCreateInput, TaskDeleteInput, TaskUnassignInput } from './schemas';
+import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
+import {
+  TaskAssignInput,
+  TaskCompleteDeleteInput,
+  TaskCopyInput,
+  TaskCreateInput,
+  TaskDeleteInput,
+  TaskUnassignInput,
+} from './schemas';
 
 @Resolver(() => TaskSchema)
 class TasksResolver {
@@ -54,6 +68,43 @@ class TasksResolver {
     );
 
     return data;
+  }
+
+  @Mutation(() => TaskSchema, {
+    description: 'Копирование дела',
+  })
+  async copyTask(
+    @Args('input') input: TaskCopyInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GoalCloneTask.Response['data']> {
+    const { data } = await this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, {
+      data: {
+        userId: uid,
+        taskId: input.id,
+      },
+    });
+
+    return data;
+  }
+
+  @Mutation(() => Int, {
+    description: 'Полное удаление дела',
+  })
+  async completeDeleteTask(
+    @Args('input') input: TaskCompleteDeleteInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GoalCompleteDeleteTask.Response['data']['id']> {
+    const { data } = await this.goalClient.send<GoalCompleteDeleteTask.Response, GoalCompleteDeleteTask.Request>(
+      GoalCompleteDeleteTask.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId: input.id,
+        },
+      },
+    );
+
+    return data.id;
   }
 
   @Mutation(() => Boolean, {
