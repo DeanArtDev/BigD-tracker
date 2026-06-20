@@ -11,7 +11,7 @@ class GetInboxResponse {
   @Field()
   name: string;
 
-  @Field(() => Number)
+  @Field(() => Int)
   taskCount: number;
 }
 
@@ -38,7 +38,7 @@ class TasksConnection {
 
 @InputType()
 class GetInboxTasksInput {
-  @Field(() => Number)
+  @Field(() => Int)
   @Min(1)
   @IsOptional()
   @IsInt()
@@ -50,7 +50,7 @@ class GetInboxTasksInput {
   @IsString()
   search?: string;
 
-  @Field(() => [Number], { nullable: true })
+  @Field(() => [Int], { nullable: true })
   @Min(1, { each: true })
   @Max(4, { each: true })
   @IsOptional()

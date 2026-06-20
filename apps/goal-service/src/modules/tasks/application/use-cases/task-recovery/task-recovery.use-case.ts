@@ -1,4 +1,4 @@
-import { TaskFactory } from '@/modules/tasks/domain';
+import { TaskFactory, TaskIdBuilder } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -18,7 +18,7 @@ class TaskRecoveryUseCase {
     private readonly taskTypeService: TaskTypeService,
   ) {}
 
-  async execute({ input }: TaskRecoveryCommand): Promise<{ id: number }> {
+  async execute({ input }: TaskRecoveryCommand): Promise<{ id: string }> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, userId, groupId } = input;
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
@@ -29,7 +29,7 @@ class TaskRecoveryUseCase {
         await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
         TaskFactory.assignToGroup(recoveredTask, groupId);
         await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
-        return { id: recoveredTask.id };
+        return { id: TaskIdBuilder.wrapOriginId(recoveredTask.id) };
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

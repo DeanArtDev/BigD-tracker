@@ -1,6 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
-import { Field, Float, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
 
 registerEnumType(TaskStatus, {
@@ -12,17 +12,18 @@ registerEnumType(TaskStatus, {
 class TaskSchema {
   @Field(() => ID)
   @IsString()
+  @MaxLength(255)
   id: string;
 
   @Field()
   @IsString()
   name: string;
 
-  @Field(() => Float)
+  @Field(() => Int)
   @IsInt()
   userId: number;
 
-  @Field(() => Float, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsInt()
   groupId?: number;
@@ -32,16 +33,16 @@ class TaskSchema {
   @IsString()
   description?: string;
 
-  @Field(() => Float)
+  @Field(() => Int)
   @Min(1)
   @Max(4)
   @IsInt()
   priority: number;
 
-  @Field(() => Float)
+  @Field(() => Int)
   @Min(0)
   @Max(100)
-  @IsNumber()
+  @IsInt()
   weight: number;
 
   @Field({ nullable: true })

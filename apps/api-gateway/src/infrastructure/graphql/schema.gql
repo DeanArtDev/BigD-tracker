@@ -10,14 +10,14 @@ type GetInboxMeta {
 type GetInboxResponse {
   id: Int!
   name: String!
-  taskCount: Float!
+  taskCount: Int!
   tasks(input: GetInboxTasksInput): TasksConnection!
 }
 
 input GetInboxTasksInput {
   cursor: String
-  limit: Float!
-  priority: [Float!]
+  limit: Int!
+  priority: [Int!]
   search: String
   status: [TaskStatus!]
 }
@@ -60,13 +60,22 @@ type Mutation {
   """Выход пользователя из системы на одном устройстве"""
   deleteTask(input: TaskDeleteInput!): TaskSchema!
 
+  """Завершение дела"""
+  finishTask(input: TaskFinishInput!): Boolean!
+
   """
   Продление токена сессии, необходимы access и refresh токены одновременно
   """
   refresh: Boolean!
 
+  """Восстановление дела"""
+  taskRecovery(input: TaskRecoveryInput!): Int!
+
   """Удалить дело из группы"""
   unassignTaskToGroup(input: TaskUnassignInput!): Boolean!
+
+  """Редактирование дела"""
+  updateTask(input: TaskUpdateInput!): TaskSchema!
 
   """Логин по email/паролю. Выставляет httpOnly cookies access/refresh."""
   userLogin(input: LoginUserInput!): Boolean!
@@ -80,6 +89,17 @@ type Query {
   getInbox: GetInboxResponse!
   getPlannerInit: GetPlannerInit!
   me: MeRes!
+}
+
+"""Частота повторения дела"""
+enum RecurrenceFrequency {
+  DAILY
+  HOURLY
+  MINUTELY
+  MONTHLY
+  SECONDLY
+  WEEKLY
+  YEARLY
 }
 
 input TaskAssignInput {
@@ -98,14 +118,53 @@ input TaskCopyInput {
 input TaskCreateInput {
   deadline: String
   description: String
-  groupId: Float
+  groupId: Int
   name: String!
-  priority: Float!
+  priority: Int!
   startDate: String
 }
 
 input TaskDeleteInput {
   id: String!
+}
+
+input TaskFinishInput {
+  id: String!
+  reason: String
+  type: TaskFinishStatus!
+}
+
+"""Статус завершения дела"""
+enum TaskFinishStatus {
+  CANCELED
+  COMPLETED
+  OVERDUE
+}
+
+input TaskRecoveryInput {
+  groupId: Int!
+  id: String!
+}
+
+"""День недели повторения дела"""
+enum TaskRecurrenceWeekday {
+  FR
+  MO
+  SA
+  SU
+  TH
+  TU
+  WE
+}
+
+input TaskRecurrencyInput {
+  frequency: RecurrenceFrequency!
+  interval: Int
+  monthdays: [Int!]
+  startDate: String!
+  untilDate: String
+  weekdays: [TaskRecurrenceWeekday!]
+  yearmonths: [Int!]
 }
 
 """Дело"""
@@ -114,14 +173,14 @@ type TaskSchema {
   deadline: String
   description: String
   endDate: String
-  groupId: Float
+  groupId: Int
   id: ID!
   name: String!
-  priority: Float!
+  priority: Int!
   startDate: String
   status: TaskStatus!
-  userId: Float!
-  weight: Float!
+  userId: Int!
+  weight: Int!
 }
 
 """Статусы дела"""
@@ -138,6 +197,17 @@ enum TaskStatus {
 input TaskUnassignInput {
   groupId: Int!
   taskId: String!
+}
+
+input TaskUpdateInput {
+  deadline: String
+  description: String
+  id: String!
+  name: String!
+  priority: Int!
+  recurrence: TaskRecurrencyInput
+  startDate: String
+  weight: Int!
 }
 
 type TasksConnection {
