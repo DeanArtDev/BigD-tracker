@@ -10,7 +10,7 @@ import {
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GetGroupInput, GroupSchema, GroupInfoDto } from '../schemas';
+import { GetGroupInput, GroupSchema, GroupInfoDto, GetGroupTasksInput } from '../schemas';
 
 @Resolver(() => GroupSchema)
 export class GroupsQueriesResolver {
@@ -48,10 +48,15 @@ export class GroupsQueriesResolver {
   }
 
   @ResolveField(() => TasksConnection)
-  async tasks(@TokenPayload() { uid }: AccessTokenPayload, @Parent() group: GroupSchema): Promise<TasksConnection> {
+  async tasks(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Parent() group: GroupSchema,
+    @Args('input', { nullable: true }) input?: GetGroupTasksInput,
+  ): Promise<TasksConnection> {
     const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
       data: {
         userId: uid,
+        order: input?.order,
         filter: {
           groupIds: [group.id],
           limit: 10000,

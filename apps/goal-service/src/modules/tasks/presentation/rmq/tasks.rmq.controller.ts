@@ -163,7 +163,7 @@ export class TasksRmqController {
 
   @MessagePattern(GoalGetTasks.pattern)
   async getTasks(@Payload() { data: payload }: GoalGetTasks.Request): Promise<GoalGetTasks.Response> {
-    const { userId, filter, search } = payload;
+    const { userId, order, filter, search } = payload;
     const { ids, groupIds, priority, status, limit, cursor } = filter ?? {};
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
 
@@ -179,6 +179,7 @@ export class TasksRmqController {
       new GetTasksQuery({
         userId,
         search,
+        order,
         limit,
         filter: requestFilter,
       }),
@@ -186,7 +187,7 @@ export class TasksRmqController {
 
     const { nextCursor, hasNext } = this.cursorPaginationService.getNextCursor({
       search,
-      filter: requestFilter,
+      filter: { ...requestFilter, order },
       limit,
       lastId: tasks.at(-1)?.id.toString(),
       currentPartLength: tasks.length,

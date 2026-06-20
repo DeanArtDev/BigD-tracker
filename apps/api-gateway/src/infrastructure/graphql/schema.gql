@@ -11,6 +11,10 @@ input GetGroupInput {
   groupId: Int!
 }
 
+input GetGroupTasksInput {
+  order: GroupTaskOrder
+}
+
 type GetInboxResponse {
   id: Int!
   name: String!
@@ -45,6 +49,11 @@ input GetTasksInput {
   status: [TaskStatus!]
 }
 
+input GroupCreateInput {
+  description: String
+  name: String!
+}
+
 type GroupInfoDto {
   id: Int!
   name: String!
@@ -57,7 +66,7 @@ type GroupSchema {
   name: String!
   progress: Int!
   status: GroupStatus!
-  tasks: TasksConnection!
+  tasks(input: GetGroupTasksInput): TasksConnection!
   userId: Int!
 }
 
@@ -66,6 +75,22 @@ enum GroupStatus {
   DONE
   IN_PROGRESS
   NOT_STARTED
+}
+
+"""Порядок дел внутри группы"""
+enum GroupTaskOrder {
+  Group
+}
+
+input GroupUpdateInput {
+  description: String
+  id: Int!
+  name: String!
+  tasks: [GroupUpdateTaskInput!]
+}
+
+input GroupUpdateTaskInput {
+  id: String!
 }
 
 input LoginUserInput {
@@ -90,6 +115,9 @@ type Mutation {
   """Копирование дела"""
   copyTask(input: TaskCopyInput!): TaskSchema!
 
+  """Создание группы"""
+  createGroup(input: GroupCreateInput!): GroupSchema!
+
   """Выход пользователя из системы на одном устройстве"""
   createTask(input: TaskCreateInput!): TaskSchema!
 
@@ -109,6 +137,9 @@ type Mutation {
 
   """Удалить дело из группы"""
   unassignTaskToGroup(input: TaskUnassignInput!): Boolean!
+
+  """Редактирование группы"""
+  updateGroup(input: GroupUpdateInput!): GroupSchema!
 
   """Редактирование дела"""
   updateTask(input: TaskUpdateInput!): TaskSchema!

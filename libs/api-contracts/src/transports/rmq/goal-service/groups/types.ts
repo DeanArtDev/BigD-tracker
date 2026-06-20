@@ -4,4 +4,8 @@ enum GroupStatus {
   DONE = 'DONE',
 }
 
-export { GroupStatus };
+enum GroupTaskOrder {
+  Group = 'group',
+}
+
+export { GroupStatus, GroupTaskOrder };

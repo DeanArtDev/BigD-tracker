@@ -1,6 +1,5 @@
-import { DescriptionVo, Task, TaskFactory, TaskFactoryReplaceInput } from '@/modules/tasks/domain';
+import { DescriptionVo } from '@/modules/tasks/domain';
 import { Name } from '@big-d/api-utils';
-import { GroupWithTasks } from './group-with-tasks.aggregate';
 import { Group } from './group.aggregate';
 
 interface GroupFactoryCreateInput {
@@ -12,10 +11,6 @@ interface GroupFactoryCreateInput {
 interface GroupFactoryReplaceInput {
   readonly name: string;
   readonly description?: string;
-}
-
-interface GroupFactoryReplaceWithTasksInput extends GroupFactoryReplaceInput {
-  readonly tasks: { task: Task; input: TaskFactoryReplaceInput }[];
 }
 
 class GroupFactory {
@@ -36,18 +31,9 @@ class GroupFactory {
     });
   }
 
-  replaceWithTasksByGroup(group: GroupWithTasks, input: GroupFactoryReplaceWithTasksInput): GroupWithTasks {
-    const { tasks, ...others } = input;
-
-    return group.replace({
-      group: (group) => this.replace(group, others),
-      tasks: tasks.map((task) => TaskFactory.replace(task.task, task.input)),
-    });
-  }
-
-  delete(group: GroupWithTasks): GroupWithTasks {
+  delete(group: Group): Group {
     return group.delete();
   }
 }
 
-export { GroupFactory, GroupFactoryReplaceWithTasksInput };
+export { GroupFactory };

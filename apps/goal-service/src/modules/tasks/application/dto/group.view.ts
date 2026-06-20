@@ -22,6 +22,17 @@ class GroupView {
   static restore(input: GroupViewState): GroupView {
     return new GroupView(input.id, input.userId, input.progress, input.name, input.status, input.description);
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      userId: this.userId,
+      progress: this.progress,
+      status: this.status,
+    };
+  }
 }
 
 export { GroupView, GroupViewState };

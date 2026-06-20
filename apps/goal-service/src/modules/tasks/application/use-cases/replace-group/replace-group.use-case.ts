@@ -1,10 +1,11 @@
-import { ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import { GroupsReadRepository, GroupsWriteRepository, TaskDatabase } from '@/modules/tasks/application/ports';
-import { GroupFactory, GroupFactoryReplaceWithTasksInput } from '@/modules/tasks/domain/aggregates/group';
+import { Task } from '@/modules/tasks/domain';
+import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
-import { GroupWithTasksView } from '../../dto';
+import { GroupsViewMapper, GroupView } from '../../dto';
+import { ExceptionTaskUnprocessable } from '../../exceptions';
+import { GroupsReadRepository, GroupsWriteRepository, TaskDatabase } from '../../ports';
 import { GroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
 import { ReplaceGroupCommand } from './replace-group.command';
 
@@ -20,12 +21,12 @@ class ReplaceGroupUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute({ input }: ReplaceGroupCommand): Promise<GroupWithTasksView> {
+  async execute({ input }: ReplaceGroupCommand): Promise<GroupView> {
     return this.db.runTransaction(async (trx) => {
-      const { id: groupId, userId, description, name, tasks } = input;
+      const { id: groupId, userId, description, name, tasks = [] } = input;
       const ensureGroup = await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
 
-      const readyToReplaceTasks: GroupFactoryReplaceWithTasksInput['tasks'] = [];
+      const readyToReplaceTasks: Task[] = [];
       for (const taskInput of tasks) {
         const { isOrigin, data } = this.taskTypeService.getType({ taskId: taskInput.id });
 
@@ -34,22 +35,34 @@ class ReplaceGroupUseCase {
 
           await this.groupCheckerService.ensureTaskInGroup({ taskId: data.id, groupId, userId }, { trx });
 
-          readyToReplaceTasks.push({ task: restoredTask, input: taskInput });
+          readyToReplaceTasks.push(restoredTask);
           continue;
         }
 
-        throw new ExceptionTaskUnprocessable({ taskId: taskInput.id, message: 'Не валидный id' });
+        throw new ExceptionTaskUnprocessable({
+          taskId: taskInput.id,
+          message: 'Не валидный id, не оригинальные дела не могут находится в группе',
+        });
       }
 
       const groupFactory = new GroupFactory();
-      const groupWithTasks = groupFactory.replaceWithTasksByGroup(ensureGroup, {
-        name,
-        description,
-        tasks: readyToReplaceTasks,
-      });
+      const updatedGroup = groupFactory.replace(ensureGroup, { description, name });
 
-      await this.groupsWriteRepo.replaceGroupAndTaskOrder(groupWithTasks, trx);
-      return await this.groupsReadRepo.getGroupWithTasksById({ groupId, userId }, { trx, throwError: true });
+      for (const task of readyToReplaceTasks) {
+        if (task.groupId !== ensureGroup.id) {
+          throw new ExceptionTaskUnprocessable({
+            taskId: task.id,
+            message: `Дело не принадлежит группе: ${ensureGroup.id}`,
+          });
+        }
+      }
+
+      await this.groupsWriteRepo.updateGroupAndTaskOrder(
+        { group: updatedGroup, taskIds: readyToReplaceTasks.map((t) => t.id) },
+        trx,
+      );
+
+      return GroupsViewMapper.fromAggregateToView(updatedGroup);
     });
   }
 }

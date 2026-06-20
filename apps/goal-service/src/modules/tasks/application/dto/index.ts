@@ -5,3 +5,4 @@ export * from './group-with-tasks.view';
 export * from './group-info.view';
 
 export * from './task.view-mapper';
+export * from './group.view-mapper';

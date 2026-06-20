@@ -1,16 +1,14 @@
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { Task } from '@/modules/tasks/domain';
+import { Group } from '@/modules/tasks/domain/aggregates/group';
 import { TaskTransaction } from '../transaction-manager.port';
 
 interface GroupsWriteRepository {
   createGroup(group: Group, trx?: TaskTransaction): Promise<Group>;
 
-  replaceGroupAndTaskOrder(group: GroupWithTasks, trx?: TaskTransaction): Promise<void>;
+  updateGroupAndTaskOrder(input: { group: Group; taskIds: Task['id'][] }, trx?: TaskTransaction): Promise<void>;
 
-  getGroupById(
-    input: { groupId: number; userId: number; includeInbox?: boolean },
-    trx?: TaskTransaction,
-  ): Promise<GroupWithTasks | null>;
+  getGroup(specification: TasksSpecification, trx?: TaskTransaction): Promise<Group | null>;
 
   delete(specifications: TasksSpecification, trx?: TaskTransaction): Promise<boolean>;
 }
