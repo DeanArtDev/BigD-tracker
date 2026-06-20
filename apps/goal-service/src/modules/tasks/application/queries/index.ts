@@ -1,8 +1,8 @@
 export * from './get-inbox-by-user-id/get-inbox-by-user-id.query';
 export * from './get-inbox-by-user-id/get-inbox-by-user-id.handler';
 
-export * from './get-detailed-groups/get-detailed-groups.query';
-export * from './get-detailed-groups/get-detailed-groups.handler';
+export * from './get-group/get-group.query';
+export * from './get-group/get-group.handler';
 
 export * from './get-tasks-by-range/get-tasks-by-range.query';
 export * from './get-tasks-by-range/get-tasks-by-range.handler';

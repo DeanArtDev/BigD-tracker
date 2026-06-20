@@ -1,8 +1,8 @@
 import {
   GetGroupUserInboxHandler,
   GetInboxByUserIdQuery,
-  GetDetailedGroupsHandler,
-  GetDetailedGroupsQuery,
+  GetGroupHandler,
+  GetGroupQuery,
   GetTasksByRangeQuery,
   GetTasksByRangeHandler,
   GetAssignableTasksQuery,
@@ -83,7 +83,7 @@ import {
 
 const queries = [
   GetInboxByUserIdQuery,
-  GetDetailedGroupsQuery,
+  GetGroupQuery,
   GetTasksByRangeQuery,
   GetAssignableTasksQuery,
   GetUserGroupsQuery,
@@ -123,7 +123,7 @@ const handlers = [
   ReplaceGroupHandler,
   CreateGroupHandler,
   DeleteGroupHandler,
-  GetDetailedGroupsHandler,
+  GetGroupHandler,
   GetTasksByRangeHandler,
   GetAssignableTasksHandler,
   FinishTaskHandler,

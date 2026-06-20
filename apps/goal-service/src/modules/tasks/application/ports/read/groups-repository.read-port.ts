@@ -1,4 +1,4 @@
-import { GroupDetailedView, GroupInfoView, GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
+import { GroupInfoView, GroupView, GroupWithTasksView } from '@/modules/tasks/application/dto';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskTransaction } from '../transaction-manager.port';
 
@@ -18,12 +18,6 @@ interface GroupsReadRepository {
   getInfoGroups(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupInfoView[]>;
 
   getGroup(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null>;
-
-  getGroupDetailed(
-    groupSpecifications: TasksSpecification,
-    taskSpecifications?: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<GroupDetailedView | null>;
 
   getGroupWithTasksById(
     input: GetGroupByIdInput,

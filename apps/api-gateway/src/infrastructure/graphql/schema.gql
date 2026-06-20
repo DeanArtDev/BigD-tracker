@@ -7,6 +7,10 @@ type CursorPaginationMeta {
   hasNextPage: Boolean!
 }
 
+input GetGroupInput {
+  groupId: Int!
+}
+
 type GetInboxResponse {
   id: Int!
   name: String!
@@ -44,6 +48,24 @@ input GetTasksInput {
 type GroupInfoDto {
   id: Int!
   name: String!
+}
+
+"""Группа"""
+type GroupSchema {
+  description: String
+  id: Int!
+  name: String!
+  progress: Int!
+  status: GroupStatus!
+  tasks: TasksConnection!
+  userId: Int!
+}
+
+"""Статусы группы"""
+enum GroupStatus {
+  DONE
+  IN_PROGRESS
+  NOT_STARTED
 }
 
 input LoginUserInput {
@@ -100,6 +122,9 @@ type Mutation {
 
 type Query {
   getAssignableGroups: [GroupInfoDto!]!
+
+  """Получение группы"""
+  getGroup(input: GetGroupInput!): GroupSchema!
   getInbox: GetInboxResponse!
   getPlannerInit: GetPlannerInit!
 

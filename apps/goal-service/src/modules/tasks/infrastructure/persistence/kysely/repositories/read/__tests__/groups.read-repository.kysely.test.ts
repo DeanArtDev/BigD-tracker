@@ -122,40 +122,6 @@ describe('GroupsReadRepositoryKysely', () => {
     );
   });
 
-  test('getGroupDetailed returns expected sql and params', async () => {
-    await withRepository<TasksDB, GroupsReadRepositoryKysely>(
-      (db) => new GroupsReadRepositoryKysely(db),
-      async ({ repository, recorder }) => {
-        const groupSpec = groupsCombinators.and(GroupByUserId(19), GroupById(301));
-        const taskSpec = tasksCombinators.and(TaskByUserId(19), TaskByStatus([TaskStatus.NOT_STARTED]));
-
-        await repository.getGroupDetailed(groupSpec, taskSpec);
-
-        expect(recorder.queries).toHaveLength(1);
-        expectSqlQuery(recorder.queries[0], {
-          sql: `
-          select
-            "groups"."id" as "id",
-            "groups"."user_id" as "user_id",
-            "groups"."description" as "description",
-            "groups"."name" as "name",
-            "groups"."progress" as "progress",
-            group_statuses.name as "status"
-          from "groups"
-          inner join "group_statuses"
-            on "groups"."status_id" = "group_statuses"."id"
-          where
-            (
-              "groups"."user_id" = $1
-              and "groups"."id" = $2
-            )
-        `,
-          parameters: [19, 301],
-        });
-      },
-    );
-  });
-
   test('getGroupWithTasksById returns expected sql and params', async () => {
     await withRepository<TasksDB, GroupsReadRepositoryKysely>(
       (db) => new GroupsReadRepositoryKysely(db),

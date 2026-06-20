@@ -1,10 +1,6 @@
-import { GroupDetailedView, GroupInfoView } from '@/modules/tasks/application/dto';
+import { GroupInfoView, GroupView, GroupWithTasksView, TaskView } from '@/modules/tasks/application/dto';
 import { Task } from '@/modules/tasks/domain';
 import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
-import {
-  GroupReadKyselyMapper,
-  RawGroupWithTasks,
-} from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupWriteKyselyMapper } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.write-mapper';
 import { RawGroup } from '@/modules/tasks/infrastructure/persistence/kysely/mappers/groups.read-mapper';
 import { GroupStatus } from '@big-d/api-contracts';
@@ -30,11 +26,22 @@ const getGroupWithTasks = (data: Partial<RawGroup> & { tasks?: Task[] } = {}): G
   });
 };
 
-const getGroupDetailedView = (data: Partial<RawGroupWithTasks> = {}): GroupDetailedView => {
+const getGroupView = (data: Partial<RawGroup> = {}): GroupView => {
   const groupRaw = getGroupRaw(data);
 
-  return GroupReadKyselyMapper.fromRawToDetailedView({
-    ...groupRaw,
+  return GroupView.restore({
+    id: groupRaw.id,
+    userId: groupRaw.user_id,
+    progress: groupRaw.progress,
+    name: groupRaw.name,
+    status: groupRaw.status,
+    description: groupRaw.description ?? undefined,
+  });
+};
+
+const getGroupDetailedView = (data: Partial<RawGroup> & { tasks?: TaskView[] } = {}): GroupWithTasksView => {
+  return GroupWithTasksView.restore({
+    group: getGroupView(data),
     tasks: data.tasks ?? [],
   });
 };
@@ -46,4 +53,4 @@ const getGroupInfoView = (data: Partial<{ id: number; name: string }> = {}): Gro
   });
 };
 
-export { getGroupDetailedView, getGroupInfoView, getGroupRaw, getGroupWithTasks };
+export { getGroupDetailedView, getGroupInfoView, getGroupRaw, getGroupView, getGroupWithTasks };

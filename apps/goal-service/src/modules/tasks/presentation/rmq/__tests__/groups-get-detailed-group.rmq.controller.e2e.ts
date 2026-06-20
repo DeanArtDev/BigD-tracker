@@ -1,6 +1,6 @@
 import { initTestEnvironment } from '@/../jest.setup';
 import { GoalsToken, GroupsToken, TasksToken } from '@/modules/tasks/tokens';
-import { GoalGetDetailedGroup, RmqErrorKind } from '@big-d/api-contracts';
+import { GoalGetGroup, RmqErrorKind } from '@big-d/api-contracts';
 import { specToDebugString } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
@@ -51,7 +51,7 @@ describe('GroupsRmqController (rmq e2e)', () => {
     await ms.close();
   });
 
-  describe(`${GoalGetDetailedGroup.pattern}`, () => {
+  describe(`${GoalGetGroup.pattern}`, () => {
     test('should return group details', async () => {
       const userId = 90;
       const groupId = 321;
@@ -64,14 +64,11 @@ describe('GroupsRmqController (rmq e2e)', () => {
       });
       groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(detailedGroup);
 
-      const payload: GoalGetDetailedGroup.Request = buildPayload({
+      const payload: GoalGetGroup.Request = buildPayload({
         data: { groupId, userId },
       });
 
-      const res = await sendMessage<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
-        GoalGetDetailedGroup.pattern,
-        payload,
-      );
+      const res = await sendMessage<GoalGetGroup.Response, GoalGetGroup.Request>(GoalGetGroup.pattern, payload);
 
       expect(groupReadRepoMock.getGroupDetailed).toHaveBeenCalledTimes(1);
       const [groupSpecArg, taskSpecArgs, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
@@ -98,16 +95,13 @@ describe('GroupsRmqController (rmq e2e)', () => {
       const groupId = 322;
       groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(null);
 
-      const payload: GoalGetDetailedGroup.Request = buildPayload({
+      const payload: GoalGetGroup.Request = buildPayload({
         data: { groupId, userId },
       });
 
       let error: unknown;
       try {
-        await sendMessage<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
-          GoalGetDetailedGroup.pattern,
-          payload,
-        );
+        await sendMessage<GoalGetGroup.Response, GoalGetGroup.Request>(GoalGetGroup.pattern, payload);
       } catch (err) {
         error = err;
       }
