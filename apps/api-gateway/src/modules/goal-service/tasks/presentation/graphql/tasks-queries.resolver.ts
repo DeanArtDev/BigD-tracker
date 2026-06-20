@@ -1,10 +1,10 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { AvailableInboxTasksStatuses, GoalGetTasks } from '@big-d/api-contracts';
+import { AvailableInboxTasksStatuses, GoalGetTaskById, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { GetTasksInput, TaskSchema, TasksConnection } from './schemas';
+import { GetTaskByIdInput, GetTasksInput, TaskSchema, TasksConnection } from './schemas';
 
 @Resolver(() => TaskSchema)
 class TasksQueriesResolver {
@@ -40,6 +40,26 @@ class TasksQueriesResolver {
       items: data.items,
       meta: data.meta,
     };
+  }
+
+  @Query(() => TaskSchema, {
+    description: 'Получение дела по id',
+  })
+  async getTaskById(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Args('input') input: GetTaskByIdInput,
+  ): Promise<GoalGetTaskById.Response['data']> {
+    const { data } = await this.goalClient.send<GoalGetTaskById.Response, GoalGetTaskById.Request>(
+      GoalGetTaskById.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId: input.id,
+        },
+      },
+    );
+
+    return data;
   }
 }
 

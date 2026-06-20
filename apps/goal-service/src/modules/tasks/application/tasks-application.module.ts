@@ -13,6 +13,8 @@ import {
   GetAssignableGroupsHandler,
   GetDiaryTasksQuery,
   GetDiaryTasksHandler,
+  GetTaskByIdQuery,
+  GetTaskByIdHandler,
   GetTasksQuery,
   GetTasksHandler,
 } from './queries';
@@ -87,6 +89,7 @@ const queries = [
   GetUserGroupsQuery,
   GetAssignableGroupsQuery,
   GetDiaryTasksQuery,
+  GetTaskByIdQuery,
   GetTasksQuery,
 ];
 const commands = [
@@ -129,6 +132,7 @@ const handlers = [
   GetUserGroupsHandler,
   GetAssignableGroupsHandler,
   GetDiaryTasksHandler,
+  GetTaskByIdHandler,
   GetTasksHandler,
 ];
 const useCases = [

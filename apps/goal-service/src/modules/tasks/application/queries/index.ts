@@ -19,5 +19,8 @@ export * from './get-user-groups/get-user-groups.handler';
 export * from './get-assignable-groups/get-assignable-groups.query';
 export * from './get-assignable-groups/get-assignable-groups.handler';
 
+export * from './get-task-by-id/get-task-by-id.query';
+export * from './get-task-by-id/get-task-by-id.handler';
+
 export * from './get-tasks/get-tasks.query';
 export * from './get-tasks/get-tasks.handler';

@@ -1,8 +1,8 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
-import { ExceptionTaskNotFound } from '@/modules/tasks/application/exceptions';
-import { TasksReadRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
+import { TaskView } from '../dto';
+import { ExceptionTaskNotFound } from '../exceptions';
+import { TasksReadRepository, TaskTransaction } from '../ports';
 
 @Injectable()
 class TaskQueryService {

@@ -2,6 +2,8 @@ import {
   GetAssignableTasksQuery,
   GetDiaryTasksHandler,
   GetDiaryTasksQuery,
+  GetTaskByIdHandler,
+  GetTaskByIdQuery,
   GetTasksByRangeHandler,
   GetTasksByRangeQuery,
   GetTasksHandler,
@@ -27,6 +29,7 @@ import {
   GoalFinishTask,
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
+  GoalGetTaskById,
   GoalGetTasks,
   GoalReplaceTask,
   GoalTaskRecovery,
@@ -194,6 +197,18 @@ export class TasksRmqController {
         items: tasks,
         meta: { endCursor: nextCursor, hasNextPage: hasNext },
       },
+    };
+  }
+
+  @MessagePattern(GoalGetTaskById.pattern)
+  async getTaskById(@Payload() { data: payload }: GoalGetTaskById.Request): Promise<GoalGetTaskById.Response> {
+    return {
+      data: await this.queryBus.execute<GetTaskByIdQuery, ReturnHandlerType<typeof GetTaskByIdHandler>>(
+        new GetTaskByIdQuery({
+          userId: payload.userId,
+          taskId: payload.taskId,
+        }),
+      ),
     };
   }
 
