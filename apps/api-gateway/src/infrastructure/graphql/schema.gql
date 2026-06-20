@@ -27,6 +27,10 @@ type GetPlannerInit {
   inboxTaskCount: Int!
 }
 
+input GetTaskByIdInput {
+  id: String!
+}
+
 input GetTasksInput {
   cursor: String
   groupIds: [Int!]
@@ -98,6 +102,9 @@ type Query {
   getAssignableGroups: [GroupInfoDto!]!
   getInbox: GetInboxResponse!
   getPlannerInit: GetPlannerInit!
+
+  """Получение дела по id"""
+  getTaskById(input: GetTaskByIdInput!): TaskSchema!
 
   """Получение списка дел"""
   getTasks(input: GetTasksInput!): TasksConnection!
