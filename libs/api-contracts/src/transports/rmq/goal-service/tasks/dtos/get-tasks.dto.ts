@@ -1,3 +1,4 @@
+import { GroupTaskOrder } from '@/transports/rmq/goal-service/groups';
 import { CursorPaginationQueryDto } from '@/transports/rmq/shared/dto';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
@@ -37,6 +38,10 @@ class GetTasksReqData {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsEnum(GroupTaskOrder)
+  order?: GroupTaskOrder;
 
   @Type(() => GetTasksFilterDto)
   @ValidateNested({ each: true })

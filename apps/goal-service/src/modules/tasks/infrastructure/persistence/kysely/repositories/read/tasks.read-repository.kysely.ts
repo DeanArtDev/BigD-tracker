@@ -2,6 +2,7 @@ import { TaskView } from '@/modules/tasks/application/dto';
 import { TaskDatabase, TasksReadRepository, TasksSorting, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import {
+  GroupTaskOrder,
   RecurrenceFrequency,
   SortDirection,
   TaskRecurrenceStatus,
@@ -127,17 +128,22 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
   async getMany(
     specifications: TasksSpecification,
-    params: { limit: number; sort?: SortDirection },
+    params: { limit: number; sort?: SortDirection; order?: 'group' },
     trx?: TaskTransaction,
   ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-many.read', async () => {
       const tasks = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .where((eb) => specifications.toExpr(eb))
-        .limit(params.limit)
-        .orderBy('id', (ob) => {
-          if (params.sort === SortDirection.DESC) return ob.desc();
-          return ob.asc();
+        .$if(params.order === GroupTaskOrder.Group, (qb) =>
+          qb.innerJoin('task_to_group as ttg', 'tasks.id', 'ttg.task_id').orderBy('ttg.position', 'asc'),
+        )
+        .$if(params.order == null, (qb) => {
+          return qb.orderBy('id', (ob) => {
+            if (params.sort === SortDirection.DESC) return ob.desc();
+            return ob.asc();
+          });
         })
+        .limit(params.limit)
         .execute();
 
       return tasks.map((task) => {

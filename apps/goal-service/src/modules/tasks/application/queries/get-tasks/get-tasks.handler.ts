@@ -30,7 +30,7 @@ export class GetTasksHandler implements IQueryHandler<GetTasksQuery> {
 
   async execute({ input }: GetTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
-      const { userId, filter, search, limit } = input;
+      const { userId, filter, order, search, limit } = input;
       const { ids = [], groupIds = [], status = [], priority = [], lastId } = filter ?? {};
       const lId = TaskIdBuilder.unwrapId(lastId?.toString() ?? '')?.origin?.id ?? undefined;
 
@@ -48,7 +48,7 @@ export class GetTasksHandler implements IQueryHandler<GetTasksQuery> {
         ]),
       );
 
-      return this.tasksReadRepository.getMany(specifications, { limit, sort: SortDirection.DESC }, trx);
+      return this.tasksReadRepository.getMany(specifications, { limit, order, sort: SortDirection.DESC }, trx);
     });
   }
 }

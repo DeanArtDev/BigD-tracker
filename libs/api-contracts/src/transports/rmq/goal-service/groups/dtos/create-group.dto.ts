@@ -32,9 +32,6 @@ class CreateGroupResData {
   @IsNumber()
   progress: number;
 
-  @IsNumber()
-  weight: number;
-
   @IsEnum(GroupStatus)
   status: GroupStatus;
 }

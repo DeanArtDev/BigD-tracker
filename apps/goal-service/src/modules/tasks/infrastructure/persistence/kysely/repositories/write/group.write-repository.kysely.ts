@@ -1,14 +1,13 @@
 import { GroupsWriteRepository, TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
-import { groupsQuerySpec } from '@/modules/tasks/domain';
-import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { groupsQuerySpec, Task } from '@/modules/tasks/domain';
+import { Group } from '@/modules/tasks/domain/aggregates/group';
 import { GroupStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupWriteKyselyMapper } from '../../mappers/groups.write-mapper';
-import { TasksWriteKyselyMapper } from '../../mappers/tasks.write-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { groupWithStatusQuery, leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
+import { groupWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupWriteRepositoryKysely extends BaseTasksRepository implements GroupsWriteRepository {
@@ -16,54 +15,20 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
     super();
   }
 
-  async getGroupById(
-    input: { groupId: number; userId: number; includeInbox?: boolean },
-    trx?: TaskTransaction,
-  ): Promise<GroupWithTasks | null> {
-    return await this.errorCatcher('groups.get-by-id.write', async () => {
-      const { includeInbox = false } = input;
-
-      let query = groupWithStatusQuery(this.db, trx);
-
-      if (!includeInbox) {
-        query = query.where('groups.name', 'not in', groupsQuerySpec.unavailableNames);
-      }
-
-      const group = await query
-        .where('groups.id', '=', input.groupId)
-        .where('groups.user_id', '=', input.userId)
+  async getGroup(specifications: TasksSpecification, trx?: TaskTransaction): Promise<Group | null> {
+    return await this.errorCatcher('groups.get.read', async () => {
+      const group = await groupWithStatusQuery(this.db, trx)
+        .where((eb) => specifications.toExpr(eb))
         .executeTakeFirst();
       if (group == null) return null;
 
-      const taskQuery = tasksWithStatusQuery(this.db, trx)
-        .where('tasks.group_id', '=', input.groupId)
-        .orderBy('tasks.id', 'asc');
-      const tasks = await leftJoinTaskRecurrences(taskQuery).execute();
-
-      return GroupWriteKyselyMapper.fromRawToAgrWithTasks({
+      return GroupWriteKyselyMapper.fromRawToAgr({
         id: group.id,
         name: group.name,
         description: group.description,
         user_id: group.user_id,
         progress: group.progress,
         status: group.status,
-        tasks: tasks.map((task) =>
-          TasksWriteKyselyMapper.fromRawToAgr({
-            id: task.id,
-            user_id: task.user_id,
-            group_id: group.id,
-            name: task.name,
-            description: task.description,
-            priority: task.priority,
-            weight: task.weight,
-            cancel_reason: task.cancel_reason,
-            start_date: task.start_date,
-            end_date: task.end_date,
-            deadline: task.deadline,
-            status: task.status,
-            recurrence_id: task.recurrence_id,
-          }),
-        ),
       });
     });
   }
@@ -103,8 +68,10 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
   /**
    * Обновление группы и порядка ее дел
    * */
-  async replaceGroupAndTaskOrder(group: GroupWithTasks, trx?: TaskTransaction): Promise<void> {
-    return await this.errorCatcher('groups.replace-with-tasks', async () => {
+  async updateGroupAndTaskOrder(input: { group: Group; taskIds: Task['id'][] }, trx?: TaskTransaction): Promise<void> {
+    return await this.errorCatcher('groups.update-group-and-task-order', async () => {
+      const { group, taskIds } = input;
+
       await this.db
         .qb(trx)
         .updateTable('groups')
@@ -118,13 +85,13 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirstOrThrow();
 
       await this.db.qb(trx).deleteFrom('task_to_group as ttg').where('ttg.group_id', '=', group.id).execute();
-      if (group.tasks.length > 0) {
+      if (taskIds.length > 0) {
         await this.db
           .qb(trx)
           .insertInto('task_to_group')
           .values(
-            group.tasks.map((t, i) => ({
-              task_id: t.id,
+            taskIds.map((id, i) => ({
+              task_id: id,
               group_id: group.id,
               position: i,
             })),

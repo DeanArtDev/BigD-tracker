@@ -1,5 +1,3 @@
-import { TaskRecurrenceValues } from '../../types';
-
 export class ReplaceGroupCommand {
   constructor(
     readonly input: {
@@ -7,15 +5,8 @@ export class ReplaceGroupCommand {
       readonly name: string;
       readonly userId: number;
       readonly description?: string;
-      readonly tasks: {
+      readonly tasks?: {
         readonly id: string;
-        readonly name: string;
-        readonly description?: string;
-        readonly weight: number;
-        readonly startDate?: string;
-        readonly deadline?: string;
-        readonly priority: number;
-        readonly recurrence?: TaskRecurrenceValues;
       }[];
     },
   ) {}

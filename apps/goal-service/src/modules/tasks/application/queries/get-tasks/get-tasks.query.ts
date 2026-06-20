@@ -6,6 +6,7 @@ export class GetTasksQuery {
       readonly userId: number;
       readonly search?: string;
       readonly limit: number;
+      readonly order?: 'group';
       readonly filter?: {
         readonly priority?: number[];
         readonly status?: TaskStatus[];

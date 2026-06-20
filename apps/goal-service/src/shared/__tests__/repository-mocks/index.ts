@@ -40,15 +40,14 @@ const tasksOverridesWriteRepoMock: Record<keyof TasksOverridesRepositoryWritePor
 const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
   createGroup: jest.fn(),
   delete: jest.fn(),
-  getGroupById: jest.fn(),
-  replaceGroupAndTaskOrder: jest.fn(),
+  getGroup: jest.fn(),
+  updateGroupAndTaskOrder: jest.fn(),
 };
 
 const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> & { getGroupDetailed: jest.Mock } = {
   getByName: jest.fn(),
   getGroup: jest.fn(),
   getGroupDetailed: jest.fn(),
-  getGroupWithTasksById: jest.fn(),
   ensureTaskInGroup: jest.fn(),
   getGroupListWithTasks: jest.fn(),
   getInfoGroups: jest.fn(),

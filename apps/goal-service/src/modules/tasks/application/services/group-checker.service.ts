@@ -1,8 +1,12 @@
-import { GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { Group } from '@/modules/tasks/domain/aggregates/group';
 import { GroupsToken } from '@/modules/tasks/tokens';
 import { Inject, Injectable } from '@nestjs/common';
+import { compact } from 'lodash';
 import { ExceptionGroupNotExist, ExceptionTaskAlreadyInGroup, ExceptionTaskNotInGroup } from '../exceptions';
 import { GroupsReadRepository, GroupsWriteRepository, TaskTransaction } from '../ports';
+import { GroupById, GroupByUserId, GroupInbox, groupsCombinators } from '../specifications';
+
+const { and, not } = groupsCombinators;
 
 @Injectable()
 class GroupCheckerService {
@@ -80,19 +84,21 @@ class GroupCheckerService {
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params?: { trx?: TaskTransaction; skipException?: false | undefined; includeInbox?: boolean },
-  ): Promise<GroupWithTasks>;
+  ): Promise<Group>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params: { trx?: TaskTransaction; skipException: true; includeInbox?: boolean },
-  ): Promise<GroupWithTasks | null>;
+  ): Promise<Group | null>;
   async ensureGroupExists(
     input: { groupId: number; userId: number },
     params?: { trx?: TaskTransaction; skipException?: boolean; includeInbox?: boolean },
-  ): Promise<GroupWithTasks | null> {
+  ): Promise<Group | null> {
     const { skipException, trx } = params ?? {};
 
-    const group = await this.groupWriteRepo.getGroupById(
-      { groupId: input.groupId, userId: input.userId, includeInbox: params?.includeInbox },
+    const group = await this.groupWriteRepo.getGroup(
+      and(
+        ...compact([GroupById(input.groupId), GroupByUserId(input.userId), !params?.includeInbox && not(GroupInbox())]),
+      ),
       trx,
     );
 

@@ -1,29 +1,10 @@
-import { TaskRecurrencyDto } from '@/transports/rmq/goal-service/tasks/dtos';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsNumber, IsObject, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { GroupResSingle } from './group-response.dto';
 
 class ReplaceGroupTask {
   @IsString()
   id: string;
-
-  @IsString()
-  name: string;
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsInt()
-  priority: number;
-
-  @IsNumber()
-  weight: number;
-
-  @IsOptional()
-  @IsObject()
-  @Type(() => TaskRecurrencyDto)
-  recurrence?: TaskRecurrencyDto;
 }
 
 class ReplaceGroupReqData {
@@ -42,9 +23,10 @@ class ReplaceGroupReqData {
   description?: string;
 
   @ValidateNested({ each: true })
+  @IsOptional()
   @IsArray()
   @Type(() => ReplaceGroupTask)
-  tasks: ReplaceGroupTask[];
+  tasks?: ReplaceGroupTask[];
 }
 
 class ReplaceGroupReq {

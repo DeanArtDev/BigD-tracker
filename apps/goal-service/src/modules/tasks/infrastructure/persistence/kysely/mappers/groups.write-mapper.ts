@@ -1,5 +1,4 @@
-import { Task } from '@/modules/tasks/domain';
-import { Group, GroupWithTasks } from '@/modules/tasks/domain/aggregates/group';
+import { Group } from '@/modules/tasks/domain/aggregates/group';
 import { DescriptionVo, ProgressVo } from '@/modules/tasks/domain/aggregates/value-objects';
 import { GroupStatus } from '@big-d/api-contracts';
 import { Name } from '@big-d/api-utils';
@@ -13,10 +12,6 @@ interface RawGroup {
   readonly status: GroupStatus;
 }
 
-interface RawGroupWithTasks extends RawGroup {
-  readonly tasks: Task[];
-}
-
 class GroupWriteKyselyMapper {
   static fromRawToAgr(raw: RawGroup): Group {
     return Group.restore({
@@ -26,13 +21,6 @@ class GroupWriteKyselyMapper {
       userId: raw.user_id,
       status: raw.status,
       progress: ProgressVo.restore(raw.progress),
-    });
-  }
-
-  static fromRawToAgrWithTasks({ tasks, ...raw }: RawGroupWithTasks): GroupWithTasks {
-    return GroupWithTasks.restore({
-      group: this.fromRawToAgr(raw),
-      tasks,
     });
   }
 }
