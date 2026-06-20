@@ -6,7 +6,7 @@ import { TaskRecoveryUseCase } from './task-recovery.use-case';
 export class TaskRecoveryHandler implements ICommandHandler<TaskRecoveryCommand> {
   constructor(private readonly taskRecoveryUseCase: TaskRecoveryUseCase) {}
 
-  async execute(command: TaskRecoveryCommand): Promise<{ id: number }> {
+  async execute(command: TaskRecoveryCommand): Promise<{ id: string }> {
     return await this.taskRecoveryUseCase.execute(command);
   }
 }

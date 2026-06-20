@@ -19,8 +19,8 @@ class TaskRecoveryReq {
 }
 
 class TaskRecoveryResData {
-  @IsInt()
-  id: number;
+  @IsString()
+  id: string;
 }
 
 class TaskRecoveryRes {

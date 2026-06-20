@@ -8,6 +8,9 @@ import {
   GoalCompleteDeleteTask,
   GoalCreateTask,
   GoalDeleteTask,
+  GoalFinishTask,
+  GoalReplaceTask,
+  GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
@@ -18,6 +21,9 @@ import {
   TaskCopyInput,
   TaskCreateInput,
   TaskDeleteInput,
+  TaskFinishInput,
+  TaskRecoveryInput,
+  TaskUpdateInput,
   TaskUnassignInput,
 } from './schemas';
 
@@ -43,6 +49,33 @@ class TasksResolver {
           name: input.name,
           startDate: input.startDate,
           deadline: input.deadline,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  @Mutation(() => TaskSchema, {
+    description: 'Редактирование дела',
+  })
+  async updateTask(
+    @Args('input') input: TaskUpdateInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GoalReplaceTask.Response['data']> {
+    const { data } = await this.goalClient.send<GoalReplaceTask.Response, GoalReplaceTask.Request>(
+      GoalReplaceTask.pattern,
+      {
+        data: {
+          id: input.id,
+          userId: uid,
+          priority: input.priority,
+          name: input.name,
+          description: input.description,
+          weight: input.weight,
+          startDate: input.startDate,
+          deadline: input.deadline,
+          recurrence: input.recurrence,
         },
       },
     );
@@ -100,6 +133,49 @@ class TasksResolver {
         data: {
           userId: uid,
           taskId: input.id,
+        },
+      },
+    );
+
+    return data.id;
+  }
+
+  @Mutation(() => Boolean, {
+    description: 'Завершение дела',
+  })
+  async finishTask(
+    @Args('input') input: TaskFinishInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GoalFinishTask.Response['data']> {
+    const { data } = await this.goalClient.send<GoalFinishTask.Response, GoalFinishTask.Request>(
+      GoalFinishTask.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId: input.id,
+          reason: input.reason,
+          type: input.type,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  @Mutation(() => Int, {
+    description: 'Восстановление дела',
+  })
+  async taskRecovery(
+    @Args('input') input: TaskRecoveryInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GoalTaskRecovery.Response['data']['id']> {
+    const { data } = await this.goalClient.send<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
+      GoalTaskRecovery.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId: input.id,
+          groupId: input.groupId,
         },
       },
     );
