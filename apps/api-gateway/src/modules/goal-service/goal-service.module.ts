@@ -3,10 +3,10 @@ import { Module } from '@nestjs/common';
 import { GroupsController } from './groups';
 import { GroupInboxResolver, GroupsResolver } from './groups/presentation/graphql';
 import { TasksController, TasksInboxController } from './tasks';
-import { TasksResolver } from './tasks/presentation/graphql';
+import { TasksMutationsResolver, TasksQueriesResolver } from './tasks/presentation/graphql';
 
 @Module({
-  providers: [GroupInboxResolver, TasksResolver, GroupsResolver],
+  providers: [GroupInboxResolver, TasksMutationsResolver, TasksQueriesResolver, GroupsResolver],
   imports: [GoalServiceClientModule],
   controllers: [GroupsController, TasksController, TasksInboxController],
 })

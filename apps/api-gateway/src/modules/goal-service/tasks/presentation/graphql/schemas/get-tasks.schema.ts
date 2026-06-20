@@ -1,22 +1,10 @@
 import { AvailableInboxTasksStatuses, TaskStatus } from '@big-d/api-contracts';
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { CursorPaginationInput } from '@shared/graphql';
-import { IsArray, IsEnum, IsIn, IsOptional, IsString, Length, Max, Min } from 'class-validator';
-
-@ObjectType()
-class GetInboxResponse {
-  @Field(() => Int)
-  id: number;
-
-  @Field()
-  name: string;
-
-  @Field(() => Int)
-  taskCount: number;
-}
+import { IsArray, IsEnum, IsIn, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
 @InputType()
-class GetInboxTasksInput extends CursorPaginationInput {
+class GetTasksInput extends CursorPaginationInput {
   @Field(() => String, { nullable: true })
   @Length(0, 50)
   @IsOptional()
@@ -28,6 +16,7 @@ class GetInboxTasksInput extends CursorPaginationInput {
   @Max(4, { each: true })
   @IsOptional()
   @IsArray()
+  @IsInt({ each: true })
   priority?: number[];
 
   @Field(() => [TaskStatus], { nullable: true })
@@ -36,6 +25,18 @@ class GetInboxTasksInput extends CursorPaginationInput {
   @IsArray()
   @IsEnum(TaskStatus, { each: true })
   status?: TaskStatus[];
+
+  @Field(() => [Int], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  groupIds?: number[];
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  ids?: string[];
 }
 
-export { GetInboxResponse, GetInboxTasksInput };
+export { GetTasksInput };

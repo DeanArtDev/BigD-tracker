@@ -2,7 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type GetInboxMeta {
+type CursorPaginationMeta {
   endCursor: String
   hasNextPage: Boolean!
 }
@@ -25,6 +25,16 @@ input GetInboxTasksInput {
 type GetPlannerInit {
   inboxId: Int!
   inboxTaskCount: Int!
+}
+
+input GetTasksInput {
+  cursor: String
+  groupIds: [Int!]
+  ids: [String!]
+  limit: Int!
+  priority: [Int!]
+  search: String
+  status: [TaskStatus!]
 }
 
 type GroupInfoDto {
@@ -88,6 +98,9 @@ type Query {
   getAssignableGroups: [GroupInfoDto!]!
   getInbox: GetInboxResponse!
   getPlannerInit: GetPlannerInit!
+
+  """Получение списка дел"""
+  getTasks(input: GetTasksInput!): TasksConnection!
   me: MeRes!
 }
 
@@ -212,5 +225,5 @@ input TaskUpdateInput {
 
 type TasksConnection {
   items: [TaskSchema!]!
-  meta: GetInboxMeta!
+  meta: CursorPaginationMeta!
 }
