@@ -28,7 +28,7 @@ import {
 } from './schemas';
 
 @Resolver(() => TaskSchema)
-class TasksResolver {
+class TasksMutationsResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
   @Mutation(() => TaskSchema, {
@@ -226,4 +226,4 @@ class TasksResolver {
   }
 }
 
-export { TasksResolver };
+export { TasksMutationsResolver };

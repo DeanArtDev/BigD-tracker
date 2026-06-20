@@ -9,7 +9,8 @@ import {
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GetInboxResponse, GetInboxTasksInput, GroupInfoDto, TasksConnection } from '../schemas';
+import { TasksConnection } from '@/modules/goal-service/tasks';
+import { GetInboxResponse, GetInboxTasksInput, GroupInfoDto } from '../schemas';
 
 @Resolver(() => GetInboxResponse)
 export class GroupInboxResolver {
