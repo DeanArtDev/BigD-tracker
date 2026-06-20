@@ -44,7 +44,7 @@ const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
   replaceGroupAndTaskOrder: jest.fn(),
 };
 
-const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> = {
+const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> & { getGroupDetailed: jest.Mock } = {
   getByName: jest.fn(),
   getGroup: jest.fn(),
   getGroupDetailed: jest.fn(),

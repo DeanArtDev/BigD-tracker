@@ -1,7 +1,7 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { AvailableInboxTasksStatuses, GoalGetTaskById, GoalGetTasks } from '@big-d/api-contracts';
+import { AvailableToViewTasksStatuses, GoalGetTaskById, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { GetTaskByIdInput, GetTasksInput, TaskSchema, TasksConnection } from './schemas';
@@ -19,7 +19,7 @@ class TasksQueriesResolver {
   ): Promise<TasksConnection> {
     const { status, limit, cursor, search, priority, groupIds, ids } = input;
     const availableStatuses =
-      status?.filter((i) => AvailableInboxTasksStatuses.includes(i)) ?? AvailableInboxTasksStatuses;
+      status?.filter((i) => AvailableToViewTasksStatuses.includes(i)) ?? AvailableToViewTasksStatuses;
 
     const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
       data: {

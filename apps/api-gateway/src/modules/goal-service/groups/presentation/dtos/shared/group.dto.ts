@@ -42,16 +42,17 @@ class GroupDto {
   @IsEnum(GroupStatus)
   status: GroupStatus;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Список дел',
     type: TaskDto,
     isArray: true,
   })
   @Expose()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => TaskDto)
   @IsArray()
-  tasks: TaskDto[];
+  tasks?: TaskDto[];
 }
 
 export { GroupDto };

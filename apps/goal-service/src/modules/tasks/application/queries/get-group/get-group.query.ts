@@ -1,4 +1,4 @@
-export class GetDetailedGroupsQuery {
+export class GetGroupQuery {
   constructor(
     readonly input: {
       readonly groupId: number;

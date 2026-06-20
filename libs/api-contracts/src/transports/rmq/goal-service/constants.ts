@@ -1,6 +1,6 @@
 import { TaskStatus } from './tasks';
 
-const AvailableInboxTasksStatuses: TaskStatus[] = [
+const AvailableToViewTasksStatuses: TaskStatus[] = [
   TaskStatus.NOT_STARTED,
   TaskStatus.IN_PROGRESS,
   TaskStatus.COMPLETED,
@@ -8,4 +8,4 @@ const AvailableInboxTasksStatuses: TaskStatus[] = [
   TaskStatus.CANCELED,
 ];
 
-export { AvailableInboxTasksStatuses };
+export { AvailableToViewTasksStatuses };

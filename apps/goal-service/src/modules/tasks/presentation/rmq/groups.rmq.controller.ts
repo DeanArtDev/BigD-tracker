@@ -1,9 +1,5 @@
 import { GroupWithTasksView } from '@/modules/tasks/application/dto';
-import {
-  GetAssignableGroupsQuery,
-  GetDetailedGroupsQuery,
-  GetUserGroupsQuery,
-} from '@/modules/tasks/application/queries';
+import { GetAssignableGroupsQuery, GetGroupQuery, GetUserGroupsQuery } from '@/modules/tasks/application/queries';
 import { CreateGroupCommand, DeleteGroupCommand, ReplaceGroupCommand } from '@/modules/tasks/application/use-cases';
 import { CursorPaginationService } from '@shared/cursor-pagination';
 import { GroupViewRmqMapper } from './mappers/group-view.rmq.mapper';
@@ -11,7 +7,7 @@ import {
   GoalCreateGroup,
   GoalDeleteGroup,
   GoalGetAssignableGroups,
-  GoalGetDetailedGroup,
+  GoalGetGroup,
   GoalGetUserGroups,
   GoalReplaceGroup,
 } from '@big-d/api-contracts';
@@ -87,19 +83,24 @@ export class GroupsRmqController {
     };
   }
 
-  @MessagePattern(GoalGetDetailedGroup.pattern)
-  async getDetailedGroup(
-    @Payload() { data: payload }: GoalGetDetailedGroup.Request,
-  ): Promise<GoalGetDetailedGroup.Response> {
-    const groupWithTasks = await this.queryBus.execute(
-      new GetDetailedGroupsQuery({
+  @MessagePattern(GoalGetGroup.pattern)
+  async getGroup(@Payload() { data: payload }: GoalGetGroup.Request): Promise<GoalGetGroup.Response> {
+    const group = await this.queryBus.execute(
+      new GetGroupQuery({
         userId: payload.userId,
         groupId: payload.groupId,
       }),
     );
 
     return {
-      data: groupWithTasks.toJSON(),
+      data: {
+        id: group.id,
+        name: group.name,
+        description: group.description,
+        userId: group.userId,
+        progress: group.progress,
+        status: group.status,
+      },
     };
   }
 

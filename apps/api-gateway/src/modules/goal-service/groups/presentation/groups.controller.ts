@@ -7,7 +7,7 @@ import {
   GoalCreateGroup,
   GoalDeleteGroup,
   GoalGetAssignableGroups,
-  GoalGetDetailedGroup,
+  GoalGetGroup,
   GoalGetGroupInBox,
   GoalGetUserGroups,
   GoalReplaceGroup,
@@ -33,10 +33,10 @@ import {
   CreateGroupRes,
   DeleteGroupRes,
   GetAssignableGroupsRes,
-  GetDetailedGroupsRes,
   GetInBoxRes,
   GetUserGroupsQuery,
   GetUserGroupsRes,
+  GroupResSingle,
   ReplaceGroupReq,
   ReplaceGroupRes,
 } from './dtos';
@@ -79,24 +79,6 @@ export class GroupsController {
     );
   }
 
-  @Get('/:groupId/detailed')
-  @ApiOperation({ summary: 'Получение групп с подробностями' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: GetDetailedGroupsRes,
-  })
-  @ValidateRpcResponse(GetDetailedGroupsRes)
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getDetailedGroup(
-    @TokenPayload() { uid }: AccessTokenPayload,
-    @Param('groupId', ParseIntPipe) groupId: number,
-  ): Promise<GetDetailedGroupsRes> {
-    return await this.goalClient.send<GoalGetDetailedGroup.Response, GoalGetDetailedGroup.Request>(
-      GoalGetDetailedGroup.pattern,
-      { data: { userId: uid, groupId } },
-    );
-  }
-
   @Get('/assignable')
   @ApiOperation({ summary: 'Группы доступные к назначению дел' })
   @ApiResponse({
@@ -110,6 +92,23 @@ export class GroupsController {
       GoalGetAssignableGroups.pattern,
       { data: { userId: uid } },
     );
+  }
+
+  @Get('/:groupId')
+  @ApiOperation({ summary: 'Получение группы' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: GroupResSingle,
+  })
+  @ValidateRpcResponse(GroupResSingle)
+  @ApiBearerAuth(ACCESS_TOKEN_KEY)
+  async getGroup(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ): Promise<GroupResSingle> {
+    return await this.goalClient.send<GoalGetGroup.Response, GoalGetGroup.Request>(GoalGetGroup.pattern, {
+      data: { userId: uid, groupId },
+    });
   }
 
   @Post()

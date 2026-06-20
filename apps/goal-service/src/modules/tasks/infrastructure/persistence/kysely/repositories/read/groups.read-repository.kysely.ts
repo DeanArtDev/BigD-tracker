@@ -1,10 +1,4 @@
-import {
-  GroupDetailedView,
-  GroupInfoView,
-  GroupView,
-  GroupWithTasksView,
-  TaskView,
-} from '@/modules/tasks/application/dto';
+import { GroupInfoView, GroupView, GroupWithTasksView, TaskView } from '@/modules/tasks/application/dto';
 import {
   GetGroupByIdInput,
   GroupsReadRepository,
@@ -76,64 +70,6 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
         user_id: group.user_id,
         progress: group.progress,
         status: group.status,
-      });
-    });
-  }
-
-  async getGroupDetailed(
-    groupSpecifications: TasksSpecification,
-    taskSpecifications?: TasksSpecification,
-    trx?: TaskTransaction,
-  ): Promise<GroupDetailedView | null> {
-    return await this.errorCatcher('groups.get-detailed.read', async () => {
-      const group = await groupWithStatusQuery(this.db, trx)
-        .where((eb) => groupSpecifications.toExpr(eb))
-        .executeTakeFirst();
-      if (group == null) return null;
-
-      const taskQuery = tasksWithStatusQuery(this.db, trx)
-        .where('tasks.group_id', '=', group.id)
-        .$if(taskSpecifications != null, (eb) => eb.where((eb) => taskSpecifications!.toExpr(eb)));
-
-      const tasks = await leftJoinTaskRecurrences(taskQuery)
-        .innerJoin('task_to_group', 'tasks.id', 'task_to_group.task_id')
-        .orderBy('task_to_group.position', 'asc')
-        .execute();
-
-      return GroupReadKyselyMapper.fromRawToDetailedView({
-        id: group.id,
-        name: group.name,
-        description: group.description,
-        user_id: group.user_id,
-        progress: group.progress,
-        status: group.status,
-        tasks: tasks.map((task) =>
-          TasksReadKyselyMapper.fromRawToView({
-            id: task.id,
-            user_id: task.user_id,
-            name: task.name,
-            description: task.description,
-            priority: task.priority,
-            weight: task.weight,
-            group_id: group.id,
-            cancel_reason: task.cancel_reason,
-            start_date: task.start_date,
-            end_date: task.end_date,
-            deadline: task.deadline,
-            status: task.status,
-            recurrence: {
-              recurrence_status: task.recurrence_status,
-              timezone: task.recurrence_timezone,
-              recurrence_frequency: task.recurrence_frequency,
-              start_date: task.start_date,
-              interval: task.recurrence_interval,
-              weekdays: task.recurrence_weekdays,
-              monthdays: task.recurrence_monthdays,
-              yearmonths: task.recurrence_yearmonths,
-              until_date: task.recurrence_until_date,
-            },
-          }),
-        ),
       });
     });
   }

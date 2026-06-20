@@ -1,6 +1,6 @@
 import { ExceptionInboxNotExist } from '@/modules/tasks/application/exceptions';
 import { GroupsToken } from '@/modules/tasks/tokens';
-import { AvailableInboxTasksStatuses } from '@big-d/api-contracts';
+import { AvailableToViewTasksStatuses } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
@@ -20,7 +20,7 @@ export class GetGroupUserInboxHandler implements IQueryHandler<GetInboxByUserIdQ
   async execute({ input }: GetInboxByUserIdQuery): Promise<GroupInboxView> {
     return this.db.runTransaction(async (trx) => {
       const inbox = await this.inboxReadRepo.getInboxByUserId(
-        { userId: input.userId, taskStatuses: AvailableInboxTasksStatuses },
+        { userId: input.userId, taskStatuses: AvailableToViewTasksStatuses },
         trx,
       );
 
