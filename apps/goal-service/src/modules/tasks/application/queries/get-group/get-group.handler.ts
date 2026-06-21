@@ -17,7 +17,7 @@ export class GetGroupHandler implements IQueryHandler<GetGroupQuery> {
 
   async execute({ input }: GetGroupQuery): Promise<GroupView> {
     return this.db.runTransaction(async (trx) => {
-      const group = await this.groupsReadRepo.getGroup(
+      const group = await this.groupsReadRepo.getOne(
         groupsCombinators.and(
           GroupById(input.groupId),
           GroupByUserId(input.userId),

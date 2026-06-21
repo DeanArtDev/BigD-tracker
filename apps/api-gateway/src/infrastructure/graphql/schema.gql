@@ -11,6 +11,12 @@ input GetGroupInput {
   groupId: Int!
 }
 
+input GetGroupListInput {
+  cursor: String
+  limit: Int!
+  search: String
+}
+
 input GetGroupTasksInput {
   order: GroupTaskOrder
 }
@@ -93,6 +99,11 @@ input GroupUpdateTaskInput {
   id: String!
 }
 
+type GroupsConnection {
+  items: [GroupSchema!]!
+  meta: CursorPaginationMeta!
+}
+
 input LoginUserInput {
   email: String!
   password: String!
@@ -156,6 +167,9 @@ type Query {
 
   """Получение группы"""
   getGroup(input: GetGroupInput!): GroupSchema!
+
+  """Получение списка групп"""
+  getGroupList(input: GetGroupListInput!): GroupsConnection!
   getInbox: GetInboxResponse!
   getPlannerInit: GetPlannerInit!
 

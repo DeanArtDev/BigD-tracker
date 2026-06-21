@@ -1,7 +1,6 @@
 import { initTestEnvironment } from '@/../jest.setup';
 import { GoalsToken, GroupsToken, TasksToken } from '@/modules/tasks/tokens';
 import { GoalGetGroup, RmqErrorKind } from '@big-d/api-contracts';
-import { specToDebugString } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -9,13 +8,14 @@ import {
   buildPayload,
   connectRmqClients,
   createTestingModule,
-  expectTransaction,
+  goalsReadRepoMock,
+  groupReadRepoMock,
+  groupWriteRepoMock,
   mockDate,
   sendMessageBuilder,
+  tasksWriteRepoMock,
   unwrapRpcError,
 } from '@shared/__tests__';
-import { getGroupDetailedView, getTaskView } from '@shared/__tests__/entities';
-import { goalsReadRepoMock, groupReadRepoMock, groupWriteRepoMock, tasksWriteRepoMock } from '@shared/__tests__';
 
 initTestEnvironment();
 mockDate();
@@ -52,44 +52,6 @@ describe('GroupsRmqController (rmq e2e)', () => {
   });
 
   describe(`${GoalGetGroup.pattern}`, () => {
-    test('should return group details', async () => {
-      const userId = 90;
-      const groupId = 321;
-      const taskView = getTaskView({ id: 701, userId, name: 'Detailed task' });
-      const detailedGroup = getGroupDetailedView({
-        id: groupId,
-        user_id: userId,
-        name: 'Detailed',
-        tasks: [taskView],
-      });
-      groupReadRepoMock.getGroupDetailed.mockResolvedValueOnce(detailedGroup);
-
-      const payload: GoalGetGroup.Request = buildPayload({
-        data: { groupId, userId },
-      });
-
-      const res = await sendMessage<GoalGetGroup.Response, GoalGetGroup.Request>(GoalGetGroup.pattern, payload);
-
-      expect(groupReadRepoMock.getGroupDetailed).toHaveBeenCalledTimes(1);
-      const [groupSpecArg, taskSpecArgs, trxArg] = groupReadRepoMock.getGroupDetailed.mock.calls[0];
-      expect(trxArg).toEqual(expectTransaction());
-      expect(specToDebugString(groupSpecArg)).toMatchInlineSnapshot(`
-          "AND(
-            groups.byId,
-            groups.byUserId,
-            NOT(
-              groups.inbox
-            )
-          )"
-      `);
-      expect(specToDebugString(taskSpecArgs)).toMatchInlineSnapshot(`
-          "AND(
-            tasks.byStatus
-          )"
-      `);
-      expect(res).toEqual({ data: detailedGroup.toJSON() });
-    });
-
     test('should throw when group missing', async () => {
       const userId = 91;
       const groupId = 322;

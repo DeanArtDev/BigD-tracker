@@ -1,10 +1,4 @@
-import {
-  GroupInboxView,
-  GroupView,
-  GroupWithTasksView,
-  TaskView,
-  GroupInfoView,
-} from '@/modules/tasks/application/dto';
+import { GroupInboxView, GroupInfoView, GroupView, TaskView } from '@/modules/tasks/application/dto';
 import { GroupStatus } from '@big-d/api-contracts';
 
 interface RawGroup {
@@ -48,20 +42,6 @@ class GroupReadKyselyMapper {
     return GroupInfoView.restore({
       id: raw.id,
       name: raw.name,
-    });
-  }
-
-  static fromRawToWithTaskView(raw: RawGroupWithTasks): GroupWithTasksView {
-    return GroupWithTasksView.restore({
-      tasks: raw.tasks,
-      group: GroupReadKyselyMapper.fromRawToView({
-        id: raw.id,
-        name: raw.name,
-        description: raw.description,
-        user_id: raw.user_id,
-        progress: raw.progress,
-        status: raw.status,
-      }),
     });
   }
 

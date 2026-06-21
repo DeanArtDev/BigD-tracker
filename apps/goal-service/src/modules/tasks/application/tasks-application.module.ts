@@ -15,6 +15,8 @@ import {
   GetTaskByIdHandler,
   GetTasksQuery,
   GetTasksHandler,
+  GetGroupListHandler,
+  GetGroupListQuery,
 } from './queries';
 import {
   GroupCheckerService,
@@ -88,6 +90,7 @@ const queries = [
   GetDiaryTasksQuery,
   GetTaskByIdQuery,
   GetTasksQuery,
+  GetGroupListQuery,
 ];
 const commands = [
   CreateTaskCommand,
@@ -130,6 +133,7 @@ const handlers = [
   GetDiaryTasksHandler,
   GetTaskByIdHandler,
   GetTasksHandler,
+  GetGroupListHandler,
 ];
 const useCases = [
   CreateTaskUseCase,

@@ -34,6 +34,13 @@ const GroupAfterId = (groupId: number) =>
     toExpr: (eb) => eb('groups.id', '>', groupId),
   });
 
+const GroupBeforeId = (groupId: number) =>
+  leaf({
+    key: 'groups.beforeId',
+    purpose: 'filter',
+    toExpr: (eb) => eb('groups.id', '<', groupId),
+  });
+
 const GroupByStatus = (statuses: GroupStatus[]) =>
   leaf({
     key: 'groups.byStatus',
@@ -41,7 +48,7 @@ const GroupByStatus = (statuses: GroupStatus[]) =>
     toExpr: (eb) => eb('group_statuses.name', 'in', statuses),
   });
 
-const GroupBySearch = (search: string) =>
+const GroupByNameSearch = (search: string) =>
   leaf({
     key: 'groups.bySearch',
     purpose: 'filter',
@@ -55,4 +62,4 @@ const GroupBySearch = (search: string) =>
       }),
   });
 
-export { GroupById, GroupInbox, GroupByUserId, GroupBySearch, GroupAfterId, GroupByStatus };
+export { GroupById, GroupInbox, GroupByUserId, GroupByNameSearch, GroupAfterId, GroupBeforeId, GroupByStatus };
