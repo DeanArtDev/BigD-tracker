@@ -9,7 +9,6 @@ import {
   GoalGetAssignableGroups,
   GoalGetGroup,
   GoalGetGroupInBox,
-  GoalGetUserGroups,
   GoalReplaceGroup,
 } from '@big-d/api-contracts';
 import {
@@ -24,7 +23,6 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateRpcResponse } from '@shared/rpc-response-validation';
@@ -34,8 +32,6 @@ import {
   DeleteGroupRes,
   GetAssignableGroupsRes,
   GetInBoxRes,
-  GetUserGroupsQuery,
-  GetUserGroupsRes,
   GroupResSingle,
   ReplaceGroupReq,
   ReplaceGroupRes,
@@ -58,24 +54,6 @@ export class GroupsController {
     return await this.goalClient.send<GoalGetGroupInBox.Response, GoalGetGroupInBox.Request>(
       GoalGetGroupInBox.pattern,
       { data: { userId: uid } },
-    );
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Получение групп с делами' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: GetUserGroupsRes,
-  })
-  @ValidateRpcResponse(GetUserGroupsRes)
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  async getUserGroups(
-    @Query() { search, cursor, limit, filter, sort }: GetUserGroupsQuery,
-    @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GetUserGroupsRes> {
-    return await this.goalClient.send<GoalGetUserGroups.Response, GoalGetUserGroups.Request>(
-      GoalGetUserGroups.pattern,
-      { data: { userId: uid, search, cursor, limit, filter, sort } },
     );
   }
 

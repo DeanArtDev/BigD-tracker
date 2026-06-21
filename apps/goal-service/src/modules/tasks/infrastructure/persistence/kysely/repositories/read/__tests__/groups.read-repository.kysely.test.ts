@@ -1,15 +1,12 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
 import {
   GroupById,
-  GroupBySearch,
+  GroupByNameSearch,
   GroupByStatus,
   GroupByUserId,
-  TaskByStatus,
-  TaskByUserId,
   groupsCombinators,
-  tasksCombinators,
 } from '@/modules/tasks/application/specifications';
-import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
+import { GroupStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupsReadRepositoryKysely } from '../groups.read-repository.kysely';
 
@@ -21,7 +18,7 @@ describe('GroupsReadRepositoryKysely', () => {
         const specification = groupsCombinators.and(
           GroupByUserId(7),
           GroupByStatus([GroupStatus.NOT_STARTED]),
-          GroupBySearch('Team'),
+          GroupByNameSearch('Team'),
         );
 
         await repository.getInfoGroups(specification);
@@ -90,10 +87,10 @@ describe('GroupsReadRepositoryKysely', () => {
           GroupByUserId(5),
           GroupById(42),
           GroupByStatus([GroupStatus.IN_PROGRESS]),
-          GroupBySearch('Core'),
+          GroupByNameSearch('Core'),
         );
 
-        await repository.getGroup(spec);
+        await repository.getOne(spec);
 
         expect(recorder.queries).toHaveLength(1);
         expectSqlQuery(recorder.queries[0], {
@@ -139,42 +136,6 @@ describe('GroupsReadRepositoryKysely', () => {
             and "tasks"."user_id" = $3
         `,
           parameters: [222, 111, 15],
-        });
-      },
-    );
-  });
-
-  test('getGroupListWithTasks returns expected sql and params', async () => {
-    await withRepository<TasksDB, GroupsReadRepositoryKysely>(
-      (db) => new GroupsReadRepositoryKysely(db),
-      async ({ repository, recorder }) => {
-        const groupSpec = groupsCombinators.and(GroupByUserId(11), GroupBySearch('Tech'));
-        const taskSpec = tasksCombinators.and(TaskByUserId(11), TaskByStatus([TaskStatus.NOT_STARTED]));
-
-        await repository.getGroupListWithTasks(groupSpec, taskSpec, { limit: 25 });
-
-        expect(recorder.queries).toHaveLength(1);
-        expectSqlQuery(recorder.queries[0], {
-          sql: `
-          select
-            "groups"."id" as "id",
-            "groups"."user_id" as "user_id",
-            "groups"."description" as "description",
-            "groups"."name" as "name",
-            "groups"."progress" as "progress",
-            group_statuses.name as "status"
-          from "groups"
-          inner join "group_statuses"
-            on "groups"."status_id" = "group_statuses"."id"
-          where
-            (
-              "groups"."user_id" = $1
-              and "groups"."name" ilike $2
-            )
-          order by "groups"."id" asc
-          limit $3
-        `,
-          parameters: [11, '%Tech%', 25],
         });
       },
     );

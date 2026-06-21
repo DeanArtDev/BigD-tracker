@@ -1,6 +1,6 @@
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 
-class CursorPaginationQueryDto {
+class CursorPaginationDto {
   @IsOptional()
   @IsString()
   cursor?: string;
@@ -9,4 +9,13 @@ class CursorPaginationQueryDto {
   limit: number;
 }
 
-export { CursorPaginationQueryDto };
+class CursorPaginationMetaDto {
+  @IsOptional()
+  @IsString()
+  endCursor?: string;
+
+  @IsBoolean()
+  hasNextPage: boolean;
+}
+
+export { CursorPaginationDto, CursorPaginationMetaDto };

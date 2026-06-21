@@ -1,9 +1,9 @@
-import { GetUserGroupsReq, GetUserGroupsRes } from './dtos';
+import { GetGroupListReq, GetGroupListRes } from './dtos';
 
-export namespace GoalGetUserGroups {
-  export const pattern = 'goal.get-user-groups.query';
+export namespace GoalGetGroupList {
+  export const pattern = 'goal.get-group-list.query';
 
-  export class Request extends GetUserGroupsReq {}
+  export class Request extends GetGroupListReq {}
 
-  export class Response extends GetUserGroupsRes {}
+  export class Response extends GetGroupListRes {}
 }

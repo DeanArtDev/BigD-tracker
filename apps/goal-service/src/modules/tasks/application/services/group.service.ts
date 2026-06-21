@@ -24,7 +24,7 @@ class GroupsService {
   async createGroup(input: CreateGroupInput, trx?: TaskTransaction): Promise<GroupView> {
     const groupDraft = new GroupFactory().create(input);
     const group = await this.groupsWriteRepo.createGroup(groupDraft, trx);
-    const groupView = await this.groupReadRepo.getGroup(
+    const groupView = await this.groupReadRepo.getOne(
       and(GroupById(group.id), GroupByUserId(input.userId), not(GroupInbox())),
       trx,
     );

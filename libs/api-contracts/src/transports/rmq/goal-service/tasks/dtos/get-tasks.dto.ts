@@ -1,11 +1,11 @@
 import { GroupTaskOrder } from '@/transports/rmq/goal-service/groups';
-import { CursorPaginationQueryDto } from '@/transports/rmq/shared/dto';
+import { CursorPaginationMetaDto, CursorPaginationDto } from '@/transports/rmq/shared/dto';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { TaskStatus } from '../types';
 import { TaskDto } from './task.dto';
 
-class GetTasksFilterDto extends CursorPaginationQueryDto {
+class GetTasksFilterDto extends CursorPaginationDto {
   @IsOptional()
   @Type(() => Number)
   @Min(1, { each: true })
@@ -54,15 +54,6 @@ class GetTasksReq {
   data: GetTasksReqData;
 }
 
-class GetTasksResMeta {
-  @IsOptional()
-  @IsString()
-  endCursor?: string;
-
-  @IsBoolean()
-  hasNextPage: boolean;
-}
-
 class GetTasksResData {
   @Type(() => TaskDto)
   @ValidateNested({ each: true })
@@ -70,8 +61,8 @@ class GetTasksResData {
   items: TaskDto[];
 
   @ValidateNested()
-  @Type(() => GetTasksResMeta)
-  meta: GetTasksResMeta;
+  @Type(() => CursorPaginationMetaDto)
+  meta: CursorPaginationMetaDto;
 }
 
 class GetTasksRes {

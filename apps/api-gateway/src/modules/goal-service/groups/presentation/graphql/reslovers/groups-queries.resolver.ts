@@ -6,11 +6,19 @@ import {
   AvailableToViewTasksStatuses,
   GoalGetAssignableGroups,
   GoalGetGroup,
+  GoalGetGroupList,
   GoalGetTasks,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GetGroupInput, GroupSchema, GroupInfoDto, GetGroupTasksInput } from '../schemas';
+import {
+  GetGroupInput,
+  GetGroupListInput,
+  GroupSchema,
+  GroupInfoDto,
+  GetGroupTasksInput,
+  GroupsConnection,
+} from '../schemas';
 
 @Resolver(() => GroupSchema)
 export class GroupsQueriesResolver {
@@ -24,6 +32,31 @@ export class GroupsQueriesResolver {
     );
 
     return data;
+  }
+
+  @Query(() => GroupsConnection, {
+    description: 'Получение списка групп',
+  })
+  async getGroupList(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Args('input') input: GetGroupListInput,
+  ): Promise<GroupsConnection> {
+    const { data } = await this.goalClient.send<GoalGetGroupList.Response, GoalGetGroupList.Request>(
+      GoalGetGroupList.pattern,
+      {
+        data: {
+          userId: uid,
+          limit: input.limit,
+          cursor: input.cursor,
+          search: input.search,
+        },
+      },
+    );
+
+    return {
+      items: data.items,
+      meta: data.meta,
+    };
   }
 
   @Query(() => GroupSchema, {

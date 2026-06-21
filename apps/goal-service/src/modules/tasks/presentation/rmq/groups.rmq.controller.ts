@@ -1,4 +1,10 @@
-import { GetAssignableGroupsQuery, GetGroupHandler, GetGroupQuery } from '@/modules/tasks/application/queries';
+import {
+  GetAssignableGroupsQuery,
+  GetGroupHandler,
+  GetGroupListHandler,
+  GetGroupListQuery,
+  GetGroupQuery,
+} from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
   CreateGroupHandler,
@@ -11,13 +17,16 @@ import {
   GoalDeleteGroup,
   GoalGetAssignableGroups,
   GoalGetGroup,
+  GoalGetGroupList,
   GoalReplaceGroup,
 } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CursorPaginationService } from '@shared/cursor-pagination';
 import { RequestContextPayloadGuard } from '@shared/request-context';
+import { isFloat } from 'validator';
 
 @Controller()
 @UseGuards(RequestContextPayloadGuard)
@@ -25,6 +34,7 @@ export class GroupsRmqController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
+    private readonly cursorPaginationService: CursorPaginationService,
   ) {}
 
   @MessagePattern(GoalCreateGroup.pattern)
@@ -83,6 +93,38 @@ export class GroupsRmqController {
           userId: payload.userId,
         }),
       ),
+    };
+  }
+
+  @MessagePattern(GoalGetGroupList.pattern)
+  async getGroupList(@Payload() { data: payload }: GoalGetGroupList.Request): Promise<GoalGetGroupList.Response> {
+    const { userId, limit, cursor, search } = payload;
+    const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
+
+    const requestFilter = {
+      lastId: requestCursorPayload?.lastId?.toString(),
+    };
+
+    const lid = requestFilter.lastId ?? '';
+    const positiveNumberString = isFloat(lid, { gt: 0 });
+
+    const groups = await this.queryBus.execute<GetGroupListQuery, ReturnHandlerType<typeof GetGroupListHandler>>(
+      new GetGroupListQuery({ userId, limit, search, lastId: positiveNumberString ? Number(lid) : undefined }),
+    );
+
+    const { nextCursor, hasNext } = this.cursorPaginationService.getNextCursor({
+      search,
+      filter: requestFilter,
+      limit,
+      lastId: groups.at(-1)?.id,
+      currentPartLength: groups.length,
+    });
+
+    return {
+      data: {
+        items: groups,
+        meta: { endCursor: nextCursor, hasNextPage: hasNext },
+      },
     };
   }
 
