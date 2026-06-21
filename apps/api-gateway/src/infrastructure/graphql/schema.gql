@@ -60,6 +60,10 @@ input GroupCreateInput {
   name: String!
 }
 
+input GroupDeleteInput {
+  groupId: Int!
+}
+
 type GroupInfoDto {
   id: Int!
   name: String!
@@ -137,6 +141,9 @@ type Mutation {
 
   """Завершение дела"""
   finishTask(input: TaskFinishInput!): Boolean!
+
+  """Удаление группы"""
+  groupDelete(input: GroupDeleteInput!): Boolean!
 
   """
   Продление токена сессии, необходимы access и refresh токены одновременно

@@ -1,10 +1,10 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalCreateGroup, GoalReplaceGroup } from '@big-d/api-contracts';
+import { GoalCreateGroup, GoalDeleteGroup, GoalReplaceGroup } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { GroupCreateInput, GroupSchema, GroupUpdateInput } from '../schemas';
+import { GroupCreateInput, GroupDeleteInput, GroupSchema, GroupUpdateInput } from '../schemas';
 
 @Resolver(() => GroupSchema)
 class GroupsMutationsResolver {
@@ -47,6 +47,26 @@ class GroupsMutationsResolver {
           name: input.name,
           description: input.description,
           tasks: input.tasks,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  @Mutation(() => Boolean, {
+    description: 'Удаление группы',
+  })
+  async groupDelete(
+    @Args('input') input: GroupDeleteInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GoalDeleteGroup.Response['data']> {
+    const { data } = await this.goalClient.send<GoalDeleteGroup.Response, GoalDeleteGroup.Request>(
+      GoalDeleteGroup.pattern,
+      {
+        data: {
+          userId: uid,
+          groupId: input.groupId,
         },
       },
     );

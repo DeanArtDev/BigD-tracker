@@ -29,12 +29,13 @@ export class CookieService {
     const { maxAge, token } = params;
 
     const isProd = this.config.get<boolean>('IS_PROD');
+    const isProdStage = this.config.get<boolean>('IS_PROD_STAGE');
 
     if (token == null) {
       res.clearCookie(key, {
         httpOnly: true,
         secure: isProd,
-        sameSite: 'lax',
+        sameSite: isProdStage ? 'none' : 'lax',
         path: tokenPath[key],
         maxAge,
       });
@@ -44,7 +45,7 @@ export class CookieService {
     res.cookie(key, token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: 'lax',
+      sameSite: isProdStage ? 'none' : 'lax',
       path: tokenPath[key],
       maxAge,
     });
