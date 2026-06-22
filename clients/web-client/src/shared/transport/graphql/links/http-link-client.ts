@@ -13,7 +13,7 @@ function isTimeoutDomException(err: unknown): err is DOMException {
   );
 }
 
-const createHttpLink = (options: { headers: Record<string, string> } = { headers: {} }) => {
+const createHttpLink = (options: { uri?: string; headers: Record<string, string> } = { headers: {} }) => {
   return new HttpLink({
     ...appFetchOptions,
     ...options,

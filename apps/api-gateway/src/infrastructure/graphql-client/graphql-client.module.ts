@@ -14,14 +14,14 @@ import { AppGraphQLContext } from './types';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService): ApolloDriverConfig => {
-        const isProd = config.get<boolean>('IS_PROD');
+        const IS_PROD_STAGE = config.get<boolean>('IS_PROD_STAGE');
 
         return {
           autoSchemaFile: join(process.cwd(), './src/infrastructure/graphql/schema.gql'),
           sortSchema: true,
           playground: false,
           path: '/graphql',
-          introspection: !isProd,
+          introspection: !IS_PROD_STAGE,
           plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
           context: (ctx): AppGraphQLContext => {
             const { req, res } = ctx;
@@ -44,7 +44,7 @@ import { AppGraphQLContext } from './types';
             return {
               message: formatted.message,
               path: formatted.path,
-              locations: isProd ? undefined : formatted.locations,
+              locations: IS_PROD_STAGE ? undefined : formatted.locations,
               extensions: { ...formatted.extensions, ...details },
             };
           },

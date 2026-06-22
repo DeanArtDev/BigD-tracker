@@ -10,5 +10,5 @@ export function proxy(req: NextRequest, event: NextFetchEvent) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  matcher: ['/((?!api/graphql|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 };
