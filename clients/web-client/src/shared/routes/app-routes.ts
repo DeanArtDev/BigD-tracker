@@ -93,6 +93,14 @@ const routes = {
   }))('/error'),
 } as const;
 
-type RoutePaths = (typeof routes)[keyof typeof routes]['path'];
+const apiRoutes = {
+  dropSession: (<Path extends string = string>(path: Path) => ({
+    path,
+    link: () => buildLink(path),
+  }))('/api/auth/drop-session'),
+};
 
-export { routes, type RoutePaths };
+type RoutePaths = (typeof routes)[keyof typeof routes]['path'];
+type ApiRoutePaths = (typeof apiRoutes)[keyof typeof apiRoutes]['path'];
+
+export { routes, apiRoutes, type RoutePaths, type ApiRoutePaths };

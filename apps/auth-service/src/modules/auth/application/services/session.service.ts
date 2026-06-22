@@ -1,5 +1,5 @@
 import { Session, SessionFactory } from '@/modules/auth/domain/aggreates';
-import { DateVo, TimeAndDate, timeAndDate } from '@big-d/api-utils';
+import { DateVo, timeAndDate } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -71,7 +71,7 @@ class SessionService {
       userAgent,
       tokenHash,
       userId,
-      expiresAt: DateVo.format(this.getSessionMaxAge().toISOString()),
+      expiresAt: DateVo.format(timeAndDate().add(this.getSessionMaxAge(), 'millisecond').toISOString()),
     });
     const session = await this.sessionWriteRepositoryKysely.create(sessionDraft, trx);
 
@@ -103,8 +103,8 @@ class SessionService {
     return { accessToken };
   }
 
-  getSessionMaxAge(): TimeAndDate {
-    return timeAndDate().add(ms(this.configService.getOrThrow('auth.REFRESH_EXPIRE_TIME')), 'milliseconds');
+  getSessionMaxAge(): number {
+    return ms(this.configService.getOrThrow<ms.StringValue>('auth.REFRESH_EXPIRE_TIME'));
   }
 }
 

@@ -14,6 +14,13 @@ function isUnauthorized(error: unknown): ApiError | null {
   return null;
 }
 
+function isUserNotFound(error: unknown): ApiError | null {
+  if (isApiError(error) && error.code === exceptionCode.userNotFound.code) {
+    return error;
+  }
+  return null;
+}
+
 function isRequestTimeout(error: unknown): ApiError | null {
   if (isApiError(error) && error.code === exceptionCode.requestTimeout.code) {
     return error;
@@ -30,4 +37,4 @@ function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
 
-export { isUnauthorized, isRequestTimeout, isApiError };
+export { isUnauthorized, isRequestTimeout, isApiError, isUserNotFound };
