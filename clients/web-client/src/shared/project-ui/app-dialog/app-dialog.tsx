@@ -14,7 +14,7 @@ import {
 import { isToasterClosest } from '../app-toaster.provider';
 
 interface AppDialogProps {
-  readonly title: string;
+  readonly title: ReactNode;
   readonly description?: string;
   readonly trigger?: ReactNode;
   readonly content: ReactNode;

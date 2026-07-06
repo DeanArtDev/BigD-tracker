@@ -7,11 +7,23 @@ const TASK_CREATE_MUTATION = gql`
       name
       description
       deadline
-      endDate
       priority
       startDate
       status
-      cancelReason
+    }
+  }
+`;
+
+const TASK_UPDATE_MUTATION = gql`
+  mutation UpdateTask($input: TaskUpdateInput!) {
+    updateTask(input: $input) {
+      id
+      name
+      description
+      deadline
+      priority
+      startDate
+      status
     }
   }
 `;

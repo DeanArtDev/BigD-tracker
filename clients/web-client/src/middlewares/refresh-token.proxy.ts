@@ -1,7 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
 import { NextResponse } from 'next/server';
 import { parseSetCookie } from 'set-cookie-parser';
-import { routes } from '@/shared/routes';
+import { apiRoutes, routes } from '@/shared/routes';
 import { fetchRefreshToken } from '@/shared/transport/graphql';
 import { ProxyFactory } from './helpers';
 
@@ -23,6 +23,8 @@ const refreshTokenProxy: ProxyFactory = (next) => async (req, event, res) => {
     if (userAgent != null && userAgent.length > 0) {
       headers['user-agent'] = userAgent;
     }
+
+    const dropSession = () => NextResponse.redirect(new URL(apiRoutes.dropSession.path, req.url));
 
     try {
       const refreshTokenResponse = await fetchRefreshToken({ headers });
@@ -52,11 +54,9 @@ const refreshTokenProxy: ProxyFactory = (next) => async (req, event, res) => {
         return next(req, event, response);
       }
 
-      req.headers.delete('access_token');
-      req.headers.delete('refresh_token');
+      return dropSession();
     } catch {
-      req.headers.delete('access_token');
-      req.headers.delete('refresh_token');
+      return dropSession();
     }
   }
 

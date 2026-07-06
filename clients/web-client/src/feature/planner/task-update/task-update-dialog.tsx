@@ -1,48 +1,39 @@
 'use client';
 
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-import { usePlannerInit } from '@/entity/planner/init';
 import {
+  Task,
   TaskForm,
   TaskFormFooter,
   TaskFormProvider,
   TaskSubmitFormData,
-  useTaskCreate,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
+import { useTaskUpdate } from '@/entity/planner/tasks/model';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
-import { Button } from '@/shared/ui-kit';
 
 interface ComponentProps {
+  readonly open: boolean;
+  readonly onOpenChange: (value: boolean) => void;
   readonly onSubmit: (taskFormData: TaskSubmitFormData, close: () => void) => MaybePromise<void>;
 }
 
-function Component({ onSubmit }: ComponentProps) {
-  const [open, setOpen] = useState(false);
+function Component({ open, onOpenChange, onSubmit }: ComponentProps) {
   const { viaConfirmation } = useConfirmDialog();
   const {
     resetToInit,
     formState: { isDirty },
   } = useTaskFromContext();
-  const { data } = usePlannerInit();
 
   const close = () => {
-    setOpen(false);
+    onOpenChange(false);
     resetToInit();
   };
 
   return (
     <AppDialog
       open={open}
-      title="Создание дела"
-      trigger={
-        <Button type="button" disabled={data.inbox.id == null}>
-          <Plus />
-          Создать
-        </Button>
-      }
+      title="Редактирование дела"
       content={<TaskForm className="px-4 py-2" onSubmit={(taskFormData) => void onSubmit(taskFormData, close)} />}
       footer={<TaskFormFooter />}
       onOpenChange={(value) => {
@@ -54,7 +45,7 @@ function Component({ onSubmit }: ComponentProps) {
           });
         } else {
           if (value) {
-            setOpen(true);
+            onOpenChange(true);
           } else {
             close();
           }
@@ -64,24 +55,36 @@ function Component({ onSubmit }: ComponentProps) {
   );
 }
 
-function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePromise<void> }) {
-  const { loading, createTask } = useTaskCreate();
+interface TaskUpdateDialogProps {
+  readonly open: ComponentProps['open'];
+  readonly task: Task | undefined;
+
+  readonly onOpenChange: ComponentProps['onOpenChange'];
+  readonly onSuccess?: () => MaybePromise<void>;
+}
+
+function TaskUpdateDialog(props: TaskUpdateDialogProps) {
+  const { task, open, onOpenChange, onSuccess } = props;
+  const { loading, updateTask } = useTaskUpdate();
   const { promise } = useNotify();
 
   return (
-    <TaskFormProvider loading={loading} fieldVisibility={{ groupSelection: false }}>
+    <TaskFormProvider task={task} loading={loading} fieldVisibility={{ groupSelection: false }}>
       <Component
+        open={open}
+        onOpenChange={onOpenChange}
         onSubmit={async (taskFormData, close) => {
+          if (task == null) return;
           const { name, description, deadline, startDate, priority } = taskFormData;
 
           promise(async () => {
-            const response = await createTask({
-              variables: { input: { name, description, deadline, startDate, priority, groupId: props.groupId } },
+            const response = await updateTask({
+              variables: { input: { id: task.id, weight: 100, name, description, deadline, startDate, priority } },
             });
 
             close();
-            if (response.data?.createTask != null) {
-              props.onSuccess();
+            if (response.data?.updateTask != null) {
+              onSuccess?.();
             }
           });
         }}
@@ -90,4 +93,4 @@ function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePro
   );
 }
 
-export { TaskCreationDialog };
+export { TaskUpdateDialog };

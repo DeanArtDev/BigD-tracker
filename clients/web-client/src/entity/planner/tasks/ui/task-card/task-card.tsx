@@ -69,16 +69,18 @@ function TaskCard(props: TaskCardProps) {
       )}
 
       <CardTitle className="grid grid-cols-[1fr_max-content]">
-        <Typography.H5
-          className="truncate px-2 hover:underline hover:decoration-solid cursor-pointer"
-          onClick={(evt) => {
-            if (onHeaderClick != null) {
-              evt.stopPropagation();
-              onHeaderClick();
-            }
-          }}
-        >
-          {name}
+        <Typography.H5 className="truncate px-2">
+          <span
+            className="hover:underline hover:decoration-solid cursor-pointer"
+            onClick={(evt) => {
+              if (onHeaderClick != null) {
+                evt.stopPropagation();
+                onHeaderClick();
+              }
+            }}
+          >
+            {name}
+          </span>
         </Typography.H5>
 
         {afterHeaderSlot}

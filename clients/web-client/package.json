@@ -11,11 +11,14 @@
     "lint:fix": "eslint --fix",
     "format": "prettier \"src/**/*.{ts,tsx}\" --check",
     "format:fix": "prettier \"src/**/*.{ts,tsx}\" --write",
+    "type:check": "tsc -b --noEmit",
+    "check:project": "pnpm lint && pnpm format && pnpm type:check",
+    "check:project:fix": "pnpm lint:fix && pnpm format:fix && pnpm type:check",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",
     "===============================  TOOLS  ==========================": "",
-    "codegen": "graphql-codegen && pnpm format:fix && pnpm lint:fix"
+    "codegen": "dotenv -e .env.development -- graphql-codegen && pnpm format:fix && pnpm lint:fix"
   },
   "dependencies": {
     "@apollo/client": "4.1.9",

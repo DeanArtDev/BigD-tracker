@@ -25,6 +25,7 @@ function TaskFormErrorReactor() {
             const currentId = warning({
               message: error.message,
               duration: 10000,
+              position: 'top-center',
               onAutoClose: () => {
                 const exist = toastIds.get(error.message ?? '');
                 dismiss(exist);
