@@ -3,3 +3,4 @@ export { useTaskFromContext, useTaskFormState } from './context/task-from.contex
 export { TaskFormProvider, type TaskFormProviderProps } from './context/task-form.provider';
 export { withTaskFormProvider } from './context/hoc';
 export type { TaskFormData, TaskSubmitFormData } from './context/task-form-schema';
+export * from './components/task-form-footer';

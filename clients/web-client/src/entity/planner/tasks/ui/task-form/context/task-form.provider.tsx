@@ -3,7 +3,8 @@
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { type PropsWithChildren, useCallback, useId, useMemo } from 'react';
 import { DefaultValues, FormProvider, useForm } from 'react-hook-form';
-import { TaskFormData, TaskPriority } from '@/entity/planner/tasks';
+import { Task, TaskFormData, TaskPriority } from '@/entity/planner/tasks';
+import timeAndDate from '@/shared/lib/time';
 import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
 
@@ -23,17 +24,32 @@ const defaultValues: DefaultValues<TaskFormData> = {
 
 type TaskFormProviderProps = PropsWithChildren<{
   readonly loading?: boolean;
+  readonly task?: Task;
   readonly fieldVisibility?: TaskFromContext['fieldVisibility'];
 }>;
 
-function TaskFormProvider({ loading, fieldVisibility = {}, children }: TaskFormProviderProps) {
+function TaskFormProvider({ task, loading, fieldVisibility = {}, children }: TaskFormProviderProps) {
   const formId = useId();
+  const isEdit = task != null;
+
+  const values = isEdit
+    ? {
+        name: task.name ?? undefined,
+        priority: task.priority.toString(),
+        description: task?.description ?? undefined,
+        startDate: task.startDate != null ? timeAndDate(task.startDate).toDate() : undefined,
+        deadline: task.deadline != null ? timeAndDate(task.deadline).toDate() : undefined,
+        groupId: task.groupId ?? undefined,
+        isDescriptionDirty: false,
+      }
+    : undefined;
 
   const form = useForm<TaskFormData, unknown, TaskSubmitFormData>({
     resolver: standardSchemaResolver(taskFormSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     disabled: loading,
+    values,
     defaultValues,
   });
 

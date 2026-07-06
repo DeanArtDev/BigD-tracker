@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 import { GroupId } from '@/entity/planner/groups';
+import { Override } from '@/shared/lib';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import {
   GetPlannerInitDocument,
@@ -7,8 +8,15 @@ import {
   GetPlannerInitQueryVariables,
 } from './schemas/init.schema.generated';
 
+type InitQuery = Override<
+  GetPlannerInitQuery,
+  {
+    getPlannerInit: Override<GetPlannerInitQuery['getPlannerInit'], { inboxId: GroupId }>;
+  }
+>;
+
 function usePlannerInit() {
-  const result = useQuery<GetPlannerInitQuery, GetPlannerInitQueryVariables>(GetPlannerInitDocument, {
+  const result = useQuery<InitQuery, GetPlannerInitQueryVariables>(GetPlannerInitDocument, {
     context: { endpoint: 'private' },
     errorPolicy: 'ignore',
     fetchPolicy: 'cache-first',
@@ -23,7 +31,7 @@ function usePlannerInit() {
     initialLoading,
     data: {
       inbox: {
-        id: result.data?.getPlannerInit.inboxId as GroupId,
+        id: result.data?.getPlannerInit.inboxId,
         taskCount: result.data?.getPlannerInit.inboxTaskCount,
       },
     },

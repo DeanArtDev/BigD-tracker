@@ -1,7 +1,10 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
+import { getEnvConfigClient } from './src/shared/lib/env-config.client';
+
+const envConfit = getEnvConfigClient();
 
 const config: CodegenConfig = {
-  schema: 'http://localhost:4002/graphql',
+  schema: envConfit.NEXT_PUBLIC_HTTP_API_URL,
   documents: ['./src/**/*.{tsx,ts}'],
   generates: {
     './src/entity/schema-types.ts': {

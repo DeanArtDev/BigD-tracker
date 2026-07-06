@@ -7,6 +7,7 @@ import { TaskList } from '@/entity/planner/tasks';
 import { useTaskAssignToGroup } from '@/feature/planner/task-assign-to-group';
 import { useTaskDeleteFeature } from '@/feature/planner/task-delete';
 import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
+import { useTaskUpdateContext } from '@/feature/planner/task-update';
 import { useNotify } from '@/shared/lib';
 import { EmptyTasksPlaceholder } from './empty-inbox-tasks.placeholder';
 import { useInboxQueryByUrlQuery } from '../_model/use-inbox-query-by-url-query';
@@ -29,6 +30,8 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
   const { promise } = useNotify();
   const { openGroupList } = useGroupListDrawerContext();
 
+  const { openTaskUpdate } = useTaskUpdateContext();
+
   const tasks = data.tasks ?? [];
   const count = tasks?.length ?? 0;
   const hasNextPage = data.meta?.hasNextPage ?? false;
@@ -36,6 +39,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
   return (
     <TaskList
       tasks={tasks}
+      onTaskContentClick={openTaskUpdate}
       dropdownProps={{
         onAssign: (task, groupInfo) => {
           promise(assignToGroup({ groupId: groupInfo.id, taskId: task.id }));
