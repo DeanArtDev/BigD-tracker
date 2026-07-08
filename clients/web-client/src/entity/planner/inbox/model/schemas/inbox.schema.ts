@@ -11,13 +11,11 @@ const GET_INBOX_QUERY = gql`
           hasNextPage
         }
         items {
-          cancelReason
-          deadline
-          description
-          endDate
-          groupId
           id
           name
+          deadline
+          description
+          groupId
           priority
           startDate
           status
