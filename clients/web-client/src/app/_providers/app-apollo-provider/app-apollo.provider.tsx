@@ -5,6 +5,7 @@ import { FieldMergeFunctionOptions, FieldReadFunctionOptions } from '@apollo/cli
 import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/client-integration-nextjs';
 import { PropsWithChildren } from 'react';
 import { GetInboxQuery, GetInboxQueryVariables } from '@/entity/planner/inbox';
+import { TaskSchema } from '@/entity/schema-types';
 import { cookieAccessLink, createHttpLink, retryLink } from '@/shared/transport/graphql';
 import { reactorErrorLink } from './error-link';
 
@@ -48,6 +49,23 @@ function makeClient() {
   return new ApolloClient({
     cache: new InMemoryCache({
       typePolicies: {
+        TaskSchema: {
+          keyFields: ['id'],
+        },
+
+        Query: {
+          fields: {
+            getTaskById: {
+              read(_existing, { args, toReference }) {
+                const id = args?.id;
+                if (id == null) return undefined;
+                const __typename: TaskSchema['__typename'] = 'TaskSchema';
+                return toReference({ __typename, id });
+              },
+            },
+          },
+        },
+
         GetInboxResponse: {
           fields: {
             tasks: inboxTasksItemsPolicy,

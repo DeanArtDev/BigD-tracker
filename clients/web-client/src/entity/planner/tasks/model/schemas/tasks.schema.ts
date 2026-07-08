@@ -56,4 +56,27 @@ const TASK_UNASSIGN_MUTATION = gql`
   }
 `;
 
-export { TASK_CREATE_MUTATION, TASK_DELETE_MUTATION, TASK_ASSIGN_MUTATION, TASK_UNASSIGN_MUTATION, TASK_COPY_MUTATION };
+const TASK_BY_ID_QUERY = gql`
+  query TaskById($input: GetTaskByIdInput!) {
+    getTaskById(input: $input) {
+      id
+      name
+      description
+      priority
+      endDate
+      status
+      startDate
+      deadline
+      groupId
+    }
+  }
+`;
+
+export {
+  TASK_CREATE_MUTATION,
+  TASK_DELETE_MUTATION,
+  TASK_ASSIGN_MUTATION,
+  TASK_UNASSIGN_MUTATION,
+  TASK_COPY_MUTATION,
+  TASK_BY_ID_QUERY,
+};

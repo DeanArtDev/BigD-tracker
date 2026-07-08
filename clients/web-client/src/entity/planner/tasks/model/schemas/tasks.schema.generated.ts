@@ -5,6 +5,10 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 import * as Types from '@/entity/schema-types';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type GetTaskByIdInput = {
+  id: string;
+};
+
 /** Частота повторения дела */
 export type RecurrenceFrequency = 'DAILY' | 'HOURLY' | 'MINUTELY' | 'MONTHLY' | 'SECONDLY' | 'WEEKLY' | 'YEARLY';
 
@@ -117,6 +121,24 @@ export type TaskUnassignMutationVariables = Exact<{
 }>;
 
 export type TaskUnassignMutation = { unassignTaskToGroup: boolean };
+
+export type TaskByIdQueryVariables = Exact<{
+  input: Types.GetTaskByIdInput;
+}>;
+
+export type TaskByIdQuery = {
+  getTaskById: {
+    id: string;
+    name: string;
+    description: string | null;
+    priority: number;
+    endDate: string | null;
+    status: Types.TaskStatus;
+    startDate: string | null;
+    deadline: string | null;
+    groupId: number | null;
+  };
+};
 
 export const CreateTaskDocument = {
   kind: 'Document',
@@ -351,3 +373,50 @@ export const TaskUnassignDocument = {
     },
   ],
 } as unknown as DocumentNode<TaskUnassignMutation, TaskUnassignMutationVariables>;
+export const TaskByIdDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'TaskById' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetTaskByIdInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTaskById' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TaskByIdQuery, TaskByIdQueryVariables>;
