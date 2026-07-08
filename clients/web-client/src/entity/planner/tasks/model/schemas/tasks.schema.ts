@@ -14,6 +14,14 @@ const TASK_CREATE_MUTATION = gql`
   }
 `;
 
+const TASK_COPY_MUTATION = gql`
+  mutation CopyTask($input: TaskCopyInput!) {
+    copyTask(input: $input) {
+      id
+    }
+  }
+`;
+
 const TASK_UPDATE_MUTATION = gql`
   mutation UpdateTask($input: TaskUpdateInput!) {
     updateTask(input: $input) {
@@ -48,4 +56,4 @@ const TASK_UNASSIGN_MUTATION = gql`
   }
 `;
 
-export { TASK_CREATE_MUTATION, TASK_DELETE_MUTATION, TASK_ASSIGN_MUTATION, TASK_UNASSIGN_MUTATION };
+export { TASK_CREATE_MUTATION, TASK_DELETE_MUTATION, TASK_ASSIGN_MUTATION, TASK_UNASSIGN_MUTATION, TASK_COPY_MUTATION };
