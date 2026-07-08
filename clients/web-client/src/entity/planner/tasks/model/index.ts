@@ -5,3 +5,4 @@ export * from './use-task-delete';
 export * from './use-task-assign';
 export * from './use-task-unassign';
 export * from './use-task-update';
+export * from './use-task-copy';

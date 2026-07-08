@@ -13,6 +13,10 @@ export type TaskAssignInput = {
   taskId: string;
 };
 
+export type TaskCopyInput = {
+  id: string;
+};
+
 export type TaskCreateInput = {
   deadline?: string | null | undefined;
   description?: string | null | undefined;
@@ -73,6 +77,12 @@ export type CreateTaskMutation = {
     status: Types.TaskStatus;
   };
 };
+
+export type CopyTaskMutationVariables = Exact<{
+  input: Types.TaskCopyInput;
+}>;
+
+export type CopyTaskMutation = { copyTask: { id: string } };
 
 export type UpdateTaskMutationVariables = Exact<{
   input: Types.TaskUpdateInput;
@@ -153,6 +163,43 @@ export const CreateTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
+export const CopyTaskDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CopyTask' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskCopyInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'copyTask' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CopyTaskMutation, CopyTaskMutationVariables>;
 export const UpdateTaskDocument = {
   kind: 'Document',
   definitions: [

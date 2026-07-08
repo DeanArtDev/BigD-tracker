@@ -23,6 +23,7 @@ type TaskListProps = {
   readonly menuProps?: {
     readonly loading?: boolean;
     readonly onDelete?: (task: Task) => MaybePromise<void>;
+    readonly onCopy?: (task: Task) => MaybePromise<void>;
     readonly onAssign?: (task: Task) => MaybePromise<void>;
     readonly onUnassign?: (task: Task) => MaybePromise<void>;
   };
@@ -88,6 +89,7 @@ function TaskList({
                     taskType={TaskDomain.parseId(task.id).type}
                     onDelete={() => void menuProps?.onDelete?.(task)}
                     onAssign={() => void menuProps?.onAssign?.(task)}
+                    onCopy={() => void menuProps?.onCopy?.(task)}
                     onUnassign={() => void menuProps?.onUnassign?.(task)}
                   />
                 </div>
