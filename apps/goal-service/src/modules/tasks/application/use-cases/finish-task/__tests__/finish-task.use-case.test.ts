@@ -1,6 +1,6 @@
-import { TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
+import { Priority, Task, TaskIdBuilder, TaskOverride, Weight } from '@/modules/tasks/domain';
 import { TaskFinishStatus, TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
-import { DateVo } from '@big-d/api-utils';
+import { DateVo, Name } from '@big-d/api-utils';
 import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
 import { FinishTaskCommand } from '../finish-task.command';
 import { FinishTaskUseCase } from '../finish-task.use-case';
@@ -24,6 +24,28 @@ function createUseCase(deps: {
       } as const)) as never,
     (deps.tasksWriteRepo ?? { replaceTask: jest.fn() }) as never,
   );
+}
+
+function restoreSavedOverride(override: TaskOverride, id: number): TaskOverride {
+  return TaskOverride.restore({
+    recurrenceId: override.recurrenceId,
+    recurrenceStart: DateVo.restore(override.recurrenceStart),
+    type: override.type,
+    task: Task.restore({
+      id,
+      userId: override.userId,
+      groupId: override.groupId,
+      name: Name.restore(override.name),
+      description: override.description,
+      priority: Priority.restore(override.priority),
+      weight: Weight.restore(override.weight),
+      cancelReason: override.cancelReason,
+      startDate: override.startDate != null ? DateVo.restore(override.startDate) : undefined,
+      deadline: override.deadline != null ? DateVo.restore(override.deadline) : undefined,
+      endDate: override.endDate != null ? DateVo.restore(override.endDate) : undefined,
+      status: override.status,
+    }),
+  });
 }
 
 describe('FinishTaskUseCase', () => {
@@ -67,7 +89,7 @@ describe('FinishTaskUseCase', () => {
       }),
     };
     const taskRecurrenceService = {
-      getRecurrence: jest.fn(),
+      getRecurrence: jest.fn().mockResolvedValue(null),
     };
     const taskOverrideService = {
       upsertOverride: jest.fn(),
@@ -76,7 +98,7 @@ describe('FinishTaskUseCase', () => {
       runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
     };
     const tasksWriteRepo = {
-      replaceTask: jest.fn(),
+      replaceTask: jest.fn().mockImplementation((taskToFinish) => taskToFinish),
     };
     const useCase = createUseCase({
       taskCheckerService,
@@ -87,10 +109,10 @@ describe('FinishTaskUseCase', () => {
       tasksWriteRepo,
     });
 
-    await useCase.execute(
+    const result = await useCase.execute(
       new FinishTaskCommand({
         userId,
-        taskId: `t::${taskId}`,
+        taskId: TaskIdBuilder.wrapOriginId(taskId),
         type,
         reason,
       }),
@@ -103,7 +125,22 @@ describe('FinishTaskUseCase', () => {
     expect(taskArg.endDate).toBe(DateVo.format(finishedAt.toISOString()));
     expect(taskArg.cancelReason).toBe(reason);
     expect(trxArg).toBe(trx);
+    expect(taskRecurrenceService.getRecurrence).toHaveBeenCalledWith({ userId, taskId, id: undefined });
     expect(taskOverrideService.upsertOverride).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      id: TaskIdBuilder.wrapOriginId(taskId),
+      userId,
+      name: 'Origin task',
+      description: 'origin description',
+      priority: 3,
+      weight: 5,
+      startDate: '2026-03-12T09:00',
+      deadline: '2026-03-12T18:00',
+      endDate: DateVo.format(finishedAt.toISOString()),
+      status: expectedStatus,
+      cancelReason: reason,
+      recurrence: undefined,
+    });
   });
 
   test.each([
@@ -168,7 +205,7 @@ describe('FinishTaskUseCase', () => {
       getRecurrence: jest.fn().mockResolvedValue(recurrence),
     };
     const taskOverrideService = {
-      upsertOverride: jest.fn().mockResolvedValue({ id: 9001 }),
+      upsertOverride: jest.fn().mockImplementation((override) => restoreSavedOverride(override, 9001)),
     };
     const db = {
       runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
@@ -185,7 +222,7 @@ describe('FinishTaskUseCase', () => {
       tasksWriteRepo,
     });
 
-    await useCase.execute(
+    const result = await useCase.execute(
       new FinishTaskCommand({
         userId,
         taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId, date: recurrenceStart }),
@@ -204,6 +241,20 @@ describe('FinishTaskUseCase', () => {
     expect(overrideArg.endDate).toBe(DateVo.format(finishedAt.toISOString()));
     expect(trxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      id: TaskIdBuilder.wrapOriginId(9001),
+      userId,
+      name: 'Virtual source',
+      description: 'virtual source description',
+      priority: 3,
+      weight: 5,
+      startDate: DateVo.format(recurrenceStart),
+      deadline: '2026-03-13T12:00',
+      endDate: DateVo.format(finishedAt.toISOString()),
+      status: expectedStatus,
+      cancelReason: reason,
+      recurrence: undefined,
+    });
   });
 
   test.each([
@@ -286,7 +337,7 @@ describe('FinishTaskUseCase', () => {
     };
     const taskOverrideService = {
       getOverride: jest.fn().mockResolvedValue(currentOverride),
-      upsertOverride: jest.fn().mockResolvedValue({ id: overrideId }),
+      upsertOverride: jest.fn().mockImplementation((override) => override),
     };
     const db = {
       runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
@@ -303,7 +354,7 @@ describe('FinishTaskUseCase', () => {
       tasksWriteRepo,
     });
 
-    await useCase.execute(
+    const result = await useCase.execute(
       new FinishTaskCommand({
         userId,
         taskId: TaskIdBuilder.wrapOverrideId({ recurrenceId, overrideId, date: recurrenceStart }),
@@ -324,5 +375,19 @@ describe('FinishTaskUseCase', () => {
     expect(overrideArg.endDate).toBe(DateVo.format(finishedAt.toISOString()));
     expect(trxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      id: TaskIdBuilder.wrapOriginId(overrideId),
+      userId,
+      name: 'Override task',
+      description: 'override description',
+      priority: 4,
+      weight: 6,
+      startDate: '2026-03-12T09:30',
+      deadline: '2026-03-13T13:45',
+      endDate: DateVo.format(finishedAt.toISOString()),
+      status: expectedStatus,
+      cancelReason: reason,
+      recurrence: undefined,
+    });
   });
 });

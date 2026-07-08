@@ -140,7 +140,7 @@ type Mutation {
   deleteTask(input: TaskDeleteInput!): TaskSchema!
 
   """Завершение дела"""
-  finishTask(input: TaskFinishInput!): Boolean!
+  finishTask(input: TaskFinishInput!): TaskSchema!
 
   """Удаление группы"""
   groupDelete(input: GroupDeleteInput!): Boolean!

@@ -140,7 +140,7 @@ class TasksMutationsResolver {
     return data.id;
   }
 
-  @Mutation(() => Boolean, {
+  @Mutation(() => TaskSchema, {
     description: 'Завершение дела',
   })
   async finishTask(

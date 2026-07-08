@@ -158,7 +158,7 @@ export type Mutation = {
   /** Выход пользователя из системы на одном устройстве */
   deleteTask: TaskSchema;
   /** Завершение дела */
-  finishTask: Scalars['Boolean']['output'];
+  finishTask: TaskSchema;
   /** Удаление группы */
   groupDelete: Scalars['Boolean']['output'];
   /** Продление токена сессии, необходимы access и refresh токены одновременно */

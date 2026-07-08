@@ -27,13 +27,11 @@ export type GetInboxQuery = {
     tasks: {
       meta: { endCursor: string | null; hasNextPage: boolean };
       items: Array<{
-        cancelReason: string | null;
-        deadline: string | null;
-        description: string | null;
-        endDate: string | null;
-        groupId: number | null;
         id: string;
         name: string;
+        deadline: string | null;
+        description: string | null;
+        groupId: number | null;
         priority: number;
         startDate: string | null;
         status: Types.TaskStatus;
@@ -97,13 +95,11 @@ export const GetInboxDocument = {
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'status' } },

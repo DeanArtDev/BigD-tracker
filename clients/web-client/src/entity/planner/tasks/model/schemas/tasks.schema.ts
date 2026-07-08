@@ -56,6 +56,16 @@ const TASK_UNASSIGN_MUTATION = gql`
   }
 `;
 
+const TASK_FINISH_MUTATION = gql`
+  mutation TaskFinish($input: TaskFinishInput!) {
+    finishTask(input: $input) {
+      id
+      status
+      cancelReason
+    }
+  }
+`;
+
 const TASK_BY_ID_QUERY = gql`
   query TaskById($input: GetTaskByIdInput!) {
     getTaskById(input: $input) {

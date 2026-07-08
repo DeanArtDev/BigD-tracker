@@ -49,7 +49,11 @@ function AppDialog(props: AppDialogProps) {
         <DialogHeader className="border-b pt-4 px-4 mb-auto">
           <DialogTitle>{title}</DialogTitle>
 
-          <DialogDescription>{description}</DialogDescription>
+          {description != null ? (
+            <DialogDescription className="mb-3">{description}</DialogDescription>
+          ) : (
+            <DialogDescription />
+          )}
         </DialogHeader>
 
         <ScrollAreaNativeVertical className="h-fit max-h-[65vh]">{content}</ScrollAreaNativeVertical>
