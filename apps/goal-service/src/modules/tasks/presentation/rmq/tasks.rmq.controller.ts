@@ -15,6 +15,7 @@ import {
   CompleteDeleteTaskCommand,
   CreateTaskCommand,
   FinishTaskCommand,
+  FinishTaskHandler,
   ReplaceTaskCommand,
   SoftDeleteTaskCommand,
   TaskRecoveryCommand,
@@ -31,11 +32,11 @@ import {
   GoalGetDiaryTasks,
   GoalGetTaskById,
   GoalGetTasks,
+  GoalGetTasksByRange,
   GoalReplaceTask,
   GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
 } from '@big-d/api-contracts';
-import { GoalGetTasksByRange } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -268,7 +269,7 @@ export class TasksRmqController {
 
   @MessagePattern(GoalFinishTask.pattern)
   async finishTask(@Payload() { data: payload }: GoalFinishTask.Request): Promise<GoalFinishTask.Response> {
-    await this.commandBus.execute(
+    const data = await this.commandBus.execute<FinishTaskCommand, ReturnHandlerType<typeof FinishTaskHandler>>(
       new FinishTaskCommand({
         userId: payload.userId,
         taskId: payload.taskId,
@@ -276,6 +277,6 @@ export class TasksRmqController {
         type: payload.type,
       }),
     );
-    return { data: true };
+    return { data };
   }
 }

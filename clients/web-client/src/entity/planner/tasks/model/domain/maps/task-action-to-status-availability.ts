@@ -5,7 +5,7 @@ const taskActionByStatusesAvailability = {
   [TaskActionType.Delete]: [
     TaskStatus.NotStarted,
     TaskStatus.InProgress,
-    TaskStatus.Canceled,
+    TaskStatus.Completed,
     TaskStatus.Overdue,
     TaskStatus.Canceled,
     TaskStatus.Archived,
@@ -14,7 +14,7 @@ const taskActionByStatusesAvailability = {
   [TaskActionType.Clone]: [
     TaskStatus.NotStarted,
     TaskStatus.InProgress,
-    TaskStatus.Canceled,
+    TaskStatus.Completed,
     TaskStatus.Overdue,
     TaskStatus.Canceled,
     TaskStatus.Archived,

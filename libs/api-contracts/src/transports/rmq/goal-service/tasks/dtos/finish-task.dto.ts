@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TaskFinishStatus } from '../types';
+import { TaskDto } from './task.dto';
 
 class FinishFinishReqData {
   @IsInt()
@@ -25,7 +26,7 @@ class FinishTaskReq {
 
 class FinishTaskRes {
   @IsBoolean()
-  data: boolean;
+  data: TaskDto;
 }
 
 export { FinishTaskReq, FinishTaskRes };

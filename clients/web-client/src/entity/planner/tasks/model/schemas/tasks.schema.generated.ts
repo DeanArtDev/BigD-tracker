@@ -34,6 +34,15 @@ export type TaskDeleteInput = {
   id: string;
 };
 
+export type TaskFinishInput = {
+  id: string;
+  reason?: string | null | undefined;
+  type: TaskFinishStatus;
+};
+
+/** Статус завершения дела */
+export type TaskFinishStatus = 'CANCELED' | 'COMPLETED' | 'OVERDUE';
+
 /** День недели повторения дела */
 export type TaskRecurrenceWeekday = 'FR' | 'MO' | 'SA' | 'SU' | 'TH' | 'TU' | 'WE';
 
@@ -121,6 +130,12 @@ export type TaskUnassignMutationVariables = Exact<{
 }>;
 
 export type TaskUnassignMutation = { unassignTaskToGroup: boolean };
+
+export type TaskFinishMutationVariables = Exact<{
+  input: Types.TaskFinishInput;
+}>;
+
+export type TaskFinishMutation = { finishTask: { id: string; status: Types.TaskStatus; cancelReason: string | null } };
 
 export type TaskByIdQueryVariables = Exact<{
   input: Types.GetTaskByIdInput;
@@ -373,6 +388,47 @@ export const TaskUnassignDocument = {
     },
   ],
 } as unknown as DocumentNode<TaskUnassignMutation, TaskUnassignMutationVariables>;
+export const TaskFinishDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'TaskFinish' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskFinishInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'finishTask' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TaskFinishMutation, TaskFinishMutationVariables>;
 export const TaskByIdDocument = {
   kind: 'Document',
   definitions: [

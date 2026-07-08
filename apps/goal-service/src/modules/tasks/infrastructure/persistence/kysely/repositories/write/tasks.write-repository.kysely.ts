@@ -93,6 +93,7 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           start_date: task.startDate ?? null,
           end_date: task.endDate,
           deadline: task.deadline ?? null,
+          cancel_reason: task.cancelReason ?? null,
           status_id,
         })
         .returning([

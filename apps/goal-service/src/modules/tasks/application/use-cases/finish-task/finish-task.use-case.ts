@@ -7,6 +7,7 @@ import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GoalServiceRequestContext } from '@shared/request-context';
+import { TasksViewMapper, TaskView } from '../../dto';
 import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '../../exceptions';
 import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import { TaskCheckerService, TaskOverrideService, TaskRecurrenceService, TaskTypeService } from '../../services';
@@ -28,7 +29,7 @@ class FinishTaskUseCase {
     @Inject(TasksToken.WRITE_REPOSITORY) private readonly tasksWriteRepo: TasksWriteRepository,
   ) {}
 
-  async execute({ input }: FinishTaskCommand): Promise<void> {
+  async execute({ input }: FinishTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, userId, reason, type } = input;
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
@@ -40,8 +41,13 @@ class FinishTaskUseCase {
       if (isOrigin) {
         const task = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const { taskToFinish } = this.taskWithRecurrenceService.finish(task, patch);
-        await this.tasksWriteRepo.replaceTask(taskToFinish, trx);
-        return;
+        const newTask = await this.tasksWriteRepo.replaceTask(taskToFinish, trx);
+        const recurrence = await this.taskRecurrenceService.getRecurrence({
+          userId,
+          taskId: newTask.id,
+          id: newTask.recurrenceId,
+        });
+        return TasksViewMapper.fromAggregateToView(newTask, recurrence);
       }
 
       if (isVirtual) {
@@ -61,9 +67,9 @@ class FinishTaskUseCase {
           },
           patch,
         );
-        await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
 
-        return;
+        const newOverride = await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
+        return TasksViewMapper.fromOverrideToView(newOverride);
       }
 
       if (isOverride) {
@@ -85,9 +91,9 @@ class FinishTaskUseCase {
           },
           patch,
         );
-        await this.taskOverrideService.upsertOverride(overrideToUpdate, trx);
 
-        return;
+        const newOverride = await this.taskOverrideService.upsertOverride(overrideToUpdate, trx);
+        return TasksViewMapper.fromOverrideToView(newOverride);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

@@ -34,5 +34,6 @@ export * from './ui/calendar';
 export * from './ui/select';
 export * from './ui/alert-dialog';
 export * from './ui/drawer';
+export * from './ui/radio-group';
 
 export * from './lib/utils';
