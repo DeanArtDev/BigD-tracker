@@ -5,12 +5,15 @@ import { useState } from 'react';
 import { usePlannerInit } from '@/entity/planner/init';
 import {
   TaskForm,
+  TaskFormFieldProvider,
   TaskFormFooter,
   TaskFormProvider,
   TaskSubmitFormData,
+  useTaskAssign,
   useTaskCreate,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
+import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
 import { Button } from '@/shared/ui-kit';
@@ -66,26 +69,30 @@ function Component({ onSubmit }: ComponentProps) {
 
 function TaskCreationDialog(props: { groupId?: number; onSuccess: () => MaybePromise<void> }) {
   const { loading, createTask } = useTaskCreate();
+  const {} = useTaskAssign();
+  const {} = useTaskAssignToGroupFeature();
   const { promise } = useNotify();
 
   return (
-    <TaskFormProvider loading={loading} fieldVisibility={{ groupSelection: false }}>
-      <Component
-        onSubmit={async (taskFormData, close) => {
-          const { name, description, deadline, startDate, priority } = taskFormData;
+    <TaskFormProvider loading={loading}>
+      <TaskFormFieldProvider>
+        <Component
+          onSubmit={async (taskFormData, close) => {
+            const { name, description, deadline, startDate, priority } = taskFormData;
 
-          promise(async () => {
-            const response = await createTask({
-              variables: { input: { name, description, deadline, startDate, priority, groupId: props.groupId } },
+            promise(async () => {
+              const response = await createTask({
+                variables: { input: { name, description, deadline, startDate, priority, groupId: props.groupId } },
+              });
+
+              close();
+              if (response.data?.createTask != null) {
+                props.onSuccess();
+              }
             });
-
-            close();
-            if (response.data?.createTask != null) {
-              props.onSuccess();
-            }
-          });
-        }}
-      />
+          }}
+        />
+      </TaskFormFieldProvider>
     </TaskFormProvider>
   );
 }

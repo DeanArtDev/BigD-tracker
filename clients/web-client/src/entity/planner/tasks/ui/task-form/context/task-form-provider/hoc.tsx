@@ -6,16 +6,16 @@ import { TaskFormProvider } from './task-form.provider';
 function withTaskFormProvider<TProps extends Record<string, unknown>>(WrappedComponent: FunctionComponent<TProps>) {
   const displayName = WrappedComponent?.displayName ?? WrappedComponent?.name ?? 'Component';
 
-  function ComponentWithNotification(props: TProps) {
+  function ComponentWithTaskFormProvider(props: TProps) {
     return (
       <TaskFormProvider>
         <WrappedComponent {...props} />
       </TaskFormProvider>
     );
   }
-  ComponentWithNotification.displayName = `WithTaskFormProvider${displayName}`;
+  ComponentWithTaskFormProvider.displayName = `WithTaskFormProvider${displayName}`;
 
-  return ComponentWithNotification;
+  return ComponentWithTaskFormProvider;
 }
 
 export { withTaskFormProvider };

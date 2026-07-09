@@ -2,15 +2,21 @@
 
 import { ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
-import { useTaskFromContext } from '@/entity/planner/tasks';
 import { Button, cn, Collapsible, CollapsibleContent, CollapsibleTrigger, Typography } from '@/shared/ui-kit';
 import { DateAndTimePicker } from './date-and-time-picker';
 import { Group } from './group';
 import { Priority } from './priority';
+import { TaskStatusIndication } from '../../task-status-indication';
+import { useTaskFormFieldContext } from '../context/task-form-field-provider';
+import { useTaskFromContext } from '../context/task-form-provider';
 
 function TaskFormParamsSettings() {
   const [isOpen, setIsOpen] = useState(false);
-  const { formState } = useTaskFromContext();
+  const { formState, getValues } = useTaskFromContext();
+  const { fieldsState } = useTaskFormFieldContext();
+  const { startDate, deadline } = fieldsState;
+
+  const taskStatus = getValues('status');
 
   return (
     <Collapsible
@@ -20,8 +26,10 @@ function TaskFormParamsSettings() {
       className="flex flex-col bg-muted rounded-md"
     >
       <CollapsibleTrigger asChild>
-        <Button className="justify-between" variant="ghost">
-          <Typography.Muted className="text-xs">Параметры</Typography.Muted>
+        <Button className="gap-2" variant="ghost">
+          <Typography.Muted className="text-xs mr-auto">Параметры</Typography.Muted>
+
+          {taskStatus != null && <TaskStatusIndication status={taskStatus} />}
           <ChevronsUpDown className="stroke-muted-foreground" />
         </Button>
       </CollapsibleTrigger>
@@ -34,15 +42,19 @@ function TaskFormParamsSettings() {
           'data-[state=closed]:animate-collapsible-up',
         )}
       >
-        <Group />
+        <div className="grid grid-cols-2 gap-3 justify-between">
+          <Priority />
 
-        <Priority />
-
-        <div className="grid grid-cols-2 gap-3">
-          <DateAndTimePicker name="startDate" />
-
-          <DateAndTimePicker name="deadline" />
+          <Group />
         </div>
+
+        {(!deadline.hidden || !startDate.hidden) && (
+          <div className="grid grid-cols-2 gap-3">
+            {!startDate.hidden && <DateAndTimePicker disabled={startDate.disabled} name="startDate" />}
+
+            {!deadline.hidden && <DateAndTimePicker disabled={deadline.disabled} name="deadline" />}
+          </div>
+        )}
       </CollapsibleContent>
     </Collapsible>
   );

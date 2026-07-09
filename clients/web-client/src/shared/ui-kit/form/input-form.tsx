@@ -21,14 +21,14 @@ interface InputFormProps<FormValues extends FieldValues = FieldValues> extends O
 }
 
 function InputForm<FormValues extends FieldValues = FieldValues>(props: InputFormProps<FormValues>) {
-  const { name, label, classNames, isErrorMessage, ...inputProps } = props;
+  const { name, label, classNames, isErrorMessage, disabled, ...inputProps } = props;
 
   const context = useFormContext<FormValues>();
 
   return (
     <Controller
       name={name}
-      render={({ field, fieldState }) => (
+      render={({ field, fieldState, formState }) => (
         <Field data-invalid={fieldState.invalid} className={classNames?.wrapper}>
           <FieldLabel htmlFor={field.name} className={classNames?.label}>
             {label}
@@ -39,6 +39,7 @@ function InputForm<FormValues extends FieldValues = FieldValues>(props: InputFor
             aria-invalid={fieldState.invalid}
             className={classNames?.input}
             {...context.register(name, {
+              disabled: disabled || formState.disabled,
               setValueAs: (v) => (v == '' || v == null ? formElementsValues.inputText.value : v),
               onChange: (evt) =>
                 evt.target.value.trim() === '' ? formElementsValues.inputText.changeResult : evt.target.value,

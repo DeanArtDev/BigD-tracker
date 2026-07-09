@@ -1,12 +1,8 @@
 import { z } from 'zod';
-import {
-  transformToPlaceholder,
-  transformPrimitive,
-  transformDate,
-  schemaPlaceholderValues,
-} from '@/shared/ui-kit/form';
-import { taskPriorityEnumSchema } from '../../../lib';
-import { TaskDomain } from '../../../model';
+import { TaskStatus } from '@/entity/schema-types';
+import { transformToPlaceholder, transformDate, schemaPlaceholderValues } from '@/shared/ui-kit/form';
+import { taskPriorityEnumSchema } from '../../../../lib';
+import { TaskDomain } from '../../../../model';
 
 const taskFormSchema = z
   .object({
@@ -25,10 +21,9 @@ const taskFormSchema = z
         error: `Невалидное значение приоритета`,
       }),
 
-    groupId: z.coerce
-      .number()
-      .optional()
-      .transform((value) => transformPrimitive.toNumber(value === 0 ? 'empty' : value)),
+    status: z.enum(TaskStatus).optional(),
+
+    groupId: z.number().optional(),
 
     startDate: z
       .date()

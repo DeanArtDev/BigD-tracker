@@ -1,6 +1,5 @@
 'use client';
 
-import { useTaskFromContext } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import { useWysiwygController } from '@/shared/project-ui';
 import { WysiwygForm } from '@/shared/project-ui/form';
@@ -8,7 +7,8 @@ import { cn } from '@/shared/ui-kit';
 import { InputForm } from '@/shared/ui-kit/form';
 import { TaskFormErrorReactor } from './components/task-form-error-reactor';
 import { TaskFormParamsSettings } from './components/task-form-params-settings';
-import { TaskFormData, TaskSubmitFormData } from './context/task-form-schema';
+import { useTaskFormFieldContext } from './context/task-form-field-provider';
+import { TaskSubmitFormData, useTaskFromContext } from './context/task-form-provider';
 
 interface TaskFormProps {
   readonly className?: string;
@@ -18,6 +18,9 @@ interface TaskFormProps {
 function TaskForm({ className, onSubmit }: TaskFormProps) {
   const { formId, handleSubmit, setValue } = useTaskFromContext();
   const { wysiwygController } = useWysiwygController();
+
+  const { fieldsState } = useTaskFormFieldContext();
+  const { name, description } = fieldsState;
 
   return (
     <>
@@ -35,17 +38,28 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
           })(evt);
         }}
       >
-        <InputForm name="name" label="Имя" placeholder="Например, 10 раз отжаться!" isErrorMessage={false} />
+        {!name.hidden && (
+          <InputForm
+            name="name"
+            label="Имя"
+            disabled={name.disabled}
+            placeholder="Например, 10 раз отжаться!"
+            isErrorMessage={false}
+          />
+        )}
 
-        <WysiwygForm
-          name="description"
-          classNames={{ wrapper: 'border rounded-xl h-120' }}
-          placeholder="Добавь детали, контекст и ожидаемый результат."
-          wysiwygController={wysiwygController}
-          onDirtyChange={(isDirty) => {
-            setValue('isDescriptionDirty', isDirty, { shouldDirty: true });
-          }}
-        />
+        {!description.hidden && (
+          <WysiwygForm
+            name="description"
+            disabled={description.disabled}
+            classNames={{ wrapper: 'border rounded-xl h-120' }}
+            placeholder="Добавь детали, контекст и ожидаемый результат."
+            wysiwygController={wysiwygController}
+            onDirtyChange={(isDirty) => {
+              setValue('isDescriptionDirty', isDirty, { shouldDirty: true });
+            }}
+          />
+        )}
 
         <TaskFormParamsSettings />
       </form>
@@ -55,4 +69,4 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
   );
 }
 
-export { TaskForm, type TaskFormData };
+export { TaskForm };

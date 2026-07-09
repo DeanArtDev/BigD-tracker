@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { MaybePromise } from '@/shared/lib';
 import { AlertConfirmDialog } from '../alert-confirm-dialog';
 import { useConfirmDialogContext } from './confirm-dialog.context';
@@ -14,8 +14,8 @@ function useConfirmDialog() {
       callback: () => MaybePromise<void>;
       cancel?: () => void;
       dialog?: {
-        title?: string;
-        content?: string;
+        title?: ReactNode;
+        content?: ReactNode;
       };
     }) => {
       if (param.isNeedConfirm()) {

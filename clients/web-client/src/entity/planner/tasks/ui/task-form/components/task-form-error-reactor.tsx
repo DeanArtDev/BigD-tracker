@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash-es';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useNotify } from '@/shared/lib';
-import { TaskFormData } from '../task-form';
+import { TaskFormData } from '../context/task-form-provider';
 
 function TaskFormErrorReactor() {
   const { subscribe } = useFormContext<TaskFormData>();

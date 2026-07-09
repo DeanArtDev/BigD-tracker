@@ -1,8 +1,11 @@
 'use client';
 
+import { invalidateInboxTasks } from '@/entity/planner/inbox';
+import { usePlannerInit } from '@/entity/planner/init';
 import {
   Task,
   TaskForm,
+  TaskFormFieldProvider,
   TaskFormFooter,
   TaskFormProvider,
   TaskSubmitFormData,
@@ -65,30 +68,40 @@ interface TaskUpdateDialogProps {
 
 function TaskUpdateDialog(props: TaskUpdateDialogProps) {
   const { task, open, onOpenChange, onSuccess } = props;
-  const { loading, updateTask } = useTaskUpdate();
+
+  const { loading, client, updateTask } = useTaskUpdate();
+  const { data } = usePlannerInit();
+
   const { promise } = useNotify();
 
   return (
-    <TaskFormProvider task={task} loading={loading} fieldVisibility={{ groupSelection: false }}>
-      <Component
-        open={open}
-        onOpenChange={onOpenChange}
-        onSubmit={async (taskFormData, close) => {
-          if (task == null) return;
-          const { name, description, deadline, startDate, priority } = taskFormData;
+    <TaskFormProvider task={task} loading={loading}>
+      <TaskFormFieldProvider taskStatus={task?.status}>
+        <Component
+          open={open}
+          onOpenChange={onOpenChange}
+          onSubmit={async (taskFormData, close) => {
+            if (task == null) return;
+            const { name, description, deadline, startDate, priority } = taskFormData;
 
-          promise(async () => {
-            const response = await updateTask({
-              variables: { input: { id: task.id, weight: 100, name, description, deadline, startDate, priority } },
+            promise(async () => {
+              const response = await updateTask({
+                variables: { input: { id: task.id, weight: 100, name, description, deadline, startDate, priority } },
+                onCompleted: ({ updateTask: ok }) => {
+                  if (ok != null && data.inbox.id != null) {
+                    invalidateInboxTasks(client, data.inbox.id);
+                  }
+                },
+              });
+
+              close();
+              if (response.data?.updateTask != null) {
+                onSuccess?.();
+              }
             });
-
-            close();
-            if (response.data?.updateTask != null) {
-              onSuccess?.();
-            }
-          });
-        }}
-      />
+          }}
+        />
+      </TaskFormFieldProvider>
     </TaskFormProvider>
   );
 }

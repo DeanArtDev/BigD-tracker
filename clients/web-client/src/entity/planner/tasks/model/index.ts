@@ -1,5 +1,6 @@
 export * from './domain/task';
 export * from './domain/task-domain';
+export * from './domain/task-fields-to-change-by-status';
 export * from './use-task-create';
 export * from './use-task-delete';
 export * from './use-task-assign';
