@@ -8,10 +8,6 @@ import timeAndDate from '@/shared/lib/time';
 import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
 
-const defaultVisibility: TaskFromContext['fieldVisibility'] = {
-  groupSelection: true,
-};
-
 const defaultValues: DefaultValues<TaskFormData> = {
   name: undefined,
   priority: TaskPriority.DELETE.toString(),
@@ -25,14 +21,13 @@ const defaultValues: DefaultValues<TaskFormData> = {
 type TaskFormProviderProps = PropsWithChildren<{
   readonly loading?: boolean;
   readonly task?: Task;
-  readonly fieldVisibility?: TaskFromContext['fieldVisibility'];
 }>;
 
-function TaskFormProvider({ task, loading, fieldVisibility = {}, children }: TaskFormProviderProps) {
+function TaskFormProvider({ task, loading, children }: TaskFormProviderProps) {
   const formId = useId();
   const isEdit = task != null;
 
-  const values = isEdit
+  const values: TaskFormData | undefined = isEdit
     ? {
         name: task.name ?? undefined,
         priority: task.priority.toString(),
@@ -40,6 +35,7 @@ function TaskFormProvider({ task, loading, fieldVisibility = {}, children }: Tas
         startDate: task.startDate != null ? timeAndDate(task.startDate).toDate() : undefined,
         deadline: task.deadline != null ? timeAndDate(task.deadline).toDate() : undefined,
         groupId: task.groupId ?? undefined,
+        status: task?.status ?? undefined,
         isDescriptionDirty: false,
       }
     : undefined;
@@ -53,7 +49,6 @@ function TaskFormProvider({ task, loading, fieldVisibility = {}, children }: Tas
     defaultValues,
   });
 
-  const { groupSelection = defaultVisibility?.groupSelection } = fieldVisibility;
   const resetToInit = useCallback(() => {
     void form.reset(undefined, {
       keepDirty: false,
@@ -63,10 +58,7 @@ function TaskFormProvider({ task, loading, fieldVisibility = {}, children }: Tas
     });
   }, [form]);
 
-  const value = useMemo<TaskFromContext>(
-    () => ({ formId, resetToInit, fieldVisibility: { groupSelection } }),
-    [formId, groupSelection, resetToInit],
-  );
+  const value = useMemo<TaskFromContext>(() => ({ formId, resetToInit }), [formId, resetToInit]);
 
   return (
     <FormProvider {...form}>

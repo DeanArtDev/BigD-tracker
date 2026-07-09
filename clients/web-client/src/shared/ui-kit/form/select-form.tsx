@@ -44,7 +44,7 @@ function SelectForm<FormValues extends FieldValues = FieldValues>({
             <Select
               {...field}
               disabled={disabled || field.disabled}
-              value={field.value ?? formElementsValues.select.value}
+              value={field.value?.toString() ?? formElementsValues.select.value}
               onValueChange={(value) => field.onChange(value)}
             >
               <SelectTrigger aria-invalid={Boolean(fieldState.error)} className={classNames?.trigger}>

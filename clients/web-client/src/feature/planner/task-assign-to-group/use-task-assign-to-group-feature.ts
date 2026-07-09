@@ -4,7 +4,7 @@ import { invalidateInboxTasks } from '@/entity/planner/inbox';
 import { invalidatePlannerInit } from '@/entity/planner/init';
 import { TaskId, useTaskAssign } from '@/entity/planner/tasks';
 
-function useTaskAssignToGroup() {
+function useTaskAssignToGroupFeature() {
   const { assignTask, client, ...rest } = useTaskAssign();
   const [loading, setLoading] = useState(false);
 
@@ -29,4 +29,4 @@ function useTaskAssignToGroup() {
   };
 }
 
-export { useTaskAssignToGroup };
+export { useTaskAssignToGroupFeature };

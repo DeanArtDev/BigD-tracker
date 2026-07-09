@@ -6,9 +6,10 @@ interface DateAndTimePickerProps {
   readonly name: 'startDate' | 'deadline';
   readonly max?: Date;
   readonly min?: Date;
+  readonly disabled?: boolean;
 }
 
-function DateAndTimePicker({ name, min, max }: DateAndTimePickerProps) {
+function DateAndTimePicker({ name, disabled, min, max }: DateAndTimePickerProps) {
   const isStartDate = name === 'startDate';
 
   return (
@@ -18,6 +19,7 @@ function DateAndTimePicker({ name, min, max }: DateAndTimePickerProps) {
       </Typography.H6>
 
       <DatePickerForm
+        disabled={disabled}
         name={name}
         min={min}
         max={max}
@@ -33,6 +35,7 @@ function DateAndTimePicker({ name, min, max }: DateAndTimePickerProps) {
       />
 
       <TimePickerForm
+        disabled={disabled}
         classNames={{ wrapper: 'col-span-1', inputGroup: 'bg-background' }}
         name={name}
         format="HH:mm"

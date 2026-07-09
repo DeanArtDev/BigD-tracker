@@ -4,7 +4,7 @@ import { SearchX } from 'lucide-react';
 import { memo } from 'react';
 import { useGroupListDrawerContext } from '@/entity/planner/groups';
 import { TaskList } from '@/entity/planner/tasks';
-import { useTaskAssignToGroup } from '@/feature/planner/task-assign-to-group';
+import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
 import { useTaskCopyFeature } from '@/feature/planner/task-copy';
 import { useTaskDeleteFeature } from '@/feature/planner/task-delete';
 import { useTaskFinishFeature } from '@/feature/planner/task-finish';
@@ -26,7 +26,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
   } = useInboxQueryByUrlQuery();
 
   const { deleteTask, loading: isTaskDeleteLoading } = useTaskDeleteFeature();
-  const { assignToGroup, loading: isTaskAssignLoading } = useTaskAssignToGroup();
+  const { assignToGroup, loading: isTaskAssignLoading } = useTaskAssignToGroupFeature();
   const { unassignTaskFromGroup, loading: isTaskUnassignLoading } = useTaskUnassignFromGroup();
   const { copyTask, loading: isTaskCopyLoading } = useTaskCopyFeature();
   const { finishTask, loading: isTaskFinishLoading, taskFinishDialogHolder } = useTaskFinishFeature();

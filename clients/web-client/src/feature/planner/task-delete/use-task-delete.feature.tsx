@@ -4,6 +4,7 @@ import { TaskId, useTaskDelete } from '@/entity/planner/tasks';
 import { TaskSchema } from '@/entity/schema-types';
 import { useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
+import { Typography } from '@/shared/ui-kit';
 
 function useTaskDeleteFeature() {
   const { deleteTask, ...rest } = useTaskDelete();
@@ -37,8 +38,12 @@ function useTaskDeleteFeature() {
         },
 
         dialog: {
-          title: 'Задача будет перемещена в раздел «Удалённые». Её можно восстановить или удалить навсегда.',
-          content: 'Можно восстановить',
+          title: 'Удалить?',
+          content: (
+            <Typography.Small className="text-sm">
+              Дело будет перемещена в «Удалённые». Её будет можно восстановить.
+            </Typography.Small>
+          ),
         },
       });
     },

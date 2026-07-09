@@ -10,9 +10,10 @@ const GROUPS_EMPTY: GroupInfo[] = [];
 
 type Query = Override<GetAssignableGroupsQuery, { getAssignableGroups: GroupInfo[] }>;
 
-function useGetAssignableGroups() {
+function useGetAssignableGroups({ skip }: { skip?: boolean } = {}) {
   const result = useQuery<Query>(GetAssignableGroupsDocument, {
     context: { endpoint: 'private' },
+    skip,
   });
 
   const initialLoading = result.networkStatus === 1 && result.data == null;

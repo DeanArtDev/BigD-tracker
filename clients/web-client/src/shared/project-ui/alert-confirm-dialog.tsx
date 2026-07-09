@@ -46,7 +46,7 @@ function AlertConfirmDialog({
         if (!value) handleClose();
       }}
     >
-      <AlertDialogContent className="gap-2 p-5" size="sm">
+      <AlertDialogContent className="gap-2" size="sm">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
         </AlertDialogHeader>

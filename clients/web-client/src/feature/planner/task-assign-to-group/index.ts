@@ -1,1 +1,1 @@
-export * from './use-task-assign-to-group';
+export * from './use-task-assign-to-group-feature';
