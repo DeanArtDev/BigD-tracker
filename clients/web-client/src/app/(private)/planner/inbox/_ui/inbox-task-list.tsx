@@ -11,7 +11,7 @@ import { useTaskFinishFeature } from '@/feature/planner/task-finish';
 import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
 import { useTaskUpdateContext } from '@/feature/planner/task-update';
 import { useNotify } from '@/shared/lib';
-import { EmptyTasksPlaceholder } from './empty-inbox-tasks.placeholder';
+import { DataLoader } from '@/shared/ui-kit';
 import { useInboxQueryByUrlQuery } from '../_model/use-inbox-query-by-url-query';
 
 const InboxTaskList = memo(function InboxTaskListMemo() {
@@ -87,7 +87,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
           isLoading: initialLoading,
           isEmpty,
           emptyElement: (
-            <EmptyTasksPlaceholder
+            <DataLoader.Empty
               title="Ничего не нашлось"
               description="Попробуй изменить запрос или сбросить фильтры."
               icon={<SearchX className="size-7 text-muted-foreground" strokeWidth={2} />}

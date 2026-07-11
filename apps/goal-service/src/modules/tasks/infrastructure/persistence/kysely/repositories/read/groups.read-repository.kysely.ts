@@ -69,15 +69,22 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
 
   async getMany(
     specifications: TasksSpecification,
-    params: { sort?: SortDirection; limit: number },
+    params: { sort?: { name?: SortDirection; id?: SortDirection }; limit: number },
     trx?: TaskTransaction,
   ): Promise<GroupView[]> {
     return await this.errorCatcher('groups.get-many.read', async () => {
+      const { sort } = params;
       const groups = await groupWithStatusQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
-        .$if(params.sort != null, (qb) => {
+        .$if(params.sort?.id != null, (qb) => {
           return qb.orderBy('id', (ob) => {
-            if (params.sort === SortDirection.DESC) return ob.desc();
+            if (sort?.id === SortDirection.DESC) return ob.desc();
+            return ob.asc();
+          });
+        })
+        .$if(params.sort?.name != null, (qb) => {
+          return qb.orderBy('name', (ob) => {
+            if (sort?.name === SortDirection.DESC) return ob.desc();
             return ob.asc();
           });
         })

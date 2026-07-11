@@ -53,13 +53,13 @@ const routes = {
   plannerGroupList: (<Path extends string = string>(path: Path) => ({
     path,
     link: (query?: UrlQueryParams) => buildLink(path, { queryObject: query }),
-  }))('/planner/group-list'),
+  }))('/planner/groups'),
 
   plannerGroup: (<Path extends string = string>(path: Path) => ({
     path,
     link: ({ groupId }: { groupId: number }, query?: UrlQueryParams) =>
       buildLink(path, { urlParams: { groupId: groupId.toString() }, queryObject: query }),
-  }))('/planner/group-list/:groupId'),
+  }))('/planner/groups/:groupId'),
 
   plannerDiary: (<Path extends string = string>(path: Path) => ({
     path,

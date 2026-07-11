@@ -2,14 +2,7 @@ import { FolderOutput } from 'lucide-react';
 import { GroupInfo, GroupListDropdown } from '@/entity/planner/groups';
 import { MaybePromise } from '@/shared/lib';
 import { AppTooltip } from '@/shared/project-ui';
-import {
-  Button,
-  DataErrorElement,
-  DataLoader,
-  DataLoadingElement,
-  VirtualizedInfinityScroll,
-  VirtualizedInfinityScrollProps,
-} from '@/shared/ui-kit';
+import { Button, DataLoader, VirtualizedInfinityScroll, VirtualizedInfinityScrollProps } from '@/shared/ui-kit';
 import { DataLoaderProps } from '@/shared/ui-kit';
 import { Task, TaskDomain } from '../model';
 import { TaskActionsDropdown } from './task-actions-dropdown';
@@ -51,8 +44,8 @@ function TaskList({
 }: TaskListProps) {
   return (
     <DataLoader
-      loadingElement={<DataLoadingElement />}
-      errorElement={<DataErrorElement className="grow" onRetry={onRetry} />}
+      loadingElement={<DataLoader.Loading />}
+      errorElement={<DataLoader.Error className="grow" onRetry={onRetry} />}
       {...dataLoaderProps}
     >
       <VirtualizedInfinityScroll

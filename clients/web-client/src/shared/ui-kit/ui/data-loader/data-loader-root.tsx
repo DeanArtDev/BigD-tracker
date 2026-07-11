@@ -5,7 +5,7 @@ import { cn } from '@/shared/ui-kit';
 import { DataLoadingElement } from './data-loading-element';
 import './styles.css';
 
-type DataLoaderProps = PropsWithChildren & {
+type DataLoaderRootProps = PropsWithChildren & {
   readonly isLoading?: boolean;
   readonly loadingElement?: ReactNode;
 
@@ -24,7 +24,7 @@ type DataLoaderProps = PropsWithChildren & {
       }
   );
 
-function DataLoader(props: DataLoaderProps) {
+function DataLoaderRoot(props: DataLoaderRootProps) {
   const {
     isEmpty = false,
     isError = false,
@@ -43,7 +43,8 @@ function DataLoader(props: DataLoaderProps) {
   } = props;
 
   const readyToShow = !isLoading && !isEmpty && !isError;
-  const renderLoadingElement = isLoading && !isError;
+  const renderErrorElement = !isLoading && isError;
+  const renderLoadingElement = isLoading;
   const renderEmptyElement = isEmpty && !isLoading && !isError;
 
   if (blur) {
@@ -68,7 +69,7 @@ function DataLoader(props: DataLoaderProps) {
 
   return (
     <>
-      {isError && errorElement}
+      {renderErrorElement && errorElement}
 
       {renderLoadingElement && loadingElement}
 
@@ -83,4 +84,4 @@ function DataLoader(props: DataLoaderProps) {
   );
 }
 
-export { DataLoader, type DataLoaderProps };
+export { DataLoaderRoot, type DataLoaderRootProps };

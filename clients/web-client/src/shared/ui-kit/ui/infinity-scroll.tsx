@@ -3,7 +3,7 @@
 import { isFunction } from 'lodash-es';
 import { CSSProperties, type PropsWithChildren, Ref, useRef } from 'react';
 import { useOnInView } from 'react-intersection-observer';
-import { DataLoadingElement } from '@/shared/ui-kit';
+import { DataLoader } from '@/shared/ui-kit';
 import { ScrollAreaNativeVertical } from './scroll-area-native-vertical';
 
 interface InfinityScrollProps extends PropsWithChildren {
@@ -60,7 +60,7 @@ function InfinityScroll({
       <div className="flex flex-col grow p-[1px]">
         {children}
 
-        {isLoadingNextPage && <DataLoadingElement className="mt-3" size={40} />}
+        {isLoadingNextPage && <DataLoader.Loading className="mt-3" size={40} />}
         <div className="h-px w-full" ref={trackingRef} />
       </div>
     </ScrollAreaNativeVertical>

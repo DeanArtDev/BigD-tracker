@@ -31,7 +31,7 @@ export class GetGroupListHandler implements IQueryHandler<GetGroupListQuery> {
             not(GroupInbox()),
           ]),
         ),
-        { sort: SortDirection.DESC, limit },
+        { sort: { name: SortDirection.ASC }, limit },
         trx,
       );
     });

@@ -1,9 +1,9 @@
 'use client';
 
-import { Inbox } from 'lucide-react';
+import { Folder, Inbox } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
 import { RoutePaths, routes } from '@/shared/routes';
-import { Badge, DataLoader, DataLoadingElement, Typography, useSidebar } from '@/shared/ui-kit';
+import { Badge, DataLoader, Typography, useSidebar } from '@/shared/ui-kit';
 import { useSidebarInfoQuery } from '@/widget/planner/planner-sidebar';
 
 interface PlannerSidebarNavPath {
@@ -24,7 +24,7 @@ function useNavItems(): PlannerSidebarNavPath[] {
           <>
             <span>INBOX</span>{' '}
             <Badge>
-              <DataLoader isLoading={loading} loadingElement={<DataLoadingElement inverse />}>
+              <DataLoader isLoading={loading} loadingElement={<DataLoader.Loading inverse />}>
                 <Typography.Muted className="text-white text-xs">{inboxTaskCount ?? 0}</Typography.Muted>
               </DataLoader>
             </Badge>
@@ -39,6 +39,12 @@ function useNavItems(): PlannerSidebarNavPath[] {
           </div>
         ),
         path: routes.plannerInBox.path,
+      },
+
+      {
+        title: <span>Группы</span>,
+        icon: <Folder />,
+        path: routes.plannerGroupList.path,
       },
     ],
     [inboxTaskCount, loading, open],

@@ -3,20 +3,11 @@
 import { Search, X } from 'lucide-react';
 import { memo, useState } from 'react';
 import { TaskPriorityPicker, TaskStatusSelect } from '@/entity/planner/tasks';
-import { TaskStatus } from '@/entity/schema-types';
 import { Button, InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui-kit';
-import { useInboxUrlQuery } from '../_model/use-inbox-url-query';
+import { UseInboxUrlQuery, useInboxUrlQuery } from '../_model/use-inbox-url-query';
 
-interface InboxManipulationBlockProps {
-  readonly onFiltersChange?: (filters: { status?: TaskStatus[]; priority?: number[] }) => void;
-  readonly onSearchChange?: (search?: string) => void;
-}
-
-const InboxManipulationBlock = memo(function InboxManipulationBlockMemo({
-  onSearchChange,
-  onFiltersChange,
-}: InboxManipulationBlockProps) {
-  const [searchQuery] = useInboxUrlQuery();
+const InboxManipulationBlock = memo(function InboxManipulationBlockMemo() {
+  const [searchQuery, setSearchQuery] = useInboxUrlQuery();
 
   const filter = {
     search: searchQuery?.search,
@@ -25,6 +16,11 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo({
   };
 
   const [draftSearch, setDraftSearch] = useState(filter?.search ?? '');
+
+  const setSearch = (search: string) => void setSearchQuery((prev) => ({ ...prev, search: search }));
+  const setFilters = ({ status, priority }: Pick<UseInboxUrlQuery, 'status' | 'priority'>) => {
+    setSearchQuery((prev) => ({ ...prev, priority, status }));
+  };
 
   return (
     <div className="flex gap-5 items-center">
@@ -38,11 +34,11 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo({
           onKeyDown={(event) => {
             if (event.key !== 'Enter') return;
             event.preventDefault();
-            onSearchChange?.(draftSearch);
+            setSearch(draftSearch);
           }}
           onBlur={(event) => {
             event.preventDefault();
-            onSearchChange?.(draftSearch);
+            setSearch(draftSearch);
           }}
         />
 
@@ -55,7 +51,7 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo({
               size="icon-sm"
               onClick={() => {
                 setDraftSearch('');
-                onSearchChange?.('');
+                setSearch('');
               }}
             >
               <X className="size-3" />
@@ -67,7 +63,7 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo({
             size="icon-sm"
             type="button"
             onClick={() => {
-              onSearchChange?.(draftSearch);
+              setSearch(draftSearch);
             }}
           >
             <Search />
@@ -80,14 +76,14 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo({
         value={filter.priority}
         onChange={(values) => {
           const v = values.length <= 0 ? undefined : values;
-          onFiltersChange?.({ priority: v, status: filter.status });
+          setFilters({ priority: v?.map(String), status: filter.status });
         }}
       />
 
       <TaskStatusSelect
         values={filter.status}
         onChange={(value) => {
-          onFiltersChange?.({ status: value, priority: filter.priority });
+          setFilters({ priority: filter.priority?.map(String), status: value });
         }}
       />
     </div>

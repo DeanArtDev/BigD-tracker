@@ -17,7 +17,7 @@ interface GroupsReadRepository {
 
   getMany(
     specifications: TasksSpecification,
-    params: { sort?: SortDirection; limit: number },
+    params: { sort?: { name?: SortDirection; id?: SortDirection }; limit: number },
     trx?: TaskTransaction,
   ): Promise<GroupView[]>;
 }

@@ -1,12 +1,12 @@
 'use client';
 
 import { lazy, Suspense, type ComponentType, type ReactNode } from 'react';
-import { DataLoadingElement } from '@/shared/ui-kit';
+import { DataLoader } from '@/shared/ui-kit';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function withLazy<T extends ComponentType<any>>(
   loader: () => Promise<{ default: T }>,
-  loaderElement: ReactNode = <DataLoadingElement size={50} />,
+  loaderElement: ReactNode = <DataLoader.Loading size={50} />,
 ) {
   const Component = lazy<T>(loader);
 
