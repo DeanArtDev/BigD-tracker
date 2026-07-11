@@ -1,11 +1,11 @@
 import { AppGraphQLContext } from '@/infrastructure/graphql-client/types';
 import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { ACCESS_TOKEN_KEY } from '@/modules/auth';
+import { ACCESS_TOKEN_KEY, RefreshTokenGuard } from '@/modules/auth';
 import { AuthErrorSkip, Public, REFRESH_TOKEN_KEY, RefreshToken, TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { ExceptionLogoutFailed, ExceptionUnauthorized } from '@/modules/auth/exceptions';
 import { AuthLogin, AuthLogout, AuthRefresh, RpcStatus } from '@big-d/api-contracts';
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IpAddress } from '@shared/decorators/ip.decorator';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
@@ -43,6 +43,7 @@ export class AuthResolver {
   }
 
   @AuthErrorSkip()
+  @UseGuards(RefreshTokenGuard)
   @Mutation(() => Boolean, {
     description: 'Продление токена сессии, необходимы access и refresh токены одновременно',
   })
