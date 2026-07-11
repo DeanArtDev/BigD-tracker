@@ -4,7 +4,7 @@ const inboxInitialRequestVariables: {
   limit: NonNullable<GetInboxQueryVariables['input']>['limit'];
   cursor: NonNullable<GetInboxQueryVariables['input']>['cursor'];
 } = {
-  limit: 15,
+  limit: 12,
   cursor: null,
 };
 export { inboxInitialRequestVariables };

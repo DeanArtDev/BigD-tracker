@@ -17,19 +17,22 @@ function useTaskCopyFeature() {
       if (data.inbox.id == null) return;
 
       promise(async () => {
-        setLoading(true);
-        const response = await copyTask({
-          variables: { input: { id } },
-          awaitRefetchQueries: true,
-        });
+        try {
+          setLoading(true);
+          const response = await copyTask({
+            variables: { input: { id } },
+            awaitRefetchQueries: true,
+          });
 
-        if (response.data?.copyTask != null) {
-          const id = response.data?.copyTask.id;
-          if (id == null || data.inbox.id == null) return;
-          await invalidateInboxTasks(rest.client, data.inbox.id);
-          await invalidatePlannerInit(rest.client.cache);
+          if (response.data?.copyTask != null) {
+            const id = response.data?.copyTask.id;
+            if (id == null || data.inbox.id == null) return;
+            await invalidateInboxTasks(rest.client, data.inbox.id);
+            await invalidatePlannerInit(rest.client.cache);
+          }
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
       });
     },
     [copyTask, data.inbox.id, promise, rest.client],

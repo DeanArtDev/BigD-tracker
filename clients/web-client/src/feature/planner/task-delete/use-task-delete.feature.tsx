@@ -20,20 +20,23 @@ function useTaskDeleteFeature() {
 
         callback: async () => {
           promise(async () => {
-            setLoading(true);
-            const response = await deleteTask({
-              variables: { input: { id } },
-              awaitRefetchQueries: true,
-            });
+            try {
+              setLoading(true);
+              const response = await deleteTask({
+                variables: { input: { id } },
+                awaitRefetchQueries: true,
+              });
 
-            if (response.data?.deleteTask != null) {
-              const id = response.data?.deleteTask.id;
-              if (id == null) return;
-              await invalidatePlannerInit(rest.client.cache);
-              const __typename: TaskSchema['__typename'] = 'TaskSchema';
-              rest.client.cache.evict({ id: rest.client.cache.identify({ __typename, id }) });
+              if (response.data?.deleteTask != null) {
+                const id = response.data?.deleteTask.id;
+                if (id == null) return;
+                await invalidatePlannerInit(rest.client.cache);
+                const __typename: TaskSchema['__typename'] = 'TaskSchema';
+                rest.client.cache.evict({ id: rest.client.cache.identify({ __typename, id }) });
+              }
+            } finally {
+              setLoading(false);
             }
-            setLoading(false);
           });
         },
 

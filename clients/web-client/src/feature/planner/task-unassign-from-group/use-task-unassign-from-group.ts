@@ -10,17 +10,20 @@ function useTaskUnassignFromGroup() {
 
   const unassignTaskFromGroup = useCallback(
     async ({ groupId, taskId }: { taskId: TaskId; groupId: GroupId }) => {
-      setLoading(true);
-      const result = await unassignTask({
-        variables: { input: { groupId, taskId } },
-        awaitRefetchQueries: true,
-      });
+      try {
+        setLoading(true);
+        const result = await unassignTask({
+          variables: { input: { groupId, taskId } },
+          awaitRefetchQueries: true,
+        });
 
-      if (result.data?.unassignTaskToGroup) {
-        await invalidateInboxTasks(client, groupId);
-        await invalidatePlannerInit(client.cache);
+        if (result.data?.unassignTaskToGroup) {
+          await invalidateInboxTasks(client, groupId);
+          await invalidatePlannerInit(client.cache);
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     },
     [client, unassignTask],
   );
