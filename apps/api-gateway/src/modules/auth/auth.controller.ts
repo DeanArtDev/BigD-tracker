@@ -1,5 +1,5 @@
 import { AppRmqClient, AUTH_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
-import { AccountReferralToken, AuthRefresh, AuthLogin, AuthLogout, AuthDeleteUser } from '@big-d/api-contracts';
+import { AccountReferralToken, AuthDeleteUser, AuthLogout } from '@big-d/api-contracts';
 import {
   Body,
   Controller,
@@ -12,7 +12,6 @@ import {
   Query,
   Res,
   UnprocessableEntityException,
-  UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -23,16 +22,12 @@ import { CookieService } from '@shared/services/cookies';
 import { Response } from 'express';
 import { RegisterSage } from './application';
 import { ACCESS_TOKEN_KEY } from './constants';
-import { AuthErrorSkip, Public, REFRESH_TOKEN_KEY, RefreshToken, TokenPayload } from './decorators';
+import { Public, REFRESH_TOKEN_KEY, TokenPayload } from './decorators';
 import { AccessTokenPayload } from './dto/access-token.dto';
-import { LoginRequest } from './dto/login.dto';
 import { LogoutResponse } from './dto/logout.dto';
 import { ValidateReferralTokenQuery } from './dto/referral-token-validation.dto';
 import { ReferralTokenRes } from './dto/referral-token.dto';
-import { RefreshResponse } from './dto/refresh.dto';
 import { RegisterRequest } from './dto/register.dto';
-import { ExceptionUnauthorized } from './exceptions';
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -71,47 +66,6 @@ export class AuthController {
     this.cookieService.setRefreshTokenByKey(REFRESH_TOKEN_KEY, { token: refreshToken, maxAge }, res);
   }
 
-  @Post('refresh')
-  @ApiOperation({
-    summary: 'Обновление токена пользователя',
-    description: 'Возвращает access-token в теле и устанавливает refresh-token в cookie (HttpOnly)',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Токен успешно продлен',
-    type: RefreshResponse,
-  })
-  @ApiBearerAuth(ACCESS_TOKEN_KEY)
-  @AuthErrorSkip()
-  @UseGuards(RefreshTokenGuard)
-  async refresh(
-    @Res({ passthrough: true }) res: Response,
-    @IpAddress() ip: string,
-    @UserAgent() userAgent: string,
-    @TokenPayload() accessTokenPayload?: AccessTokenPayload,
-    @RefreshToken() refreshToken?: string,
-  ): Promise<void> {
-    if (accessTokenPayload == null) {
-      throw new ExceptionUnauthorized({ message: 'Токен доступа отсутствует' });
-    }
-
-    if (refreshToken == null) {
-      this.cookieService.dropTokens(res);
-      throw new ExceptionUnauthorized({ message: 'Рефреш токен просрочен или не валидный' });
-    }
-
-    try {
-      const { data } = await this.authClient.send<AuthRefresh.Response, AuthRefresh.Request>(AuthRefresh.pattern, {
-        data: { ip, userAgent, refreshToken, sessionId: accessTokenPayload.sid, userId: accessTokenPayload.uid },
-      });
-      const { accessToken, maxAge } = data;
-      this.cookieService.setRefreshTokenByKey(ACCESS_TOKEN_KEY, { token: accessToken, maxAge }, res);
-    } catch {
-      this.cookieService.dropTokens(res);
-      throw new ExceptionUnauthorized({ message: 'Рефреш токен просрочен или не валидный' });
-    }
-  }
-
   @Post('logout')
   @ApiOperation({
     summary: 'Выход пользователя из системы',
@@ -136,31 +90,6 @@ export class AuthController {
 
     this.cookieService.dropTokens(res);
     return { data: Boolean(data.status) };
-  }
-
-  @Post('login')
-  @Public()
-  @ApiOperation({
-    summary: 'Вход пользователя в систему',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Вход совершен успешно',
-  })
-  async login(
-    @Res({ passthrough: true }) res: Response,
-    @Body() { data }: LoginRequest,
-    @IpAddress() ip: string,
-    @UserAgent() userAgent: string,
-  ): Promise<void> {
-    const {
-      data: { refreshToken, accessToken, maxAge },
-    } = await this.authClient.send<AuthLogin.Response, AuthLogin.Request>(AuthLogin.pattern, {
-      data: { ip, userAgent, login: data.login, password: data.password },
-    });
-
-    this.cookieService.setRefreshTokenByKey(ACCESS_TOKEN_KEY, { token: accessToken, maxAge }, res);
-    this.cookieService.setRefreshTokenByKey(REFRESH_TOKEN_KEY, { token: refreshToken, maxAge }, res);
   }
 
   @Post('/referral-token')
