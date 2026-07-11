@@ -3,10 +3,11 @@ import { appFetchOptions } from './constants';
 type RefreshTokenResponse = { data: boolean; errors: null | { extensions: Record<string, unknown> }[] };
 
 async function fetchRefreshToken(params?: {
+  uri?: string;
   headers: Record<string, string>;
 }): Promise<{ data: RefreshTokenResponse; response: Response }> {
   const { uri, ...fetchOptions } = appFetchOptions;
-  const response = await fetch(uri, {
+  const response = await fetch(params?.uri ?? uri, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

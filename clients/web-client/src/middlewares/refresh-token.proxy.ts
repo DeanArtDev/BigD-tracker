@@ -1,9 +1,30 @@
 import { jwtDecode } from 'jwt-decode';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { parseSetCookie } from 'set-cookie-parser';
+import { getEnvConfigClient } from '@/shared/lib';
 import { apiRoutes, routes } from '@/shared/routes';
 import { fetchRefreshToken } from '@/shared/transport/graphql';
 import { ProxyFactory } from './helpers';
+
+const clientConfig = getEnvConfigClient();
+
+function fetchRefresh({
+  req,
+  accessToken,
+  refreshToken,
+}: {
+  req: NextRequest;
+  accessToken: string;
+  refreshToken: string;
+}) {
+  const headers: Record<string, string> = {};
+  const userAgent = req.headers.get('user-agent') ?? undefined;
+  headers.cookie = `refresh_token=${refreshToken}; access_token=${accessToken};`;
+  if (userAgent != null && userAgent.length > 0) {
+    headers['user-agent'] = userAgent;
+  }
+  return fetchRefreshToken({ uri: clientConfig.NEXT_PUBLIC_HTTP_API_URL, headers });
+}
 
 const refreshTokenProxy: ProxyFactory = (next) => async (req, event, res) => {
   const access = req.cookies.get('access_token')?.value;
@@ -17,17 +38,10 @@ const refreshTokenProxy: ProxyFactory = (next) => async (req, event, res) => {
   if (access == null || refresh == null) return next(req, event, res);
 
   if (isExpiringSoon(access, 60)) {
-    const headers: Record<string, string> = {};
-    const userAgent = req.headers.get('user-agent') ?? undefined;
-    headers.cookie = `refresh_token=${refresh}; access_token=${access};`;
-    if (userAgent != null && userAgent.length > 0) {
-      headers['user-agent'] = userAgent;
-    }
-
     const dropSession = () => NextResponse.redirect(new URL(apiRoutes.dropSession.path, req.url));
 
     try {
-      const refreshTokenResponse = await fetchRefreshToken({ headers });
+      const refreshTokenResponse = await fetchRefresh({ req, accessToken: access, refreshToken: refresh });
 
       if (refreshTokenResponse.response.ok != null) {
         const rawSetCookies = refreshTokenResponse.response.headers.getSetCookie();

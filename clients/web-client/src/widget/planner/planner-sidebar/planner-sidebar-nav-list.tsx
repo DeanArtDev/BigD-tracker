@@ -8,7 +8,7 @@ function PlannerSidebarNavList() {
   const navItems = useNavItems();
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="gap-1">
       {navItems.map((p) => (
         <PlannerSidebarMenuItem
           key={p.path}

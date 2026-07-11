@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import { MaybePromise } from '@/shared/lib';
-import {
-  Button,
-  ButtonLoading,
-  DataErrorElement,
-  DataLoader,
-  DialogFooter,
-  ScrollAreaNativeVertical,
-} from '@/shared/ui-kit';
+import { Button, ButtonLoading, DataLoader, DialogFooter, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { GroupId, GroupInfo, useGetAssignableGroups } from '../../model';
 import { GroupInfoList } from '../group-info-list';
 
@@ -28,7 +21,7 @@ function GroupList({ selectedGroupIds = [], onAccept, onCancel }: GroupListProps
     <DataLoader
       isError={isError}
       isLoading={isGetAssignableGroupsLoading}
-      errorElement={<DataErrorElement size="full" variant="transparent" onRetry={refetch} />}
+      errorElement={<DataLoader.Error size="full" variant="transparent" onRetry={refetch} />}
     >
       <div className="flex flex-col grow gap-2 min-h-0">
         <ScrollAreaNativeVertical className="grow">

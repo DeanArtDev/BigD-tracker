@@ -1,9 +1,9 @@
-import { cookies } from 'next/headers';
-import { SIDEBAR_COOKIE_NAME, Typography } from '@/shared/ui-kit';
+import { Typography } from '@/shared/ui-kit';
+import { getSidebarOpen } from './_model/server';
 import { PlannerPageLayout } from './_ui//planner-page-layout';
 
 export default async function PlannerPage() {
-  const open = (await cookies()).get(SIDEBAR_COOKIE_NAME)?.value === 'true';
+  const open = await getSidebarOpen();
 
   return (
     <PlannerPageLayout open={open}>

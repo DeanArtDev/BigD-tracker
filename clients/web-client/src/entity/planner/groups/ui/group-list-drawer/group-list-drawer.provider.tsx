@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { ReactNode, useMemo, useRef, useState } from 'react';
 import { useIsMounted } from '@/shared/lib/application-status';
 import { AppDrawer } from '@/shared/project-ui';
-import { DataLoadingElement } from '@/shared/ui-kit';
+import { DataLoader } from '@/shared/ui-kit';
 import {
   GroupListDrawerContext,
   groupListDrawerContext,
@@ -12,7 +12,7 @@ import {
 } from './group-list-drawer.context';
 
 const GroupListLazy = dynamic(() => import('./group-list').then((m) => m.GroupList), {
-  loading: ({ isLoading }) => (isLoading ? <DataLoadingElement /> : null),
+  loading: ({ isLoading }) => (isLoading ? <DataLoader.Loading /> : null),
   ssr: false,
 });
 

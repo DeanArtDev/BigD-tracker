@@ -4,17 +4,17 @@ import { Inbox } from 'lucide-react';
 import { ReactNode } from 'react';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui-kit';
 
-type EmptyTasksPlaceholderProps = {
+type DataEmptyElementProps = {
   readonly title?: string;
   readonly description?: string;
   readonly icon?: ReactNode;
 };
 
-function EmptyTasksPlaceholder({
-  title = 'Тут пока тихо. Накидай что-нибудь!',
-  description = 'Нажми + в шапке, чтобы добавить первую задачу.',
+function DataEmptyElement({
+  title = 'Тут пока пусто',
+  description,
   icon = <Inbox className="size-7 text-muted-foreground" strokeWidth={2} />,
-}: EmptyTasksPlaceholderProps) {
+}: DataEmptyElementProps) {
   return (
     <div className="flex min-h-[460px] w-full items-center justify-center px-4">
       <Empty>
@@ -30,4 +30,4 @@ function EmptyTasksPlaceholder({
   );
 }
 
-export { EmptyTasksPlaceholder, type EmptyTasksPlaceholderProps };
+export { DataEmptyElement, type DataEmptyElementProps };
