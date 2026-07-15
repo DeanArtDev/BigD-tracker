@@ -1,9 +1,15 @@
 import { SearchX } from 'lucide-react';
+import { useGroupDeleteFeature } from '@/feature/planner/group-delete';
+import { useGroupUpdateFeature } from '@/feature/planner/group-update';
 import { DataLoader, VirtualizedInfinityScroll } from '@/shared/ui-kit';
-import { useGetGroupListByUrlQuery } from '../_model/use-get-group-list-by-url-query';
+import { GroupCard } from './group-card';
+import { useGetGroupListByUrlQuery } from '../../_model/use-get-group-list-by-url-query';
 
 function GroupList() {
   const { groups, meta, loading, isEmpty, isError, fetchMore, refetch } = useGetGroupListByUrlQuery();
+
+  const { isGroupDeleteLoading, deleteGroup } = useGroupDeleteFeature();
+  const { isGroupUpdateLoading, updateGroup } = useGroupUpdateFeature();
 
   return (
     <DataLoader
@@ -29,9 +35,17 @@ function GroupList() {
             if (group == null) return null;
 
             return (
-              <li key={group.id} className="p-5 border-b">
-                {group.name}
-              </li>
+              <GroupCard
+                key={group.id}
+                id={group.id}
+                name={group.name}
+                loading={isGroupDeleteLoading || isGroupUpdateLoading}
+                onNameChange={(name) =>
+                  void updateGroup({ name, id: group.id, description: group.description ?? undefined })
+                }
+                onClick={() => void console.log('card click')}
+                onDelete={(groupId) => void deleteGroup(groupId)}
+              />
             );
           }}
         />
