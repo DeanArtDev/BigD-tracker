@@ -18,6 +18,18 @@ const GROUP_DELETE_MUTATION = gql`
   }
 `;
 
+const GROUP_CREATE_MUTATION = gql`
+  mutation CreateGroup($input: GroupCreateInput!) {
+    createGroup(input: $input) {
+      id
+      name
+      description
+      status
+      progress
+    }
+  }
+`;
+
 const GET_ASSIGNABLE_GROUPS_QUERY = gql`
   query GetAssignableGroups {
     getAssignableGroups {
@@ -45,4 +57,10 @@ const GET_GROUP_LIST_QUERY = gql`
   }
 `;
 
-export { GROUP_UPDATE_MUTATION, GROUP_DELETE_MUTATION, GET_ASSIGNABLE_GROUPS_QUERY, GET_GROUP_LIST_QUERY };
+export {
+  GROUP_UPDATE_MUTATION,
+  GROUP_DELETE_MUTATION,
+  GET_ASSIGNABLE_GROUPS_QUERY,
+  GET_GROUP_LIST_QUERY,
+  GROUP_CREATE_MUTATION,
+};

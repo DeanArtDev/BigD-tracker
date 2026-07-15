@@ -38,7 +38,7 @@ function GroupCard({ id, className, loading, name, onClick, onNameChange, onDele
             aria-invalid={!isNameValid}
             placeholder="Поиск по группам"
             onChange={(evt) => {
-              setDraftName(evt.target.value.trim());
+              setDraftName(evt.target.value);
             }}
             onKeyDown={(evt) => {
               if (!isNameChange) return;
