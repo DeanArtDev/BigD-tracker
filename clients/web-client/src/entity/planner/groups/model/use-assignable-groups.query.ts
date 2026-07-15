@@ -3,7 +3,7 @@ import { Override } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { BrandGroup } from './domain';
-import { GetAssignableGroupsDocument, GetAssignableGroupsQuery } from './schemas/inbox.schema.generated';
+import { GetAssignableGroupsDocument, GetAssignableGroupsQuery } from './schemas/groups.schema.generated';
 
 type GroupInfo = BrandGroup<GetAssignableGroupsQuery['getAssignableGroups'][0]>;
 const GROUPS_EMPTY: GroupInfo[] = [];

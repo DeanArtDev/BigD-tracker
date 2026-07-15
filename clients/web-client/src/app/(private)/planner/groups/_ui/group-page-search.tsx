@@ -11,7 +11,7 @@ function GroupPageSearch() {
   return (
     <InputGroup className="max-w-[420px] w-full">
       <InputGroupInput
-        placeholder="Поиск по имени..."
+        placeholder="Поиск по имени группы..."
         value={draftSearch}
         onChange={(e) => {
           setDraftSearch(e.target.value);

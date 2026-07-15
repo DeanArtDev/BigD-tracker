@@ -3,7 +3,7 @@ import { Override } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { GroupId } from './domain';
-import { GetGroupListQuery, GetGroupListQueryVariables, GetGroupListDocument } from './schemas/inbox.schema.generated';
+import { GetGroupListQuery, GetGroupListQueryVariables, GetGroupListDocument } from './schemas/groups.schema.generated';
 
 type GroupListItem = Override<GetGroupListQuery['getGroupList']['items'][0], { id: GroupId }>;
 const GROUPS_EMPTY: GroupListItem[] = [];

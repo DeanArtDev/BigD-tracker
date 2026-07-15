@@ -21,7 +21,11 @@ function AppDropdown({
     <DropdownMenu {...dropdownProps}>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
 
-      <DropdownMenuContent className={cn('w-fit', className)} align={align}>
+      <DropdownMenuContent
+        className={cn('w-fit', className)}
+        align={align}
+        onClick={(evt) => void evt.stopPropagation()}
+      >
         {children}
         {items.map((item) => (
           <DropdownItem {...item} key={item.key} />
