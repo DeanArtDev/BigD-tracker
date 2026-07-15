@@ -11,6 +11,11 @@ export type GetGroupListInput = {
   search?: string | null | undefined;
 };
 
+export type GroupCreateInput = {
+  description?: string | null | undefined;
+  name: string;
+};
+
 export type GroupDeleteInput = {
   groupId: number;
 };
@@ -42,6 +47,14 @@ export type DeleteGroupMutationVariables = Exact<{
 }>;
 
 export type DeleteGroupMutation = { groupDelete: boolean };
+
+export type CreateGroupMutationVariables = Exact<{
+  input: Types.GroupCreateInput;
+}>;
+
+export type CreateGroupMutation = {
+  createGroup: { id: number; name: string; description: string | null; status: Types.GroupStatus; progress: number };
+};
 
 export type GetAssignableGroupsQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -134,6 +147,49 @@ export const DeleteGroupDocument = {
     },
   ],
 } as unknown as DocumentNode<DeleteGroupMutation, DeleteGroupMutationVariables>;
+export const CreateGroupDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateGroup' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'GroupCreateInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createGroup' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'progress' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateGroupMutation, CreateGroupMutationVariables>;
 export const GetAssignableGroupsDocument = {
   kind: 'Document',
   definitions: [

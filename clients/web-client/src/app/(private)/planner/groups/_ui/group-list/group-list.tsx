@@ -6,7 +6,7 @@ import { GroupCard } from './group-card';
 import { useGetGroupListByUrlQuery } from '../../_model/use-get-group-list-by-url-query';
 
 function GroupList() {
-  const { groups, meta, loading, isEmpty, isError, fetchMore, refetch } = useGetGroupListByUrlQuery();
+  const { groups, meta, hasSearch, loading, isEmpty, isError, fetchMore, refetch } = useGetGroupListByUrlQuery();
 
   const { isGroupDeleteLoading, deleteGroup } = useGroupDeleteFeature();
   const { isGroupUpdateLoading, updateGroup } = useGroupUpdateFeature();
@@ -14,7 +14,7 @@ function GroupList() {
   return (
     <DataLoader
       isLoading={loading}
-      isEmpty={isEmpty}
+      isEmpty={isEmpty && hasSearch}
       isError={isError}
       errorElement={<DataLoader.Error onRetry={refetch} />}
       emptyElement={

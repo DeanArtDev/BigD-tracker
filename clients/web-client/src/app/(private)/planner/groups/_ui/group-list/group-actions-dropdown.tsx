@@ -50,6 +50,7 @@ function GroupActionsDropdown({ loading, onDelete, onNameEdit }: GroupActionsDro
 
   return (
     <AppDropdown
+      align="end"
       trigger={
         <Button
           variant="ghost"

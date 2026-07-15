@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { GroupId, useGroupUpdate } from '@/entity/planner/groups/model';
+import { GroupId, useGroupUpdate } from '@/entity/planner/groups';
 import { useNotify } from '@/shared/lib';
 
 function useGroupUpdateFeature() {

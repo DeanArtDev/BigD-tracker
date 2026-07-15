@@ -8,6 +8,5 @@ export {
 export * from './inbox-initial-request-variables';
 
 export * from './invalidators/invalidate-inbox-tasks';
-export * from './invalidators/invalidate-group';
 
 export * from './use-inbox.query';

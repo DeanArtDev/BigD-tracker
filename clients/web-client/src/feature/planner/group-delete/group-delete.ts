@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
-import { GroupId, useGroupDelete } from '@/entity/planner/groups/model';
-import { invalidateGroup } from '@/entity/planner/inbox';
+import { GroupId, invalidateGroup, useGroupDelete } from '@/entity/planner/groups';
 import { useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
 

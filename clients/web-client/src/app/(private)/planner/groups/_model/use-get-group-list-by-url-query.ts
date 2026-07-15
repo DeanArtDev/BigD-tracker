@@ -11,6 +11,7 @@ function useGetGroupListByUrlQuery() {
 
   return {
     ...result,
+    hasSearch: (search?.trim().length ?? 0) > 0,
     fetchMore: () =>
       result.fetchMore({
         variables: {

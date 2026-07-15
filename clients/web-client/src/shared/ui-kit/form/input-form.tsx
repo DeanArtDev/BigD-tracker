@@ -2,6 +2,7 @@
 
 import type { ComponentProps } from 'react';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
+import { cn } from '@/shared/ui-kit';
 import { formElementsValues } from './form-schema-utils';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
@@ -30,9 +31,10 @@ function InputForm<FormValues extends FieldValues = FieldValues>(props: InputFor
       name={name}
       render={({ field, fieldState, formState }) => (
         <Field data-invalid={fieldState.invalid} className={classNames?.wrapper}>
-          <FieldLabel htmlFor={field.name} className={classNames?.label}>
+          <FieldLabel htmlFor={field.name} className={cn('hidden', classNames?.label)}>
             {label}
           </FieldLabel>
+
           <Input
             {...inputProps}
             id={field.name}
