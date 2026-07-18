@@ -10,6 +10,8 @@ export {
   useGroupUpdate,
   useGroupDelete,
   useGroupCreate,
+  type GetGroupListQuery,
+  type GetGroupListQueryVariables,
 } from './model';
 export {
   GroupInfoList,

@@ -167,13 +167,13 @@ export class TasksRmqController {
     const { userId, order, filter, search } = payload;
     const { ids, groupIds, priority, status, limit, cursor } = filter ?? {};
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
+    const lid = typeof requestCursorPayload?.lastId === 'string' ? requestCursorPayload.lastId : undefined;
 
     const requestFilter = {
       ids,
       groupIds,
       priority,
       status,
-      lastId: requestCursorPayload?.lastId?.toString(),
     };
 
     const tasks = await this.queryBus.execute<GetTasksQuery, ReturnHandlerType<typeof GetTasksHandler>>(
@@ -182,7 +182,7 @@ export class TasksRmqController {
         search,
         order,
         limit,
-        filter: requestFilter,
+        filter: { ...requestFilter, lastId: lid },
       }),
     );
 

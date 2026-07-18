@@ -6,14 +6,15 @@ import { GroupCard } from './group-card';
 import { useGetGroupListByUrlQuery } from '../../_model/use-get-group-list-by-url-query';
 
 function GroupList() {
-  const { groups, meta, hasSearch, loading, isEmpty, isError, fetchMore, refetch } = useGetGroupListByUrlQuery();
+  const { groups, meta, hasSearch, loading, initialLoading, isEmpty, isError, fetchMore, refetch } =
+    useGetGroupListByUrlQuery();
 
   const { isGroupDeleteLoading, deleteGroup } = useGroupDeleteFeature();
   const { isGroupUpdateLoading, updateGroup } = useGroupUpdateFeature();
 
   return (
     <DataLoader
-      isLoading={loading}
+      isLoading={initialLoading}
       isEmpty={isEmpty && hasSearch}
       isError={isError}
       errorElement={<DataLoader.Error onRetry={refetch} />}
@@ -24,12 +25,13 @@ function GroupList() {
         />
       }
     >
-      <ul className="flex flex-col">
+      <ul className="flex flex-col min-w-0 min-h-0">
         <VirtualizedInfinityScroll
-          infinityScrollOptions={{ bottomGap: 400 }}
+          infinityScrollOptions={{ bottomGap: 100 }}
           virtualizerOptions={{ gap: 0, overscan: 5, count: groups.length ?? 0 }}
           hasNextPage={meta?.hasNextPage ?? false}
           onNextPageLoad={fetchMore}
+          isLoadingNextPage={loading}
           renderItem={(virtualItem) => {
             const group = groups[virtualItem.index];
             if (group == null) return null;

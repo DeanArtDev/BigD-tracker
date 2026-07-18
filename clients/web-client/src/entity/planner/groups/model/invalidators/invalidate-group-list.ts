@@ -9,8 +9,6 @@ async function invalidateGroupList(client: ApolloClient) {
         id: 'ROOT_QUERY',
         fieldName: 'getGroupList',
       });
-
-      cache.gc();
     },
   });
 }
