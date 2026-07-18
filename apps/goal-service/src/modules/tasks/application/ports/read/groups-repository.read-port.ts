@@ -10,6 +10,8 @@ interface GroupsReadRepository {
 
   getOne(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null>;
 
+  getGroupInfo(input: { groupId: number; userId: number }, trx?: TaskTransaction): Promise<{ taskCount: number }>;
+
   ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },
     trx?: TaskTransaction,

@@ -67,6 +67,23 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
     });
   }
 
+  async getGroupInfo(
+    input: { groupId: number; userId: number },
+    trx?: TaskTransaction,
+  ): Promise<{ taskCount: number }> {
+    return await this.errorCatcher('groups.get-info.read', async () => {
+      const result = await this.db
+        .qb(trx)
+        .selectFrom('tasks')
+        .select((eb) => eb.fn.count<number>('tasks.id').as('taskCount'))
+        .where('tasks.group_id', '=', input.groupId)
+        .where('tasks.user_id', '=', input.userId)
+        .executeTakeFirstOrThrow();
+
+      return { taskCount: Number(result.taskCount) };
+    });
+  }
+
   async getMany(
     specifications: TasksSpecification,
     params: { sort?: { name?: SortDirection; id?: SortDirection }; limit: number },

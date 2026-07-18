@@ -140,4 +140,28 @@ describe('GroupsReadRepositoryKysely', () => {
       },
     );
   });
+
+  test('getGroupInfo returns expected sql and params', async () => {
+    await withRepository<TasksDB, GroupsReadRepositoryKysely>(
+      (db) => new GroupsReadRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({ rows: [{ taskCount: '7' }] });
+
+        const result = await repository.getGroupInfo({ groupId: 42, userId: 5 });
+
+        expect(result).toEqual({ taskCount: 7 });
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          select count("tasks"."id") as "taskCount"
+          from "tasks"
+          where
+            "tasks"."group_id" = $1
+            and "tasks"."user_id" = $2
+        `,
+          parameters: [42, 5],
+        });
+      },
+    );
+  });
 });

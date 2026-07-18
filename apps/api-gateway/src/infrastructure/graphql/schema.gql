@@ -76,6 +76,7 @@ type GroupSchema {
   name: String!
   progress: Int!
   status: GroupStatus!
+  taskCount: Int
   tasks(input: GetGroupTasksInput): TasksConnection!
   userId: Int!
 }

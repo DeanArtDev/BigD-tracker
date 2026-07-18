@@ -4,6 +4,9 @@ export * from './get-inbox-by-user-id/get-inbox-by-user-id.handler';
 export * from './get-group/get-group.query';
 export * from './get-group/get-group.handler';
 
+export * from './get-group-info/get-group-info.query';
+export * from './get-group-info/get-group-info.handler';
+
 export * from './get-tasks-by-range/get-tasks-by-range.query';
 export * from './get-tasks-by-range/get-tasks-by-range.handler';
 
