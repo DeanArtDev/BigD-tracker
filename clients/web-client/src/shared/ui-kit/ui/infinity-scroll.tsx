@@ -1,7 +1,7 @@
 'use client';
 
 import { isFunction } from 'lodash-es';
-import { CSSProperties, type PropsWithChildren, Ref, useRef } from 'react';
+import { CSSProperties, type PropsWithChildren, Ref, useCallback, useState } from 'react';
 import { useOnInView } from 'react-intersection-observer';
 import { DataLoader } from '@/shared/ui-kit';
 import { ScrollAreaNativeVertical } from './scroll-area-native-vertical';
@@ -30,33 +30,35 @@ function InfinityScroll({
 }: InfinityScrollProps) {
   const { bottomGap = 50 } = options ?? {};
 
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [root, setRoot] = useState<HTMLDivElement | null>(null);
+
+  const setRootRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      setRoot(node);
+
+      if (ref != null) {
+        if (isFunction(ref)) ref(node);
+        else ref.current = node;
+      }
+    },
+    [ref],
+  );
 
   const trackingRef = useOnInView(
     (inView) => {
-      if (!hasNextPage || isLoadingNextPage) return;
       if (inView) onNextPageLoad();
     },
     {
       trackVisibility: true,
       delay: 100,
       rootMargin: `0px 0px ${bottomGap}px 0px`,
-      root: rootRef.current,
+      root,
+      skip: isLoadingNextPage || !hasNextPage,
     },
   );
 
   return (
-    <ScrollAreaNativeVertical
-      className={className}
-      style={style}
-      ref={(node) => {
-        rootRef.current = node;
-        if (ref != null) {
-          if (isFunction(ref)) ref(node);
-          else ref.current = node;
-        }
-      }}
-    >
+    <ScrollAreaNativeVertical className={className} style={style} ref={setRootRef}>
       <div className="flex flex-col grow p-[1px]">
         {children}
 
