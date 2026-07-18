@@ -13,15 +13,13 @@ function GroupTaskCount({ groupId }: GroupTaskCountProps) {
   const count = groupById?.taskCount ?? 0;
 
   return (
-    <DataLoader loadingElement={<DataLoader.Loading size={20} />} isLoading={loading}>
-      {groupById != null && (
-        <Badge variant="outline" className="h-7 rounded-md">
-          <Folder />
+    <Badge variant="outline" className="h-7 rounded-md">
+      <Folder />
 
-          {`${count} ${pluralize(count, { one: 'дело', many: 'дел', few: 'дел' })} в группе`}
-        </Badge>
-      )}
-    </DataLoader>
+      <DataLoader loadingElement={<DataLoader.Loading size={20} />} isLoading={loading}>
+        {`${count} ${pluralize(count, { one: 'дело', many: 'дел', few: 'дел' })} в группе`}
+      </DataLoader>
+    </Badge>
   );
 }
 
