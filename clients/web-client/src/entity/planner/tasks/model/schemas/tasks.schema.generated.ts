@@ -88,6 +88,7 @@ export type CreateTaskMutation = {
     priority: number;
     startDate: string | null;
     status: Types.TaskStatus;
+    groupId: number | null;
   };
 };
 
@@ -192,6 +193,7 @@ export const CreateTaskDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
               ],
             },
           },

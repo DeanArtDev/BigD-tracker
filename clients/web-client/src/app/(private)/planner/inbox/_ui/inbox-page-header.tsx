@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client/react';
 import { PlannerHeader } from '@/app/(private)/planner/_ui/planner-header';
 import { invalidateInboxTasks } from '@/entity/planner/inbox';
 import { invalidatePlannerInit, usePlannerInit } from '@/entity/planner/init';
-import { TaskCreationDialog } from './task-creation-dialog';
+import { TaskCreateTrigger } from '@/feature/planner/task-create';
 
 function InboxPageHeader() {
   const { data } = usePlannerInit();
@@ -13,8 +13,9 @@ function InboxPageHeader() {
   return (
     <PlannerHeader
       content={
-        <TaskCreationDialog
-          groupId={data.inbox.id}
+        <TaskCreateTrigger
+          disabled={data?.inbox == null}
+          groupId={data?.inbox.id}
           onSuccess={async () => {
             await invalidatePlannerInit(client.cache);
             if (data.inbox.id == null) return;

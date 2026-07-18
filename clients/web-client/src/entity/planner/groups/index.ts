@@ -11,6 +11,9 @@ export {
   useGroupDelete,
   useGroupCreate,
   useGetGroupById,
+  GetGroupByIdDocument,
+  type GetGroupByIdQuery,
+  type GetGroupByIdQueryVariables,
   type GetGroupListQuery,
   type GetGroupListQueryVariables,
 } from './model';
