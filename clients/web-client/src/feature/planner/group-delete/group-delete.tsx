@@ -3,7 +3,6 @@ import { GroupId, invalidateGroup, useGroupDelete } from '@/entity/planner/group
 import { GroupTaskCount } from '@/feature/planner/group-delete/group-task-count';
 import { useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
-import { Typography } from '@/shared/ui-kit';
 
 function useGroupDeleteFeature() {
   const { deleteGroup, client, loading: isGroupDeleteLoading } = useGroupDelete();

@@ -1,30 +1,26 @@
+import type { WatchQueryFetchPolicy } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { Override } from '@/shared/lib';
+import { exceptionCode } from '@big-d/exceptions';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
-import { GroupId } from './domain';
-import { GetGroupByIdDocument, GetGroupByIdQuery, GetGroupByIdQueryVariables } from './schemas/groups.schema.generated';
+import { Query } from './types';
+import { GetGroupByIdDocument, GetGroupByIdQueryVariables } from '../schemas/groups.schema.generated';
 
-type GroupById = Override<GetGroupByIdQuery['getGroup'], { id: GroupId }>;
-
-type Query = Override<
-  GetGroupByIdQuery,
-  {
-    getGroup: GroupById;
-  }
->;
-
-function useGetGroupById({ groupId }: { groupId?: number }) {
+function useGetGroupById({ groupId }: { groupId?: number }, options?: { fetchPolicy: WatchQueryFetchPolicy }) {
   const result = useQuery<Query, GetGroupByIdQueryVariables>(GetGroupByIdDocument, {
     context: { endpoint: 'private' },
     variables: { input: { groupId: groupId! } },
     skip: groupId == null,
+    ...options,
   });
 
   const initialLoading = result.networkStatus === 1 && result.data == null;
 
   const { appErrors, isError } = useExtendApolloErrorResult(result.error);
-  useExceptionNotificator({ exception: appErrors.at(-1) });
+  useExceptionNotificator({
+    exception: appErrors.at(-1),
+    messageHandlers: { [exceptionCode.groupNotFound.code]: () => 'Группа не найдена.' },
+  });
 
   return {
     ...result,
@@ -35,4 +31,4 @@ function useGetGroupById({ groupId }: { groupId?: number }) {
   };
 }
 
-export { useGetGroupById, type GroupById };
+export { useGetGroupById };

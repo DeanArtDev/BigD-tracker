@@ -10,6 +10,7 @@ const TASK_CREATE_MUTATION = gql`
       priority
       startDate
       status
+      groupId
     }
   }
 `;
@@ -89,4 +90,6 @@ export {
   TASK_UNASSIGN_MUTATION,
   TASK_COPY_MUTATION,
   TASK_BY_ID_QUERY,
+  TASK_FINISH_MUTATION,
+  TASK_UPDATE_MUTATION,
 };

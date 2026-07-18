@@ -1,8 +1,6 @@
 'use client';
 
-import { GroupId } from '@/entity/planner/groups';
-import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { usePlannerInit } from '@/entity/planner/init';
+import { GroupId, invalidateGroup } from '@/entity/planner/groups';
 import {
   TaskForm,
   TaskFormFieldProvider,
@@ -70,7 +68,6 @@ function TaskCreateDialog(props: TaskCreateDialogProps) {
   const { groupId, open, onOpenChange, onSuccess } = props;
 
   const { loading, client, createTask } = useTaskCreate();
-  const { data } = usePlannerInit();
 
   const { promise } = useNotify();
 
@@ -88,8 +85,10 @@ function TaskCreateDialog(props: TaskCreateDialogProps) {
                 variables: { input: { name, description, deadline, startDate, priority, groupId } },
 
                 onCompleted: async ({ createTask: ok }) => {
-                  if (ok != null && data.inbox.id != null) {
-                    await invalidateInboxTasks(client, data.inbox.id);
+                  if (ok != null) {
+                    if (ok.groupId != null) {
+                      await invalidateGroup(client.cache, ok.groupId as GroupId);
+                    }
                     await onSuccess?.();
                     close();
                   }

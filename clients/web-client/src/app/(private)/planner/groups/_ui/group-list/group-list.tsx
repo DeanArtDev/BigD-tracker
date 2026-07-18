@@ -1,6 +1,11 @@
+'use client';
+
 import { SearchX } from 'lucide-react';
+import Link from 'next/link';
+import { GroupId } from '@/entity/planner/groups';
 import { useGroupDeleteFeature } from '@/feature/planner/group-delete';
 import { useGroupUpdateFeature } from '@/feature/planner/group-update';
+import { routes } from '@/shared/routes';
 import { DataLoader, VirtualizedInfinityScroll } from '@/shared/ui-kit';
 import { GroupCard } from './group-card';
 import { useGetGroupListByUrlQuery } from '../../_model/use-get-group-list-by-url-query';
@@ -37,17 +42,18 @@ function GroupList() {
             if (group == null) return null;
 
             return (
-              <GroupCard
-                key={group.id}
-                id={group.id}
-                name={group.name}
-                loading={isGroupDeleteLoading || isGroupUpdateLoading}
-                onNameChange={(name) =>
-                  void updateGroup({ name, id: group.id, description: group.description ?? undefined })
-                }
-                onClick={() => void console.log('card click')}
-                onDelete={(groupId) => void deleteGroup(groupId)}
-              />
+              <Link href={routes.plannerGroup.link<GroupId>({ groupId: group.id })}>
+                <GroupCard
+                  key={group.id}
+                  id={group.id}
+                  name={group.name}
+                  loading={isGroupDeleteLoading || isGroupUpdateLoading}
+                  onNameChange={(name) =>
+                    void updateGroup({ name, id: group.id, description: group.description ?? undefined })
+                  }
+                  onDelete={(groupId) => void deleteGroup(groupId)}
+                />
+              </Link>
             );
           }}
         />

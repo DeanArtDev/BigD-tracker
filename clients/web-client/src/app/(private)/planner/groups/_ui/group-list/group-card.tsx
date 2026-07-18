@@ -9,12 +9,11 @@ interface GroupCardProps {
   readonly name: string;
   readonly loading: boolean;
   readonly className?: string;
-  readonly onClick: (id: GroupId) => void;
   readonly onNameChange: (name: string) => void;
   readonly onDelete: (id: GroupId) => void;
 }
 
-function GroupCard({ id, className, loading, name, onClick, onNameChange, onDelete }: GroupCardProps) {
+function GroupCard({ id, className, loading, name, onNameChange, onDelete }: GroupCardProps) {
   const [isEdit, setIsEdit] = useState(false);
   const [draftName, setDraftName] = useState(name);
 
@@ -25,8 +24,10 @@ function GroupCard({ id, className, loading, name, onClick, onNameChange, onDele
     <div
       className={cn('grid grid-cols-[1fr_min-content] items-center p-5 border-b truncate gap-2', className)}
       onClick={(evt) => {
-        evt.stopPropagation();
-        if (!isEdit) onClick?.(id);
+        if (isEdit) {
+          evt.preventDefault();
+          evt.stopPropagation();
+        }
       }}
     >
       {isEdit ? (
@@ -38,12 +39,15 @@ function GroupCard({ id, className, loading, name, onClick, onNameChange, onDele
             aria-invalid={!isNameValid}
             placeholder="Поиск по группам"
             onChange={(evt) => {
+              evt.preventDefault();
+              evt.stopPropagation();
               setDraftName(evt.target.value);
             }}
             onKeyDown={(evt) => {
               if (!isNameChange) return;
               if (evt.key !== 'Enter') return;
               evt.preventDefault();
+              evt.stopPropagation();
               onNameChange(draftName);
               setIsEdit(false);
             }}
@@ -54,7 +58,9 @@ function GroupCard({ id, className, loading, name, onClick, onNameChange, onDele
               disabled={!isNameValid || !isNameChange}
               variant="outline"
               size="icon-sm"
-              onClick={() => {
+              onClick={(evt) => {
+                evt.preventDefault();
+                evt.stopPropagation();
                 onNameChange(draftName);
                 setIsEdit(false);
               }}
@@ -65,7 +71,9 @@ function GroupCard({ id, className, loading, name, onClick, onNameChange, onDele
             <Button
               variant="destructive"
               size="icon-sm"
-              onClick={() => {
+              onClick={(evt) => {
+                evt.preventDefault();
+                evt.stopPropagation();
                 setIsEdit(false);
               }}
             >

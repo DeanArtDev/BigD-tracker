@@ -57,7 +57,7 @@ const routes = {
 
   plannerGroup: (<Path extends string = string>(path: Path) => ({
     path,
-    link: ({ groupId }: { groupId: number }, query?: UrlQueryParams) =>
+    link: <ID extends number>({ groupId }: { groupId: ID }, query?: UrlQueryParams) =>
       buildLink(path, { urlParams: { groupId: groupId.toString() }, queryObject: query }),
   }))('/planner/groups/:groupId'),
 

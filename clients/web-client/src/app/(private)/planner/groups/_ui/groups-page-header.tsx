@@ -1,19 +1,27 @@
 'use client';
 
-import { Plus } from 'lucide-react';
-import { useTaskCreateContext } from '@/feature/planner/task-create';
-import { Button } from '@/shared/ui-kit';
+import { useApolloClient } from '@apollo/client/react';
+import { invalidateGroup } from '@/entity/planner/groups';
+import { TaskCreateTrigger } from '@/feature/planner/task-create';
+import { useAppParams } from '@/shared/lib/url';
 import { PlannerHeader } from '../../_ui/planner-header';
+import { groupByIdPageSchema } from '../_lib/constants';
 
 function GroupsPageHeader() {
-  const { openTaskCreate } = useTaskCreateContext();
+  const client = useApolloClient();
+  const params = useAppParams(groupByIdPageSchema.params);
 
   return (
     <PlannerHeader
       content={
-        <Button size="icon" onClick={() => void openTaskCreate({})}>
-          <Plus />
-        </Button>
+        <TaskCreateTrigger
+          groupId={params?.id}
+          onSuccess={async () => {
+            if (params?.id != null) {
+              await invalidateGroup(client.cache, params.id);
+            }
+          }}
+        />
       }
     />
   );

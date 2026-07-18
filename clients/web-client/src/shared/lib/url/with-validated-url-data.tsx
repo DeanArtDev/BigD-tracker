@@ -8,7 +8,7 @@ interface Schema {
 }
 
 interface ComponentProps<TSchema extends Schema = Schema> {
-  params?: z.infer<TSchema['params']>;
+  params: z.infer<TSchema['params']>;
   searchParams?: z.infer<TSchema['searchParams']>;
 }
 
