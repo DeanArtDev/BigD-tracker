@@ -1,6 +1,8 @@
 import {
   GetAssignableGroupsQuery,
   GetGroupHandler,
+  GetGroupInfoHandler,
+  GetGroupInfoQuery,
   GetGroupListHandler,
   GetGroupListQuery,
   GetGroupQuery,
@@ -17,6 +19,7 @@ import {
   GoalDeleteGroup,
   GoalGetAssignableGroups,
   GoalGetGroup,
+  GoalGetGroupInfo,
   GoalGetGroupList,
   GoalReplaceGroup,
 } from '@big-d/api-contracts';
@@ -80,6 +83,15 @@ export class GroupsRmqController {
 
     return {
       data: group.toJSON(),
+    };
+  }
+
+  @MessagePattern(GoalGetGroupInfo.pattern)
+  async getGroupInfo(@Payload() { data: payload }: GoalGetGroupInfo.Request): Promise<GoalGetGroupInfo.Response> {
+    return {
+      data: await this.queryBus.execute<GetGroupInfoQuery, ReturnHandlerType<typeof GetGroupInfoHandler>>(
+        new GetGroupInfoQuery({ userId: payload.userId, groupId: payload.groupId }),
+      ),
     };
   }
 

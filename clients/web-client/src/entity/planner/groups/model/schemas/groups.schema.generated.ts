@@ -5,6 +5,10 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 import * as Types from '@/entity/schema-types';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type GetGroupInput = {
+  groupId: number;
+};
+
 export type GetGroupListInput = {
   cursor?: string | null | undefined;
   limit: number;
@@ -59,6 +63,21 @@ export type CreateGroupMutation = {
 export type GetAssignableGroupsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetAssignableGroupsQuery = { getAssignableGroups: Array<{ id: number; name: string }> };
+
+export type GetGroupByIdQueryVariables = Exact<{
+  input: Types.GetGroupInput;
+}>;
+
+export type GetGroupByIdQuery = {
+  getGroup: {
+    id: number;
+    name: string;
+    description: string | null;
+    status: Types.GroupStatus;
+    progress: number;
+    taskCount: number | null;
+  };
+};
 
 export type GetGroupListQueryVariables = Exact<{
   input: Types.GetGroupListInput;
@@ -216,6 +235,50 @@ export const GetAssignableGroupsDocument = {
     },
   ],
 } as unknown as DocumentNode<GetAssignableGroupsQuery, GetAssignableGroupsQueryVariables>;
+export const GetGroupByIdDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetGroupById' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetGroupInput' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getGroup' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'progress' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'taskCount' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetGroupByIdQuery, GetGroupByIdQueryVariables>;
 export const GetGroupListDocument = {
   kind: 'Document',
   definitions: [

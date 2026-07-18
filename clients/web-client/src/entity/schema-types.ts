@@ -92,6 +92,7 @@ export type GroupSchema = {
   name: Scalars['String']['output'];
   progress: Scalars['Int']['output'];
   status: GroupStatus;
+  taskCount?: Maybe<Scalars['Int']['output']>;
   tasks: TasksConnection;
   userId: Scalars['Int']['output'];
 };

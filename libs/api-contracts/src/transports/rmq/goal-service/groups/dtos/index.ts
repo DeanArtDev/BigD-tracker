@@ -7,5 +7,6 @@ export * from './replace-group.dto';
 export * from './delete-group.dto';
 export * from './get-group-list.dto';
 export * from './get-group.dto';
+export * from './get-group-info.dto';
 export * from './get-assignable-groups.dto';
 export * from './group-info.dto';

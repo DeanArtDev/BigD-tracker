@@ -6,11 +6,12 @@ import {
   AvailableToViewTasksStatuses,
   GoalGetAssignableGroups,
   GoalGetGroup,
+  GoalGetGroupInfo,
   GoalGetGroupList,
   GoalGetTasks,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Int, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
   GetGroupInput,
   GetGroupListInput,
@@ -78,6 +79,16 @@ export class GroupsQueriesResolver {
       progress: data.progress,
       status: data.status,
     };
+  }
+
+  @ResolveField(() => Int, { nullable: true })
+  async taskCount(@TokenPayload() { uid }: AccessTokenPayload, @Parent() group: GroupSchema): Promise<number> {
+    const { data } = await this.goalClient.send<GoalGetGroupInfo.Response, GoalGetGroupInfo.Request>(
+      GoalGetGroupInfo.pattern,
+      { data: { userId: uid, groupId: group.id } },
+    );
+
+    return data.taskCount;
   }
 
   @ResolveField(() => TasksConnection)

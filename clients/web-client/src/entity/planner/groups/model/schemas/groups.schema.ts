@@ -39,6 +39,19 @@ const GET_ASSIGNABLE_GROUPS_QUERY = gql`
   }
 `;
 
+const GET_GROUP_BY_ID_QUERY = gql`
+  query GetGroupById($input: GetGroupInput!) {
+    getGroup(input: $input) {
+      id
+      name
+      description
+      status
+      progress
+      taskCount
+    }
+  }
+`;
+
 const GET_GROUP_LIST_QUERY = gql`
   query GetGroupList($input: GetGroupListInput!) {
     getGroupList(input: $input) {
@@ -63,4 +76,5 @@ export {
   GET_ASSIGNABLE_GROUPS_QUERY,
   GET_GROUP_LIST_QUERY,
   GROUP_CREATE_MUTATION,
+  GET_GROUP_BY_ID_QUERY,
 };
