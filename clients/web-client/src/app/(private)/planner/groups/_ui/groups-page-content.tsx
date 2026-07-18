@@ -6,13 +6,6 @@ import { GroupList } from './group-list';
 import { GroupPageSearch } from './group-page-search';
 import { useGetGroupListByUrlQuery } from '../_model/use-get-group-list-by-url-query';
 
-/*TODO:
- *
- * [] empty groups with a button
- * [] a group creation button
- * []
- *
- * */
 function GroupsPageContent() {
   const { hasSearch, isEmpty } = useGetGroupListByUrlQuery();
   const isEmptyAndNoSearch = isEmpty && !hasSearch;

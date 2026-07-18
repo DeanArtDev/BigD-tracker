@@ -1,22 +1,24 @@
-import { useGroupListUrlQuery } from '@/app/(private)/planner/groups/_model/use-group-list-url-query';
 import { useGetGroupList } from '@/entity/planner/groups';
-import { inboxInitialRequestVariables } from '@/entity/planner/inbox';
+import { useGroupListUrlQuery } from './use-group-list-url-query';
+
+const requestLimit = 11;
 
 function useGetGroupListByUrlQuery() {
   const [searchQuery] = useGroupListUrlQuery();
 
   const search = searchQuery?.search;
 
-  const result = useGetGroupList({ limit: 10, search });
+  const result = useGetGroupList({ limit: requestLimit, search });
 
   return {
     ...result,
+    initialLoading: result.networkStatus === 1 && result.data == null,
     hasSearch: (search?.trim().length ?? 0) > 0,
     fetchMore: () =>
       result.fetchMore({
         variables: {
           input: {
-            limit: inboxInitialRequestVariables.limit,
+            limit: requestLimit,
             cursor: result.meta?.endCursor,
             search,
           },

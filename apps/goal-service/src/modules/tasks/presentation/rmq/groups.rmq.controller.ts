@@ -101,11 +101,7 @@ export class GroupsRmqController {
     const { userId, limit, cursor, search } = payload;
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
 
-    const requestFilter = {
-      lastId: requestCursorPayload?.lastId?.toString(),
-    };
-
-    const lid = requestFilter.lastId ?? '';
+    const lid = requestCursorPayload?.lastId?.toString() ?? '';
     const positiveNumberString = isFloat(lid, { gt: 0 });
 
     const groups = await this.queryBus.execute<GetGroupListQuery, ReturnHandlerType<typeof GetGroupListHandler>>(
@@ -114,7 +110,7 @@ export class GroupsRmqController {
 
     const { nextCursor, hasNext } = this.cursorPaginationService.getNextCursor({
       search,
-      filter: requestFilter,
+      filter: { search },
       limit,
       lastId: groups.at(-1)?.id,
       currentPartLength: groups.length,

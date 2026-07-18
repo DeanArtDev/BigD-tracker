@@ -4,6 +4,7 @@ import { ApolloLink, FieldPolicy } from '@apollo/client';
 import { FieldMergeFunctionOptions, FieldReadFunctionOptions } from '@apollo/client/cache';
 import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/client-integration-nextjs';
 import { PropsWithChildren } from 'react';
+import { GetGroupListQuery, GetGroupListQueryVariables } from '@/entity/planner/groups';
 import { GetInboxQuery, GetInboxQueryVariables } from '@/entity/planner/inbox';
 import { TaskSchema } from '@/entity/schema-types';
 import { cookieAccessLink, createHttpLink, retryLink } from '@/shared/transport/graphql';
@@ -19,6 +20,38 @@ const inboxTasksItemsPolicy: FieldPolicy<
   keyArgs: ['input', ['search', 'status', 'priority']],
 
   merge(existing, incoming, { variables, readField }) {
+    const existingItems = existing?.items ?? [];
+    const incomingItems = incoming?.items ?? [];
+    const seen = new Set(existingItems.map((item) => readField('id', item)));
+    const items = [...existingItems, ...incomingItems.filter((item) => !seen.has(readField('id', item)))];
+
+    const isInitialRequest = variables?.input?.cursor == null;
+    const hasCache = existing?.items != null;
+
+    return {
+      ...incoming,
+      items,
+      meta: {
+        ...incoming.meta,
+        hasNextPage: isInitialRequest && hasCache ? existing.meta.hasNextPage : incoming.meta.hasNextPage,
+        endCursor: isInitialRequest && hasCache ? existing.meta.endCursor : incoming.meta.endCursor,
+      },
+    };
+  },
+};
+
+const getGroupListPolicy: FieldPolicy<
+  GetGroupListQuery['getGroupList'],
+  GetGroupListQuery['getGroupList'],
+  GetGroupListQuery['getGroupList'],
+  FieldReadFunctionOptions,
+  FieldMergeFunctionOptions<object, Partial<GetGroupListQueryVariables>>
+> = {
+  keyArgs: ['input', ['search']],
+
+  merge(existing, incoming, options) {
+    const { variables, readField } = options;
+
     const existingItems = existing?.items ?? [];
     const incomingItems = incoming?.items ?? [];
     const seen = new Set(existingItems.map((item) => readField('id', item)));
@@ -55,6 +88,7 @@ function makeClient() {
 
         Query: {
           fields: {
+            getGroupList: getGroupListPolicy,
             getTaskById: {
               read(_existing, { args, toReference }) {
                 const id = args?.id;
