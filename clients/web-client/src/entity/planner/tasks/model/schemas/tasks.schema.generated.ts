@@ -26,7 +26,7 @@ export type TaskCreateInput = {
   description?: string | null | undefined;
   groupId?: number | null | undefined;
   name: string;
-  priority: number;
+  priority: TaskPriority;
   startDate?: string | null | undefined;
 };
 
@@ -42,6 +42,9 @@ export type TaskFinishInput = {
 
 /** Статус завершения дела */
 export type TaskFinishStatus = 'CANCELED' | 'COMPLETED' | 'OVERDUE';
+
+/** Приоритеты дела */
+export type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
 
 /** День недели повторения дела */
 export type TaskRecurrenceWeekday = 'FR' | 'MO' | 'SA' | 'SU' | 'TH' | 'TU' | 'WE';
@@ -69,7 +72,7 @@ export type TaskUpdateInput = {
   description?: string | null | undefined;
   id: string;
   name: string;
-  priority: number;
+  priority: TaskPriority;
   recurrence?: TaskRecurrencyInput | null | undefined;
   startDate?: string | null | undefined;
   weight: number;
@@ -85,7 +88,7 @@ export type CreateTaskMutation = {
     name: string;
     description: string | null;
     deadline: string | null;
-    priority: number;
+    priority: Types.TaskPriority;
     startDate: string | null;
     status: Types.TaskStatus;
     groupId: number | null;
@@ -108,7 +111,7 @@ export type UpdateTaskMutation = {
     name: string;
     description: string | null;
     deadline: string | null;
-    priority: number;
+    priority: Types.TaskPriority;
     startDate: string | null;
     status: Types.TaskStatus;
   };
@@ -147,7 +150,7 @@ export type TaskByIdQuery = {
     id: string;
     name: string;
     description: string | null;
-    priority: number;
+    priority: Types.TaskPriority;
     endDate: string | null;
     status: Types.TaskStatus;
     startDate: string | null;

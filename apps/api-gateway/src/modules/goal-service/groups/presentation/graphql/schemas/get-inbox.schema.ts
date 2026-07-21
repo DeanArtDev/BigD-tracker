@@ -1,7 +1,7 @@
-import { AvailableToViewTasksStatuses, TaskStatus } from '@big-d/api-contracts';
+import { AvailableToViewTasksStatuses, TaskPriority, TaskStatus } from '@big-d/api-contracts';
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CursorPaginationInput } from '@shared/graphql';
-import { IsArray, IsEnum, IsIn, IsOptional, IsString, Length, Max, Min } from 'class-validator';
+import { IsArray, IsEnum, IsIn, IsOptional, IsString, Length } from 'class-validator';
 
 @ObjectType()
 class GetInboxResponse {
@@ -23,12 +23,11 @@ class GetInboxTasksInput extends CursorPaginationInput {
   @IsString()
   search?: string;
 
-  @Field(() => [Int], { nullable: true })
-  @Min(1, { each: true })
-  @Max(4, { each: true })
+  @Field(() => [TaskPriority], { nullable: true })
   @IsOptional()
   @IsArray()
-  priority?: number[];
+  @IsEnum(TaskPriority, { each: true })
+  priority?: TaskPriority[];
 
   @Field(() => [TaskStatus], { nullable: true })
   @IsOptional()

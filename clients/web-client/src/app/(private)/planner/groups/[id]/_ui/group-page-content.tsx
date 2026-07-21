@@ -1,14 +1,17 @@
 'use client';
 
-import { TriangleAlert } from 'lucide-react';
+import { ChevronLeft, TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
-import { GroupId, useGetGroupById } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { routes } from '@/shared/routes';
-import { DataLoader, Typography } from '@/shared/ui-kit';
+import { Button, DataLoader, ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/shared/ui-kit';
+import { GroupDescription } from './group-description';
+import { useGetDetailedGroup } from '../_api';
+import { GroupName } from './group-name';
+import { GroupTaskList } from './group-task-list';
 
 function GroupPageContent({ groupId }: { groupId: GroupId }) {
-  const { data, isEmpty } = useGetGroupById({ groupId });
-  const group = data?.getGroup;
+  const { group, isEmpty } = useGetDetailedGroup({ groupId });
 
   return (
     <DataLoader
@@ -22,13 +25,29 @@ function GroupPageContent({ groupId }: { groupId: GroupId }) {
       }
     >
       {group != null && (
-        <div className="grow min-h-0 min-w-0 px-8 py-5">
-          <div className="flex flex-col gap-2">
-            <Typography.H2>{group.name}</Typography.H2>
+        <div className="flex grow min-h-0 min-w-0 px-8 py-5">
+          <div className="flex grow flex-col gap-4">
+            <div className="flex gap-2 items-center">
+              <Button asChild size="icon-lg" variant="ghost" className="mb-auto">
+                <Link href={routes.plannerGroupList.path}>
+                  <ChevronLeft className="size-7" />
+                </Link>
+              </Button>
 
-            {group.description != null && <Typography.P>{group.description}</Typography.P>}
+              <GroupName id={group.id} name={group.name} />
+            </div>
 
-            <Typography.P className="text-muted-foreground">Задач: {group.taskCount ?? 0}</Typography.P>
+            <ResizablePanelGroup orientation="horizontal" className="grow">
+              <ResizablePanel defaultSize="60%">
+                <GroupDescription id={group.id} description={group.description ?? undefined} />
+              </ResizablePanel>
+
+              <ResizableHandle withHandle className="mx-2" />
+
+              <ResizablePanel defaultSize="40%">
+                <GroupTaskList groupId={group.id} />
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </div>
         </div>
       )}

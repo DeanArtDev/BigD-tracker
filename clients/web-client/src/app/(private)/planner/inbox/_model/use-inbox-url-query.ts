@@ -1,12 +1,11 @@
 import { isEmpty } from 'lodash-es';
 import { z } from 'zod';
-import { taskPriorityEnumSchema } from '@/entity/planner/tasks';
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { useUrlQuery } from '@/shared/lib/url';
 
 const inboxUrlQuerySchema = z.object({
   status: z.enum(TaskStatus).array().optional(),
-  priority: z.enum(taskPriorityEnumSchema).array().optional(),
+  priority: z.enum(TaskPriority).array().optional(),
 
   search: z
     .string()

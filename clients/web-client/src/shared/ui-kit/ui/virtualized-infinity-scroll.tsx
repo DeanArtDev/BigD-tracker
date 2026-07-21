@@ -1,15 +1,19 @@
 'use client';
 
-import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
+import { PartialKeys, ReactVirtualizerOptions, useVirtualizer, VirtualItem } from '@tanstack/react-virtual';
+import { merge } from 'lodash-es';
 import { ReactNode, useRef } from 'react';
 import { InfinityScroll, InfinityScrollProps } from './infinity-scroll';
+import { VirtualizedListLayout } from './virtualized-list-layout';
 
 interface VirtualizedInfinityScrollProps extends Omit<InfinityScrollProps, 'ref' | 'options'> {
-  readonly virtualizerOptions: {
-    readonly count: number;
-    readonly gap?: number;
-    readonly overscan?: number;
-  };
+  readonly virtualizerOptions: Omit<
+    PartialKeys<
+      ReactVirtualizerOptions<HTMLDivElement, Element>,
+      'observeElementRect' | 'observeElementOffset' | 'scrollToFn' | 'estimateSize'
+    >,
+    'getScrollElement'
+  >;
   readonly infinityScrollOptions?: InfinityScrollProps['options'];
   readonly renderItem: (item: VirtualItem) => ReactNode;
 }
@@ -24,33 +28,13 @@ function VirtualizedInfinityScroll({
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
-    ...virtualizerOptions,
+    ...merge({}, { estimateSize: () => 100 }, virtualizerOptions),
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 100,
   });
 
   return (
     <InfinityScroll {...rest} options={infinityScrollOptions} ref={parentRef}>
-      <div className="relative w-full" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
-        {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-          return (
-            <div
-              key={virtualItem.key}
-              ref={rowVirtualizer.measureElement}
-              data-index={virtualItem.index}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              {renderItem(virtualItem)}
-            </div>
-          );
-        })}
-      </div>
+      <VirtualizedListLayout renderItem={renderItem} rowVirtualizer={rowVirtualizer} />
     </InfinityScroll>
   );
 }

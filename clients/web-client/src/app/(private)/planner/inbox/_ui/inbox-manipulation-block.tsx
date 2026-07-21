@@ -12,7 +12,7 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo() {
   const filter = {
     search: searchQuery?.search,
     status: searchQuery?.status,
-    priority: searchQuery?.priority?.map(Number) ?? [],
+    priority: searchQuery?.priority ?? [],
   };
 
   const [draftSearch, setDraftSearch] = useState(filter?.search ?? '');
@@ -76,14 +76,14 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo() {
         value={filter.priority}
         onChange={(values) => {
           const v = values.length <= 0 ? undefined : values;
-          setFilters({ priority: v?.map(String), status: filter.status });
+          setFilters({ priority: v, status: filter.status });
         }}
       />
 
       <TaskStatusSelect
         values={filter.status}
         onChange={(value) => {
-          setFilters({ priority: filter.priority?.map(String), status: value });
+          setFilters({ priority: filter.priority, status: value });
         }}
       />
     </div>

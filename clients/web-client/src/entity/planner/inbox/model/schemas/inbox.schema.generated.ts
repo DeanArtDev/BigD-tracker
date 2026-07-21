@@ -8,10 +8,13 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 export type GetInboxTasksInput = {
   cursor?: string | null | undefined;
   limit: number;
-  priority?: Array<number> | null | undefined;
+  priority?: Array<TaskPriority> | null | undefined;
   search?: string | null | undefined;
   status?: Array<TaskStatus> | null | undefined;
 };
+
+/** Приоритеты дела */
+export type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
 
 /** Статусы дела */
 export type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
@@ -32,7 +35,7 @@ export type GetInboxQuery = {
         deadline: string | null;
         description: string | null;
         groupId: number | null;
-        priority: number;
+        priority: Types.TaskPriority;
         startDate: string | null;
         status: Types.TaskStatus;
       }>;

@@ -10,6 +10,13 @@ enum TaskStatus {
   DELETED = 'DELETED',
 }
 
+enum TaskPriority {
+  Delegate = 'Delegate',
+  Delete = 'Delete',
+  Do = 'Do',
+  Plan = 'Plan',
+}
+
 enum TaskFinishStatus {
   OVERDUE = TaskStatus.OVERDUE,
   COMPLETED = TaskStatus.COMPLETED,
@@ -80,4 +87,5 @@ export {
   recurrenceFrequencyToKeyMap,
   taskStatusToOverrideTypeMap,
   TaskFinishStatus,
+  TaskPriority,
 };

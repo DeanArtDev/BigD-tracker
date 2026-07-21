@@ -31,7 +31,7 @@ type GetInboxResponse {
 input GetInboxTasksInput {
   cursor: String
   limit: Int!
-  priority: [Int!]
+  priority: [TaskPriority!]
   search: String
   status: [TaskStatus!]
 }
@@ -218,7 +218,7 @@ input TaskCreateInput {
   description: String
   groupId: Int
   name: String!
-  priority: Int!
+  priority: TaskPriority!
   startDate: String
 }
 
@@ -237,6 +237,14 @@ enum TaskFinishStatus {
   CANCELED
   COMPLETED
   OVERDUE
+}
+
+"""Приоритеты дела"""
+enum TaskPriority {
+  Delegate
+  Delete
+  Do
+  Plan
 }
 
 input TaskRecoveryInput {
@@ -274,7 +282,7 @@ type TaskSchema {
   groupId: Int
   id: ID!
   name: String!
-  priority: Int!
+  priority: TaskPriority!
   startDate: String
   status: TaskStatus!
   userId: Int!
@@ -302,7 +310,7 @@ input TaskUpdateInput {
   description: String
   id: String!
   name: String!
-  priority: Int!
+  priority: TaskPriority!
   recurrence: TaskRecurrencyInput
   startDate: String
   weight: Int!

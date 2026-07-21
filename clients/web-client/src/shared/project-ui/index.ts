@@ -7,3 +7,4 @@ export * from './wysiwyg';
 export * from './app-dropdown';
 export * from './confirm-dialog';
 export * from './app-drawer';
+export * from './vertical-dnd';

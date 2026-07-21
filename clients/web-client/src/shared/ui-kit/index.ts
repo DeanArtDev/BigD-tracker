@@ -35,5 +35,8 @@ export * from './ui/select';
 export * from './ui/alert-dialog';
 export * from './ui/drawer';
 export * from './ui/radio-group';
+export * from './ui/breadcrumb';
+export * from './ui/resizable';
+export * from './ui/virtualized-list-layout';
 
 export * from './lib/utils';

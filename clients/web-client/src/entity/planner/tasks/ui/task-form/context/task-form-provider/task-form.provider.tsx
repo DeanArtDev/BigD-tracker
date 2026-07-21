@@ -3,14 +3,15 @@
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { type PropsWithChildren, useCallback, useId, useMemo } from 'react';
 import { DefaultValues, FormProvider, useForm } from 'react-hook-form';
-import { Task, TaskFormData, TaskPriority } from '@/entity/planner/tasks';
+import { Task, TaskFormData } from '@/entity/planner/tasks';
+import { TaskPriority } from '@/entity/schema-types';
 import timeAndDate from '@/shared/lib/time';
 import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
 
 const defaultValues: DefaultValues<TaskFormData> = {
   name: undefined,
-  priority: TaskPriority.DELETE.toString(),
+  priority: TaskPriority.Delete,
   description: undefined,
   deadline: undefined,
   startDate: undefined,
@@ -30,7 +31,7 @@ function TaskFormProvider({ task, loading, children }: TaskFormProviderProps) {
   const values: TaskFormData | undefined = isEdit
     ? {
         name: task.name ?? undefined,
-        priority: task.priority.toString(),
+        priority: task.priority,
         description: task?.description ?? undefined,
         startDate: task.startDate != null ? timeAndDate(task.startDate).toDate() : undefined,
         deadline: task.deadline != null ? timeAndDate(task.deadline).toDate() : undefined,

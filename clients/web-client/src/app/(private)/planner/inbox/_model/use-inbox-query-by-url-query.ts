@@ -7,7 +7,7 @@ function useInboxQueryByUrlQuery() {
   const filter = {
     search: searchQuery?.search,
     status: searchQuery?.status,
-    priority: searchQuery?.priority?.map(Number),
+    priority: searchQuery?.priority,
   };
 
   const result = useInboxQuery({

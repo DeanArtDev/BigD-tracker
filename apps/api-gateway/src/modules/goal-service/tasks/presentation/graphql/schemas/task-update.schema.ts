@@ -1,7 +1,8 @@
+import { TaskPriority } from '@big-d/api-contracts';
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
 import { buildTaskDateTimeApiProperty } from '@shared/dto/task-date-time';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
 import { TaskRecurrencyInput } from './task-recurrency.schema';
@@ -25,12 +26,11 @@ class TaskUpdateInput {
   @IsString()
   description?: string;
 
-  @ApiProperty({ example: 2, description: 'От 1 до 4' })
-  @Field(() => Int)
-  @Min(1)
-  @Max(4)
-  @IsInt()
-  priority: number;
+  @ApiPropertyOptional({ example: 2, description: 'От 1 до 4' })
+  @IsOptional()
+  @Field(() => TaskPriority)
+  @IsEnum(TaskPriority)
+  priority: TaskPriority;
 
   @ApiProperty({ example: 100, description: 'От 0 до 100' })
   @Field(() => Int)

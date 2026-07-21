@@ -1,3 +1,4 @@
+import { TaskPriority } from '@/entity/schema-types';
 import { cn, ToggleGroupItem, Typography } from '@/shared/ui-kit';
 import { ToggleGroupForm } from '@/shared/ui-kit/form';
 import { useTaskFormFieldContext } from '../context/task-form-field-provider';
@@ -11,9 +12,9 @@ function Priority() {
     <div className="grid grid-cols-[max-content_1fr] gap-2 items-center">
       <Typography.H6 className="font-medium">Приоритет: </Typography.H6>
 
-      <ToggleGroupForm name="priority" disabled={priority.disabled}>
+      <ToggleGroupForm name="priority" disabled={priority.disabled} isErrorMessage={false}>
         <ToggleGroupItem
-          value="1"
+          value={TaskPriority.Do}
           size="sm"
           variant="outline"
           className={cn(
@@ -25,7 +26,7 @@ function Priority() {
         </ToggleGroupItem>
 
         <ToggleGroupItem
-          value="2"
+          value={TaskPriority.Plan}
           size="sm"
           variant="outline"
           className={cn(
@@ -37,7 +38,7 @@ function Priority() {
         </ToggleGroupItem>
 
         <ToggleGroupItem
-          value="3"
+          value={TaskPriority.Delegate}
           size="sm"
           variant="outline"
           className={cn(
@@ -49,7 +50,7 @@ function Priority() {
         </ToggleGroupItem>
 
         <ToggleGroupItem
-          value="4"
+          value={TaskPriority.Delete}
           size="sm"
           variant="outline"
           className={cn(

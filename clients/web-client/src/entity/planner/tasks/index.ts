@@ -2,7 +2,6 @@ export {
   TaskDomain,
   TaskActionType,
   TaskType,
-  TaskPriority,
   useTaskDelete,
   useTaskCreate,
   useTaskUnassign,

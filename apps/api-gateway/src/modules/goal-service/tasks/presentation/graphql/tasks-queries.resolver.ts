@@ -1,6 +1,7 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
+import { TaskMapper } from '../mappers/task.mapper';
 import { AvailableToViewTasksStatuses, GoalGetTaskById, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
@@ -37,7 +38,7 @@ class TasksQueriesResolver {
     });
 
     return {
-      items: data.items,
+      items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),
       meta: data.meta,
     };
   }

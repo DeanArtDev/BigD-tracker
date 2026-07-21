@@ -1,3 +1,5 @@
+'use client';
+
 import { isDate } from 'lodash-es';
 import { Clock2Icon } from 'lucide-react';
 import { type ComponentProps } from 'react';

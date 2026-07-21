@@ -1,3 +1,5 @@
+'use client';
+
 import { CalendarIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { Controller, type ControllerRenderProps, type FieldValues, type Path } from 'react-hook-form';
