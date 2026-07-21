@@ -1,5 +1,5 @@
 import { GroupId } from '@/entity/planner/groups';
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { Brand, DeepReadonly } from '@/shared/lib';
 
 type TaskId = Brand<string, 'TaskId'>;
@@ -39,13 +39,6 @@ enum TaskActionType {
   Recover = 'RECOVER',
 }
 
-enum TaskPriority {
-  DO = 1, // Важно и Срочно → Делай
-  PLAN = 2, // Важно и Несрочно → Планируй
-  DELEGATE = 3, // Неважно, но Срочно → Делегируй
-  DELETE = 4, // Неважно и Несрочно → Удали
-}
-
 enum TaskRecurrenceFrequency {
   YEARLY = 0,
   MONTHLY = 1,
@@ -66,5 +59,5 @@ enum TaskRecurrenceWeekday {
   SU = 6,
 }
 
-export { TaskType, TaskActionType, TaskPriority, TaskRecurrenceWeekday, TaskRecurrenceFrequency };
+export { TaskType, TaskActionType, TaskRecurrenceWeekday, TaskRecurrenceFrequency };
 export type { TaskId, BrandTask, Task };

@@ -1,8 +1,6 @@
-import { Check, X } from 'lucide-react';
 import { useState } from 'react';
-import { GroupId } from '@/entity/planner/groups';
-import { Button, cn, Input } from '@/shared/ui-kit';
-import { GroupActionsDropdown } from './group-actions-dropdown';
+import { GroupActionsDropdown, GroupId, GroupNameEditor } from '@/entity/planner/groups';
+import { cn, Typography } from '@/shared/ui-kit';
 
 interface GroupCardProps {
   readonly id: GroupId;
@@ -15,10 +13,6 @@ interface GroupCardProps {
 
 function GroupCard({ id, className, loading, name, onNameChange, onDelete }: GroupCardProps) {
   const [isEdit, setIsEdit] = useState(false);
-  const [draftName, setDraftName] = useState(name);
-
-  const isNameValid = draftName.trim().length > 3;
-  const isNameChange = draftName !== name;
 
   return (
     <div
@@ -30,60 +24,15 @@ function GroupCard({ id, className, loading, name, onNameChange, onDelete }: Gro
         }
       }}
     >
-      {isEdit ? (
-        <div className="h-10 flex items-center gap-2" onClick={(evt) => void evt.stopPropagation()}>
-          <Input
-            autoFocus
-            disabled={loading}
-            value={draftName}
-            aria-invalid={!isNameValid}
-            placeholder="Поиск по группам"
-            onChange={(evt) => {
-              evt.preventDefault();
-              evt.stopPropagation();
-              setDraftName(evt.target.value);
-            }}
-            onKeyDown={(evt) => {
-              if (!isNameChange) return;
-              if (evt.key !== 'Enter') return;
-              evt.preventDefault();
-              evt.stopPropagation();
-              onNameChange(draftName);
-              setIsEdit(false);
-            }}
-          />
-
-          <div className="flex gap-1">
-            <Button
-              disabled={!isNameValid || !isNameChange}
-              variant="outline"
-              size="icon-sm"
-              onClick={(evt) => {
-                evt.preventDefault();
-                evt.stopPropagation();
-                onNameChange(draftName);
-                setIsEdit(false);
-              }}
-            >
-              <Check />
-            </Button>
-
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              onClick={(evt) => {
-                evt.preventDefault();
-                evt.stopPropagation();
-                setIsEdit(false);
-              }}
-            >
-              <X />
-            </Button>
-          </div>
-        </div>
-      ) : (
-        name
-      )}
+      <Typography.H5>
+        <GroupNameEditor
+          isEdit={isEdit}
+          name={name}
+          loading={loading}
+          onIsEditChange={setIsEdit}
+          onNameChange={onNameChange}
+        />
+      </Typography.H5>
 
       {!isEdit && (
         <GroupActionsDropdown loading={loading} onDelete={() => onDelete(id)} onNameEdit={() => void setIsEdit(true)} />

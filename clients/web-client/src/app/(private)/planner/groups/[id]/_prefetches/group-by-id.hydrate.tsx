@@ -2,14 +2,18 @@
 
 import { useApolloClient } from '@apollo/client/react';
 import { ReactNode, useRef } from 'react';
-import { GetGroupByIdDocument, GetGroupByIdQuery } from '@/entity/planner/groups';
+import { GetDetailedGroupByIdQuery, GetDetailedGroupByIdDocument } from '../_api';
 
-function GroupByIdHydrator({ data, children }: { data: GetGroupByIdQuery | undefined; children: ReactNode }) {
+function GroupByIdHydrator({ data, children }: { data: GetDetailedGroupByIdQuery | undefined; children: ReactNode }) {
   const client = useApolloClient();
   const written = useRef(false);
 
   if (!written.current && data) {
-    client.writeQuery({ query: GetGroupByIdDocument, data, variables: { input: { groupId: data.getGroup.id } } });
+    client.writeQuery({
+      query: GetDetailedGroupByIdDocument,
+      data,
+      variables: { input: { groupId: data.getGroup.id } },
+    });
     written.current = true;
   }
   return children;

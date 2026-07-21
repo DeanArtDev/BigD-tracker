@@ -23,4 +23,6 @@ export {
   GroupListDrawerProvider,
   useGroupListDrawerContext,
   GroupListDropdown,
+  GroupNameEditor,
+  GroupActionsDropdown,
 } from './ui';

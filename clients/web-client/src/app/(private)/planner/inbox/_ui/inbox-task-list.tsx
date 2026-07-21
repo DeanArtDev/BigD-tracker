@@ -75,7 +75,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
         }}
         virtualizerProps={{
           hasNextPage,
-          virtualizerOptions: { count },
+          virtualizerOptions: { count, estimateSize: () => 84, gap: 10 },
           isLoadingNextPage: isInboxLoading,
           infinityScrollOptions: {
             bottomGap: 400,

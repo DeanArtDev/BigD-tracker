@@ -16,4 +16,5 @@ export * from './task-recovery';
 export * from './get-diary-tasks';
 export * from './get-tasks-by-range';
 
+export * from './dtos/task.dto';
 export * from './types';

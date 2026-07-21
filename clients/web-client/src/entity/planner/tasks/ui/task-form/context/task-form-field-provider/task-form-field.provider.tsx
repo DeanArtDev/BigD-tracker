@@ -3,7 +3,8 @@ import { ReactNode, useMemo } from 'react';
 import { TaskStatus } from '@/entity/schema-types';
 import { DeepPartial } from '@/shared/lib';
 import { FieldState, taskFormFieldContext, TaskFromFieldContext } from './task-form-field.context';
-import { getTaskFieldsToChangeByStatus, TaskFieldStatus } from '../../../../model';
+import { TaskDomain } from '../../../../model';
+import { TaskFieldStatus } from '../../../../model/domain';
 
 interface TaskFormFieldProviderProps {
   readonly children: ReactNode;
@@ -13,9 +14,9 @@ interface TaskFormFieldProviderProps {
 
 function TaskFormFieldProvider({ children, taskStatus, defaultFieldsState }: TaskFormFieldProviderProps) {
   const value = useMemo<TaskFromFieldContext>(() => {
-    const domainAvailability: ReturnType<typeof getTaskFieldsToChangeByStatus> =
+    const domainAvailability: ReturnType<typeof TaskDomain.fieldsToChangeByStatus> =
       taskStatus != null
-        ? getTaskFieldsToChangeByStatus(taskStatus)
+        ? TaskDomain.fieldsToChangeByStatus(taskStatus)
         : {
             name: 'editable',
             description: 'editable',

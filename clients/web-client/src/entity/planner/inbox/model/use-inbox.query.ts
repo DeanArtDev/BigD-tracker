@@ -1,14 +1,14 @@
 import { useQuery } from '@apollo/client/react';
 import { GroupId } from '@/entity/planner/groups';
 import { inboxInitialRequestVariables } from '@/entity/planner/inbox';
-import { BrandTask, TaskPriority } from '@/entity/planner/tasks';
-import { TaskStatus } from '@/entity/schema-types';
+import { BrandTask } from '@/entity/planner/tasks';
+import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { Override } from '@/shared/lib';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { GetInboxDocument, GetInboxQuery, GetInboxQueryVariables } from './schemas/inbox.schema.generated';
 
 type InboxTaskDto = NonNullable<NonNullable<GetInboxQuery['getInbox']['tasks']>['items'][number]>;
-type InboxTask = BrandTask<Override<InboxTaskDto, { priority: TaskPriority; groupId?: GroupId }>>;
+type InboxTask = BrandTask<Override<InboxTaskDto, { groupId?: GroupId }>>;
 
 type GetInboxResponse = Override<
   GetInboxQuery,
@@ -32,7 +32,7 @@ function useInboxQuery(params?: {
   search?: string;
   filter?: {
     status?: TaskStatus[];
-    priority?: number[];
+    priority?: TaskPriority[];
   };
 }) {
   const result = useQuery<GetInboxResponse, GetInboxQueryVariables>(GetInboxDocument, {

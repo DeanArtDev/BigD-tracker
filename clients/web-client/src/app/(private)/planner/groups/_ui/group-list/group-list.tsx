@@ -33,7 +33,7 @@ function GroupList() {
       <ul className="flex flex-col min-w-0 min-h-0">
         <VirtualizedInfinityScroll
           infinityScrollOptions={{ bottomGap: 100 }}
-          virtualizerOptions={{ gap: 0, overscan: 5, count: groups.length ?? 0 }}
+          virtualizerOptions={{ gap: 0, overscan: 5, count: groups.length ?? 0, estimateSize: () => 69 }}
           hasNextPage={meta?.hasNextPage ?? false}
           onNextPageLoad={fetchMore}
           isLoadingNextPage={loading}

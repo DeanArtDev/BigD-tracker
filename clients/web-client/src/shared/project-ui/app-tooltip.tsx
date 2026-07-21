@@ -3,6 +3,7 @@ import { cn, Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui-kit';
 
 interface AppTooltipProps extends ComponentProps<typeof Tooltip> {
   readonly asChild?: boolean;
+  readonly side?: ComponentProps<typeof TooltipContent>['side'];
   readonly disable?: boolean;
   readonly content: ReactNode;
   readonly wrapperClassName?: string;
@@ -12,6 +13,7 @@ function AppTooltip({
   asChild = true,
   disable = false,
   children,
+  side = 'left',
   content,
   wrapperClassName,
   ...props
@@ -24,7 +26,7 @@ function AppTooltip({
         <span className={cn('inline-block w-fit h-fit', wrapperClassName)}>{children}</span>
       </TooltipTrigger>
 
-      <TooltipContent side="left">{content}</TooltipContent>
+      <TooltipContent side={side}>{content}</TooltipContent>
     </Tooltip>
   );
 }

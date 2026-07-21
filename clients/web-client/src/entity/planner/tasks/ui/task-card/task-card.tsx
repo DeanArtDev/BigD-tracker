@@ -3,7 +3,7 @@
 import { Repeat2, Timer } from 'lucide-react';
 import { CSSProperties, ReactNode, Ref } from 'react';
 import { TaskDomain, TaskId } from '@/entity/planner/tasks';
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { TimeHelper } from '@/shared/lib/time';
 import { Badge, Card, CardContent, CardTitle, cn, Typography } from '@/shared/ui-kit';
 import { TaskUtils } from '../../lib/utils';
@@ -12,7 +12,8 @@ import { TaskStatusIndication } from '../task-status-indication';
 interface TaskCardProps {
   readonly id: TaskId;
   readonly name: string;
-  readonly priority: number;
+  readonly className?: string;
+  readonly priority: TaskPriority;
   readonly status: TaskStatus;
 
   readonly deadline?: string;
@@ -34,6 +35,7 @@ function TaskCard(props: TaskCardProps) {
     style,
     ref,
     status,
+    className,
     repeatable = false,
     deadline,
     afterHeaderSlot,
@@ -41,8 +43,6 @@ function TaskCard(props: TaskCardProps) {
     onContentClick,
   } = props;
 
-  const prior = Number(priority);
-  const isPriorityValid = [1, 2, 3].includes(prior);
   const isDeadlineSoon = TimeHelper.isLessThan24HoursLeft(deadline);
   const showIndications = TaskDomain.isAllowAccentIndicationTask(status, TaskDomain.parseId(id, false).type);
 
@@ -50,7 +50,7 @@ function TaskCard(props: TaskCardProps) {
     <Card
       ref={ref}
       style={style}
-      className="task-card p-3 relative hover:shadow"
+      className={cn('task-card p-3 relative hover:shadow', className)}
       onClick={(evt) => {
         if (onContentClick != null) {
           evt.stopPropagation();
@@ -58,15 +58,13 @@ function TaskCard(props: TaskCardProps) {
         }
       }}
     >
-      {isPriorityValid && (
-        <div
-          className={cn('absolute top-0 left-0 bottom-0 w-[5px] h-full rounded-tl-md rounded-bl-md', {
-            [`bg-(--priority-1)`]: prior === 1,
-            [`bg-(--priority-2)`]: prior === 2,
-            [`bg-(--priority-3)`]: prior === 3,
-          })}
-        />
-      )}
+      <div
+        className={cn('absolute top-0 left-0 bottom-0 w-[5px] h-full rounded-tl-md rounded-bl-md', {
+          [`bg-(--priority-1)`]: priority === TaskPriority.Do,
+          [`bg-(--priority-2)`]: priority === TaskPriority.Plan,
+          [`bg-(--priority-3)`]: priority === TaskPriority.Delegate,
+        })}
+      />
 
       <CardTitle className="grid grid-cols-[1fr_max-content]">
         <Typography.H5 className="truncate px-2">
@@ -100,7 +98,7 @@ function TaskCard(props: TaskCardProps) {
           </Badge>
         )}
 
-        <TaskStatusIndication className="ml-auto" status={status} size="md" />
+        <TaskStatusIndication className="ml-auto cursor-default" status={status} size="md" />
       </CardContent>
     </Card>
   );

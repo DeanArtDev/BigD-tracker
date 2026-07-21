@@ -26,6 +26,7 @@ import {
   TaskUpdateInput,
   TaskUnassignInput,
 } from './schemas';
+import { TaskMapper } from '../mappers/task.mapper';
 
 @Resolver(() => TaskSchema)
 class TasksMutationsResolver {
@@ -37,14 +38,14 @@ class TasksMutationsResolver {
   async createTask(
     @Args('input') input: TaskCreateInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GoalCreateTask.Response['data']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalCreateTask.Response, GoalCreateTask.Request>(
       GoalCreateTask.pattern,
       {
         data: {
           userId: uid,
           groupId: input.groupId,
-          priority: input.priority,
+          priority: TaskMapper.fromClientPriorityToServer(input.priority),
           description: input.description,
           name: input.name,
           startDate: input.startDate,
@@ -53,7 +54,7 @@ class TasksMutationsResolver {
       },
     );
 
-    return data;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
   @Mutation(() => TaskSchema, {
@@ -62,14 +63,14 @@ class TasksMutationsResolver {
   async updateTask(
     @Args('input') input: TaskUpdateInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GoalReplaceTask.Response['data']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalReplaceTask.Response, GoalReplaceTask.Request>(
       GoalReplaceTask.pattern,
       {
         data: {
           id: input.id,
           userId: uid,
-          priority: input.priority,
+          priority: TaskMapper.fromClientPriorityToServer(input.priority),
           name: input.name,
           description: input.description,
           weight: input.weight,
@@ -80,7 +81,7 @@ class TasksMutationsResolver {
       },
     );
 
-    return data;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
   @Mutation(() => TaskSchema, {
@@ -109,7 +110,7 @@ class TasksMutationsResolver {
   async copyTask(
     @Args('input') input: TaskCopyInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GoalCloneTask.Response['data']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, {
       data: {
         userId: uid,
@@ -117,7 +118,7 @@ class TasksMutationsResolver {
       },
     });
 
-    return data;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
   @Mutation(() => Int, {
@@ -146,7 +147,7 @@ class TasksMutationsResolver {
   async finishTask(
     @Args('input') input: TaskFinishInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GoalFinishTask.Response['data']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalFinishTask.Response, GoalFinishTask.Request>(
       GoalFinishTask.pattern,
       {
@@ -159,7 +160,7 @@ class TasksMutationsResolver {
       },
     );
 
-    return data;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
   @Mutation(() => Int, {

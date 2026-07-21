@@ -4,7 +4,7 @@ import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { AvailableToViewTasksStatuses, GoalGetGroupInBox, GoalGetTasks } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { TasksConnection } from '@/modules/goal-service/tasks';
+import { TaskMapper, TasksConnection } from '@/modules/goal-service/tasks';
 import { GetInboxResponse, GetInboxTasksInput } from '../schemas';
 
 @Resolver(() => GetInboxResponse)
@@ -40,12 +40,13 @@ export class GroupInboxResolver {
           limit,
           cursor,
           status: s,
-          priority,
+          priority: priority?.map(TaskMapper.fromClientPriorityToServer),
         },
       },
     });
+
     return {
-      items: data.items,
+      items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),
       meta: data.meta,
     };
   }

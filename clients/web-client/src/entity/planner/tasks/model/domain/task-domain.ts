@@ -1,12 +1,22 @@
+import { getTasksStatusCount } from '@/entity/planner/tasks/model/domain/helpers/get-tasks-status-count';
 import { TaskStatus } from '@/entity/schema-types';
 import timeAndDate from '@/shared/lib/time';
+import { TaskIdParser } from './helpers/taks-id-parser';
+import { getTaskFieldsToChangeByStatus } from './helpers/task-fields-to-change-by-status';
 import { taskActionByStatusesAvailability } from './maps/task-action-to-status-availability';
 import { taskIndicationByStatus, taskIndicationByType } from './maps/task-indication-availability';
 import { taskTypeToActionAvailability } from './maps/task-type-to-action-availability';
-import { TaskIdParser } from './taks-id-parser';
 import { TaskActionType, TaskId, TaskType } from './task';
 
 class TaskDomain {
+  static tasksCountByStatus(tasks: { status: TaskStatus }[]) {
+    return getTasksStatusCount(tasks);
+  }
+
+  static fieldsToChangeByStatus(status: TaskStatus) {
+    return getTaskFieldsToChangeByStatus(status);
+  }
+
   static dateToTaskStandard = (date: string | Date): string => {
     return timeAndDate(date).format('YYYY-MM-DDTHH:mm');
   };

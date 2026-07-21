@@ -44,7 +44,7 @@ export type GetInboxResponseTasksArgs = {
 export type GetInboxTasksInput = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Int']['input'];
-  priority?: InputMaybe<Array<Scalars['Int']['input']>>;
+  priority?: InputMaybe<Array<TaskPriority>>;
   search?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Array<TaskStatus>>;
 };
@@ -291,7 +291,7 @@ export type TaskCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   groupId?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
-  priority: Scalars['Int']['input'];
+  priority: TaskPriority;
   startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -310,6 +310,14 @@ export enum TaskFinishStatus {
   Canceled = 'CANCELED',
   Completed = 'COMPLETED',
   Overdue = 'OVERDUE',
+}
+
+/** Приоритеты дела */
+export enum TaskPriority {
+  Delegate = 'Delegate',
+  Delete = 'Delete',
+  Do = 'Do',
+  Plan = 'Plan',
 }
 
 export type TaskRecoveryInput = {
@@ -348,7 +356,7 @@ export type TaskSchema = {
   groupId?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  priority: Scalars['Int']['output'];
+  priority: TaskPriority;
   startDate?: Maybe<Scalars['String']['output']>;
   status: TaskStatus;
   userId: Scalars['Int']['output'];
@@ -376,7 +384,7 @@ export type TaskUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  priority: Scalars['Int']['input'];
+  priority: TaskPriority;
   recurrence?: InputMaybe<TaskRecurrencyInput>;
   startDate?: InputMaybe<Scalars['String']['input']>;
   weight: Scalars['Int']['input'];

@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { transformToPlaceholder, transformDate, schemaPlaceholderValues } from '@/shared/ui-kit/form';
-import { taskPriorityEnumSchema } from '../../../../lib';
 import { TaskDomain } from '../../../../model';
 
 const taskFormSchema = z
@@ -14,12 +13,7 @@ const taskFormSchema = z
     isDescriptionDirty: z.boolean(),
     description: z.string().optional().transform(transformToPlaceholder.optional),
 
-    priority: z
-      .enum(taskPriorityEnumSchema)
-      .transform((value) => parseInt(value, 10))
-      .refine((value) => !Number.isNaN(value), {
-        error: `Невалидное значение приоритета`,
-      }),
+    priority: z.enum(TaskPriority),
 
     status: z.enum(TaskStatus).optional(),
 

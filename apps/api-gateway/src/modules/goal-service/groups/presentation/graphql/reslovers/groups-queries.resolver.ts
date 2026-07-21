@@ -1,7 +1,7 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { TasksConnection } from '@/modules/goal-service/tasks';
+import { TaskMapper, TasksConnection } from '@/modules/goal-service/tasks';
 import {
   AvailableToViewTasksStatuses,
   GoalGetAssignableGroups,
@@ -110,7 +110,7 @@ export class GroupsQueriesResolver {
     });
 
     return {
-      items: data.items,
+      items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),
       meta: data.meta,
     };
   }
