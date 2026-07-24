@@ -37,7 +37,20 @@ export type GetDetailedGroupByIdQuery = {
     description: string | null;
     status: Types.GroupStatus;
     progress: number;
-    tasks: { items: Array<{ id: string; name: string; status: Types.TaskStatus; priority: Types.TaskPriority }> };
+    tasks: {
+      items: Array<{
+        id: string;
+        name: string;
+        status: Types.TaskStatus;
+        priority: Types.TaskPriority;
+        description: string | null;
+        startDate: string | null;
+        deadline: string | null;
+        endDate: string | null;
+        cancelReason: string | null;
+        groupId: number | null;
+      }>;
+    };
   };
 };
 
@@ -104,6 +117,12 @@ export const GetDetailedGroupByIdDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'status' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                           ],
                         },
                       },

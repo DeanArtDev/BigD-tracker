@@ -1,10 +1,12 @@
+'use client';
+
 import { Link2 } from 'lucide-react';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskDomain, TaskStatusIndication } from '@/entity/planner/tasks';
 import { TaskStatus } from '@/entity/schema-types';
 import { AppTooltip } from '@/shared/project-ui';
 import { Button, Field, FieldLabel } from '@/shared/ui-kit';
-import { useGetDetailedGroup } from '../_api';
+import { useGetDetailedGroup } from '../../_api';
 
 interface GroupTaskListHeaderProps {
   readonly groupId: GroupId;

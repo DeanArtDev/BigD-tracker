@@ -23,7 +23,7 @@ class GroupUpdateInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  description?: string;
+  description: string | null | undefined;
 
   @Field(() => [GroupUpdateTaskInput], { nullable: true })
   @ValidateNested({ each: true })

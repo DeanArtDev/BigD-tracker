@@ -16,16 +16,17 @@ import { cn, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { WysiwygProvider } from './context/provider';
 import {
   ContentEditable,
-  DirtyTrackingPlugin,
   HorizontalRulePlugin,
   LexicalErrorBoundary,
   MarkdownShortcutPlugin,
   RichTextPlugin,
+  StateChangePlugin,
   TabIndentationPlugin,
   ToolbarPlugin,
 } from './plugins';
 import { InitialStatePlugin, type InitialStatePluginProps } from './plugins/initial-state.plugin';
 import { commonTheme } from './themes';
+import { serializeEditorState } from './utils';
 
 const clientConfig = getEnvConfigClient();
 function onError(error: unknown) {
@@ -42,9 +43,10 @@ interface WysiwygEditorProps {
   readonly placeholder?: string;
   readonly config?: MakeOptional<InitialConfigType, 'namespace' | 'onError'>;
   readonly controller?: Ref<{
-    readonly getStateAsString?: () => string;
+    readonly getStateAsString?: () => string | undefined;
   }>;
   readonly onDirtyChange?: (value: boolean) => void;
+  readonly onStateChange?: (data: { isDirty: boolean }) => void;
 }
 
 function Component({
@@ -55,13 +57,14 @@ function Component({
   disabled = false,
   afterSlot,
   onDirtyChange = noop,
+  onStateChange = noop,
 }: Omit<WysiwygEditorProps, 'config'>) {
   const [historyKey, setHistoryKey] = useState(0);
 
   const [editor] = useLexicalComposerContext();
   useImperativeHandle(controller, () => {
     return {
-      getStateAsString: () => JSON.stringify(editor.getEditorState().toJSON()),
+      getStateAsString: () => serializeEditorState(editor.getEditorState()),
     };
   });
 
@@ -72,7 +75,7 @@ function Component({
         <ToolbarPlugin disabled={disabled} />
 
         <InitialStatePlugin state={state} onStateSet={() => void setHistoryKey((prev) => prev + 1)} />
-        <DirtyTrackingPlugin initialStateString={state} onDirtyChange={onDirtyChange} />
+        <StateChangePlugin initialStateString={state} onDirtyChange={onDirtyChange} onStateChange={onStateChange} />
 
         <ScrollAreaNativeVertical className="wysiwyg-editor-scroller relative">
           {beforeSlot}

@@ -39,7 +39,7 @@ function GroupPageContent({ groupId }: { groupId: GroupId }) {
 
             <ResizablePanelGroup orientation="horizontal" className="grow">
               <ResizablePanel defaultSize="60%">
-                <GroupDescription id={group.id} description={group.description ?? undefined} />
+                <GroupDescription groupId={group.id} />
               </ResizablePanel>
 
               <ResizableHandle withHandle className="mx-2" />

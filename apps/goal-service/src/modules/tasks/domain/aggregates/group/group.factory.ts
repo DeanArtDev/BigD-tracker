@@ -10,7 +10,7 @@ interface GroupFactoryCreateInput {
 
 interface GroupFactoryReplaceInput {
   readonly name: string;
-  readonly description?: string;
+  readonly description: string | undefined | null;
 }
 
 class GroupFactory {
@@ -27,7 +27,7 @@ class GroupFactory {
   replace(group: Group, input: GroupFactoryReplaceInput): Group {
     return group.replace({
       name: Name.create(input.name),
-      description: input.description != null ? DescriptionVo.create(input.description) : undefined,
+      description: input.description != null ? DescriptionVo.create(input.description) : input.description,
     });
   }
 

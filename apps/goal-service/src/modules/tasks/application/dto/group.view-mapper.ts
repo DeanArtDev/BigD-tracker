@@ -8,7 +8,7 @@ class GroupsViewMapper {
       name: agr.name,
       status: agr.status,
       progress: agr.progress,
-      description: agr.description,
+      description: agr.description ?? undefined,
       userId: agr.userId,
     });
   };

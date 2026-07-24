@@ -19,6 +19,7 @@ interface WysiwygFormProps<FormValues extends FieldValues = FieldValues> {
     readonly input?: string;
   };
   readonly onDirtyChange?: WysiwygEditorProps['onDirtyChange'];
+  readonly onStateChange?: WysiwygEditorProps['onStateChange'];
 }
 
 function WysiwygForm<FormValues extends FieldValues = FieldValues>({
@@ -31,6 +32,7 @@ function WysiwygForm<FormValues extends FieldValues = FieldValues>({
   wysiwygController,
   classNames,
   onDirtyChange,
+  onStateChange,
 }: WysiwygFormProps<FormValues>) {
   return (
     <Controller
@@ -47,6 +49,7 @@ function WysiwygForm<FormValues extends FieldValues = FieldValues>({
               placeholder={placeholder}
               controller={wysiwygController}
               onDirtyChange={onDirtyChange}
+              onStateChange={onStateChange}
             />
 
             {isErrorMessage && <FieldError errors={[fieldState.error]} />}

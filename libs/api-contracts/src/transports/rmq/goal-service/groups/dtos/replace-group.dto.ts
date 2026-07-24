@@ -20,7 +20,7 @@ class ReplaceGroupReqData {
 
   @IsString()
   @IsOptional()
-  description?: string;
+  description?: string | null;
 
   @ValidateNested({ each: true })
   @IsOptional()
