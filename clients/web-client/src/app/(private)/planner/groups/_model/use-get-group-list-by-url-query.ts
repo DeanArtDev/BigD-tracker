@@ -1,7 +1,7 @@
 import { useGetGroupList } from '@/entity/planner/groups';
 import { useGroupListUrlQuery } from './use-group-list-url-query';
 
-const requestLimit = 11;
+const requestLimit = 17;
 
 function useGetGroupListByUrlQuery() {
   const [searchQuery] = useGroupListUrlQuery();

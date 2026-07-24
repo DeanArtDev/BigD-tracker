@@ -10,7 +10,7 @@ interface GroupState {
   readonly progress: ProgressVo;
   readonly status: GroupStatus;
   name: Name;
-  description?: DescriptionVo;
+  description: DescriptionVo | undefined | null;
 }
 
 interface GroupRestoreInput {
@@ -24,7 +24,7 @@ interface GroupRestoreInput {
 
 interface GroupUpdateInput {
   readonly name: Name;
-  readonly description?: DescriptionVo;
+  readonly description: DescriptionVo | undefined | null;
 }
 
 interface GroupCreateInput {
@@ -93,8 +93,11 @@ class Group {
     return this.#state.name.value;
   }
 
-  get description(): string | undefined {
-    return this.#state.description?.value;
+  get description(): string | undefined | null {
+    if (this.#state.description != null) {
+      return this.#state.description.value;
+    }
+    return this.#state.description;
   }
 
   get progress(): number {

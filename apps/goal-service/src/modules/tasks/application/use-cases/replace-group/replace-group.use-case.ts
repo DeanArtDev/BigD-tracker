@@ -23,11 +23,11 @@ class ReplaceGroupUseCase {
 
   async execute({ input }: ReplaceGroupCommand): Promise<GroupView> {
     return this.db.runTransaction(async (trx) => {
-      const { id: groupId, userId, description, name, tasks = [] } = input;
+      const { id: groupId, userId, description, name, tasks } = input;
       const ensureGroup = await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx });
 
       const readyToReplaceTasks: Task[] = [];
-      for (const taskInput of tasks) {
+      for (const taskInput of tasks ?? []) {
         const { isOrigin, data } = this.taskTypeService.getType({ taskId: taskInput.id });
 
         if (isOrigin) {
@@ -57,10 +57,8 @@ class ReplaceGroupUseCase {
         }
       }
 
-      await this.groupsWriteRepo.updateGroupAndTaskOrder(
-        { group: updatedGroup, taskIds: readyToReplaceTasks.map((t) => t.id) },
-        trx,
-      );
+      const tIds = tasks == null ? undefined : readyToReplaceTasks.map((t) => t.id);
+      await this.groupsWriteRepo.updateGroupAndTaskOrder({ group: updatedGroup, taskIds: tIds }, trx);
 
       return GroupsViewMapper.fromAggregateToView(updatedGroup);
     });

@@ -14,6 +14,12 @@ const GET_DETAILED_GROUP_QUERY = gql`
           name
           status
           priority
+          description
+          startDate
+          deadline
+          endDate
+          cancelReason
+          groupId
         }
       }
     }

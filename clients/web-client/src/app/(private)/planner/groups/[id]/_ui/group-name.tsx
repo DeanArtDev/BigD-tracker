@@ -23,7 +23,7 @@ function GroupName({ id, name }: GroupNameProps) {
           name={name}
           loading={isGroupUpdateLoading}
           onIsEditChange={setIsEdit}
-          onNameChange={(name) => void updateGroup({ name, id })}
+          onNameChange={(name) => void updateGroup({ name, id, description: undefined })}
         />
       </Typography.H1>
 

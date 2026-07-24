@@ -6,7 +6,7 @@ import { TaskTransaction } from '../transaction-manager.port';
 interface GroupsWriteRepository {
   createGroup(group: Group, trx?: TaskTransaction): Promise<Group>;
 
-  updateGroupAndTaskOrder(input: { group: Group; taskIds: Task['id'][] }, trx?: TaskTransaction): Promise<void>;
+  updateGroupAndTaskOrder(input: { group: Group; taskIds?: Task['id'][] }, trx?: TaskTransaction): Promise<void>;
 
   getGroup(specification: TasksSpecification, trx?: TaskTransaction): Promise<Group | null>;
 

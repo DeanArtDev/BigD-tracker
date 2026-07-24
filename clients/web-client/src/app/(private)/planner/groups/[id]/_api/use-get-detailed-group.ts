@@ -1,4 +1,3 @@
-import type { WatchQueryFetchPolicy } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
 import { GroupId } from '@/entity/planner/groups';
@@ -11,8 +10,12 @@ import {
   GetDetailedGroupByIdQueryVariables,
   GetDetailedGroupByIdQuery,
 } from './schemas/group-page.schema.generated';
+import { shapeGetDetailedGroupOptions } from './shape-get-detailed-group-variables';
 
-type DetailedGroupTask = Override<GetDetailedGroupByIdQuery['getGroup']['tasks']['items'][0], { id: TaskId }>;
+type DetailedGroupTask = Override<
+  GetDetailedGroupByIdQuery['getGroup']['tasks']['items'][0],
+  { id: TaskId; groupId: GroupId }
+>;
 
 type DetailedGroup = Override<
   GetDetailedGroupByIdQuery['getGroup'],
@@ -23,12 +26,11 @@ type DetailedGroupQuery = Override<GetDetailedGroupByIdQuery, { getGroup: Detail
 
 const EMPTY_TASKS: DetailedGroupTask[] = [];
 
-function useGetDetailedGroup({ groupId }: { groupId?: number }, options?: { fetchPolicy: WatchQueryFetchPolicy }) {
+function useGetDetailedGroup({ groupId }: { groupId?: GroupId }) {
   const result = useQuery<DetailedGroupQuery, GetDetailedGroupByIdQueryVariables>(GetDetailedGroupByIdDocument, {
     context: { endpoint: 'private' },
-    variables: { input: { groupId: groupId! } },
+    ...shapeGetDetailedGroupOptions({ groupId }),
     skip: groupId == null,
-    ...options,
   });
 
   const initialLoading = result.networkStatus === 1 && result.data == null;
