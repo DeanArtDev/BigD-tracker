@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { GroupId, invalidateGroup, useGroupDelete } from '@/entity/planner/groups';
+import { GroupCacheManager, GroupId, useGroupDelete } from '@/entity/planner/groups';
 import { GroupTaskCount } from '@/feature/planner/group-delete/group-task-count';
-import { useNotify } from '@/shared/lib';
+import { MaybePromise, useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
 
 function useGroupDeleteFeature() {
@@ -10,7 +10,7 @@ function useGroupDeleteFeature() {
   const { promise } = useNotify();
 
   const handleGroupDelete = useCallback(
-    (id: GroupId) => {
+    (id: GroupId, params?: { onSuccess?: () => MaybePromise<void> }) => {
       viaConfirmation({
         dialog: {
           title: 'Удалить?',
@@ -29,7 +29,8 @@ function useGroupDeleteFeature() {
 
               onCompleted: async ({ groupDelete: ok }) => {
                 if (ok) {
-                  await invalidateGroup(client.cache, id);
+                  GroupCacheManager.removeGroup(client.cache, id);
+                  await params?.onSuccess?.();
                 }
               },
             }),

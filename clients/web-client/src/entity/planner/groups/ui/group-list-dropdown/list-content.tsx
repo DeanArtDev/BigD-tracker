@@ -14,7 +14,7 @@ function ListContent({ selectedGroupId, onSelect }: ListContentProps) {
 
   return (
     <DataLoader isLoading={loading} loadingElement={<DataLoader.Loading size={25} />}>
-      {groups.map((group) => {
+      {groups.items.map((group) => {
         const isSelected = selectedGroupId === group.id;
 
         return (

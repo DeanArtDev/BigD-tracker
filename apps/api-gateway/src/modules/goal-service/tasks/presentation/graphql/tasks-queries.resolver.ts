@@ -2,14 +2,40 @@ import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { TaskMapper } from '../mappers/task.mapper';
-import { AvailableToViewTasksStatuses, GoalGetTaskById, GoalGetTasks } from '@big-d/api-contracts';
+import {
+  AvailableToViewTasksStatuses,
+  GoalGetAssignableTasks,
+  GoalGetTaskById,
+  GoalGetTasks,
+} from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { GetTaskByIdInput, GetTasksInput, TaskSchema, TasksConnection } from './schemas';
+import { GetAssignableTasksInput, GetTaskByIdInput, GetTasksInput, TaskSchema, TasksConnection } from './schemas';
 
 @Resolver(() => TaskSchema)
 class TasksQueriesResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
+
+  @Query(() => [TaskSchema], {
+    description: 'Получение списка дел, доступных для назначения в группу',
+  })
+  async getAssignableTasks(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Args('input') { search, groupIds }: GetAssignableTasksInput,
+  ): Promise<TaskSchema[]> {
+    const { data } = await this.goalClient.send<GoalGetAssignableTasks.Response, GoalGetAssignableTasks.Request>(
+      GoalGetAssignableTasks.pattern,
+      {
+        data: {
+          userId: uid,
+          search,
+          groupIds,
+        },
+      },
+    );
+
+    return data.map(TaskMapper.fromServerTaskDtoToClientDto);
+  }
 
   @Query(() => TasksConnection, {
     description: 'Получение списка дел',

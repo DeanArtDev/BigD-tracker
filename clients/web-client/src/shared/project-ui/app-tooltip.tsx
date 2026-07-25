@@ -6,7 +6,7 @@ interface AppTooltipProps extends ComponentProps<typeof Tooltip> {
   readonly side?: ComponentProps<typeof TooltipContent>['side'];
   readonly disable?: boolean;
   readonly content: ReactNode;
-  readonly wrapperClassName?: string;
+  readonly className?: string;
 }
 
 function AppTooltip({
@@ -15,7 +15,7 @@ function AppTooltip({
   children,
   side = 'left',
   content,
-  wrapperClassName,
+  className,
   ...props
 }: AppTooltipProps) {
   if (disable) return children;
@@ -23,7 +23,7 @@ function AppTooltip({
   return (
     <Tooltip {...props}>
       <TooltipTrigger asChild={asChild}>
-        <span className={cn('inline-block w-fit h-fit', wrapperClassName)}>{children}</span>
+        <span className={cn('inline-block w-fit h-fit', className)}>{children}</span>
       </TooltipTrigger>
 
       <TooltipContent side={side}>{content}</TooltipContent>

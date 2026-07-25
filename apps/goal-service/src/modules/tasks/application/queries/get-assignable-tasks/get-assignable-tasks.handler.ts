@@ -1,5 +1,6 @@
 import { TaskView } from '@/modules/tasks/application/dto';
 import {
+  TaskByGroupId,
   TaskBySearch,
   TaskByStatus,
   TaskByUserId,
@@ -11,10 +12,11 @@ import { TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { compact } from 'lodash';
 import { TaskDatabase, TasksReadRepository } from '../../ports';
 import { GetAssignableTasksQuery } from './get-assignable-tasks.query';
 
-const { and, not } = tasksCombinators;
+const { and, not, or } = tasksCombinators;
 
 @QueryHandler(GetAssignableTasksQuery)
 export class GetAssignableTasksHandler implements IQueryHandler<GetAssignableTasksQuery> {
@@ -25,13 +27,15 @@ export class GetAssignableTasksHandler implements IQueryHandler<GetAssignableTas
 
   async execute({ input }: GetAssignableTasksQuery): Promise<TaskView[]> {
     return this.db.runTransaction(async (trx) => {
-      const { userId, search } = input;
+      const { userId, search, groupIds = [] } = input;
 
       const specifications = and(
-        TaskByUserId(userId),
-        TaskByStatus([TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS]),
-        not(TaskInGroup()),
-        TaskBySearch(search),
+        ...compact([
+          TaskByUserId(userId),
+          TaskByStatus([TaskStatus.NOT_STARTED, TaskStatus.IN_PROGRESS]),
+          groupIds.length > 0 && or(not(TaskByGroupId(groupIds)), not(TaskInGroup())),
+          TaskBySearch(search),
+        ]),
       );
 
       return this.tasksReadRepository.getMany(specifications, { limit: 10000 }, trx);

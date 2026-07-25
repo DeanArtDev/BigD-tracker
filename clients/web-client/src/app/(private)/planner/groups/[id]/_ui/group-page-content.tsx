@@ -25,7 +25,7 @@ function GroupPageContent({ groupId }: { groupId: GroupId }) {
       }
     >
       {group != null && (
-        <div className="flex grow min-h-0 min-w-0 px-8 py-5">
+        <div className="flex grow min-h-0 min-w-0 px-2 pt-5 pb-2">
           <div className="flex grow flex-col gap-4">
             <div className="flex gap-2 items-center">
               <Button asChild size="icon-lg" variant="ghost" className="mb-auto">

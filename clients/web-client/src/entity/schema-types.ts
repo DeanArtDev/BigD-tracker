@@ -15,6 +15,12 @@ export type CursorPaginationMeta = {
   hasNextPage: Scalars['Boolean']['output'];
 };
 
+export type GetAssignableTasksInput = {
+  /** Исключает дела в этих группах из выдачи */
+  groupIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  search: Scalars['String']['input'];
+};
+
 export type GetGroupInput = {
   groupId: Scalars['Int']['input'];
 };
@@ -233,6 +239,8 @@ export type MutationUserLoginArgs = {
 export type Query = {
   __typename?: 'Query';
   getAssignableGroups: Array<GroupInfoDto>;
+  /** Получение списка дел, доступных для назначения в группу */
+  getAssignableTasks: Array<TaskSchema>;
   /** Получение группы */
   getGroup: GroupSchema;
   /** Получение списка групп */
@@ -244,6 +252,10 @@ export type Query = {
   /** Получение списка дел */
   getTasks: TasksConnection;
   me: MeRes;
+};
+
+export type QueryGetAssignableTasksArgs = {
+  input: GetAssignableTasksInput;
 };
 
 export type QueryGetGroupArgs = {

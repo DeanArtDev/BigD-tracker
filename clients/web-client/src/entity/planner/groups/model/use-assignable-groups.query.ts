@@ -1,4 +1,6 @@
 import { useQuery } from '@apollo/client/react';
+import { keyBy } from 'lodash-es';
+import { useMemo } from 'react';
 import { Override } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
@@ -10,10 +12,9 @@ const GROUPS_EMPTY: GroupInfo[] = [];
 
 type Query = Override<GetAssignableGroupsQuery, { getAssignableGroups: GroupInfo[] }>;
 
-function useGetAssignableGroups({ skip }: { skip?: boolean } = {}) {
+function useGetAssignableGroups() {
   const result = useQuery<Query>(GetAssignableGroupsDocument, {
     context: { endpoint: 'private' },
-    skip,
   });
 
   const initialLoading = result.networkStatus === 1 && result.data == null;
@@ -21,12 +22,14 @@ function useGetAssignableGroups({ skip }: { skip?: boolean } = {}) {
   const { appErrors, isError } = useExtendApolloErrorResult(result.error);
   useExceptionNotificator({ exception: appErrors.at(-1) });
 
+  const items = result.data?.getAssignableGroups ?? GROUPS_EMPTY;
+
   return {
     ...result,
     isError,
     initialLoading,
     isEmpty: !initialLoading && !result.loading && (result.data?.getAssignableGroups?.length ?? 0) <= 0,
-    groups: result.data?.getAssignableGroups ?? GROUPS_EMPTY,
+    groups: { items, byId: useMemo(() => keyBy(items, 'id'), [items]) },
   };
 }
 

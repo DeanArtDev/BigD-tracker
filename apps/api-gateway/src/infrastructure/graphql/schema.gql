@@ -7,6 +7,12 @@ type CursorPaginationMeta {
   hasNextPage: Boolean!
 }
 
+input GetAssignableTasksInput {
+  """Исключает дела в этих группах из выдачи"""
+  groupIds: [Int!]
+  search: String!
+}
+
 input GetGroupInput {
   groupId: Int!
 }
@@ -172,6 +178,9 @@ type Mutation {
 
 type Query {
   getAssignableGroups: [GroupInfoDto!]!
+
+  """Получение списка дел, доступных для назначения в группу"""
+  getAssignableTasks(input: GetAssignableTasksInput!): [TaskSchema!]!
 
   """Получение группы"""
   getGroup(input: GetGroupInput!): GroupSchema!

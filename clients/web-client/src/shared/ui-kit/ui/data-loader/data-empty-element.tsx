@@ -4,23 +4,37 @@ import { Inbox } from 'lucide-react';
 import { ReactNode } from 'react';
 import { cn, Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui-kit';
 
-type DataEmptyElementProps = {
+interface DataEmptyElementProps {
   readonly title?: ReactNode;
+  readonly size?: 'md' | 'sm';
   readonly description?: ReactNode;
   readonly className?: string;
   readonly icon?: ReactNode;
-};
+}
 
 function DataEmptyElement({
   title = 'Тут пока пусто',
   description,
   className,
+  size = 'md',
   icon = <Inbox className="size-7 text-muted-foreground" strokeWidth={2} />,
 }: DataEmptyElementProps) {
+  const isSizeMd = size === 'md';
+  const isSizeSm = size === 'sm';
+
   return (
-    <Empty className={cn('flex min-h-[460px] w-full items-center justify-center px-4', className)}>
+    <Empty
+      className={cn('flex  items-center justify-center px-4', className, {
+        'min-h-[460px] w-full': isSizeMd,
+        'min-h-fit': isSizeSm,
+      })}
+    >
       <EmptyHeader>
-        <EmptyMedia className="size-15 rounded-xl bg-muted">{icon}</EmptyMedia>
+        {icon != null && (
+          <EmptyMedia className={cn('rounded-xl bg-muted', { 'size-15': isSizeMd, 'size-10': isSizeSm })}>
+            {icon}
+          </EmptyMedia>
+        )}
 
         <EmptyTitle>{title}</EmptyTitle>
 
