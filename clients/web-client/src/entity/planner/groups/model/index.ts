@@ -14,5 +14,6 @@ export {
   type GetGroupListQueryVariables,
 } from './schemas/groups.schema.generated';
 
+export { GroupCacheManager } from './cache';
 export * from './invalidators/invalidate-group';
 export * from './invalidators/invalidate-group-list';

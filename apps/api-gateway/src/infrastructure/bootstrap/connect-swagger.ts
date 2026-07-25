@@ -1,4 +1,5 @@
 import { APP_ENV } from '@/infrastructure/configs';
+import { GRAPHQL_PATH } from '@/infrastructure/graphql-client';
 import { ACCESS_TOKEN_KEY } from '@/modules/auth';
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,11 +14,17 @@ const SWAGGER_URL = 'swagger/json';
 
 const connectSwagger = (app: INestApplication) => {
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
-  const isProd = configService.getOrThrow<number>('IS_PROD');
+  const isLocalStage = configService.getOrThrow<boolean>('IS_LOCAL_STAGE');
+  const isProd = configService.getOrThrow<boolean>('IS_PROD');
 
-  if (isProd) {
+  if (!isLocalStage) {
     app.use(passport.initialize());
-    app.use([`/${DOCUMENTATION_URL}`, `/${SWAGGER_URL}`], passport.authenticate('swagger', { session: false }));
+    app.use([`/${DOCUMENTATION_URL}`, `/${SWAGGER_URL}`], passport.authenticate('swagger', { session: !isProd }));
+  }
+
+  if (!isLocalStage) {
+    app.use(passport.initialize());
+    app.use([`/${GRAPHQL_PATH}`], passport.authenticate('swagger', { session: !isProd }));
   }
 
   const config = new DocumentBuilder()

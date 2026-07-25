@@ -63,7 +63,7 @@ function TaskList({
               priority={task.priority}
               status={task.status}
               deadline={task.deadline ?? undefined}
-              afterHeaderSlot={
+              afterHeaderSlot={() => (
                 <div className="flex gap-1">
                   <GroupListDropdown
                     selectedGroupId={task.groupId}
@@ -88,7 +88,7 @@ function TaskList({
                     onUnassign={() => void menuProps?.onUnassign?.(task)}
                   />
                 </div>
-              }
+              )}
               onContentClick={() => void onTaskContentClick?.(task)}
               onHeaderClick={() => void onTaskHeaderClick?.(task)}
             />

@@ -7,6 +7,7 @@ import { taskStatusToIconMap } from '../lib/maps';
 interface TaskStatusIndicationProps {
   readonly status: TaskStatus;
   readonly className?: string;
+  readonly disable?: boolean;
   readonly size?: 'sm' | 'md' | 'lg';
 }
 
@@ -22,19 +23,23 @@ const statusToHintMap: Record<TaskStatus, string> = {
 
 const TaskStatusIndication = memo(function TaskStatusIndicationMemo({
   status,
+  disable,
   className,
   size = 'md',
 }: TaskStatusIndicationProps) {
   const StatusIcon = taskStatusToIconMap[status];
 
   return (
-    <AppTooltip content={statusToHintMap[status]} wrapperClassName={className}>
+    <AppTooltip content={statusToHintMap[status]} disable={disable} className={className}>
       <StatusIcon
-        className={cn({
-          'size-3 stroke-3': size === 'sm',
-          'size-4 stroke-3': size === 'md',
-          'size-4.5 stroke-3': size === 'lg',
-        })}
+        className={cn(
+          {
+            'size-3 stroke-3': size === 'sm',
+            'size-4 stroke-3': size === 'md',
+            'size-4.5 stroke-3': size === 'lg',
+          },
+          className,
+        )}
       />
     </AppTooltip>
   );

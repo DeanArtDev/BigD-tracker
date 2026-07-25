@@ -262,6 +262,7 @@ export class TasksRmqController {
         new GetAssignableTasksQuery({
           userId: payload.userId,
           search: payload.search,
+          groupIds: payload.groupIds,
         }),
       ),
     };

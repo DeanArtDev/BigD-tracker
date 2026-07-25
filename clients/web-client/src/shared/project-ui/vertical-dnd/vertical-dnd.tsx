@@ -24,7 +24,7 @@ import type { VerticalDnDProps } from './types';
 import { VerticalDndItem } from './vertical-dnd-item';
 
 function VerticalDnD<T extends HasId>(props: VerticalDnDProps<T>) {
-  const { items, onChange, renderItem, className, activationDistance = 0, getId } = props;
+  const { items, onChange, renderItem, className, activationDistance = 70, getId } = props;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

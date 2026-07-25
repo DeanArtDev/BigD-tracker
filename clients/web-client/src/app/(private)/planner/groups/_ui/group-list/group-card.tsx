@@ -30,6 +30,7 @@ function GroupCard({ id, className, loading, name, onNameChange, onDelete }: Gro
           name={name}
           loading={loading}
           onIsEditChange={setIsEdit}
+          className="truncate w-full"
           onNameChange={onNameChange}
         />
       </Typography.H5>

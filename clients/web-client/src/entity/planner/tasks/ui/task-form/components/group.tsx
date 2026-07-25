@@ -7,14 +7,14 @@ function Group() {
   const groupId = useWatch<{ groupId: TaskFormData['groupId'] }>({ name: 'groupId' });
   const { groups, loading } = useGetAssignableGroups();
 
-  const groupName = groups.find((g) => g.id === groupId)?.name ?? 'Нет группы';
+  const groupName = groups.items.find((g) => g.id === groupId)?.name ?? 'Нет группы';
   return (
-    <div className="flex gap-2 items-center">
+    <div className="grid grid-cols-[max-content_1fr] gap-2 items-center">
       <Typography.H6 className="font-medium">Группа:</Typography.H6>
 
       <DataLoader isLoading={loading} loadingElement={<DataLoader.Loading size={15} className="m-0" />}>
-        <Badge variant="outline" className="h-fit bg-background">
-          {groupName}
+        <Badge variant="outline" className="max-w-full bg-background h-fut justify-start">
+          <span className="truncate">{groupName}</span>
         </Badge>
       </DataLoader>
     </div>

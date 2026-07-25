@@ -9,17 +9,21 @@ import { Badge, Card, CardContent, CardTitle, cn, Typography } from '@/shared/ui
 import { TaskUtils } from '../../lib/utils';
 import { TaskStatusIndication } from '../task-status-indication';
 
+type TaskCardVariant = 'default' | 'disabled';
+
 interface TaskCardProps {
   readonly id: TaskId;
   readonly name: string;
   readonly className?: string;
   readonly priority: TaskPriority;
-  readonly status: TaskStatus;
+  readonly status?: TaskStatus;
+
+  readonly variant?: TaskCardVariant;
 
   readonly deadline?: string;
   readonly repeatable?: boolean;
 
-  readonly afterHeaderSlot?: ReactNode;
+  readonly afterHeaderSlot?: ({ variant }: { variant: TaskCardVariant }) => ReactNode;
   readonly ref?: Ref<HTMLDivElement>;
   readonly style?: CSSProperties;
 
@@ -35,6 +39,7 @@ function TaskCard(props: TaskCardProps) {
     style,
     ref,
     status,
+    variant = 'default',
     className,
     repeatable = false,
     deadline,
@@ -44,47 +49,54 @@ function TaskCard(props: TaskCardProps) {
   } = props;
 
   const isDeadlineSoon = TimeHelper.isLessThan24HoursLeft(deadline);
-  const showIndications = TaskDomain.isAllowAccentIndicationTask(status, TaskDomain.parseId(id, false).type);
+  const showIndications =
+    status == null ? false : TaskDomain.isAllowAccentIndicationTask(status, TaskDomain.parseId(id, false).type);
+
+  const isDisabled = variant === 'disabled';
+
+  const hideContent = !repeatable && status == null && deadline == null;
 
   return (
     <Card
+      aria-disabled={isDisabled}
       ref={ref}
       style={style}
-      className={cn('task-card p-3 relative hover:shadow', className)}
+      className={cn('task-card p-3 relative hover:shadow', className, {
+        ['opacity-50']: isDisabled,
+        'gap-0': hideContent,
+      })}
       onClick={(evt) => {
-        if (onContentClick != null) {
-          evt.stopPropagation();
-          onContentClick();
-        }
+        evt.stopPropagation();
+        evt.preventDefault();
+        if (!isDisabled) onContentClick?.();
       }}
     >
       <div
-        className={cn('absolute top-0 left-0 bottom-0 w-[5px] h-full rounded-tl-md rounded-bl-md', {
+        className={cn('absolute top-0 left-0 bottom-0 w-1.25 h-full rounded-tl-md rounded-bl-md', {
           [`bg-(--priority-1)`]: priority === TaskPriority.Do,
           [`bg-(--priority-2)`]: priority === TaskPriority.Plan,
           [`bg-(--priority-3)`]: priority === TaskPriority.Delegate,
         })}
       />
 
-      <CardTitle className="grid grid-cols-[1fr_max-content]">
+      <CardTitle className={cn('grid grid-cols-[1fr_max-content]')}>
         <Typography.H5 className="truncate px-2">
           <span
-            className="hover:underline hover:decoration-solid cursor-pointer"
+            className={cn({ 'hover:underline hover:decoration-solid cursor-pointer': !isDisabled })}
             onClick={(evt) => {
-              if (onHeaderClick != null) {
-                evt.stopPropagation();
-                onHeaderClick();
-              }
+              evt.stopPropagation();
+              evt.preventDefault();
+              if (!isDisabled) onHeaderClick?.();
             }}
           >
             {name}
           </span>
         </Typography.H5>
 
-        {afterHeaderSlot}
+        {afterHeaderSlot?.({ variant })}
       </CardTitle>
 
-      <CardContent className="flex flex-wrap gap-3 p-0 pr-1.5 items-center">
+      <CardContent className="flex flex-wrap gap-3 p-0 pr-1.5 min-h-5 items-center">
         {deadline != null && (
           <Badge variant={isDeadlineSoon && showIndications ? 'destructive' : 'outline'}>
             <Timer />
@@ -98,7 +110,9 @@ function TaskCard(props: TaskCardProps) {
           </Badge>
         )}
 
-        <TaskStatusIndication className="ml-auto cursor-default" status={status} size="md" />
+        {status != null && (
+          <TaskStatusIndication className="ml-auto cursor-default" disable={isDisabled} status={status} size="md" />
+        )}
       </CardContent>
     </Card>
   );

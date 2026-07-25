@@ -26,7 +26,7 @@ function GroupList({ selectedGroupIds = [], onAccept, onCancel }: GroupListProps
       <div className="flex flex-col grow gap-2 min-h-0">
         <ScrollAreaNativeVertical className="grow">
           <GroupInfoList
-            groups={groups}
+            groups={groups.items}
             selectedGroupIds={selectedIds}
             onGroupClick={(groupsInfo) => {
               if (loading) return;

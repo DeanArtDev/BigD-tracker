@@ -2,15 +2,17 @@ import { Link2Off } from 'lucide-react';
 import { type FieldArrayPath, useFieldArray } from 'react-hook-form';
 import { TaskCard, TaskId } from '@/entity/planner/tasks';
 import { AppTooltip, VerticalDnD } from '@/shared/project-ui';
-import { Button } from '@/shared/ui-kit';
+import { Button, cn } from '@/shared/ui-kit';
 import { GroupTaskListSchemaFormData } from './group-task-list.form';
 
 interface TaskListProps {
+  readonly loadingTaskId?: TaskId;
   readonly onHeaderClick: (task: GroupTaskListSchemaFormData['tasks'][0]) => void;
   readonly onContentClick: (task: GroupTaskListSchemaFormData['tasks'][0]) => void;
+  readonly onUnassign: (task: GroupTaskListSchemaFormData['tasks'][0]) => void;
 }
 
-function TaskList({ onContentClick, onHeaderClick }: TaskListProps) {
+function TaskList({ loadingTaskId, onContentClick, onHeaderClick, onUnassign }: TaskListProps) {
   const { fields: tasks, move } = useFieldArray<
     { tasks: GroupTaskListSchemaFormData['tasks'] },
     FieldArrayPath<{ tasks: GroupTaskListSchemaFormData['tasks'] }>,
@@ -27,39 +29,56 @@ function TaskList({ onContentClick, onHeaderClick }: TaskListProps) {
       getId={(task) => task.formUid}
       onChange={({ oldIndex, newIndex }) => void move(oldIndex, newIndex)}
       renderItem={({ item: task, setNodeRef, style, isDragging, handleProps }) => {
-        const disableDragging = isDragging || tasks.length <= 1;
+        const disabledVariant = loadingTaskId === task.id;
+        const disableDragging = isDragging || tasks.length <= 1 || disabledVariant;
 
         return (
           <div style={style} {...(disableDragging ? {} : handleProps)} ref={setNodeRef}>
             <TaskCard
+              variant={disabledVariant ? 'disabled' : 'default'}
               id={task.id as TaskId}
               className="group/task-card-wrapper"
               priority={task.priority}
               status={task.status}
               name={task.name}
-              afterHeaderSlot={
-                <AppTooltip content="Отвязать дело от группы" delayDuration={1500}>
-                  <Button
-                    className="opacity-0 transition-opacity group-hover/task-card-wrapper:opacity-100 focus-visible:opacity-100"
-                    size="icon-sm"
-                    variant="ghost"
-                    onKeyDown={(evt) => {
-                      evt.stopPropagation();
-                      evt.preventDefault();
-                    }}
-                    onTouchStart={(evt) => {
-                      evt.stopPropagation();
-                      evt.preventDefault();
-                    }}
-                    onPointerDown={(evt) => {
-                      evt.stopPropagation();
-                      evt.preventDefault();
-                    }}
-                  >
-                    <Link2Off className="stroke-muted-foreground" />
-                  </Button>
-                </AppTooltip>
-              }
+              deadline={task.deadline ?? undefined}
+              afterHeaderSlot={({ variant }) => {
+                const isDisabled = variant === 'disabled';
+
+                return (
+                  <AppTooltip content="Отвязать дело от группы" disable={isDisabled} delayDuration={1500}>
+                    <Button
+                      className={cn({
+                        'opacity-0!': isDisabled,
+                        'opacity-0 transition-opacity group-hover/task-card-wrapper:opacity-100': !isDisabled,
+                      })}
+                      size="icon-sm"
+                      aria-hidden={isDisabled}
+                      disabled={isDisabled}
+                      variant="ghost"
+                      onKeyDown={(evt) => {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                      }}
+                      onTouchStart={(evt) => {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                      }}
+                      onPointerDown={(evt) => {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                      }}
+                      onClick={(evt) => {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                        onUnassign(task);
+                      }}
+                    >
+                      <Link2Off className="stroke-muted-foreground" />
+                    </Button>
+                  </AppTooltip>
+                );
+              }}
               onContentClick={() => void onContentClick(task)}
               onHeaderClick={() => void onHeaderClick(task)}
             />
@@ -70,4 +89,4 @@ function TaskList({ onContentClick, onHeaderClick }: TaskListProps) {
   );
 }
 
-export { TaskList };
+export { TaskList, type TaskListProps };

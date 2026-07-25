@@ -7,6 +7,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'node:path';
 import { AppGraphQLContext } from './types';
 
+const GRAPHQL_PATH = '/graphql';
+
 @Module({
   imports: [
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -20,7 +22,7 @@ import { AppGraphQLContext } from './types';
           autoSchemaFile: join(process.cwd(), './src/infrastructure/graphql/schema.gql'),
           sortSchema: true,
           playground: false,
-          path: '/graphql',
+          path: GRAPHQL_PATH,
           introspection: !IS_PROD_STAGE,
           plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
           context: (ctx): AppGraphQLContext => {
@@ -54,3 +56,5 @@ import { AppGraphQLContext } from './types';
   ],
 })
 export class GraphQLClientModule {}
+
+export { GRAPHQL_PATH };

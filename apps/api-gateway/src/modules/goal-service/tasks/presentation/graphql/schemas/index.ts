@@ -5,6 +5,7 @@ export * from './task-create.schema';
 export * from './task-copy.schema';
 export * from './task-delete.schema';
 export * from './task-finish.schema';
+export * from './get-assignable-tasks.schema';
 export * from './get-task-by-id.schema';
 export * from './get-tasks.schema';
 export * from './task-recurrency.schema';

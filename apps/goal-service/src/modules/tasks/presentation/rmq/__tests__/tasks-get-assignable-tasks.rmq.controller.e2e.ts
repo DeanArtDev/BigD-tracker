@@ -68,9 +68,9 @@ describe('TasksRmqController (rmq e2e)', () => {
   });
 
   describe(`${GoalGetAssignableTasks.pattern}`, () => {
-    test('should return assignable tasks', async () => {
+    test('should exclude tasks from the provided groups', async () => {
       const userId = 90;
-      const groupId = 120;
+      const groupIds = [120, 121];
       const taskView = getTaskView({ id: 9010, userId, name: 'Assignable' });
 
       tasksReadRepoMock.getMany.mockResolvedValueOnce([taskView]);
@@ -78,7 +78,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const payload: GoalGetAssignableTasks.Request = buildPayload({
         data: {
           userId,
-          groupId,
+          groupIds,
           search: 'Assign',
         },
       });
@@ -89,15 +89,53 @@ describe('TasksRmqController (rmq e2e)', () => {
       );
 
       expect(tasksReadRepoMock.getMany).toHaveBeenCalledTimes(1);
-      const [, specArg, tasksTrx] = tasksReadRepoMock.getMany.mock.calls[0];
+      const [specArg, params, tasksTrx] = tasksReadRepoMock.getMany.mock.calls[0];
+      expect(params).toEqual({ limit: 10000 });
       expect(tasksTrx).toEqual(expectTransaction());
       expect(specToDebugString(specArg)).toMatchInlineSnapshot(`
           "AND(
             tasks.byUserId,
             tasks.byStatus,
-            NOT(
-              tasks.inGroup
+            OR(
+              NOT(
+                tasks.byGroupId
+              ),
+              NOT(
+                tasks.inGroup
+              )
             ),
+            tasks.bySearch
+          )"
+      `);
+      expect(res).toEqual({ data: [toTaskResponse(taskView)] });
+    });
+
+    test('should not filter tasks by group when groupIds are not provided', async () => {
+      const userId = 90;
+      const taskView = getTaskView({ id: 9010, userId, name: 'Assignable' });
+
+      tasksReadRepoMock.getMany.mockResolvedValueOnce([taskView]);
+
+      const payload: GoalGetAssignableTasks.Request = buildPayload({
+        data: {
+          userId,
+          search: 'Assign',
+        },
+      });
+
+      const res = await sendMessage<GoalGetAssignableTasks.Response, GoalGetAssignableTasks.Request>(
+        GoalGetAssignableTasks.pattern,
+        payload,
+      );
+
+      expect(tasksReadRepoMock.getMany).toHaveBeenCalledTimes(1);
+      const [specArg, params, tasksTrx] = tasksReadRepoMock.getMany.mock.calls[0];
+      expect(params).toEqual({ limit: 10000 });
+      expect(tasksTrx).toEqual(expectTransaction());
+      expect(specToDebugString(specArg)).toMatchInlineSnapshot(`
+          "AND(
+            tasks.byUserId,
+            tasks.byStatus,
             tasks.bySearch
           )"
       `);

@@ -3,6 +3,7 @@ import { GroupId } from '@/entity/planner/groups';
 import { invalidateInboxTasks } from '@/entity/planner/inbox';
 import { invalidatePlannerInit, usePlannerInit } from '@/entity/planner/init';
 import { TaskId, useTaskAssign } from '@/entity/planner/tasks';
+import { MaybePromise } from '@/shared/lib';
 
 function useTaskAssignToGroupFeature() {
   const { assignTask, client, ...rest } = useTaskAssign();
@@ -10,7 +11,10 @@ function useTaskAssignToGroupFeature() {
   const [loading, setLoading] = useState(false);
 
   const assignToGroup = useCallback(
-    async ({ groupId, taskId }: { taskId: TaskId; groupId: GroupId }) => {
+    async (
+      { groupId, taskId }: { taskId: TaskId; groupId: GroupId },
+      params?: { onSuccess?: () => MaybePromise<void> },
+    ) => {
       try {
         setLoading(true);
         const response = await assignTask({
@@ -19,6 +23,7 @@ function useTaskAssignToGroupFeature() {
         if (!response.data?.assignTaskToGroup || data?.inbox.id == null) return;
         await invalidateInboxTasks(client, data.inbox.id);
         await invalidatePlannerInit(client.cache);
+        await params?.onSuccess?.();
       } finally {
         setLoading(false);
       }
@@ -28,6 +33,7 @@ function useTaskAssignToGroupFeature() {
 
   return {
     assignToGroup,
+    client,
     ...rest,
     loading: loading || rest.loading,
   };

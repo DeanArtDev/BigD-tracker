@@ -1,7 +1,9 @@
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { GroupActionsDropdown, GroupId, GroupNameEditor } from '@/entity/planner/groups';
 import { useGroupDeleteFeature } from '@/feature/planner/group-delete';
 import { useGroupUpdateFeature } from '@/feature/planner/group-update';
+import { routes } from '@/shared/routes';
 import { Typography } from '@/shared/ui-kit';
 
 interface GroupNameProps {
@@ -11,6 +13,8 @@ interface GroupNameProps {
 
 function GroupName({ id, name }: GroupNameProps) {
   const [isEdit, setIsEdit] = useState(false);
+
+  const router = useRouter();
 
   const { isGroupUpdateLoading, updateGroup } = useGroupUpdateFeature();
   const { isGroupDeleteLoading, deleteGroup } = useGroupDeleteFeature();
@@ -30,7 +34,13 @@ function GroupName({ id, name }: GroupNameProps) {
       {!isEdit && (
         <GroupActionsDropdown
           loading={isGroupUpdateLoading || isGroupDeleteLoading}
-          onDelete={() => deleteGroup(id)}
+          onDelete={() =>
+            deleteGroup(id, {
+              onSuccess: async () => {
+                router.replace(routes.plannerGroupList.path);
+              },
+            })
+          }
           onNameEdit={() => void setIsEdit(true)}
         />
       )}
