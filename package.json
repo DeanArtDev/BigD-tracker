@@ -9,6 +9,7 @@
     "lint:all": "turbo lint",
     "lint:all:fix": "turbo lint:fix",
     "test:all": "turbo test",
+    "type:check:all": "turbo type:check -F=!@big-d/tracker-client",
     "test:e2e:all": "turbo test:e2e -F=@big-d/goal-service",
     "===============================  BINDED  ==========================": "",
     "compose:dev": "docker-compose --env-file ./.env.development -f ./docker-compose.dev.yml",

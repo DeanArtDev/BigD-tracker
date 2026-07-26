@@ -1,18 +1,9 @@
 import { useMutation } from '@apollo/client/react';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
-import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
-import {
-  UpdateGroupMutation,
-  UpdateGroupDocument,
-  UpdateGroupMutationVariables,
-} from './schemas/groups.schema.generated';
+import { shapeGroupUpdateOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
 
 function useGroupUpdate() {
-  const [updateGroup, rest] = useMutation<UpdateGroupMutation, UpdateGroupMutationVariables>(UpdateGroupDocument, {
-    context: {
-      endpoint: 'private',
-    },
-  });
+  const [updateGroup, rest] = useMutation(...shapeGroupUpdateOptions());
 
   const { appErrors } = useExtendApolloErrorResult(rest.error);
   useExceptionNotificator({ exception: appErrors.at(-1) });

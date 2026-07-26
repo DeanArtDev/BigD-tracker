@@ -47,6 +47,8 @@
 
     "lint": {},
 
-    "lint:fix": {}
+    "lint:fix": {},
+
+    "type:check": {}
   }
 }

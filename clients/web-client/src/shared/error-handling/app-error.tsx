@@ -1,9 +1,9 @@
 'use client';
 
 import { Home, RefreshCw, TriangleAlert } from 'lucide-react';
-import Link from 'next/link';
 import { useEffect } from 'react';
 import { getEnvConfigClient } from '@/shared/lib';
+import { AppLink } from '@/shared/project-ui';
 import { routes } from '@/shared/routes';
 import { isApiError } from '@/shared/transport/graphql';
 import { Button, Typography } from '@/shared/ui-kit';
@@ -68,10 +68,10 @@ function AppError({ error, reset }: AppErrorProps) {
           Перезагрузить страницу
         </Button>
         <Button asChild variant="outline">
-          <Link href={routes.home.path}>
+          <AppLink href={routes.home.path}>
             <Home />
             На главную
-          </Link>
+          </AppLink>
         </Button>
       </div>
 

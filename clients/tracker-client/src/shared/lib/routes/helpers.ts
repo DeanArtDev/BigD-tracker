@@ -2,7 +2,7 @@ import qs from 'qs';
 import { generatePath } from 'react-router-dom';
 import { type UrlQueryParams } from './types';
 
-type UrlParams = Record<string, string | number>;
+type UrlParams = Record<string, string | null | undefined>;
 
 interface UrlBuilderOptions {
   readonly urlParams?: UrlParams;

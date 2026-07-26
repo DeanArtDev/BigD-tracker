@@ -1,3 +1,4 @@
 pnpm test:all --no-cache;
 pnpm format:all --no-cache;
 pnpm lint:all --no-cache;
+pnpm type:check:all --no-cache;

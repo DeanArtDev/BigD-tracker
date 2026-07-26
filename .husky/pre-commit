@@ -1,2 +1,3 @@
 pnpm format:all;
 pnpm lint:all;
+pnpm type:check:all;

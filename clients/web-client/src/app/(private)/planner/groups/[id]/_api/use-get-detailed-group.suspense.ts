@@ -1,16 +1,12 @@
-import { useQuery } from '@apollo/client/react';
+import { useSuspenseQuery } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
+import { GroupTaskOrder } from '@/entity/schema-types';
 import { Override } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
-import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
-import {
-  GetDetailedGroupByIdDocument,
-  GetDetailedGroupByIdQueryVariables,
-  GetDetailedGroupByIdQuery,
-} from './schemas/group-page.schema.generated';
-import { shapeGetDetailedGroupOptions } from './shape-get-detailed-group-variables';
+import { shapeGetDetailedGroupOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
+import { GetDetailedGroupByIdQuery } from './schemas/group-page.schema.generated';
 
 type DetailedGroupTask = Override<
   GetDetailedGroupByIdQuery['getGroup']['tasks']['items'][0],
@@ -26,14 +22,17 @@ type DetailedGroupQuery = Override<GetDetailedGroupByIdQuery, { getGroup: Detail
 
 const EMPTY_TASKS: DetailedGroupTask[] = [];
 
-function useGetDetailedGroup({ groupId }: { groupId?: GroupId }) {
-  const result = useQuery<DetailedGroupQuery, GetDetailedGroupByIdQueryVariables>(GetDetailedGroupByIdDocument, {
-    context: { endpoint: 'private' },
-    ...shapeGetDetailedGroupOptions({ groupId }),
-    skip: groupId == null,
-  });
+function useGetDetailedGroupSuspense({ groupId }: { groupId?: GroupId }) {
+  const [document, options] = shapeGetDetailedGroupOptions<DetailedGroupQuery>({
+    groupId,
+    order: GroupTaskOrder.Group,
+  }).suspense();
 
-  const initialLoading = result.networkStatus === 1 && result.data == null;
+  const result = useSuspenseQuery(document, {
+    variables: options.variables,
+    context: options.context,
+    errorPolicy: options.errorPolicy,
+  });
 
   const { appErrors, isError } = useExtendApolloErrorResult(result.error);
   useExceptionNotificator({
@@ -46,12 +45,11 @@ function useGetDetailedGroup({ groupId }: { groupId?: GroupId }) {
   return {
     ...result,
     isError,
-    initialLoading,
-    isEmpty: !initialLoading && !result.loading && result.data?.getGroup == null,
-    isEmptyTasks: !initialLoading && !result.loading && (result.data?.getGroup.tasks.items.length ?? 0) <= 0,
+    isEmpty: result.data?.getGroup == null,
+    isEmptyTasks: (result.data?.getGroup.tasks.items.length ?? 0) <= 0,
     group: data?.getGroup,
     tasks: data?.getGroup.tasks.items ?? EMPTY_TASKS,
   };
 }
 
-export { useGetDetailedGroup, type DetailedGroupTask, type DetailedGroup };
+export { useGetDetailedGroupSuspense, type DetailedGroupTask };

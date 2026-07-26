@@ -6,10 +6,9 @@ import { PreloadQuery } from '@/shared/transport/graphql/server';
 import { DataLoader } from '@/shared/ui-kit';
 
 async function GroupByIdPrefetch({ groupId, children }: { groupId: GroupId; children: ReactNode }) {
-  const [query, options] = shapeGetDetailedGroupOptions(
-    { groupId, order: GroupTaskOrder.Group },
-    { errorPolicy: 'ignore' },
-  );
+  const [query, options] = shapeGetDetailedGroupOptions({ groupId, order: GroupTaskOrder.Group }).query({
+    errorPolicy: 'ignore',
+  });
 
   return (
     <PreloadQuery

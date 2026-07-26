@@ -4,7 +4,7 @@ import { GroupId } from '@/entity/planner/groups';
 import { useGroupUpdateFeature } from '@/feature/planner/group-update';
 import { useWysiwygController, WysiwygEditor } from '@/shared/project-ui';
 import { DataLoader, Separator, Typography, useLoadingStatus } from '@/shared/ui-kit';
-import { useGetDetailedGroup } from '../../_api';
+import { useGetDetailedGroupSuspense } from '../../_api';
 
 interface GroupDescriptionProps {
   readonly groupId: GroupId;
@@ -14,7 +14,7 @@ const SAVE_DELAY_TIME = 3000;
 
 function GroupDescription({ groupId }: GroupDescriptionProps) {
   const { updateGroup } = useGroupUpdateFeature({ showToast: false });
-  const { group } = useGetDetailedGroup({ groupId });
+  const { group } = useGetDetailedGroupSuspense({ groupId });
 
   const initialValueRef = useRef(group?.description);
 

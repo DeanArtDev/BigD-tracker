@@ -9,7 +9,6 @@ export {
   invalidateGroupList,
   useGroupUpdate,
   useGroupDelete,
-  useGroupCreate,
   useGetGroupById,
   GetGroupByIdDocument,
   type GetGroupByIdQuery,

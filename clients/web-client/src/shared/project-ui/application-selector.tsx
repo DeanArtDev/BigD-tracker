@@ -1,13 +1,13 @@
 'use client';
 
 import { Check, ChevronsLeftRight, LayoutGrid } from 'lucide-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useMemo } from 'react';
 import { applicationNavPaths } from '@/app/(private)/planner/_model';
 import { RoutePaths, routes } from '@/shared/routes';
 import { Button, cn, PopoverHeader, Separator, Typography } from '@/shared/ui-kit';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui-kit';
+import { AppLink } from './app-link';
 
 interface ApplicationSelectorProps {
   readonly className?: string;
@@ -57,7 +57,7 @@ function ApplicationSelector({ items, className }: ApplicationSelectorProps) {
               variant={isSelected ? 'secondary' : 'ghost'}
               asChild
             >
-              <Link
+              <AppLink
                 href={path}
                 onNavigate={(evt) => {
                   if (disabled || isSelected) evt.preventDefault();
@@ -66,16 +66,16 @@ function ApplicationSelector({ items, className }: ApplicationSelectorProps) {
                 {icon}
                 {title}
                 {isSelected ? <Check className="ml-auto" /> : null}
-              </Link>
+              </AppLink>
             </Button>
           );
         })}
 
         <Separator className="m-0" />
         <Button className="flex gap-2 justify-start pl-2" variant="ghost" asChild>
-          <Link href={routes.home.path}>
+          <AppLink href={routes.home.path}>
             <LayoutGrid className="stroke-muted-foreground" />К списку приложений
-          </Link>
+          </AppLink>
         </Button>
       </PopoverContent>
     </Popover>

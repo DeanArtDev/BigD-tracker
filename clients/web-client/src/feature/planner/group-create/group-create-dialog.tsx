@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useGroupCreate } from '@/entity/planner/groups';
 import { useNotify } from '@/shared/lib';
 import { GroupCacheManager } from '@/shared/transport/graphql';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@/shared/ui-kit';
+import { useGroupCreate } from './api/use-group-create';
 import { GroupForm } from './group-form/group-form';
 
 function GroupCreateDialog() {

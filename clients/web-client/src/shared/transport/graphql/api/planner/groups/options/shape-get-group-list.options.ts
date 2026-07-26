@@ -1,22 +1,45 @@
-import { AppQueryOptionsResponse } from '../../../types';
+import { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse } from '../../../types';
 import { GetGroupListDocument, GetGroupListQuery, GetGroupListQueryVariables } from '../schemas';
 
-type OptionsResponse = AppQueryOptionsResponse<GetGroupListQuery, GetGroupListQueryVariables>;
+type OptionsResponse<TData> = AppQueryOptionsResponse<TData, GetGroupListQueryVariables>;
+type OptionsSuspenseResponse<TData> = AppSuspenseQueryOptionsResponse<TData, GetGroupListQueryVariables>;
 
-function shapeGetGroupListOptions(
-  { limit, cursor, search }: { limit: number; cursor?: string; search?: string },
-  additionalOptions?: Partial<OptionsResponse[1]>,
-): OptionsResponse {
-  const options: OptionsResponse[1] = {
-    ...additionalOptions,
-    variables: { input: { limit, cursor, search } },
-    context: {
-      ...additionalOptions?.context,
-      endpoint: 'private',
+function shapeGetGroupListOptions<TData = GetGroupListQuery>({
+  limit,
+  cursor,
+  search,
+}: {
+  limit: number;
+  cursor?: string;
+  search?: string;
+}) {
+  return {
+    query: (additionalOptions?: Partial<OptionsResponse<TData>[1]>): OptionsResponse<TData> => {
+      const options: OptionsResponse<TData>[1] = {
+        ...additionalOptions,
+        variables: { input: { limit, cursor, search } },
+        context: {
+          ...additionalOptions?.context,
+          endpoint: 'private',
+        },
+      };
+
+      return [GetGroupListDocument, options];
+    },
+
+    suspense: (additionalOptions?: Partial<OptionsSuspenseResponse<TData>[1]>): OptionsSuspenseResponse<TData> => {
+      const options: OptionsSuspenseResponse<TData>[1] = {
+        ...additionalOptions,
+        variables: { input: { limit, cursor, search } },
+        context: {
+          ...additionalOptions?.context,
+          endpoint: 'private',
+        },
+      };
+
+      return [GetGroupListDocument, options];
     },
   };
-
-  return [GetGroupListDocument, options];
 }
 
 shapeGetGroupListOptions.document = GetGroupListDocument;
