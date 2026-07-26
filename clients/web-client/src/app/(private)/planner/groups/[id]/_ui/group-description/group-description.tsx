@@ -26,7 +26,7 @@ function GroupDescription({ groupId }: GroupDescriptionProps) {
       try {
         setLoadingStatus();
         const value = wysiwygController.current?.getStateAsString?.();
-        await updateGroup({ id: group.id, name: group.name, description: value ?? null });
+        await updateGroup({ id: group.id, name: group.name, description: value ?? null, taskIds: undefined });
         setSuccessStatus();
       } catch {
         setErrorStatus();

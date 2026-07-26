@@ -1,9 +1,5 @@
-import { AppQueryOptionsResponse } from '../types';
-import {
-  GetAssignableTasksQueryVariables,
-  GetAssignableTasksQuery,
-  GetAssignableTasksDocument,
-} from './schema/task.schema.generated';
+import { AppQueryOptionsResponse } from '../../../types';
+import { GetAssignableTasksQueryVariables, GetAssignableTasksQuery, GetAssignableTasksDocument } from '../schemas';
 
 type OptionsResponse = AppQueryOptionsResponse<GetAssignableTasksQuery, GetAssignableTasksQueryVariables>;
 
@@ -22,5 +18,7 @@ function shapeGetAssignableTasksOptions(
 
   return [GetAssignableTasksDocument, options];
 }
+
+shapeGetAssignableTasksOptions.document = GetAssignableTasksDocument;
 
 export { shapeGetAssignableTasksOptions };

@@ -1,19 +1,24 @@
-import { ApolloCache, ApolloClient } from '@apollo/client';
-import { GroupId } from '@/entity/planner/groups';
-import { GetInboxResponse } from '@/entity/schema-types';
+import { ApolloClient } from '@apollo/client';
+import { shapeGetPlannerInitOptions } from '@/shared/transport/graphql';
 
-async function invalidateInboxTasks(client: ApolloClient, inboxId: GroupId) {
-  return client.refetchQueries({
-    updateCache(cache: ApolloCache) {
-      const __typename: GetInboxResponse['__typename'] = 'GetInboxResponse';
+async function invalidateInboxTasks(client: ApolloClient) {
+  return await client.refetchQueries({
+    updateCache(cache) {
+      const plannerInit = client.cache.readQuery({ query: shapeGetPlannerInitOptions.document });
+
       const inboxCacheId = cache.identify({
-        __typename,
-        id: inboxId,
+        __typename: 'GetInboxResponse',
+        id: plannerInit?.getPlannerInit.inboxId,
       });
 
-      if (inboxCacheId != null) {
-        cache.evict({ id: inboxCacheId, fieldName: 'tasks' });
+      if (!inboxCacheId) {
+        return;
       }
+
+      cache.evict({
+        id: inboxCacheId,
+        fieldName: 'tasks',
+      });
     },
   });
 }

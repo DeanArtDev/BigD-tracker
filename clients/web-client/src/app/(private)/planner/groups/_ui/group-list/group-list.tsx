@@ -49,9 +49,9 @@ function GroupList() {
                   name={group.name}
                   loading={isGroupDeleteLoading || isGroupUpdateLoading}
                   onNameChange={(name) =>
-                    void updateGroup({ name, id: group.id, description: group.description ?? undefined })
+                    void updateGroup({ name, id: group.id, description: undefined, taskIds: undefined })
                   }
-                  onDelete={(groupId) => void deleteGroup(groupId)}
+                  onDelete={deleteGroup}
                 />
               </Link>
             );

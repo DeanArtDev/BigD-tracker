@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsString, ValidateNested } from 'class-validator';
+import { IsInt, IsString, ValidateNested } from 'class-validator';
+import { TaskDto } from './task.dto';
 
 class AssignTaskToGroupReqData {
   @IsInt()
@@ -18,15 +19,10 @@ class AssignTaskToGroupReq {
   data: AssignTaskToGroupReqData;
 }
 
-class AssignTaskToGroupResData {
-  @IsBoolean()
-  success: boolean;
-}
-
 class AssignTaskToGroupRes {
   @ValidateNested()
-  @Type(() => AssignTaskToGroupResData)
-  data: AssignTaskToGroupResData;
+  @Type(() => TaskDto)
+  data: TaskDto;
 }
 
 export { AssignTaskToGroupReq, AssignTaskToGroupRes };

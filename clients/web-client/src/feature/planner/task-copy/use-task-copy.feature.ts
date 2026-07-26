@@ -1,21 +1,19 @@
 import { useCallback, useState } from 'react';
 import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { invalidatePlannerInit, usePlannerInit } from '@/entity/planner/init';
+import { invalidatePlannerInit } from '@/entity/planner/init';
 import { TaskId } from '@/entity/planner/tasks';
 import { useTaskCopy } from '@/entity/planner/tasks/model';
 import { useNotify } from '@/shared/lib';
+import { GroupCacheManager, InboxGroupCacheManager, PlannerInitCacheManager } from '@/shared/transport/graphql';
 
 function useTaskCopyFeature() {
   const { copyTask, ...rest } = useTaskCopy();
-  const { data } = usePlannerInit();
   const { promise } = useNotify();
 
   const [loading, setLoading] = useState(false);
 
   const copyTaskHandler = useCallback(
     (id: TaskId) => {
-      if (data.inbox.id == null) return;
-
       promise(async () => {
         try {
           setLoading(true);
@@ -24,18 +22,22 @@ function useTaskCopyFeature() {
             awaitRefetchQueries: true,
           });
 
-          if (response.data?.copyTask != null) {
-            const id = response.data?.copyTask.id;
-            if (id == null || data.inbox.id == null) return;
-            await invalidateInboxTasks(rest.client, data.inbox.id);
-            await invalidatePlannerInit(rest.client.cache);
+          const taskData = response.data?.copyTask;
+          if (taskData?.groupId != null) {
+            InboxGroupCacheManager.insertTaskAfterTarget(rest.client.cache, {
+              targetTaskId: id,
+              clonedTaskId: taskData.id,
+            });
+            // InboxGroupCacheManager.refetch(rest.client, { inboxId: taskData.groupId });
+            // GroupCacheManager.refetchGroup(rest.client, { groupId: taskData.groupId });
+            PlannerInitCacheManager.refetch(rest.client);
           }
         } finally {
           setLoading(false);
         }
       });
     },
-    [copyTask, data.inbox.id, promise, rest.client],
+    [copyTask, promise, rest.client],
   );
 
   return { copyTask: copyTaskHandler, ...rest, loading: loading || rest.loading };

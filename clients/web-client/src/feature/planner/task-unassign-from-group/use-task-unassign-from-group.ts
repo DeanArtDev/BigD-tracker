@@ -1,7 +1,5 @@
 import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { invalidatePlannerInit } from '@/entity/planner/init';
 import { TaskId, useTaskUnassign } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 
@@ -12,25 +10,25 @@ function useTaskUnassignFromGroup() {
   const unassignTaskFromGroup = useCallback(
     async (
       { groupId, taskId }: { taskId: TaskId; groupId: GroupId },
-      params?: { onSuccess?: () => MaybePromise<void> },
+      params?: { onSuccess?: (data: { taskId: TaskId }) => MaybePromise<void> },
     ) => {
       try {
         setLoading(true);
+
         const result = await unassignTask({
           variables: { input: { groupId, taskId } },
           awaitRefetchQueries: true,
         });
 
-        if (result.data?.unassignTaskToGroup) {
-          await invalidateInboxTasks(client, groupId);
-          await invalidatePlannerInit(client.cache);
-          await params?.onSuccess?.();
+        if (result?.data != null) {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await params?.onSuccess?.({ taskId });
         }
       } finally {
         setLoading(false);
       }
     },
-    [client, unassignTask],
+    [unassignTask],
   );
 
   return {

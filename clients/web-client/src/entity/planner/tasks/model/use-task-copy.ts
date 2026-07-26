@@ -1,12 +1,8 @@
 import { useMutation } from '@apollo/client/react';
-import { CopyTaskDocument, CopyTaskMutation, CopyTaskMutationVariables } from './schemas/tasks.schema.generated';
+import { shapeTaskCopyOptions } from '@/shared/transport/graphql';
 
 function useTaskCopy() {
-  const [copyTask, rest] = useMutation<CopyTaskMutation, CopyTaskMutationVariables>(CopyTaskDocument, {
-    context: {
-      endpoint: 'private',
-    },
-  });
+  const [copyTask, rest] = useMutation(...shapeTaskCopyOptions());
 
   return { copyTask, ...rest };
 }

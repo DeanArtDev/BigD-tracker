@@ -2,9 +2,9 @@
 
 import { useApolloClient } from '@apollo/client/react';
 import { PlannerHeader } from '@/app/(private)/planner/_ui/planner-header';
-import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { invalidatePlannerInit, usePlannerInit } from '@/entity/planner/init';
+import { usePlannerInit } from '@/entity/planner/init';
 import { TaskCreateTrigger } from '@/feature/planner/task-create';
+import { InboxGroupCacheManager, PlannerInitCacheManager } from '@/shared/transport/graphql';
 
 function InboxPageHeader() {
   const { data } = usePlannerInit();
@@ -17,9 +17,8 @@ function InboxPageHeader() {
           disabled={data?.inbox == null}
           groupId={data?.inbox.id}
           onSuccess={async () => {
-            await invalidatePlannerInit(client.cache);
-            if (data.inbox.id == null) return;
-            await invalidateInboxTasks(client, data.inbox.id);
+            PlannerInitCacheManager.refetch(client);
+            InboxGroupCacheManager.refetch(client);
           }}
         />
       }

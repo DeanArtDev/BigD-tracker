@@ -1,6 +1,6 @@
 'use client';
 
-import { GroupCreate } from '@/feature/planner/group-create';
+import { GroupCreateDialog } from '@/feature/planner/group-create';
 import { DataLoader, Typography } from '@/shared/ui-kit';
 import { GroupList } from './group-list';
 import { GroupPageSearch } from './group-page-search';
@@ -15,7 +15,7 @@ function GroupsPageContent() {
       <div className="grid grid-cols-[1fr_min-content] gap-2">
         <Typography.H2>Группы</Typography.H2>
 
-        {!isEmptyAndNoSearch && <GroupCreate />}
+        {!isEmptyAndNoSearch && <GroupCreateDialog />}
       </div>
 
       <DataLoader
@@ -23,7 +23,7 @@ function GroupsPageContent() {
         emptyElement={
           <DataLoader.Empty
             title="Тут пока тихо. Накидай что-нибудь!"
-            description={isEmptyAndNoSearch && <GroupCreate />}
+            description={isEmptyAndNoSearch && <GroupCreateDialog />}
           />
         }
       >

@@ -69,7 +69,11 @@ class TasksViewMapper {
 
   static fromOverrideToView = (override: TaskOverride): TaskView => {
     return TaskView.restore({
-      id: TaskIdBuilder.wrapOriginId(override.id),
+      id: TaskIdBuilder.wrapOverrideId({
+        overrideId: override.id,
+        recurrenceId: override.recurrenceId,
+        date: override.recurrenceStart,
+      }),
       userId: override.userId,
       groupId: override.groupId,
       name: override.name,

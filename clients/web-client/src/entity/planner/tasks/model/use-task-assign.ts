@@ -8,6 +8,7 @@ function useTaskAssign() {
     context: {
       endpoint: 'private',
     },
+    awaitRefetchQueries: true,
   });
 
   const { appErrors } = useExtendApolloErrorResult(rest.error);

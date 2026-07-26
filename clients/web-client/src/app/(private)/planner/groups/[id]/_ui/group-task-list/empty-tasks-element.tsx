@@ -1,8 +1,8 @@
 import { Link2, SearchX } from 'lucide-react';
 import { useState } from 'react';
-import { AssignTaskToGroupDialog } from '@/app/(private)/planner/groups/[id]/_ui/group-task-list/assign-task-to-group-dialog';
 import { GroupId } from '@/entity/planner/groups';
 import { ButtonLoading, DataLoader } from '@/shared/ui-kit';
+import { AssignTaskToGroupDialog } from './assign-task-to-group-dialog';
 
 interface EmptyTasksElementProps {
   readonly groupId: GroupId;

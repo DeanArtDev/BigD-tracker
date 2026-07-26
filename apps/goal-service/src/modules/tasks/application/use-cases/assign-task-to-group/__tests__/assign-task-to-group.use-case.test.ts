@@ -35,7 +35,7 @@ describe('AssignTaskToGroupUseCase', () => {
       }),
     };
     const tasksWriteRepo = {
-      replaceTask: jest.fn().mockResolvedValue(task),
+      replaceTask: jest.fn().mockImplementation((taskToSave) => taskToSave),
     };
     const db = {
       runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
@@ -50,7 +50,7 @@ describe('AssignTaskToGroupUseCase', () => {
       db as never,
     );
 
-    await useCase.execute(
+    const result = await useCase.execute(
       new AssignTaskToGroupCommand({
         userId,
         taskId: TaskIdBuilder.wrapOriginId(taskId),
@@ -58,6 +58,10 @@ describe('AssignTaskToGroupUseCase', () => {
       }),
     );
 
+    expect(result).toMatchObject({
+      id: TaskIdBuilder.wrapOriginId(taskId),
+      groupId,
+    });
     expect(db.runTransaction).toHaveBeenCalledTimes(1);
     expect(taskTypeService.getType).toHaveBeenCalledWith({ taskId: TaskIdBuilder.wrapOriginId(taskId) });
     expect(groupCheckerService.ensureGroupExists).toHaveBeenCalledWith(
@@ -106,7 +110,7 @@ describe('AssignTaskToGroupUseCase', () => {
       }),
     };
     const tasksWriteRepo = {
-      replaceTask: jest.fn().mockResolvedValue(sourceTask),
+      replaceTask: jest.fn().mockImplementation((taskToSave) => taskToSave),
     };
     const db = {
       runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
@@ -121,7 +125,7 @@ describe('AssignTaskToGroupUseCase', () => {
       db as never,
     );
 
-    await useCase.execute(
+    const result = await useCase.execute(
       new AssignTaskToGroupCommand({
         userId,
         taskId: TaskIdBuilder.wrapVirtualId({ recurrenceId, date: recurrenceStart }),
@@ -129,6 +133,10 @@ describe('AssignTaskToGroupUseCase', () => {
       }),
     );
 
+    expect(result).toMatchObject({
+      id: TaskIdBuilder.wrapOriginId(taskId),
+      groupId,
+    });
     expect(groupCheckerService.ensureGroupExists).toHaveBeenCalledWith(
       { groupId, userId },
       { trx, includeInbox: true },
@@ -177,7 +185,7 @@ describe('AssignTaskToGroupUseCase', () => {
       }),
     };
     const tasksWriteRepo = {
-      replaceTask: jest.fn().mockResolvedValue(sourceTask),
+      replaceTask: jest.fn().mockImplementation((taskToSave) => taskToSave),
     };
     const db = {
       runTransaction: jest.fn().mockImplementation(async (work) => await work(trx)),
@@ -192,7 +200,7 @@ describe('AssignTaskToGroupUseCase', () => {
       db as never,
     );
 
-    await useCase.execute(
+    const result = await useCase.execute(
       new AssignTaskToGroupCommand({
         userId,
         taskId: TaskIdBuilder.wrapOverrideId({ recurrenceId, overrideId, date: recurrenceStart }),
@@ -200,6 +208,10 @@ describe('AssignTaskToGroupUseCase', () => {
       }),
     );
 
+    expect(result).toMatchObject({
+      id: TaskIdBuilder.wrapOriginId(taskId),
+      groupId,
+    });
     expect(groupCheckerService.ensureGroupExists).toHaveBeenCalledWith(
       { groupId, userId },
       { trx, includeInbox: true },

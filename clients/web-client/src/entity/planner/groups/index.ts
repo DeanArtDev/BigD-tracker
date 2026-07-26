@@ -16,7 +16,6 @@ export {
   type GetGroupByIdQueryVariables,
   type GetGroupListQuery,
   type GetGroupListQueryVariables,
-  GroupCacheManager,
 } from './model';
 export {
   GroupInfoList,

@@ -69,7 +69,7 @@ function TaskList({
                     selectedGroupId={task.groupId}
                     trigger={
                       <Button size="icon-sm" variant="ghost" disabled={menuProps?.loading}>
-                        <AppTooltip content="Переместить в группу" asChild>
+                        <AppTooltip content="Переместить в группу" delayDuration={2000} asChild>
                           <FolderOutput />
                         </AppTooltip>
                       </Button>

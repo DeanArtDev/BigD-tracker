@@ -67,7 +67,7 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
 
   /**
    * Обновление группы и порядка ее дел
-   * taskIds === [] перезапишет имеющиеся
+   * taskIds === [] удалит все дела из группы
    * taskIds === undefined не будет изменять текущее значение
    * */
   async updateGroupAndTaskOrder(input: { group: Group; taskIds?: Task['id'][] }, trx?: TaskTransaction): Promise<void> {
@@ -87,20 +87,37 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
         .executeTakeFirstOrThrow();
 
       if (taskIds !== undefined) {
-        await this.db.qb(trx).deleteFrom('task_to_group as ttg').where('ttg.group_id', '=', group.id).execute();
+        const qb = this.db.qb(trx);
+
+        await qb.deleteFrom('task_to_group').where('group_id', '=', group.id).execute();
 
         if (taskIds.length > 0) {
-          await this.db
-            .qb(trx)
+          await qb
             .insertInto('task_to_group')
             .values(
-              taskIds.map((id, i) => ({
-                task_id: id,
+              taskIds.map((taskId, position) => ({
+                task_id: taskId,
                 group_id: group.id,
-                position: i,
+                position,
               })),
             )
             .executeTakeFirstOrThrow();
+        }
+
+        await qb
+          .updateTable('tasks')
+          .set({ group_id: null })
+          .where('group_id', '=', group.id)
+          .where('user_id', '=', group.userId)
+          .execute();
+
+        if (taskIds.length > 0) {
+          await qb
+            .updateTable('tasks')
+            .set({ group_id: group.id })
+            .where('id', 'in', taskIds)
+            .where('user_id', '=', group.userId)
+            .execute();
         }
       }
     });

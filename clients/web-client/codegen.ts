@@ -3,9 +3,19 @@ import { getEnvConfigClient } from './src/shared/lib/env-config.client';
 
 const envConfit = getEnvConfigClient();
 
+function makeIncrementalTypeLocal(_filePath: string, content: string): string {
+  return content
+    .replace('export type Incremental<T>', 'type Incremental<T>')
+    .replace('export type TaskPriority', 'type TaskPriority')
+    .replace('export type TaskStatus', 'type TaskStatus');
+}
+
 const config: CodegenConfig = {
   schema: envConfit.NEXT_PUBLIC_HTTP_API_URL,
   documents: ['./src/**/*.{tsx,ts}'],
+  hooks: {
+    beforeOneFileWrite: makeIncrementalTypeLocal,
+  },
   generates: {
     './src/entity/schema-types.ts': {
       plugins: ['typescript'],

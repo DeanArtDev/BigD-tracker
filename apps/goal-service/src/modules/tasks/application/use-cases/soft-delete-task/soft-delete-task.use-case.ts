@@ -1,5 +1,5 @@
+import { TaskView, TasksViewMapper } from '@/modules/tasks/application/dto';
 import { ExceptionRecurrenceNotExist, ExceptionTaskUnprocessable } from '@/modules/tasks/application/exceptions';
-import { TaskIdBuilder } from '@/modules/tasks/domain';
 import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -28,13 +28,14 @@ class SoftDeleteTaskUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute({ input }: SoftDeleteTaskCommand): Promise<{ id: string }> {
+  async execute({ input }: SoftDeleteTaskCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, userId } = input;
 
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
       if (isOrigin) {
-        return await this.taskServices.softDeleteTask({ taskId: data.id, userId }, trx);
+        const deletedTask = await this.taskServices.softDeleteTask({ taskId: data.id, userId }, trx);
+        return TasksViewMapper.fromAggregateToView(deletedTask, null);
       }
 
       if (isVirtual) {
@@ -52,13 +53,7 @@ class SoftDeleteTaskUseCase {
         });
         const newOverride = await this.taskOverrideService.upsertOverride(overrideToCreate, trx);
 
-        return {
-          id: TaskIdBuilder.wrapOverrideId({
-            overrideId: newOverride.id,
-            recurrenceId: newOverride.recurrenceId,
-            date: newOverride.recurrenceStart,
-          }),
-        };
+        return TasksViewMapper.fromOverrideToView(newOverride);
       }
 
       if (isOverride) {
@@ -88,13 +83,7 @@ class SoftDeleteTaskUseCase {
           await this.taskRecurrenceService.deleteRecurrence({ id: recurrence.id }, trx);
         }
 
-        return {
-          id: TaskIdBuilder.wrapOverrideId({
-            overrideId: updatedOverride.id,
-            recurrenceId: updatedOverride.recurrenceId,
-            date: updatedOverride.recurrenceStart,
-          }),
-        };
+        return TasksViewMapper.fromOverrideToView(updatedOverride);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

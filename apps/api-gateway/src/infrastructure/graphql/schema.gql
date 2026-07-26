@@ -70,7 +70,7 @@ input GroupDeleteInput {
   groupId: Int!
 }
 
-type GroupInfoDto {
+type GroupInfoSchema {
   id: Int!
   name: String!
 }
@@ -129,7 +129,7 @@ type MeRes {
 
 type Mutation {
   """Добавить дело в группу"""
-  assignTaskToGroup(input: TaskAssignInput!): Boolean!
+  assignTaskToGroup(input: TaskAssignInput!): TaskSchema!
 
   """Полное удаление дела"""
   completeDeleteTask(input: TaskCompleteDeleteInput!): Int!
@@ -140,10 +140,10 @@ type Mutation {
   """Создание группы"""
   createGroup(input: GroupCreateInput!): GroupSchema!
 
-  """Выход пользователя из системы на одном устройстве"""
+  """Создание дела"""
   createTask(input: TaskCreateInput!): TaskSchema!
 
-  """Выход пользователя из системы на одном устройстве"""
+  """Удаление дела"""
   deleteTask(input: TaskDeleteInput!): TaskSchema!
 
   """Завершение дела"""
@@ -161,7 +161,7 @@ type Mutation {
   taskRecovery(input: TaskRecoveryInput!): Int!
 
   """Удалить дело из группы"""
-  unassignTaskToGroup(input: TaskUnassignInput!): Boolean!
+  unassignTaskToGroup(input: TaskUnassignInput!): TaskSchema!
 
   """Редактирование группы"""
   updateGroup(input: GroupUpdateInput!): GroupSchema!
@@ -177,7 +177,7 @@ type Mutation {
 }
 
 type Query {
-  getAssignableGroups: [GroupInfoDto!]!
+  getAssignableGroups: [GroupInfoSchema!]!
 
   """Получение списка дел, доступных для назначения в группу"""
   getAssignableTasks(input: GetAssignableTasksInput!): [TaskSchema!]!

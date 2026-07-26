@@ -113,13 +113,6 @@ function LoadingStatus({
 
     const isCurrentAnimation = () => animationIdRef.current === currentAnimationId;
 
-    /*
-     * success / error
-     *
-     * 1. Иконка плавно появляется немного больше стандартного размера.
-     * 2. Увеличивается до пикового размера.
-     * 3. Сразу после пика начинает одновременно уменьшаться и исчезать.
-     */
     frameId = requestAnimationFrame(() => {
       if (!isCurrentAnimation()) {
         return;

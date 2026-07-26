@@ -1,9 +1,9 @@
 'use client';
 
 import { useApolloClient } from '@apollo/client/react';
-import { invalidateGroup } from '@/entity/planner/groups';
 import { TaskCreateTrigger } from '@/feature/planner/task-create';
 import { useAppParams } from '@/shared/lib/url';
+import { GroupCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
 import { PlannerHeader } from '../../_ui/planner-header';
 import { groupByIdPageSchema } from '../_lib/constants';
 
@@ -16,9 +16,10 @@ function GroupsPageHeader() {
       content={
         <TaskCreateTrigger
           groupId={params?.id}
-          onSuccess={async () => {
-            if (params?.id != null) {
-              await invalidateGroup(client.cache, params.id);
+          onSuccess={async (data) => {
+            TaskCacheManager.refetchTask(client, { taskId: data.id });
+            if (data?.groupId != null) {
+              GroupCacheManager.refetchGroup(client, { groupId: data.groupId });
             }
           }}
         />
