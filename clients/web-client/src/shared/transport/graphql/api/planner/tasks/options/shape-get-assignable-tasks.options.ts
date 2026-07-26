@@ -1,22 +1,40 @@
-import { AppQueryOptionsResponse } from '../../../types';
+import { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse } from '../../../types';
 import { GetAssignableTasksQueryVariables, GetAssignableTasksQuery, GetAssignableTasksDocument } from '../schemas';
 
-type OptionsResponse = AppQueryOptionsResponse<GetAssignableTasksQuery, GetAssignableTasksQueryVariables>;
+type OptionsResponse<TData> = AppQueryOptionsResponse<TData, GetAssignableTasksQueryVariables>;
+type OptionsSuspenseResponse<TData> = AppSuspenseQueryOptionsResponse<TData, GetAssignableTasksQueryVariables>;
 
-function shapeGetAssignableTasksOptions(
-  input: { search?: string; groupIds?: number[] },
-  additionalOptions?: Partial<OptionsResponse[1]>,
-): OptionsResponse {
-  const options: OptionsResponse[1] = {
-    ...additionalOptions,
-    variables: { input: { search: input.search!, groupIds: input.groupIds } },
-    context: {
-      ...additionalOptions?.context,
-      endpoint: 'private',
+function shapeGetAssignableTasksOptions<TData = GetAssignableTasksQuery>(input: {
+  search?: string;
+  groupIds?: number[];
+}) {
+  return {
+    query: (additionalOptions?: Partial<OptionsResponse<TData>[1]>): OptionsResponse<TData> => {
+      const options: OptionsResponse<TData>[1] = {
+        ...additionalOptions,
+        variables: { input: { search: input.search!, groupIds: input.groupIds } },
+        context: {
+          ...additionalOptions?.context,
+          endpoint: 'private',
+        },
+      };
+
+      return [GetAssignableTasksDocument, options];
+    },
+
+    suspense: (additionalOptions?: Partial<OptionsSuspenseResponse<TData>[1]>): OptionsSuspenseResponse<TData> => {
+      const options: OptionsSuspenseResponse<TData>[1] = {
+        ...additionalOptions,
+        variables: { input: { search: input.search!, groupIds: input.groupIds } },
+        context: {
+          ...additionalOptions?.context,
+          endpoint: 'private',
+        },
+      };
+
+      return [GetAssignableTasksDocument, options];
     },
   };
-
-  return [GetAssignableTasksDocument, options];
 }
 
 shapeGetAssignableTasksOptions.document = GetAssignableTasksDocument;

@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { AppLink } from '@/shared/project-ui';
 import { SidebarMenuButton, SidebarMenuItem } from '@/shared/ui-kit';
 import { PlannerSidebarNavPath } from './planner-sidebar-nav-paths';
 
@@ -15,7 +15,7 @@ function PlannerSidebarMenuItem({ icon, path, title, active }: PlannerSidebarMen
   return (
     <SidebarMenuItem className="flex justify-center items-center">
       <SidebarMenuButton asChild isActive={active} tooltip={{ children: title }}>
-        <Link
+        <AppLink
           href={path}
           onNavigate={(evt) => {
             if (path === pathname) {
@@ -26,7 +26,7 @@ function PlannerSidebarMenuItem({ icon, path, title, active }: PlannerSidebarMen
           {icon}
 
           {title}
-        </Link>
+        </AppLink>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );

@@ -14,7 +14,9 @@ const EMPTY: AssignableTask[] = [];
 
 function useGetAssignableTasks(input: { search?: string; groupIds?: GroupId[] }) {
   const result = useQuery(
-    ...shapeGetAssignableTasksOptions(input, { skip: input.search == null || input.search.length <= 0 }),
+    ...shapeGetAssignableTasksOptions(input).query({
+      skip: input.search == null || input.search.length <= 0,
+    }),
   );
 
   const initialLoading = result.networkStatus === 1 && result.data == null;

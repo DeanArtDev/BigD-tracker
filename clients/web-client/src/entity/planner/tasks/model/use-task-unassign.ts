@@ -1,19 +1,9 @@
 import { useMutation } from '@apollo/client/react';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
-import { useExtendApolloErrorResult } from '@/shared/transport/graphql';
-import {
-  TaskUnassignDocument,
-  TaskUnassignMutation,
-  TaskUnassignMutationVariables,
-} from './schemas/tasks.schema.generated';
+import { shapeTaskUnassignOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
 
 function useTaskUnassign() {
-  const [unassignTask, rest] = useMutation<TaskUnassignMutation, TaskUnassignMutationVariables>(TaskUnassignDocument, {
-    context: {
-      endpoint: 'private',
-    },
-    awaitRefetchQueries: true,
-  });
+  const [unassignTask, rest] = useMutation(...shapeTaskUnassignOptions({ awaitRefetchQueries: true }));
 
   const { appErrors } = useExtendApolloErrorResult(rest.error);
   useExceptionNotificator({

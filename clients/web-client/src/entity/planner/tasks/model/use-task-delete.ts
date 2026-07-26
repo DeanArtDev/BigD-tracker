@@ -1,12 +1,8 @@
 import { useMutation } from '@apollo/client/react';
-import { DeleteTaskMutationVariables, DeleteTaskMutation, DeleteTaskDocument } from './schemas/tasks.schema.generated';
+import { shapeTaskDeleteOptions } from '@/shared/transport/graphql';
 
 function useTaskDelete() {
-  const [deleteTask, rest] = useMutation<DeleteTaskMutation, DeleteTaskMutationVariables>(DeleteTaskDocument, {
-    context: {
-      endpoint: 'private',
-    },
-  });
+  const [deleteTask, rest] = useMutation(...shapeTaskDeleteOptions());
 
   return { deleteTask, ...rest };
 }

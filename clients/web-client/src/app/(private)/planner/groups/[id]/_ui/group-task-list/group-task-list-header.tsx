@@ -7,14 +7,14 @@ import { TaskDomain, TaskStatusIndication } from '@/entity/planner/tasks';
 import { TaskStatus } from '@/entity/schema-types';
 import { ButtonLoading, Field, FieldLabel } from '@/shared/ui-kit';
 import { AssignTaskToGroupDialog } from './assign-task-to-group-dialog';
-import { useGetDetailedGroup } from '../../_api';
+import { useGetDetailedGroupSuspense } from '../../_api';
 
 interface GroupTaskListHeaderProps {
   readonly groupId: GroupId;
 }
 
 function GroupTaskListHeader({ groupId }: GroupTaskListHeaderProps) {
-  const { tasks, isEmptyTasks } = useGetDetailedGroup({ groupId });
+  const { tasks, isEmptyTasks } = useGetDetailedGroupSuspense({ groupId });
 
   const { overdue, inProgress, notStarted, done } = TaskDomain.tasksCountByStatus(tasks);
 

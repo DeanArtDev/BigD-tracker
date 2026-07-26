@@ -1,12 +1,8 @@
 import { useMutation } from '@apollo/client/react';
-import { TaskFinishDocument, TaskFinishMutation, TaskFinishMutationVariables } from './schemas/tasks.schema.generated';
+import { shapeTaskFinishOptions } from '@/shared/transport/graphql';
 
 function useTaskFinish() {
-  const [finishTask, rest] = useMutation<TaskFinishMutation, TaskFinishMutationVariables>(TaskFinishDocument, {
-    context: {
-      endpoint: 'private',
-    },
-  });
+  const [finishTask, rest] = useMutation(...shapeTaskFinishOptions());
 
   return { finishTask, ...rest };
 }

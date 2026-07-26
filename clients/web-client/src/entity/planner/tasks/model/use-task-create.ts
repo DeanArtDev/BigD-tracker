@@ -1,12 +1,8 @@
 import { useMutation } from '@apollo/client/react';
-import { CreateTaskDocument, CreateTaskMutation, CreateTaskMutationVariables } from './schemas/tasks.schema.generated';
+import { shapeTaskCreateOptions } from '@/shared/transport/graphql';
 
 function useTaskCreate() {
-  const [createTask, rest] = useMutation<CreateTaskMutation, CreateTaskMutationVariables>(CreateTaskDocument, {
-    context: {
-      endpoint: 'private',
-    },
-  });
+  const [createTask, rest] = useMutation(...shapeTaskCreateOptions());
 
   return { createTask, ...rest };
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
+import { AppLink } from '@/shared/project-ui';
 import { Button, cn, Typography } from '@/shared/ui-kit';
 
 export const metadata: Metadata = {
@@ -12,9 +12,9 @@ export default function NotFound() {
   return (
     <main className={cn('grid min-h-dvh place-items-center px-6 py-12')}>
       <section className="flex w-full max-w-[560px] flex-col items-center gap-6 text-center">
-        <Link href="/" aria-label="На главную">
+        <AppLink href="/" aria-label="На главную">
           <Image className="rounded-lg" src="/big-d-logo.png" width={60} height={28} alt="" loading="eager" priority />
-        </Link>
+        </AppLink>
 
         <p
           aria-hidden
@@ -31,7 +31,7 @@ export default function NotFound() {
 
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
-            <Link href="/">На главную</Link>
+            <AppLink href="/">На главную</AppLink>
           </Button>
         </div>
       </section>

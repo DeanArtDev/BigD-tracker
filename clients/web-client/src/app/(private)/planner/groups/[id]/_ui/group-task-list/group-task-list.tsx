@@ -10,14 +10,14 @@ import { DataLoader, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { EmptyTasksElement } from './empty-tasks-element';
 import { GroupTaskListForm } from './group-task-list-form';
 import { GroupTaskListHeader } from './group-task-list-header';
-import { DetailedGroupTask, useGetDetailedGroup } from '../../_api';
+import { DetailedGroupTask, useGetDetailedGroupSuspense } from '../../_api';
 
 interface GroupTaskListProps {
   readonly groupId: GroupId;
 }
 
 function GroupTaskList({ groupId }: GroupTaskListProps) {
-  const { group, tasks, initialLoading, isEmptyTasks, isError, refetch } = useGetDetailedGroup({ groupId });
+  const { group, tasks, isEmptyTasks, isError, refetch } = useGetDetailedGroupSuspense({ groupId });
   const { openTaskUpdate } = useTaskUpdateContext();
 
   const { updateGroup } = useGroupUpdateFeature();
@@ -31,7 +31,6 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
       <GroupTaskListHeader groupId={groupId} />
 
       <DataLoader
-        isLoading={initialLoading}
         isEmpty={isEmptyTasks}
         isError={isError}
         errorElement={<DataLoader.Error className="grow" onRetry={refetch} />}

@@ -1,6 +1,4 @@
 import { useCallback, useState } from 'react';
-import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { invalidatePlannerInit } from '@/entity/planner/init';
 import { TaskId } from '@/entity/planner/tasks';
 import { useTaskCopy } from '@/entity/planner/tasks/model';
 import { useNotify } from '@/shared/lib';
@@ -24,13 +22,15 @@ function useTaskCopyFeature() {
 
           const taskData = response.data?.copyTask;
           if (taskData?.groupId != null) {
+            PlannerInitCacheManager.refetch(rest.client);
             InboxGroupCacheManager.insertTaskAfterTarget(rest.client.cache, {
               targetTaskId: id,
               clonedTaskId: taskData.id,
             });
-            // InboxGroupCacheManager.refetch(rest.client, { inboxId: taskData.groupId });
-            // GroupCacheManager.refetchGroup(rest.client, { groupId: taskData.groupId });
-            PlannerInitCacheManager.refetch(rest.client);
+            GroupCacheManager.insertTaskAfterTarget(rest.client.cache, {
+              targetTaskId: id,
+              clonedTaskId: taskData.id,
+            });
           }
         } finally {
           setLoading(false);

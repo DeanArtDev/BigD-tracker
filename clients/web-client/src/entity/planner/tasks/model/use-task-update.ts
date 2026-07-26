@@ -1,12 +1,8 @@
 import { useMutation } from '@apollo/client/react';
-import { UpdateTaskDocument, UpdateTaskMutation, UpdateTaskMutationVariables } from './schemas/tasks.schema.generated';
+import { shapeTaskUpdateOptions } from '@/shared/transport/graphql';
 
 function useTaskUpdate() {
-  const [updateTask, rest] = useMutation<UpdateTaskMutation, UpdateTaskMutationVariables>(UpdateTaskDocument, {
-    context: {
-      endpoint: 'private',
-    },
-  });
+  const [updateTask, rest] = useMutation(...shapeTaskUpdateOptions());
 
   return { updateTask, ...rest };
 }

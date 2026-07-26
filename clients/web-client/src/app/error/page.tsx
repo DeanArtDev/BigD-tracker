@@ -1,6 +1,6 @@
 import { TriangleAlert } from 'lucide-react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { AppLink } from '@/shared/project-ui';
 import { routes } from '@/shared/routes';
 import { Button, Typography } from '@/shared/ui-kit';
 import { Main } from '../_ui/main';
@@ -37,7 +37,7 @@ export default function ErrorPage() {
 
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
-            <Link href={routes.home.path}>На главную</Link>
+            <AppLink href={routes.home.path}>На главную</AppLink>
           </Button>
         </div>
       </section>
