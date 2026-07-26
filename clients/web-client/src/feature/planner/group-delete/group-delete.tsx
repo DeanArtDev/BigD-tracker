@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
-import { GroupId, useGroupDelete } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { GroupTaskCount } from '@/feature/planner/group-delete/group-task-count';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
 import { GroupCacheManager } from '@/shared/transport/graphql';
+import { useGroupDelete } from './api/use-group-delete';
 
 function useGroupDeleteFeature() {
   const { deleteGroup, client, loading: isGroupDeleteLoading } = useGroupDelete();

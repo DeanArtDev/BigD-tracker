@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TaskPriority, TaskStatus } from '@/entity/schema-types';
+import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { transformToPlaceholder, transformDate, schemaPlaceholderValues } from '@/shared/ui-kit/form';
 import { TaskDomain } from '../../../../model';
 

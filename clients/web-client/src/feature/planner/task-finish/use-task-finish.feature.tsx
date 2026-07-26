@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { TaskId } from '@/entity/planner/tasks';
-import { useTaskFinish } from '@/entity/planner/tasks/model';
-import { TaskFinishStatus } from '@/entity/schema-types';
 import { TaskFinishDialog } from '@/feature/planner/task-finish/task-finish-dialog';
 import { useNotify } from '@/shared/lib';
+import { TaskFinishStatus } from '@/shared/transport/graphql';
+import { useTaskFinish } from './api/use-task-finish';
 
 function useTaskFinishFeature() {
   const { finishTask, ...rest } = useTaskFinish();

@@ -1,8 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { LoginForm, useLogin } from '@/entity/auth';
+import { LoginForm } from '@/entity/auth';
 import { routes } from '@/shared/routes';
+import { useLogin } from './api/use-login';
 
 function LoginFormFeature() {
   const router = useRouter();

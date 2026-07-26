@@ -1,10 +1,22 @@
+import { Brand, Override } from '@/shared/lib';
 import { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse } from '../../../types';
 import { GetGroupListDocument, GetGroupListQuery, GetGroupListQueryVariables } from '../schemas';
 
 type OptionsResponse<TData> = AppQueryOptionsResponse<TData, GetGroupListQueryVariables>;
 type OptionsSuspenseResponse<TData> = AppSuspenseQueryOptionsResponse<TData, GetGroupListQueryVariables>;
 
-function shapeGetGroupListOptions<TData = GetGroupListQuery>({
+type GroupListItemDto = GetGroupListQuery['getGroupList']['items'][number];
+
+type GroupListItem<BrandGroup extends Brand<number, string>> = Override<GroupListItemDto, { readonly id: BrandGroup }>;
+
+type GroupListQuery<BrandGroup extends Brand<number, string>> = Override<
+  GetGroupListQuery,
+  {
+    readonly getGroupList: Override<GetGroupListQuery['getGroupList'], { readonly items: GroupListItem<BrandGroup>[] }>;
+  }
+>;
+
+function shapeGetGroupListOptions<BrandGroup extends Brand<number, string>, TData = GroupListQuery<BrandGroup>>({
   limit,
   cursor,
   search,
@@ -44,4 +56,4 @@ function shapeGetGroupListOptions<TData = GetGroupListQuery>({
 
 shapeGetGroupListOptions.document = GetGroupListDocument;
 
-export { shapeGetGroupListOptions };
+export { shapeGetGroupListOptions, type GroupListItem };

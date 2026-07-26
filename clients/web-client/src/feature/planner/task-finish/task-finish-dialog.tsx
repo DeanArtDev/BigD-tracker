@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TaskId } from '@/entity/planner/tasks';
-import { TaskFinishStatus } from '@/entity/schema-types';
 import { AppDialog } from '@/shared/project-ui';
+import { TaskFinishStatus } from '@/shared/transport/graphql';
 import {
   Button,
   ButtonLoading,

@@ -4,10 +4,16 @@ import { ApolloLink, FieldPolicy } from '@apollo/client';
 import { FieldMergeFunctionOptions, FieldReadFunctionOptions } from '@apollo/client/cache';
 import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/client-integration-nextjs';
 import { PropsWithChildren } from 'react';
-import { GetGroupListQuery, GetGroupListQueryVariables } from '@/entity/planner/groups';
-import { GetInboxQuery, GetInboxQueryVariables } from '@/entity/planner/inbox';
-import { TaskSchema } from '@/entity/schema-types';
-import { cookieAccessLink, createHttpLink, retryLink } from '@/shared/transport/graphql';
+import {
+  cookieAccessLink,
+  createHttpLink,
+  GetGroupListQuery,
+  GetGroupListQueryVariables,
+  GetInboxQuery,
+  GetInboxQueryVariables,
+  retryLink,
+  TaskSchema,
+} from '@/shared/transport/graphql';
 import { reactorErrorLink } from './error-link';
 
 const inboxTasksItemsPolicy: FieldPolicy<

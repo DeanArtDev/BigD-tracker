@@ -9,9 +9,9 @@ import {
   TaskSubmitFormData,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
-import { useTaskUpdate } from '@/entity/planner/tasks/model';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
+import { useTaskUpdate } from './api/use-task-update';
 
 interface ComponentProps {
   readonly open: boolean;

@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { TaskStatus } from '@/entity/schema-types';
 import { AppTooltip } from '@/shared/project-ui';
+import { TaskStatus } from '@/shared/transport/graphql';
 import { cn } from '@/shared/ui-kit';
 import { taskStatusToIconMap } from '../lib/maps';
 

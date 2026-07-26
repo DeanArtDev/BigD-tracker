@@ -1,4 +1,4 @@
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskStatus } from '@/shared/transport/graphql';
 import { TaskType } from '../task';
 
 const taskIndicationByStatus: Record<TaskStatus, boolean> = {

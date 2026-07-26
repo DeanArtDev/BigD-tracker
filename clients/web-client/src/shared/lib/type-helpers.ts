@@ -1,4 +1,4 @@
-type Override<T, TOverrides> = Omit<T, keyof TOverrides> & TOverrides;
+type Override<T extends AnyObject, TOverrides extends Partial<AnyValues<T>>> = Omit<T, keyof TOverrides> & TOverrides;
 
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -8,6 +8,11 @@ type ValueOf<Type> = Type[keyof Type];
 
 type DeepPartial<T> = {
   [K in keyof T]?: DeepPartial<T[K]>;
+};
+
+type AnyValues<T> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [K in keyof T]: any;
 };
 
 type Primitive = string | number | boolean | bigint | symbol | null | undefined;
@@ -34,4 +39,18 @@ type Brand<T, TBrand extends string> = T & {
   readonly __brand: TBrand;
 };
 
-export type { HasId, Override, ValueOf, Nullable, DeepPartial, MakeOptional, DeepReadonly, Brand, MaybePromise };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyObject = Record<string | number | symbol, any>;
+
+export type {
+  AnyObject,
+  HasId,
+  Override,
+  ValueOf,
+  Nullable,
+  DeepPartial,
+  MakeOptional,
+  DeepReadonly,
+  Brand,
+  MaybePromise,
+};

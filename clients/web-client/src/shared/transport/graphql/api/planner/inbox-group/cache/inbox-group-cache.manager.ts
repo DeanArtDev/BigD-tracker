@@ -1,7 +1,7 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
-import { GetInboxResponse, type TaskSchema } from '@/entity/schema-types';
 import { Override } from '@/shared/lib';
 import { TaskCacheManager } from '@/shared/transport/graphql';
+import { GetInboxResponse, type TaskSchema } from '../../../../schema-types';
 import { WithReferenceList } from '../../../types';
 import { shapeGetPlannerInitOptions } from '../../planner-init';
 

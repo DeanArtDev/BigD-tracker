@@ -2,9 +2,9 @@ import { useSuspenseQuery } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
-import { GroupTaskOrder } from '@/entity/schema-types';
 import { Override } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
+import { GroupTaskOrder } from '@/shared/transport/graphql';
 import { shapeGetDetailedGroupOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
 import { GetDetailedGroupByIdQuery } from './schemas/group-page.schema.generated';
 
@@ -20,7 +20,7 @@ type DetailedGroup = Override<
 
 type DetailedGroupQuery = Override<GetDetailedGroupByIdQuery, { getGroup: DetailedGroup }>;
 
-const EMPTY_TASKS: DetailedGroupTask[] = [];
+const EMPTY_TASKS: never[] = [];
 
 function useGetDetailedGroupSuspense({ groupId }: { groupId?: GroupId }) {
   const [document, options] = shapeGetDetailedGroupOptions<DetailedGroupQuery>({

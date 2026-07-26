@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskId, useTaskUnassign } from '@/entity/planner/tasks';
+import { TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
+import { useTaskUnassign } from './api/use-task-unassign';
 
 function useTaskUnassignFromGroup() {
   const { unassignTask, client, ...rest } = useTaskUnassign();

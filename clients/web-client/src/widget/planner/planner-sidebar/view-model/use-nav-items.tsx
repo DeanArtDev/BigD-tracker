@@ -15,7 +15,7 @@ interface PlannerSidebarNavPath {
 function useNavItems(): PlannerSidebarNavPath[] {
   const { open } = useSidebar();
   const { data, loading } = useSidebarInfoQuery();
-  const inboxTaskCount = data.inbox.taskCount;
+  const inboxTaskCount = data?.inbox.taskCount ?? 0;
 
   return useMemo(
     () => [
@@ -25,7 +25,7 @@ function useNavItems(): PlannerSidebarNavPath[] {
             <span>INBOX</span>{' '}
             <Badge>
               <DataLoader isLoading={loading} loadingElement={<DataLoader.Loading inverse />}>
-                <Typography.Muted className="text-white text-xs">{inboxTaskCount ?? 0}</Typography.Muted>
+                <Typography.Muted className="text-white text-xs">{inboxTaskCount}</Typography.Muted>
               </DataLoader>
             </Badge>
           </>
@@ -33,7 +33,7 @@ function useNavItems(): PlannerSidebarNavPath[] {
         icon: (
           <div className="relative">
             <Inbox />
-            {!open && (inboxTaskCount ?? 0) > 0 && (
+            {!open && inboxTaskCount > 0 && (
               <div className="absolute size-1.5 bg-destructive rounded-4xl top-3 -right-[3px]" />
             )}
           </div>

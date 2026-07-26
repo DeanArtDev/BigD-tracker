@@ -1,4 +1,5 @@
-import { useGetGroupList } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
+import { useGetGroupList } from '@/shared/transport/graphql';
 import { useGroupListUrlQuery } from './use-group-list-url-query';
 
 const requestLimit = 17;
@@ -8,7 +9,7 @@ function useGetGroupListByUrlQuery() {
 
   const search = searchQuery?.search;
 
-  const result = useGetGroupList({ limit: requestLimit, search });
+  const result = useGetGroupList<GroupId>({ limit: requestLimit, search });
 
   return {
     ...result,

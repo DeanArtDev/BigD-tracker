@@ -1,4 +1,4 @@
-import { TaskPriority } from '@/entity/schema-types';
+import { TaskPriority } from '@/shared/transport/graphql';
 import { cn, ToggleGroupItem, Typography } from '@/shared/ui-kit';
 import { ToggleGroupForm } from '@/shared/ui-kit/form';
 import { useTaskFormFieldContext } from '../context/task-form-field-provider';

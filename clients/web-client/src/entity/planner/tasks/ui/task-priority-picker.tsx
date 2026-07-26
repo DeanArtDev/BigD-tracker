@@ -1,5 +1,5 @@
 import { Circle } from 'lucide-react';
-import { TaskPriority } from '@/entity/schema-types';
+import { TaskPriority } from '@/shared/transport/graphql';
 import { ToggleGroup, ToggleGroupItem } from '@/shared/ui-kit';
 
 interface TaskPriorityPickerProps {

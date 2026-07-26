@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { MaybePromise } from '@/shared/lib';
+import { useGetAssignableGroups } from '@/shared/transport/graphql';
 import { Button, ButtonLoading, DataLoader, DialogFooter, ScrollAreaNativeVertical } from '@/shared/ui-kit';
-import { GroupId, GroupInfo, useGetAssignableGroups } from '../../model';
+import { GroupId, GroupInfo } from '../../model';
 import { GroupInfoList } from '../group-info-list';
 
 interface GroupListProps {
@@ -14,7 +15,7 @@ function GroupList({ selectedGroupIds = [], onAccept, onCancel }: GroupListProps
   const [selectedIds, setSelectedIds] = useState<GroupId[]>(selectedGroupIds);
   const [selectedGroups, setSelectedGroups] = useState<GroupInfo[]>([]);
 
-  const { groups, isError, loading: isGetAssignableGroupsLoading, refetch } = useGetAssignableGroups();
+  const { groups, isError, loading: isGetAssignableGroupsLoading, refetch } = useGetAssignableGroups<GroupId>();
   const [loading, setLoading] = useState(false);
 
   return (

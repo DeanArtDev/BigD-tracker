@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
-import { GroupId, useGroupUpdate } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { useNotify } from '@/shared/lib';
 import { GroupCacheManager } from '@/shared/transport/graphql';
+import { useGroupUpdate } from './api/use-group-update';
 
 type GroupUpdateHandlerParams = {
   readonly id: GroupId;

@@ -1,5 +1,5 @@
 import { ApolloClient } from '@apollo/client';
-import { GetPlannerInit } from '@/entity/schema-types';
+import { GetPlannerInit } from '../../../../schema-types';
 import { GetPlannerInitDocument } from '../schemas';
 
 class PlannerInitCacheManager {

@@ -1,4 +1,4 @@
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskStatus } from '@/shared/transport/graphql';
 
 interface TasksStatusCount {
   total: number;

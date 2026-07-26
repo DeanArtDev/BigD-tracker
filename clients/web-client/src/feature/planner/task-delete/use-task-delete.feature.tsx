@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
-import { TaskId, useTaskDelete } from '@/entity/planner/tasks';
+import { TaskId } from '@/entity/planner/tasks';
 import { useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
 import { PlannerInitCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
 import { Typography } from '@/shared/ui-kit';
+import { useTaskDelete } from './api/use-task-delete';
 
 function useTaskDeleteFeature() {
   const { deleteTask, ...rest } = useTaskDelete();

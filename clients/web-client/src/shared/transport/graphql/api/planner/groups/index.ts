@@ -1,3 +1,4 @@
 export * from './cache';
-export * from './schemas';
 export * from './options';
+export * from './queries';
+export type { GetGroupListQuery, GetGroupListQueryVariables } from './schemas';

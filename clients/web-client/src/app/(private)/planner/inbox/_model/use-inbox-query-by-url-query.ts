@@ -1,4 +1,6 @@
-import { inboxInitialRequestVariables, useInboxQuery } from '@/entity/planner/inbox';
+import { GroupId } from '@/entity/planner/groups';
+import { TaskId } from '@/entity/planner/tasks';
+import { inboxInitialRequestVariables, useInboxQuery } from '@/shared/transport/graphql';
 import { useInboxUrlQuery } from './use-inbox-url-query';
 
 function useInboxQueryByUrlQuery() {
@@ -10,7 +12,7 @@ function useInboxQueryByUrlQuery() {
     priority: searchQuery?.priority,
   };
 
-  const result = useInboxQuery({
+  const result = useInboxQuery<GroupId, TaskId>({
     search: searchQuery?.search,
     filter,
   });

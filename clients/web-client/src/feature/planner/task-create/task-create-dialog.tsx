@@ -7,11 +7,11 @@ import {
   TaskFormFooter,
   TaskFormProvider,
   TaskSubmitFormData,
-  useTaskCreate,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
+import { useTaskCreate } from './api/use-task-create';
 import { SuccessHandler } from './context/task-create.context';
 
 interface ComponentProps {
