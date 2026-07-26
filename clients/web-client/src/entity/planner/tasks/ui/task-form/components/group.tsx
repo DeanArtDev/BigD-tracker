@@ -1,11 +1,12 @@
 import { useWatch } from 'react-hook-form';
-import { useGetAssignableGroups } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { TaskFormData } from '@/entity/planner/tasks';
+import { useGetAssignableGroups } from '@/shared/transport/graphql';
 import { Badge, DataLoader, Typography } from '@/shared/ui-kit';
 
 function Group() {
   const groupId = useWatch<{ groupId: TaskFormData['groupId'] }>({ name: 'groupId' });
-  const { groups, loading } = useGetAssignableGroups();
+  const { groups, loading } = useGetAssignableGroups<GroupId>();
 
   const groupName = groups.items.find((g) => g.id === groupId)?.name ?? 'Нет группы';
   return (

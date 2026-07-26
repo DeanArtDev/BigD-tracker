@@ -1,6 +1,6 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
-import type { GetInboxResponse, GroupSchema, TaskSchema, TasksConnection } from '@/entity/schema-types';
 import { shapeGetAssignableTasksOptions } from '@/shared/transport/graphql';
+import type { GetInboxResponse, GroupSchema, TaskSchema, TasksConnection } from '../../../../schema-types';
 import type { WithReferenceList } from '../../../types';
 
 type TasksConnectionCache = WithReferenceList<TasksConnection, 'items'>;

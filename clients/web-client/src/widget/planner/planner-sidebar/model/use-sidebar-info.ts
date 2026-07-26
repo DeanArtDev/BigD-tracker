@@ -1,4 +1,4 @@
-import { usePlannerInit } from '@/entity/planner/init';
+import { usePlannerInit } from '@/shared/transport/graphql';
 
 function useSidebarInfoQuery() {
   return usePlannerInit();

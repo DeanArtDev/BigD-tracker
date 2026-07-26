@@ -1,21 +1,4 @@
-export {
-  type GroupId,
-  type Group,
-  type BrandGroup,
-  useGetAssignableGroups,
-  type GroupInfo,
-  useGetGroupList,
-  invalidateGroup,
-  invalidateGroupList,
-  useGroupUpdate,
-  useGroupDelete,
-  useGetGroupById,
-  GetGroupByIdDocument,
-  type GetGroupByIdQuery,
-  type GetGroupByIdQueryVariables,
-  type GetGroupListQuery,
-  type GetGroupListQueryVariables,
-} from './model';
+export { type GroupId, type Group, type GroupInfo } from './model';
 export {
   GroupInfoList,
   type GroupInfoListProps,

@@ -1,7 +1,8 @@
 import { Check, Folder } from 'lucide-react';
 import { DropdownItem } from '@/shared/project-ui';
+import { useGetAssignableGroups } from '@/shared/transport/graphql';
 import { Button, DataLoader, Typography } from '@/shared/ui-kit';
-import { GroupId, GroupInfo, useGetAssignableGroups } from '../../model';
+import { GroupId, GroupInfo } from '../../model';
 
 interface ListContentProps {
   readonly selectedGroupId?: GroupId;
@@ -10,7 +11,7 @@ interface ListContentProps {
 }
 
 function ListContent({ selectedGroupId, onSelect }: ListContentProps) {
-  const { groups, loading } = useGetAssignableGroups();
+  const { groups, loading } = useGetAssignableGroups<GroupId>();
 
   return (
     <DataLoader isLoading={loading} loadingElement={<DataLoader.Loading size={25} />}>

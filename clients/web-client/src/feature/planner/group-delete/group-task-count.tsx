@@ -1,6 +1,7 @@
 import { Folder } from 'lucide-react';
-import { GroupId, useGetGroupById } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { pluralize } from '@/shared/lib/pluralize';
+import { useGetGroupById } from '@/shared/transport/graphql';
 import { Badge, DataLoader } from '@/shared/ui-kit';
 
 interface GroupTaskCountProps {
@@ -8,7 +9,7 @@ interface GroupTaskCountProps {
 }
 
 function GroupTaskCount({ groupId }: GroupTaskCountProps) {
-  const { groupById, loading } = useGetGroupById({ groupId });
+  const { groupById, loading } = useGetGroupById<GroupId>({ groupId });
 
   const count = groupById?.taskCount ?? 0;
 

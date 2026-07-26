@@ -4,8 +4,8 @@ import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { type PropsWithChildren, useCallback, useId, useMemo } from 'react';
 import { DefaultValues, FormProvider, useForm } from 'react-hook-form';
 import { Task, TaskFormData } from '@/entity/planner/tasks';
-import { TaskPriority } from '@/entity/schema-types';
 import timeAndDate from '@/shared/lib/time';
+import { TaskPriority } from '@/shared/transport/graphql';
 import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
 

@@ -4,7 +4,7 @@ import { Link2 } from 'lucide-react';
 import { useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskDomain, TaskStatusIndication } from '@/entity/planner/tasks';
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskStatus } from '@/shared/transport/graphql';
 import { ButtonLoading, Field, FieldLabel } from '@/shared/ui-kit';
 import { AssignTaskToGroupDialog } from './assign-task-to-group-dialog';
 import { useGetDetailedGroupSuspense } from '../../_api';

@@ -1,7 +1,7 @@
 import type { DocumentNode, OperationVariables, TypedDocumentNode } from '@apollo/client';
 import type { Reference } from '@apollo/client/cache';
 import { useMutation, useQuery, useSuspenseQuery } from '@apollo/client/react';
-import { Override } from '@/shared/lib';
+import { AnyObject } from '@/shared/lib';
 
 type AppQueryOptions<TData = unknown, TVariables extends OperationVariables = OperationVariables> = useQuery.Options<
   NoInfer<TData>,
@@ -32,6 +32,8 @@ type AppMutationOptionsResponse<TData = unknown, TVariables extends OperationVar
   AppMutationOptions<TData, TVariables>,
 ];
 
-type WithReferenceList<T, K extends keyof T> = Override<T, { [P in K]: Reference[] }>;
+type WithReferenceList<T extends AnyObject, K extends keyof T> = Omit<T, K> & {
+  [P in K]: Reference[];
+};
 
 export type { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse, WithReferenceList, AppMutationOptionsResponse };

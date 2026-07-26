@@ -1,4 +1,4 @@
-import { GroupTaskOrder } from '@/entity/schema-types';
+import { GroupTaskOrder } from '../../../../schema-types';
 import { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse } from '../../../types';
 import {
   GetDetailedGroupByIdDocument,
@@ -16,6 +16,7 @@ function shapeGetDetailedGroupOptions<TData = GetDetailedGroupByIdQuery>(input: 
   return {
     query: (additionalOptions?: Partial<OptionsResponse<TData>[1]>): OptionsResponse<TData> => {
       const options: OptionsResponse<TData>[1] = {
+        errorPolicy: 'all',
         ...additionalOptions,
         variables: { input: { groupId: input.groupId! }, tasksInput: { order: input.order } },
         skip: input.groupId == null,
@@ -30,6 +31,7 @@ function shapeGetDetailedGroupOptions<TData = GetDetailedGroupByIdQuery>(input: 
 
     suspense: (additionalOptions?: Partial<OptionsSuspenseResponse<TData>[1]>): OptionsSuspenseResponse<TData> => {
       const options: OptionsSuspenseResponse<TData>[1] = {
+        errorPolicy: 'all',
         ...additionalOptions,
         variables: { input: { groupId: input.groupId! }, tasksInput: { order: input.order } },
         context: {

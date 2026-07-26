@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskId, useTaskAssign } from '@/entity/planner/tasks';
+import { TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
+import { useTaskAssign } from './api/use-task-assign';
 
 type AssignTaskHandlerParams = {
   readonly task: {

@@ -2,7 +2,7 @@
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-import * as Types from '@/entity/schema-types';
+import * as Types from '@/shared/transport/graphql/schema-types';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type GetGroupInput = {
@@ -14,10 +14,10 @@ export type GetGroupTasksInput = {
 };
 
 /** Статусы группы */
-export type GroupStatus = 'DONE' | 'IN_PROGRESS' | 'NOT_STARTED';
+type GroupStatus = 'DONE' | 'IN_PROGRESS' | 'NOT_STARTED';
 
 /** Порядок дел внутри группы */
-export type GroupTaskOrder = 'Group';
+type GroupTaskOrder = 'Group';
 
 /** Приоритеты дела */
 type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';

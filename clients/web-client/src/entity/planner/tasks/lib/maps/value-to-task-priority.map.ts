@@ -1,4 +1,4 @@
-import { TaskPriority } from '@/entity/schema-types';
+import { TaskPriority } from '@/shared/transport/graphql';
 
 const valueToTaskPriority: Record<number, TaskPriority> = {
   1: TaskPriority.Do,

@@ -1,7 +1,7 @@
 import { merge } from 'lodash-es';
 import { ReactNode, useMemo } from 'react';
-import { TaskStatus } from '@/entity/schema-types';
 import { DeepPartial } from '@/shared/lib';
+import { TaskStatus } from '@/shared/transport/graphql';
 import { FieldState, taskFormFieldContext, TaskFromFieldContext } from './task-form-field.context';
 import { TaskDomain } from '../../../../model';
 import { TaskFieldStatus } from '../../../../model/domain';

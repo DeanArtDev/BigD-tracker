@@ -3,8 +3,8 @@
 import { Repeat2, Timer } from 'lucide-react';
 import { CSSProperties, ReactNode, Ref } from 'react';
 import { TaskDomain, TaskId } from '@/entity/planner/tasks';
-import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { TimeHelper } from '@/shared/lib/time';
+import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { Badge, Card, CardContent, CardTitle, cn, Typography } from '@/shared/ui-kit';
 import { TaskUtils } from '../../lib/utils';
 import { TaskStatusIndication } from '../task-status-indication';

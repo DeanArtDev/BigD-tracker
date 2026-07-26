@@ -1,8 +1,8 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
 import { GroupId } from '@/entity/planner/groups';
-import type { GroupInfoSchema, GroupSchema, Query, TaskSchema } from '@/entity/schema-types';
 import { Override } from '@/shared/lib';
 import { shapeGetPlannerInitOptions, TaskCacheManager } from '@/shared/transport/graphql';
+import type { GroupInfoSchema, GroupSchema, Query, TaskSchema } from '../../../../schema-types';
 import { WithReferenceList } from '../../../types';
 import { shapeGetGroupListOptions } from '../options';
 

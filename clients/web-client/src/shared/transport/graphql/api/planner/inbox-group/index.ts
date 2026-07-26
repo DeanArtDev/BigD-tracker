@@ -1,3 +1,4 @@
 export * from './cache';
 export * from './options';
-export type { GetInboxQuery } from './schemas';
+export * from './queries';
+export type { GetInboxQuery, GetInboxQueryVariables } from './schemas';

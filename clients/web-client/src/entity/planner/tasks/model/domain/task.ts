@@ -1,6 +1,6 @@
 import { GroupId } from '@/entity/planner/groups';
-import { TaskPriority, TaskStatus } from '@/entity/schema-types';
 import { Brand, DeepReadonly } from '@/shared/lib';
+import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 
 type TaskId = Brand<string, 'TaskId'>;
 

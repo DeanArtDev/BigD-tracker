@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect, useEffectEvent } from 'react';
+import { useOnUnmount } from '@/shared/lib/application-status';
 import { useNotify } from '@/shared/lib/use-notify';
 import { ApiError, ApiErrorCode } from '@/shared/transport/graphql';
 
@@ -12,6 +13,8 @@ interface ExceptionNotificatorProps {
   readonly exception: ApiError | undefined;
   readonly messageHandlers?: ExceptionMessageHandlers;
 }
+
+const shownExceptionSet = new Set<ApiErrorCode>();
 
 function handleExceptionMessage<Code extends ApiErrorCode>(
   exception: ApiError<Code>,
@@ -30,8 +33,16 @@ function useExceptionNotificator({ exception, messageHandlers }: ExceptionNotifi
     if (exception == null) return;
     const handlers = messageHandlersRef();
 
-    error({ message: handleExceptionMessage(exception, handlers) ?? 'Непредвиденная ошибка!' });
+    if (shownExceptionSet.has(exception.code)) return;
+    shownExceptionSet.add(exception.code);
+    error({
+      message: handleExceptionMessage(exception, handlers) ?? 'Непредвиденная ошибка!',
+      onDismiss: () => void shownExceptionSet.delete(exception.code),
+      onAutoClose: () => void shownExceptionSet.delete(exception.code),
+    });
   }, [exception, error]);
+
+  useOnUnmount(() => void shownExceptionSet.clear());
 }
 
 export { useExceptionNotificator, type ExceptionMessageHandlers, type ExceptionNotificatorProps };

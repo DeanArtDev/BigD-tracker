@@ -1,8 +1,8 @@
 import { capitalize } from 'lodash-es';
 import { EllipsisVertical } from 'lucide-react';
-import { TaskStatus } from '@/entity/schema-types';
 import { MaybePromise } from '@/shared/lib';
 import { AppDropdown } from '@/shared/project-ui';
+import { TaskStatus } from '@/shared/transport/graphql';
 import { cn, DropdownMenuSeparator } from '@/shared/ui-kit';
 import { Button } from '@/shared/ui-kit/ui/button';
 import { TaskAction } from './task-action';

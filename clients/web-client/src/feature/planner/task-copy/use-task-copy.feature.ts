@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { TaskId } from '@/entity/planner/tasks';
-import { useTaskCopy } from '@/entity/planner/tasks/model';
 import { useNotify } from '@/shared/lib';
 import { GroupCacheManager, InboxGroupCacheManager, PlannerInitCacheManager } from '@/shared/transport/graphql';
+import { useTaskCopy } from './api/use-task-copy';
 
 function useTaskCopyFeature() {
   const { copyTask, ...rest } = useTaskCopy();

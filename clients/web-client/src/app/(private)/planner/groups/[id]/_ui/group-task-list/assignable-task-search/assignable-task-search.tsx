@@ -1,9 +1,10 @@
 import { Search } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 import { AssignableTask, useGetAssignableTasks } from '@/app/(private)/planner/groups/[id]/_api';
-import { GroupId, useGetAssignableGroups } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { useDebounce } from '@/shared/lib';
+import { useGetAssignableGroups } from '@/shared/transport/graphql';
 import { Card, CardContent, cn, DataLoader, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { GroupedTaskList } from './ui/grouped-task-list';
 import { TaskSearchInput } from './ui/task-search-input';
@@ -22,7 +23,7 @@ function AssignableTaskSearch({ groupId, loading, onTaskSelect }: AssignableTask
     search: debouncedSearch,
     groupIds: [groupId],
   });
-  const { groups } = useGetAssignableGroups();
+  const { groups } = useGetAssignableGroups<GroupId>();
 
   const [isPending, startTransition] = useTransition();
 

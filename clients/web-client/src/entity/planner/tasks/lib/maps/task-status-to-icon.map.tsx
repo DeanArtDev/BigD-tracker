@@ -9,7 +9,7 @@ import {
   Trash,
 } from 'lucide-react';
 import type { JSX } from 'react';
-import { TaskStatus } from '@/entity/schema-types';
+import { TaskStatus } from '@/shared/transport/graphql';
 import { cn } from '@/shared/ui-kit';
 
 const taskStatusToIconMap: Record<TaskStatus, (props: LucideProps) => JSX.Element> = {

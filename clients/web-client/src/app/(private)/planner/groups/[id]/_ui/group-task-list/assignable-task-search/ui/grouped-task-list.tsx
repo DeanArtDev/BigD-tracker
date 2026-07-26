@@ -1,6 +1,6 @@
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
-import { TaskPriority } from '@/entity/schema-types';
+import { TaskPriority } from '@/shared/transport/graphql';
 import { cn, Field, FieldContent, FieldLabel, Typography } from '@/shared/ui-kit';
 
 interface Task {

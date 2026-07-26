@@ -3,11 +3,13 @@ import { getEnvConfigClient } from './src/shared/lib/env-config.client';
 
 const envConfit = getEnvConfigClient();
 
-function makeIncrementalTypeLocal(_filePath: string, content: string): string {
+function makeIncrementalTypeLocal(_: string, content: string): string {
   return content
     .replace('export type Incremental<T>', 'type Incremental<T>')
     .replace('export type TaskPriority', 'type TaskPriority')
-    .replace('export type TaskStatus', 'type TaskStatus');
+    .replace('export type TaskStatus', 'type TaskStatus')
+    .replace('export type GroupTaskOrder', 'type GroupTaskOrder')
+    .replace('export type GroupStatus', 'type GroupStatus');
 }
 
 const config: CodegenConfig = {
@@ -17,13 +19,13 @@ const config: CodegenConfig = {
     beforeOneFileWrite: makeIncrementalTypeLocal,
   },
   generates: {
-    './src/entity/schema-types.ts': {
+    './src/shared/transport/graphql/schema-types.ts': {
       plugins: ['typescript'],
     },
     'src/': {
       preset: 'near-operation-file',
       presetConfig: {
-        baseTypesPath: '~@/entity/schema-types',
+        baseTypesPath: `~@/shared/transport/graphql/schema-types`,
         extension: '.generated.ts',
       },
       plugins: ['typescript-operations', 'typed-document-node'],

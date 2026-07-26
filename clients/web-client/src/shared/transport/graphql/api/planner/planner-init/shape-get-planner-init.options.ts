@@ -1,10 +1,18 @@
+import { Brand, Override } from '@/shared/lib';
 import { GetPlannerInitDocument, GetPlannerInitQueryVariables, GetPlannerInitQuery } from './schemas';
 import { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse } from '../../types';
 
 type OptionsResponse<TData> = AppQueryOptionsResponse<TData, GetPlannerInitQueryVariables>;
 type OptionsSuspenseResponse<TData> = AppSuspenseQueryOptionsResponse<TData, GetPlannerInitQueryVariables>;
 
-function shapeGetPlannerInitOptions<TData = GetPlannerInitQuery>() {
+type InitQuery<BrandGroup extends Brand<number, string>> = Override<
+  GetPlannerInitQuery,
+  {
+    getPlannerInit: Override<GetPlannerInitQuery['getPlannerInit'], { inboxId: BrandGroup }>;
+  }
+>;
+
+function shapeGetPlannerInitOptions<BrandGroup extends Brand<number, string>, TData = InitQuery<BrandGroup>>() {
   return {
     query: (additionalOptions?: Partial<OptionsResponse<TData>[1]>): OptionsResponse<TData> => {
       const options: OptionsResponse<TData>[1] = {
