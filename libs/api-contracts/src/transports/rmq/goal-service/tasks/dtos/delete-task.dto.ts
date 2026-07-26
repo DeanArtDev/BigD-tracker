@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsString, ValidateNested } from 'class-validator';
+import { TaskDto } from './task.dto';
 
 class DeleteTaskReqData {
   @IsString()
@@ -15,15 +16,10 @@ class DeleteTaskReq {
   data: DeleteTaskReqData;
 }
 
-class DeleteTaskResData {
-  @IsString()
-  id: string;
-}
-
 class DeleteTaskRes {
   @ValidateNested()
-  @Type(() => DeleteTaskResData)
-  data: DeleteTaskResData;
+  @Type(() => TaskDto)
+  data: TaskDto;
 }
 
 export { DeleteTaskRes, DeleteTaskReq };

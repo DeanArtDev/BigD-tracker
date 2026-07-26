@@ -15,20 +15,13 @@ const TASK_CREATE_MUTATION = gql`
   }
 `;
 
-const TASK_COPY_MUTATION = gql`
-  mutation CopyTask($input: TaskCopyInput!) {
-    copyTask(input: $input) {
-      id
-    }
-  }
-`;
-
 const TASK_UPDATE_MUTATION = gql`
   mutation UpdateTask($input: TaskUpdateInput!) {
     updateTask(input: $input) {
       id
       name
       description
+      cancelReason
       deadline
       priority
       startDate
@@ -47,13 +40,19 @@ const TASK_DELETE_MUTATION = gql`
 
 const TASK_ASSIGN_MUTATION = gql`
   mutation TaskAssign($input: TaskAssignInput!) {
-    assignTaskToGroup(input: $input)
+    assignTaskToGroup(input: $input) {
+      id
+      groupId
+    }
   }
 `;
 
 const TASK_UNASSIGN_MUTATION = gql`
   mutation TaskUnassign($input: TaskUnassignInput!) {
-    unassignTaskToGroup(input: $input)
+    unassignTaskToGroup(input: $input) {
+      id
+      groupId
+    }
   }
 `;
 
@@ -88,7 +87,6 @@ export {
   TASK_DELETE_MUTATION,
   TASK_ASSIGN_MUTATION,
   TASK_UNASSIGN_MUTATION,
-  TASK_COPY_MUTATION,
   TASK_BY_ID_QUERY,
   TASK_FINISH_MUTATION,
   TASK_UPDATE_MUTATION,

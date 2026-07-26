@@ -1,7 +1,5 @@
 'use client';
 
-import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { usePlannerInit } from '@/entity/planner/init';
 import {
   Task,
   TaskForm,
@@ -69,8 +67,7 @@ interface TaskUpdateDialogProps {
 function TaskUpdateDialog(props: TaskUpdateDialogProps) {
   const { task, open, onOpenChange, onSuccess } = props;
 
-  const { loading, client, updateTask } = useTaskUpdate();
-  const { data } = usePlannerInit();
+  const { loading, updateTask } = useTaskUpdate();
 
   const { promise } = useNotify();
 
@@ -87,16 +84,11 @@ function TaskUpdateDialog(props: TaskUpdateDialogProps) {
             promise(async () => {
               const response = await updateTask({
                 variables: { input: { id: task.id, weight: 100, name, description, deadline, startDate, priority } },
-                onCompleted: ({ updateTask: ok }) => {
-                  if (ok != null && data.inbox.id != null) {
-                    invalidateInboxTasks(client, data.inbox.id);
-                  }
-                },
               });
 
-              close();
               if (response.data?.updateTask != null) {
-                onSuccess?.();
+                close();
+                await onSuccess?.();
               }
             });
           }}

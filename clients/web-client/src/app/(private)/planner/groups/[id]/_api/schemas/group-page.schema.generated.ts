@@ -1,7 +1,7 @@
 /** Internal type. DO NOT USE DIRECTLY. */
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import * as Types from '@/entity/schema-types';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
@@ -20,10 +20,10 @@ export type GroupStatus = 'DONE' | 'IN_PROGRESS' | 'NOT_STARTED';
 export type GroupTaskOrder = 'Group';
 
 /** Приоритеты дела */
-export type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
+type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
 
 /** Статусы дела */
-export type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
+type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
 
 export type GetDetailedGroupByIdQueryVariables = Exact<{
   input: Types.GetGroupInput;

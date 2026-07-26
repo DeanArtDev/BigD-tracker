@@ -3,7 +3,7 @@ import { Field, InputType, Int, ObjectType, registerEnumType } from '@nestjs/gra
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 @ObjectType()
-class GroupInfoDto {
+class GroupInfoSchema {
   @Field(() => Int)
   @IsInt()
   id: number;
@@ -23,4 +23,4 @@ class GetGroupTasksInput {
   order?: GroupTaskOrder;
 }
 
-export { GroupInfoDto, GetGroupTasksInput };
+export { GroupInfoSchema, GetGroupTasksInput };

@@ -1,1 +1,1 @@
-export * from './group-create';
+export * from './group-create-dialog';

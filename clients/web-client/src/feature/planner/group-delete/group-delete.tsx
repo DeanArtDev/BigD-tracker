@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
-import { GroupCacheManager, GroupId, useGroupDelete } from '@/entity/planner/groups';
+import { GroupId, useGroupDelete } from '@/entity/planner/groups';
 import { GroupTaskCount } from '@/feature/planner/group-delete/group-task-count';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
+import { GroupCacheManager } from '@/shared/transport/graphql';
 
 function useGroupDeleteFeature() {
   const { deleteGroup, client, loading: isGroupDeleteLoading } = useGroupDelete();

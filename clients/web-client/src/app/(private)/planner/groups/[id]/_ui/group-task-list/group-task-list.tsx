@@ -1,10 +1,11 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { GroupCacheManager, GroupId } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import { useGroupUpdateFeature } from '@/feature/planner/group-update';
 import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
 import { useTaskUpdateContext } from '@/feature/planner/task-update';
+import { GroupCacheManager } from '@/shared/transport/graphql';
 import { DataLoader, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { EmptyTasksElement } from './empty-tasks-element';
 import { GroupTaskListForm } from './group-task-list-form';
@@ -20,7 +21,7 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
   const { openTaskUpdate } = useTaskUpdateContext();
 
   const { updateGroup } = useGroupUpdateFeature();
-  const { unassignTaskFromGroup, client } = useTaskUnassignFromGroup();
+  const { unassignTaskFromGroup, client, loading: isTaskUnassignLoading } = useTaskUnassignFromGroup();
   const [targetTask, setTargetTask] = useState<DetailedGroupTask | null>(null);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -45,24 +46,25 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
                 onContentClick={(task) => void openTaskUpdate(task)}
                 onHeaderClick={() => void console.log('header click')}
                 onUnassign={(task) => {
+                  if (isTaskUnassignLoading) return;
                   setTargetTask(task);
                   unassignTaskFromGroup(
                     { taskId: task.id, groupId },
                     {
                       onSuccess: () => {
-                        GroupCacheManager.removeGroupTask(client.cache, { groupId, taskId: task.id });
-                        GroupCacheManager.changeGroupTaskCount(client.cache, { groupId, delta: -1 });
+                        GroupCacheManager.refetchGroupTasks(client, { groupId });
+                        setTargetTask(null);
                       },
                     },
-                  ).finally(() => void setTargetTask(null));
+                  );
                 }}
                 onTasksUpdate={(ids) => {
                   if (group != null) {
                     updateGroup({
                       id: group.id,
                       name: group.name,
-                      description: group.description ?? undefined,
                       taskIds: ids,
+                      description: undefined,
                     });
                   }
                 }}

@@ -242,7 +242,11 @@ describe('FinishTaskUseCase', () => {
     expect(trxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
     expect(result).toMatchObject({
-      id: TaskIdBuilder.wrapOriginId(9001),
+      id: TaskIdBuilder.wrapOverrideId({
+        recurrenceId,
+        overrideId: 9001,
+        date: DateVo.format(recurrenceStart),
+      }),
       userId,
       name: 'Virtual source',
       description: 'virtual source description',
@@ -376,7 +380,11 @@ describe('FinishTaskUseCase', () => {
     expect(trxArg).toBe(trx);
     expect(tasksWriteRepo.replaceTask).not.toHaveBeenCalled();
     expect(result).toMatchObject({
-      id: TaskIdBuilder.wrapOriginId(overrideId),
+      id: TaskIdBuilder.wrapOverrideId({
+        recurrenceId,
+        overrideId,
+        date: DateVo.format(recurrenceStart),
+      }),
       userId,
       name: 'Override task',
       description: 'override description',

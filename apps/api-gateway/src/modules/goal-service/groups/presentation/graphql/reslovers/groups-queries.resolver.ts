@@ -16,7 +16,7 @@ import {
   GetGroupInput,
   GetGroupListInput,
   GroupSchema,
-  GroupInfoDto,
+  GroupInfoSchema,
   GetGroupTasksInput,
   GroupsConnection,
 } from '../schemas';
@@ -25,8 +25,8 @@ import {
 export class GroupsQueriesResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
-  @Query(() => [GroupInfoDto])
-  async getAssignableGroups(@TokenPayload() { uid }: AccessTokenPayload): Promise<GroupInfoDto[]> {
+  @Query(() => [GroupInfoSchema])
+  async getAssignableGroups(@TokenPayload() { uid }: AccessTokenPayload): Promise<GroupInfoSchema[]> {
     const { data } = await this.goalClient.send<GoalGetAssignableGroups.Response, GoalGetAssignableGroups.Request>(
       GoalGetAssignableGroups.pattern,
       { data: { userId: uid } },

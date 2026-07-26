@@ -4,6 +4,7 @@ import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { TasksViewMapper, TaskView } from '../../dto';
 import { GroupCheckerService, TaskCheckerService, TaskOverrideService, TaskTypeService } from '../../services';
 import { AssignTaskToGroupCommand } from './assign-task-to-group.command';
 
@@ -19,7 +20,7 @@ class AssignTaskToGroupUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute({ input }: AssignTaskToGroupCommand): Promise<{ success: boolean }> {
+  async execute({ input }: AssignTaskToGroupCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, groupId, userId } = input;
 
@@ -29,7 +30,7 @@ class AssignTaskToGroupUseCase {
       if (isOrigin) {
         const sureTask = await this.taskCheckerService.ensureTaskExists({ taskId: data.id, userId }, { trx });
         const assignedTask = TaskFactory.assignToGroup(sureTask, groupId);
-        await this.tasksWriteRepo.replaceTask(assignedTask, trx);
+        const savedTask = await this.tasksWriteRepo.replaceTask(assignedTask, trx);
 
         if (sureTask.recurrenceId != null) {
           await this.taskOverrideService.updateGroupIdForManyOverrides(
@@ -37,7 +38,7 @@ class AssignTaskToGroupUseCase {
             trx,
           );
         }
-        return { success: true };
+        return TasksViewMapper.fromAggregateToView(savedTask, null);
       }
 
       if (isVirtual || isOverride) {
@@ -50,13 +51,13 @@ class AssignTaskToGroupUseCase {
           { trx },
         );
         const assignedTask = TaskFactory.assignToGroup(sourceTask, groupId);
-        await this.tasksWriteRepo.replaceTask(assignedTask, trx);
+        const savedTask = await this.tasksWriteRepo.replaceTask(assignedTask, trx);
         await this.taskOverrideService.updateGroupIdForManyOverrides(
           { userId, groupId, recurrenceId: recurrence.id },
           trx,
         );
 
-        return { success: true };
+        return TasksViewMapper.fromAggregateToView(savedTask, null);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

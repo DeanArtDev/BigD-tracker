@@ -11,18 +11,8 @@ import { TaskSearchInput } from './ui/task-search-input';
 interface AssignableTaskSearchProps {
   readonly groupId: GroupId;
   readonly loading: boolean;
-  readonly onTaskSelect: (task: { id: TaskId; name: string }) => void;
+  readonly onTaskSelect: (task: { id: TaskId; name: string; groupId?: GroupId }) => void;
 }
-
-/*TODO:
- *
- * [x] truncate
- * [x] priority
- * [x] useTransition with spinner
- * [x] close by Esc or X at the top right corner of the screen
- * [] release backend
- *
- * */
 
 function AssignableTaskSearch({ groupId, loading, onTaskSelect }: AssignableTaskSearchProps) {
   const [search, setSearch] = useState('');
@@ -51,7 +41,8 @@ function AssignableTaskSearch({ groupId, loading, onTaskSelect }: AssignableTask
 
       for (const task of assignableTasks) {
         if (task.groupId != null) {
-          map.has(task.groupId) ? map.get(task.groupId)?.push(task) : map.set(task.groupId, [task]);
+          if (map.has(task.groupId)) map.get(task.groupId)?.push(task);
+          else map.set(task.groupId, [task]);
         } else {
           groupFreeTasks.push(task);
         }

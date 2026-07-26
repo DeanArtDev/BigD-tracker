@@ -9,7 +9,7 @@ import {
   useExtendApolloErrorResult,
 } from '@/shared/transport/graphql';
 
-type AssignableTask = Override<BrandTask<GetAssignableTasksQuery['getAssignableTasks'][0]>, { groupId: GroupId }>;
+type AssignableTask = Override<BrandTask<GetAssignableTasksQuery['getAssignableTasks'][0]>, { groupId?: GroupId }>;
 const EMPTY: AssignableTask[] = [];
 
 function useGetAssignableTasks(input: { search?: string; groupIds?: GroupId[] }) {

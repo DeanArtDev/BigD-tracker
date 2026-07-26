@@ -84,8 +84,8 @@ export type GroupDeleteInput = {
   groupId: Scalars['Int']['input'];
 };
 
-export type GroupInfoDto = {
-  __typename?: 'GroupInfoDto';
+export type GroupInfoSchema = {
+  __typename?: 'GroupInfoSchema';
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
 };
@@ -153,16 +153,16 @@ export type MeRes = {
 export type Mutation = {
   __typename?: 'Mutation';
   /** Добавить дело в группу */
-  assignTaskToGroup: Scalars['Boolean']['output'];
+  assignTaskToGroup: TaskSchema;
   /** Полное удаление дела */
   completeDeleteTask: Scalars['Int']['output'];
   /** Копирование дела */
   copyTask: TaskSchema;
   /** Создание группы */
   createGroup: GroupSchema;
-  /** Выход пользователя из системы на одном устройстве */
+  /** Создание дела */
   createTask: TaskSchema;
-  /** Выход пользователя из системы на одном устройстве */
+  /** Удаление дела */
   deleteTask: TaskSchema;
   /** Завершение дела */
   finishTask: TaskSchema;
@@ -173,7 +173,7 @@ export type Mutation = {
   /** Восстановление дела */
   taskRecovery: Scalars['Int']['output'];
   /** Удалить дело из группы */
-  unassignTaskToGroup: Scalars['Boolean']['output'];
+  unassignTaskToGroup: TaskSchema;
   /** Редактирование группы */
   updateGroup: GroupSchema;
   /** Редактирование дела */
@@ -238,7 +238,7 @@ export type MutationUserLoginArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getAssignableGroups: Array<GroupInfoDto>;
+  getAssignableGroups: Array<GroupInfoSchema>;
   /** Получение списка дел, доступных для назначения в группу */
   getAssignableTasks: Array<TaskSchema>;
   /** Получение группы */

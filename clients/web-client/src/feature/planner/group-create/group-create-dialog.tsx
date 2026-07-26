@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { invalidateGroupList, useGroupCreate } from '@/entity/planner/groups';
+import { useGroupCreate } from '@/entity/planner/groups';
 import { useNotify } from '@/shared/lib';
+import { GroupCacheManager } from '@/shared/transport/graphql';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@/shared/ui-kit';
 import { GroupForm } from './group-form/group-form';
 
-function GroupCreate() {
+function GroupCreateDialog() {
   const [open, setOpen] = useState(false);
   const { promise } = useNotify();
   const { createGroup, client, loading: isGroupCreateLoading } = useGroupCreate();
@@ -26,17 +27,17 @@ function GroupCreate() {
           loading={isGroupCreateLoading}
           onSubmit={(fromData) => {
             promise(
-              async () =>
-                await createGroup({
-                  awaitRefetchQueries: true,
-                  variables: { input: { name: fromData.name } },
-                  onCompleted: async ({ createGroup: data }) => {
-                    if (data.id != null) {
-                      setOpen(false);
-                      await invalidateGroupList(client);
-                    }
-                  },
-                }),
+              createGroup({
+                awaitRefetchQueries: true,
+                variables: { input: { name: fromData.name } },
+                onCompleted: async ({ createGroup: data }) => {
+                  if (data.id != null) {
+                    setOpen(false);
+                    GroupCacheManager.refetchGroupList(client);
+                    GroupCacheManager.refetchAssignableGroups(client);
+                  }
+                },
+              }),
             );
           }}
         />
@@ -45,4 +46,4 @@ function GroupCreate() {
   );
 }
 
-export { GroupCreate };
+export { GroupCreateDialog };

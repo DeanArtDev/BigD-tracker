@@ -1,13 +1,12 @@
 import { Plus } from 'lucide-react';
 import { ComponentProps } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { MaybePromise } from '@/shared/lib';
 import { Button } from '@/shared/ui-kit';
-import { useTaskCreateContext } from '../context/task-create.context';
+import { SuccessHandler, useTaskCreateContext } from '../context/task-create.context';
 
 interface TaskCreateTriggerProps extends ComponentProps<typeof Button> {
   readonly groupId?: GroupId;
-  readonly onSuccess?: () => MaybePromise<void>;
+  readonly onSuccess?: SuccessHandler;
 }
 
 function TaskCreateTrigger({ groupId, onSuccess, ...buttonProps }: TaskCreateTriggerProps) {

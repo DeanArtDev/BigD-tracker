@@ -27,7 +27,7 @@ function GroupName({ id, name }: GroupNameProps) {
           name={name}
           loading={isGroupUpdateLoading}
           onIsEditChange={setIsEdit}
-          onNameChange={(name) => void updateGroup({ name, id, description: undefined })}
+          onNameChange={(name) => void updateGroup({ name, id, description: undefined, taskIds: undefined })}
         />
       </Typography.H1>
 
@@ -36,7 +36,7 @@ function GroupName({ id, name }: GroupNameProps) {
           loading={isGroupUpdateLoading || isGroupDeleteLoading}
           onDelete={() =>
             deleteGroup(id, {
-              onSuccess: async () => {
+              onSuccess: () => {
                 router.replace(routes.plannerGroupList.path);
               },
             })

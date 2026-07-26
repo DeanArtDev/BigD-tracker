@@ -1,6 +1,6 @@
 'use client';
 
-import { GroupId, invalidateGroup } from '@/entity/planner/groups';
+import { GroupId } from '@/entity/planner/groups';
 import {
   TaskForm,
   TaskFormFieldProvider,
@@ -12,6 +12,7 @@ import {
 } from '@/entity/planner/tasks';
 import { MaybePromise, useNotify } from '@/shared/lib';
 import { AppDialog, useConfirmDialog } from '@/shared/project-ui';
+import { SuccessHandler } from './context/task-create.context';
 
 interface ComponentProps {
   readonly open: boolean;
@@ -61,13 +62,13 @@ interface TaskCreateDialogProps {
   readonly groupId?: GroupId;
 
   readonly onOpenChange: ComponentProps['onOpenChange'];
-  readonly onSuccess?: () => MaybePromise<void>;
+  readonly onSuccess?: SuccessHandler;
 }
 
 function TaskCreateDialog(props: TaskCreateDialogProps) {
   const { groupId, open, onOpenChange, onSuccess } = props;
 
-  const { loading, client, createTask } = useTaskCreate();
+  const { loading, createTask } = useTaskCreate();
 
   const { promise } = useNotify();
 
@@ -86,10 +87,7 @@ function TaskCreateDialog(props: TaskCreateDialogProps) {
 
                 onCompleted: async ({ createTask: ok }) => {
                   if (ok != null) {
-                    if (ok.groupId != null) {
-                      await invalidateGroup(client.cache, ok.groupId as GroupId);
-                    }
-                    await onSuccess?.();
+                    await onSuccess?.(ok);
                     close();
                   }
                 },
@@ -102,4 +100,4 @@ function TaskCreateDialog(props: TaskCreateDialogProps) {
   );
 }
 
-export { TaskCreateDialog };
+export { TaskCreateDialog, type TaskCreateDialogProps };

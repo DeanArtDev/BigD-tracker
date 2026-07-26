@@ -1,11 +1,19 @@
+import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { TaskPriority } from '@/entity/schema-types';
 import { cn, Field, FieldContent, FieldLabel, Typography } from '@/shared/ui-kit';
 
+interface Task {
+  readonly id: TaskId;
+  readonly name: string;
+  readonly priority: TaskPriority;
+  readonly groupId?: GroupId;
+}
+
 interface GroupedTaskListProps {
   readonly groupName: string;
-  readonly tasks: { id: TaskId; name: string; priority: TaskPriority }[];
-  readonly onTaskSelect: (task: { id: TaskId; name: string }) => void;
+  readonly tasks: Task[];
+  readonly onTaskSelect: (task: Task) => void;
 }
 
 function GroupedTaskList({ groupName, tasks, onTaskSelect }: GroupedTaskListProps) {
@@ -17,7 +25,7 @@ function GroupedTaskList({ groupName, tasks, onTaskSelect }: GroupedTaskListProp
 
       <FieldContent className="task-container">
         <ul className="flex flex-col">
-          {tasks.map(({ id, name, priority }) => {
+          {tasks.map(({ id, name, priority, groupId }) => {
             return (
               <span
                 key={id}
@@ -31,7 +39,7 @@ function GroupedTaskList({ groupName, tasks, onTaskSelect }: GroupedTaskListProp
                     [`before:bg-(--priority-3)`]: priority === TaskPriority.Delegate,
                   },
                 )}
-                onClick={() => void onTaskSelect({ id, name })}
+                onClick={() => void onTaskSelect({ id, name, priority, groupId })}
               >
                 {name}
               </span>

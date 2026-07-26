@@ -1,7 +1,7 @@
 /** Internal type. DO NOT USE DIRECTLY. */
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import * as Types from '@/entity/schema-types';
 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
@@ -15,10 +15,6 @@ export type RecurrenceFrequency = 'DAILY' | 'HOURLY' | 'MINUTELY' | 'MONTHLY' | 
 export type TaskAssignInput = {
   groupId: number;
   taskId: string;
-};
-
-export type TaskCopyInput = {
-  id: string;
 };
 
 export type TaskCreateInput = {
@@ -44,7 +40,7 @@ export type TaskFinishInput = {
 export type TaskFinishStatus = 'CANCELED' | 'COMPLETED' | 'OVERDUE';
 
 /** Приоритеты дела */
-export type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
+type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
 
 /** День недели повторения дела */
 export type TaskRecurrenceWeekday = 'FR' | 'MO' | 'SA' | 'SU' | 'TH' | 'TU' | 'WE';
@@ -60,7 +56,7 @@ export type TaskRecurrencyInput = {
 };
 
 /** Статусы дела */
-export type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
+type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
 
 export type TaskUnassignInput = {
   groupId: number;
@@ -95,12 +91,6 @@ export type CreateTaskMutation = {
   };
 };
 
-export type CopyTaskMutationVariables = Exact<{
-  input: Types.TaskCopyInput;
-}>;
-
-export type CopyTaskMutation = { copyTask: { id: string } };
-
 export type UpdateTaskMutationVariables = Exact<{
   input: Types.TaskUpdateInput;
 }>;
@@ -110,6 +100,7 @@ export type UpdateTaskMutation = {
     id: string;
     name: string;
     description: string | null;
+    cancelReason: string | null;
     deadline: string | null;
     priority: Types.TaskPriority;
     startDate: string | null;
@@ -127,13 +118,13 @@ export type TaskAssignMutationVariables = Exact<{
   input: Types.TaskAssignInput;
 }>;
 
-export type TaskAssignMutation = { assignTaskToGroup: boolean };
+export type TaskAssignMutation = { assignTaskToGroup: { id: string; groupId: number | null } };
 
 export type TaskUnassignMutationVariables = Exact<{
   input: Types.TaskUnassignInput;
 }>;
 
-export type TaskUnassignMutation = { unassignTaskToGroup: boolean };
+export type TaskUnassignMutation = { unassignTaskToGroup: { id: string; groupId: number | null } };
 
 export type TaskFinishMutationVariables = Exact<{
   input: Types.TaskFinishInput;
@@ -205,43 +196,6 @@ export const CreateTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
-export const CopyTaskDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CopyTask' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskCopyInput' } } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'copyTask' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<CopyTaskMutation, CopyTaskMutationVariables>;
 export const UpdateTaskDocument = {
   kind: 'Document',
   definitions: [
@@ -275,6 +229,7 @@ export const UpdateTaskDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
@@ -351,6 +306,13 @@ export const TaskAssignDocument = {
                 value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
               },
             ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+              ],
+            },
           },
         ],
       },
@@ -387,6 +349,13 @@ export const TaskUnassignDocument = {
                 value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
               },
             ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+              ],
+            },
           },
         ],
       },

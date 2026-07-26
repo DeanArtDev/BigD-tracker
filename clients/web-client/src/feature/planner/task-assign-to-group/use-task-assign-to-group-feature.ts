@@ -1,34 +1,36 @@
 import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { invalidateInboxTasks } from '@/entity/planner/inbox';
-import { invalidatePlannerInit, usePlannerInit } from '@/entity/planner/init';
 import { TaskId, useTaskAssign } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 
+type AssignTaskHandlerParams = {
+  readonly task: {
+    readonly groupId?: GroupId;
+    readonly id: TaskId;
+  };
+  readonly groupId: GroupId;
+};
+
 function useTaskAssignToGroupFeature() {
   const { assignTask, client, ...rest } = useTaskAssign();
-  const { data } = usePlannerInit();
   const [loading, setLoading] = useState(false);
 
   const assignToGroup = useCallback(
     async (
-      { groupId, taskId }: { taskId: TaskId; groupId: GroupId },
-      params?: { onSuccess?: () => MaybePromise<void> },
+      { groupId, task }: AssignTaskHandlerParams,
+      params?: { onSuccess?: (data: AssignTaskHandlerParams) => MaybePromise<void> },
     ) => {
-      try {
-        setLoading(true);
-        const response = await assignTask({
-          variables: { input: { groupId, taskId } },
-        });
-        if (!response.data?.assignTaskToGroup || data?.inbox.id == null) return;
-        await invalidateInboxTasks(client, data.inbox.id);
-        await invalidatePlannerInit(client.cache);
-        await params?.onSuccess?.();
-      } finally {
-        setLoading(false);
-      }
+      assignTask({
+        variables: { input: { groupId, taskId: task.id } },
+        onCompleted: async ({ assignTaskToGroup: ok }) => {
+          if (ok != null) {
+            await params?.onSuccess?.({ groupId, task });
+          }
+          setLoading(false);
+        },
+      });
     },
-    [assignTask, client, data.inbox.id],
+    [assignTask],
   );
 
   return {

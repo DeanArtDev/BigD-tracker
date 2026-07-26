@@ -2,6 +2,7 @@ import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { TasksViewMapper, TaskView } from '../../dto';
 import { ExceptionTaskUnprocessable } from '../../exceptions';
 import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import { GroupCheckerService, TaskCheckerService, TaskOverrideService, TaskTypeService } from '../../services';
@@ -19,7 +20,7 @@ class UnassignTaskFromGroupUseCase {
     @Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase,
   ) {}
 
-  async execute({ input }: UnassignTaskFromGroupCommand): Promise<{ success: boolean }> {
+  async execute({ input }: UnassignTaskFromGroupCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, groupId, userId } = input;
       const { isOrigin, isVirtual, isOverride, data } = this.taskTypeService.getType({ taskId });
@@ -29,7 +30,7 @@ class UnassignTaskFromGroupUseCase {
         await this.groupCheckerService.ensureTaskInGroup({ groupId, userId, taskId: data.id }, { trx });
 
         const task = TaskFactory.unassignFromGroup(sureTask);
-        await this.tasksWriteRepo.replaceTask(task, trx);
+        const savedTask = await this.tasksWriteRepo.replaceTask(task, trx);
 
         if (sureTask.recurrenceId != null) {
           await this.taskOverrideService.updateGroupIdForManyOverrides(
@@ -38,7 +39,7 @@ class UnassignTaskFromGroupUseCase {
           );
         }
 
-        return { success: true };
+        return TasksViewMapper.fromAggregateToView(savedTask, null);
       }
 
       if (isVirtual || isOverride) {
@@ -52,13 +53,13 @@ class UnassignTaskFromGroupUseCase {
         );
         await this.groupCheckerService.ensureTaskInGroup({ groupId, userId, taskId: sourceTask.id }, { trx });
         const unassignedTask = TaskFactory.unassignFromGroup(sourceTask);
-        await this.tasksWriteRepo.replaceTask(unassignedTask, trx);
+        const savedTask = await this.tasksWriteRepo.replaceTask(unassignedTask, trx);
         await this.taskOverrideService.updateGroupIdForManyOverrides(
           { userId, groupId: undefined, recurrenceId: recurrence.id },
           trx,
         );
 
-        return { success: true };
+        return TasksViewMapper.fromAggregateToView(savedTask, null);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });

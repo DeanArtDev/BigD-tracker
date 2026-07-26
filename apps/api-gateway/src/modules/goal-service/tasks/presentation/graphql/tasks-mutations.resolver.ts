@@ -33,7 +33,7 @@ class TasksMutationsResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
   @Mutation(() => TaskSchema, {
-    description: 'Выход пользователя из системы на одном устройстве',
+    description: 'Создание дела',
   })
   async createTask(
     @Args('input') input: TaskCreateInput,
@@ -85,12 +85,12 @@ class TasksMutationsResolver {
   }
 
   @Mutation(() => TaskSchema, {
-    description: 'Выход пользователя из системы на одном устройстве',
+    description: 'Удаление дела',
   })
   async deleteTask(
     @Args('input') input: TaskDeleteInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GoalDeleteTask.Response['data']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalDeleteTask.Response, GoalDeleteTask.Request>(
       GoalDeleteTask.pattern,
       {
@@ -101,7 +101,7 @@ class TasksMutationsResolver {
       },
     );
 
-    return data;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
   @Mutation(() => TaskSchema, {
@@ -184,13 +184,13 @@ class TasksMutationsResolver {
     return data.id;
   }
 
-  @Mutation(() => Boolean, {
+  @Mutation(() => TaskSchema, {
     description: 'Добавить дело в группу',
   })
   async assignTaskToGroup(
     @Args('input') input: TaskAssignInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<boolean> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
       GoalAssignTaskToGroup.pattern,
       {
@@ -202,16 +202,16 @@ class TasksMutationsResolver {
       },
     );
 
-    return data.success;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
-  @Mutation(() => Boolean, {
+  @Mutation(() => TaskSchema, {
     description: 'Удалить дело из группы',
   })
   async unassignTaskToGroup(
     @Args('input') input: TaskUnassignInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<boolean> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
       GoalUnassignTaskFromGroup.pattern,
       {
@@ -223,7 +223,7 @@ class TasksMutationsResolver {
       },
     );
 
-    return data.success;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 }
 

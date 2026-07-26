@@ -1,17 +1,26 @@
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { getClient } from '@/shared/transport/graphql/server';
-import { shapeGetDetailedGroupOptions } from '../_api';
-import { GroupByIdHydrator } from './group-by-id.hydrate';
+import { GroupTaskOrder } from '@/entity/schema-types';
+import { shapeGetDetailedGroupOptions } from '@/shared/transport/graphql';
+import { PreloadQuery } from '@/shared/transport/graphql/server';
+import { DataLoader } from '@/shared/ui-kit';
 
 async function GroupByIdPrefetch({ groupId, children }: { groupId: GroupId; children: ReactNode }) {
-  const client = await getClient();
-  const { data } = await client.query({
-    ...shapeGetDetailedGroupOptions({ groupId }),
-    errorPolicy: 'ignore',
-  });
+  const [query, options] = shapeGetDetailedGroupOptions(
+    { groupId, order: GroupTaskOrder.Group },
+    { errorPolicy: 'ignore' },
+  );
 
-  return <GroupByIdHydrator data={data}>{children}</GroupByIdHydrator>;
+  return (
+    <PreloadQuery
+      query={query}
+      variables={options.variables}
+      errorPolicy={options.errorPolicy}
+      context={options.context}
+    >
+      <Suspense fallback={<DataLoader.Loading />}>{children}</Suspense>
+    </PreloadQuery>
+  );
 }
 
 export { GroupByIdPrefetch };

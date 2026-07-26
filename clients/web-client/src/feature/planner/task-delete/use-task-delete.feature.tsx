@@ -1,9 +1,8 @@
 import { useCallback, useState } from 'react';
-import { invalidatePlannerInit } from '@/entity/planner/init';
 import { TaskId, useTaskDelete } from '@/entity/planner/tasks';
-import { TaskSchema } from '@/entity/schema-types';
 import { useNotify } from '@/shared/lib';
 import { useConfirmDialog } from '@/shared/project-ui';
+import { PlannerInitCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
 import { Typography } from '@/shared/ui-kit';
 
 function useTaskDeleteFeature() {
@@ -30,9 +29,8 @@ function useTaskDeleteFeature() {
               if (response.data?.deleteTask != null) {
                 const id = response.data?.deleteTask.id;
                 if (id == null) return;
-                await invalidatePlannerInit(rest.client.cache);
-                const __typename: TaskSchema['__typename'] = 'TaskSchema';
-                rest.client.cache.evict({ id: rest.client.cache.identify({ __typename, id }) });
+                PlannerInitCacheManager.refetch(rest.client);
+                TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
               }
             } finally {
               setLoading(false);
@@ -50,7 +48,7 @@ function useTaskDeleteFeature() {
         },
       });
     },
-    [deleteTask, promise, rest.client.cache, viaConfirmation],
+    [deleteTask, promise, rest.client, viaConfirmation],
   );
 
   return { deleteTask: deleteTaskHandler, ...rest, loading: loading || rest.loading };

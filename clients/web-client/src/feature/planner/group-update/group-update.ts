@@ -1,7 +1,15 @@
 import { useCallback } from 'react';
-import { GroupCacheManager, GroupId, useGroupUpdate } from '@/entity/planner/groups';
+import { GroupId, useGroupUpdate } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { useNotify } from '@/shared/lib';
+import { GroupCacheManager } from '@/shared/transport/graphql';
+
+type GroupUpdateHandlerParams = {
+  readonly id: GroupId;
+  readonly name: string;
+  readonly description: string | undefined | null;
+  readonly taskIds: { readonly id: TaskId }[] | undefined;
+};
 
 function useGroupUpdateFeature(options: { showToast?: boolean } = { showToast: true }) {
   const { showToast } = options;
@@ -10,7 +18,7 @@ function useGroupUpdateFeature(options: { showToast?: boolean } = { showToast: t
   const { promise } = useNotify();
 
   const handleGroupUpdate = useCallback(
-    (input: { name: string; id: GroupId; description: string | undefined | null; taskIds?: { id: TaskId }[] }) => {
+    (input: GroupUpdateHandlerParams) => {
       const mutation = async () => {
         const result = await updateGroup({
           variables: {

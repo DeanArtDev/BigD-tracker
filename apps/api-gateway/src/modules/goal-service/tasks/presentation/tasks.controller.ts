@@ -295,7 +295,7 @@ export class TasksController {
     @Param('taskId') taskId: string,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<AssignTaskToGroupRes> {
-    return await this.goalClient.send<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
+    await this.goalClient.send<GoalAssignTaskToGroup.Response, GoalAssignTaskToGroup.Request>(
       GoalAssignTaskToGroup.pattern,
       {
         data: {
@@ -305,6 +305,8 @@ export class TasksController {
         },
       },
     );
+
+    return { data: { success: true } };
   }
 
   @Post('/:taskId/groups/:groupId/unassign')
@@ -320,7 +322,7 @@ export class TasksController {
     @Param('taskId') taskId: string,
     @Param('groupId', ParseIntPipe) groupId: number,
   ): Promise<UnassignTaskFromGroupRes> {
-    return await this.goalClient.send<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
+    await this.goalClient.send<GoalUnassignTaskFromGroup.Response, GoalUnassignTaskFromGroup.Request>(
       GoalUnassignTaskFromGroup.pattern,
       {
         data: {
@@ -330,6 +332,8 @@ export class TasksController {
         },
       },
     );
+
+    return { data: { success: true } };
   }
 
   @Put('/:taskId')
