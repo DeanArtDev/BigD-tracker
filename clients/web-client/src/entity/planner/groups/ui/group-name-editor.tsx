@@ -32,7 +32,7 @@ function GroupNameEditor({ name, isEdit, className, loading, onNameChange, onIsE
           <Input
             autoFocus
             name={`name:${name}`}
-            className="font-normal"
+            className="font-normal ml-1"
             disabled={loading}
             value={draftName}
             aria-invalid={!isNameValid}
