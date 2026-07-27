@@ -4,9 +4,12 @@ import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { Override } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
-import { GroupTaskOrder } from '@/shared/transport/graphql';
-import { shapeGetDetailedGroupOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
-import { GetDetailedGroupByIdQuery } from './schemas/group-page.schema.generated';
+import {
+  GetDetailedGroupByIdQuery,
+  GroupTaskOrder,
+  shapeGetDetailedGroupOptions,
+  useExtendApolloErrorResult,
+} from '@/shared/transport/graphql';
 
 type DetailedGroupTask = Override<
   GetDetailedGroupByIdQuery['getGroup']['tasks']['items'][0],

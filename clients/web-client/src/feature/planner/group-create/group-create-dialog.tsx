@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNotify } from '@/shared/lib';
+import { useNotify } from '@/shared/project-ui';
 import { GroupCacheManager } from '@/shared/transport/graphql';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@/shared/ui-kit';
 import { useGroupCreate } from './api/use-group-create';

@@ -10,16 +10,7 @@ const GET_DETAILED_GROUP_QUERY = gql`
       progress
       tasks(input: $tasksInput) {
         items {
-          id
-          name
-          status
-          priority
-          description
-          startDate
-          deadline
-          endDate
-          cancelReason
-          groupId
+          ...TaskFragment
         }
       }
     }

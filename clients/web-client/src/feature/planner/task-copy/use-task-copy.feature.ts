@@ -1,7 +1,12 @@
 import { useCallback, useState } from 'react';
 import { TaskId } from '@/entity/planner/tasks';
-import { useNotify } from '@/shared/lib';
-import { GroupCacheManager, InboxGroupCacheManager, PlannerInitCacheManager } from '@/shared/transport/graphql';
+import { useNotify } from '@/shared/project-ui';
+import {
+  GroupCacheManager,
+  InboxGroupCacheManager,
+  PlannerInitCacheManager,
+  TaskCacheManager,
+} from '@/shared/transport/graphql';
 import { useTaskCopy } from './api/use-task-copy';
 
 function useTaskCopyFeature() {
@@ -30,7 +35,9 @@ function useTaskCopyFeature() {
             GroupCacheManager.insertTaskAfterTarget(rest.client.cache, {
               targetTaskId: id,
               clonedTaskId: taskData.id,
+              groupId: taskData.groupId,
             });
+            TaskCacheManager.refetchAssignableTasks(rest.client);
           }
         } finally {
           setLoading(false);

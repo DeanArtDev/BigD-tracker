@@ -17,7 +17,8 @@ function GroupsPageHeader() {
         <TaskCreateTrigger
           groupId={params?.id}
           onSuccess={async (data) => {
-            TaskCacheManager.refetchTask(client, { taskId: data.id });
+            await TaskCacheManager.refetchTask(client, { taskId: data.id });
+            await TaskCacheManager.refetchAssignableTasks(client);
             if (data?.groupId != null) {
               GroupCacheManager.refetchGroup(client, { groupId: data.groupId });
             }

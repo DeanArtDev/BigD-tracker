@@ -2,7 +2,7 @@
 
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
-import { useNotify } from '@/shared/lib';
+import { useNotify } from '@/shared/project-ui';
 import { Button } from '@/shared/ui-kit';
 
 interface Props {

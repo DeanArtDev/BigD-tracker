@@ -3,7 +3,7 @@ import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { shapeTaskUnassignOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
 
 function useTaskUnassign() {
-  const [unassignTask, rest] = useMutation(...shapeTaskUnassignOptions({ awaitRefetchQueries: true }));
+  const [unassignTask, rest] = useMutation(...shapeTaskUnassignOptions());
 
   const { appErrors } = useExtendApolloErrorResult(rest.error);
   useExceptionNotificator({

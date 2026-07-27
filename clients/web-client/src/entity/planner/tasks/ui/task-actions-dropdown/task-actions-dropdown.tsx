@@ -42,7 +42,7 @@ function TaskActionsDropdown({
   const actions = [
     {
       element: (
-        <TaskAction action={TaskActionType.Recover} loading={loading} key="recover" onClick={onRecover}>
+        <TaskAction action={TaskActionType.Recover} key="recover" onClick={onRecover}>
           {capitalize(taskActionToHumanize[TaskActionType.Recover])}
         </TaskAction>
       ),
@@ -51,7 +51,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction action={TaskActionType.Finish} loading={loading} key="finish" onClick={onFinish}>
+        <TaskAction action={TaskActionType.Finish} key="finish" onClick={onFinish}>
           {capitalize(taskActionToHumanize[TaskActionType.Finish])}
         </TaskAction>
       ),
@@ -60,7 +60,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction action={TaskActionType.Clone} loading={loading} key="clone" onClick={onCopy}>
+        <TaskAction action={TaskActionType.Clone} key="clone" onClick={onCopy}>
           {capitalize(taskActionToHumanize[TaskActionType.Clone])}
         </TaskAction>
       ),
@@ -69,7 +69,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction action={TaskActionType.Unassign} loading={loading} key="unassign" onClick={onUnassign}>
+        <TaskAction action={TaskActionType.Unassign} key="unassign" onClick={onUnassign}>
           {capitalize(taskActionToHumanize[TaskActionType.Unassign])}
         </TaskAction>
       ),
@@ -78,7 +78,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction action={TaskActionType.Assign} loading={loading} key="assign" onClick={onAssign}>
+        <TaskAction action={TaskActionType.Assign} key="assign" onClick={onAssign}>
           {capitalize(taskActionToHumanize[TaskActionType.Assign])}
         </TaskAction>
       ),
@@ -92,7 +92,6 @@ function TaskActionsDropdown({
         <TaskAction
           variant="destructive"
           action={TaskActionType.DeleteComplete}
-          loading={loading}
           key="delete-complete"
           onClick={onDeleteComplete}
         >
@@ -104,13 +103,7 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction
-          variant="destructive"
-          action={TaskActionType.Delete}
-          loading={loading}
-          key="delete"
-          onClick={onDelete}
-        >
+        <TaskAction variant="destructive" action={TaskActionType.Delete} key="delete" onClick={onDelete}>
           {capitalize(taskActionToHumanize[TaskActionType.Delete])}
         </TaskAction>
       ),
@@ -125,6 +118,7 @@ function TaskActionsDropdown({
       align="end"
       trigger={
         <Button
+          disabled={loading}
           variant="ghost"
           className={cn(
             'border-none focus-visible:outline-none focus-visible:border-none focus-visible:ring-0 size-7',

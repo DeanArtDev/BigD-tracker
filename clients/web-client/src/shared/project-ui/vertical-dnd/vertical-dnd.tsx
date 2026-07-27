@@ -24,7 +24,7 @@ import type { VerticalDnDProps } from './types';
 import { VerticalDndItem } from './vertical-dnd-item';
 
 function VerticalDnD<T extends HasId>(props: VerticalDnDProps<T>) {
-  const { items, onChange, renderItem, className, activationDistance = 70, getId } = props;
+  const { items, onChange, renderItem, className, activationDistance = 70, getId, disabledDragging } = props;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -61,7 +61,7 @@ function VerticalDnD<T extends HasId>(props: VerticalDnDProps<T>) {
       modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
       onDragEnd={onDragEnd}
     >
-      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+      <SortableContext items={ids} disabled={disabledDragging} strategy={verticalListSortingStrategy}>
         <ul className={cn('flex flex-col', className)}>
           {items.map((item, idx) => {
             const id = ids[idx];

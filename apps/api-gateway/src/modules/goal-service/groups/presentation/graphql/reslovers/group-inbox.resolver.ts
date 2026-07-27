@@ -18,7 +18,10 @@ export class GroupInboxResolver {
       { data: { userId: uid } },
     );
 
-    return data;
+    return {
+      id: data.id,
+      name: data.name,
+    };
   }
 
   @ResolveField(() => TasksConnection)

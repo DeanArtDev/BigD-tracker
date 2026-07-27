@@ -1,7 +1,7 @@
 import { Wifi } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import { useNotify } from '@/shared/lib';
 import { useOnlineStatus } from '@/shared/lib/application-status';
+import { useNotify } from '@/shared/project-ui';
 
 function useNetworkReactor() {
   const firstNotify = useRef(false);

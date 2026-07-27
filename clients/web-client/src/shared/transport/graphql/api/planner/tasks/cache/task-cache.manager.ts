@@ -1,5 +1,5 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
-import { shapeGetAssignableTasksOptions } from '@/shared/transport/graphql';
+import { type Query, shapeGetAssignableTasksOptions } from '@/shared/transport/graphql';
 import type { GetInboxResponse, GroupSchema, TaskSchema, TasksConnection } from '../../../../schema-types';
 import type { WithReferenceList } from '../../../types';
 
@@ -64,13 +64,25 @@ class TaskCacheManager {
 
   static refetchTask(client: ApolloClient, { taskId }: { taskId: string }) {
     return client.refetchQueries({
-      include: [shapeGetAssignableTasksOptions.document],
       updateCache: (cache) => {
         const id = cache.identify({ __typename: this.taskTypename, id: taskId });
         if (id != null) {
           cache.evict({ id });
-          cache.gc();
         }
+      },
+    });
+  }
+
+  static refetchAssignableTasks(client: ApolloClient) {
+    const fieldName: keyof Query = 'getAssignableTasks';
+
+    return client.refetchQueries({
+      include: [shapeGetAssignableTasksOptions.document],
+      updateCache(cache) {
+        cache.evict({
+          id: 'ROOT_QUERY',
+          fieldName,
+        });
       },
     });
   }

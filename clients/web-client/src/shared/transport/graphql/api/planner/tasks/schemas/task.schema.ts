@@ -14,14 +14,7 @@ const GET_ASSIGNABLE_TASKS_QUERY = gql`
 const TASK_CREATE_MUTATION = gql`
   mutation CreateTask($input: TaskCreateInput!) {
     createTask(input: $input) {
-      id
-      name
-      description
-      deadline
-      priority
-      startDate
-      status
-      groupId
+      ...TaskFragment
     }
   }
 `;
@@ -29,8 +22,7 @@ const TASK_CREATE_MUTATION = gql`
 const TASK_COPY_MUTATION = gql`
   mutation CopyTask($input: TaskCopyInput!) {
     copyTask(input: $input) {
-      id
-      groupId
+      ...TaskFragment
     }
   }
 `;
@@ -38,14 +30,7 @@ const TASK_COPY_MUTATION = gql`
 const TASK_UPDATE_MUTATION = gql`
   mutation UpdateTask($input: TaskUpdateInput!) {
     updateTask(input: $input) {
-      id
-      name
-      description
-      cancelReason
-      deadline
-      priority
-      startDate
-      status
+      ...TaskFragment
     }
   }
 `;
@@ -89,15 +74,7 @@ const TASK_FINISH_MUTATION = gql`
 const TASK_BY_ID_QUERY = gql`
   query TaskById($input: GetTaskByIdInput!) {
     getTaskById(input: $input) {
-      id
-      name
-      description
-      priority
-      endDate
-      status
-      startDate
-      deadline
-      groupId
+      ...TaskFragment
     }
   }
 `;
