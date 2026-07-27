@@ -7,7 +7,7 @@ import { GroupPageSearch } from './group-page-search';
 import { useGetGroupListByUrlQuery } from '../_model/use-get-group-list-by-url-query';
 
 function GroupsPageContent() {
-  const { hasSearch, isEmpty } = useGetGroupListByUrlQuery();
+  const { hasSearch, isEmpty, initialLoading } = useGetGroupListByUrlQuery();
   const isEmptyAndNoSearch = isEmpty && !hasSearch;
 
   return (
@@ -15,7 +15,7 @@ function GroupsPageContent() {
       <div className="grid grid-cols-[1fr_min-content] gap-2">
         <Typography.H2>Группы</Typography.H2>
 
-        {!isEmptyAndNoSearch && <GroupCreateDialog />}
+        {!isEmptyAndNoSearch && !initialLoading && <GroupCreateDialog />}
       </div>
 
       <DataLoader
