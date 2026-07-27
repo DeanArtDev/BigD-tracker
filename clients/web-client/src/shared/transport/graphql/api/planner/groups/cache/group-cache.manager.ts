@@ -1,7 +1,6 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
-import { GroupId } from '@/entity/planner/groups';
 import { Override } from '@/shared/lib';
-import { shapeGetPlannerInitOptions, TaskCacheManager } from '@/shared/transport/graphql';
+import { TaskCacheManager } from '@/shared/transport/graphql';
 import type { GroupInfoSchema, GroupSchema, Query, TaskSchema } from '../../../../schema-types';
 import { WithReferenceList } from '../../../types';
 import { shapeGetGroupListOptions } from '../options';
@@ -67,7 +66,7 @@ class GroupCacheManager {
     });
   }
 
-  static updateGroupInfo(cache: ApolloCache, input: { groupId: GroupId; name: string }): boolean {
+  static updateGroupInfo(cache: ApolloCache, input: { groupId: number; name: string }): boolean {
     const groupInfoCacheId = cache.identify({
       __typename: this.#groupInfoTypename,
       id: input.groupId,
@@ -85,7 +84,33 @@ class GroupCacheManager {
     });
   }
 
-  static removeGroup(cache: ApolloCache, groupId: GroupId): boolean {
+  static removeTaskFromGroup(cache: ApolloCache, input: { groupId: number; taskId: string }): boolean {
+    const groupCacheId = cache.identify({ __typename: this.#groupTypename, id: input.groupId });
+    if (groupCacheId == null) return false;
+    const taskCacheId = cache.identify({ __typename: TaskCacheManager.taskTypename, id: input.taskId });
+    if (taskCacheId == null) return false;
+
+    return cache.modify<GroupCache>({
+      id: groupCacheId,
+      fields: {
+        taskCount(existed) {
+          if (existed == null) return existed;
+          return Math.max(0, existed - 1);
+        },
+        tasks(existingTasks, { isReference, readField, toReference }) {
+          if (existingTasks == null || isReference(existingTasks)) return existingTasks;
+          const taskRef = toReference(taskCacheId);
+
+          return {
+            ...existingTasks,
+            items: existingTasks.items.filter((task) => readField('id', task) !== readField('id', taskRef)),
+          };
+        },
+      },
+    });
+  }
+
+  static removeGroup(cache: ApolloCache, groupId: number): boolean {
     const groupCacheId = cache.identify({ __typename: this.#groupTypename, id: groupId });
     const groupInfoCacheId = cache.identify({ __typename: this.#groupInfoTypename, id: groupId });
 
@@ -97,11 +122,13 @@ class GroupCacheManager {
 
   static insertTaskAfterTarget(
     cache: ApolloCache,
-    { targetTaskId, clonedTaskId }: { targetTaskId: TaskSchema['id']; clonedTaskId: TaskSchema['id'] },
+    {
+      targetTaskId,
+      clonedTaskId,
+      groupId,
+    }: { targetTaskId: TaskSchema['id']; clonedTaskId: TaskSchema['id']; groupId: GroupSchema['id'] },
   ): boolean {
-    const plannerInit = cache.readQuery({ query: shapeGetPlannerInitOptions.document });
-
-    const groupCacheId = cache.identify({ __typename: this.#groupTypename, id: plannerInit?.getPlannerInit.inboxId });
+    const groupCacheId = cache.identify({ __typename: this.#groupTypename, id: groupId });
     if (groupCacheId == null) return false;
     const clonedTaskCacheId = cache.identify({ __typename: TaskCacheManager.taskTypename, id: clonedTaskId });
     if (clonedTaskCacheId == null) return false;
@@ -109,6 +136,10 @@ class GroupCacheManager {
     return cache.modify<GroupCache>({
       id: groupCacheId,
       fields: {
+        taskCount(existed) {
+          if (existed == null) return existed;
+          return Math.max(0, existed + 1);
+        },
         tasks(existingTasks, { isReference, readField, toReference }) {
           if (existingTasks == null || isReference(existingTasks)) return existingTasks;
           const clonedTaskRef = toReference(clonedTaskCacheId);

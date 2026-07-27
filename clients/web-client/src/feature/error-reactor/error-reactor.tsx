@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client/react';
 import { exceptionCode } from '@big-d/exceptions';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useNotify } from '@/shared/lib';
+import { useNotify } from '@/shared/project-ui';
 import { routes } from '@/shared/routes';
 import { useReactorStore } from './store';
 import { useNetworkReactor } from './use-network-reactor';

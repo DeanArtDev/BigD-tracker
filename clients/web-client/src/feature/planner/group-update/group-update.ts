@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
-import { useNotify } from '@/shared/lib';
+import { useNotify } from '@/shared/project-ui';
 import { GroupCacheManager } from '@/shared/transport/graphql';
 import { useGroupUpdate } from './api/use-group-update';
 
@@ -12,14 +12,12 @@ type GroupUpdateHandlerParams = {
   readonly taskIds: { readonly id: TaskId }[] | undefined;
 };
 
-function useGroupUpdateFeature(options: { showToast?: boolean } = { showToast: true }) {
-  const { showToast } = options;
-
+function useGroupUpdateFeature() {
   const { updateGroup, client, loading: isGroupUpdateLoading } = useGroupUpdate();
   const { promise } = useNotify();
 
   const handleGroupUpdate = useCallback(
-    (input: GroupUpdateHandlerParams) => {
+    (input: GroupUpdateHandlerParams, params?: { showToast?: boolean }) => {
       const mutation = async () => {
         const result = await updateGroup({
           variables: {
@@ -37,10 +35,10 @@ function useGroupUpdateFeature(options: { showToast?: boolean } = { showToast: t
         return result;
       };
 
-      if (showToast) return promise(mutation, { success: 'Группа обновлена', duration: 500 });
+      if (params?.showToast) return promise(mutation, { success: 'Группа обновлена', duration: 500 });
       else return mutation();
     },
-    [client.cache, promise, showToast, updateGroup],
+    [client.cache, promise, updateGroup],
   );
 
   return { updateGroup: handleGroupUpdate, isGroupUpdateLoading };

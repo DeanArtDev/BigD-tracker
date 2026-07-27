@@ -2,8 +2,8 @@
 
 import { type ReactNode, useEffect, useEffectEvent } from 'react';
 import { useOnUnmount } from '@/shared/lib/application-status';
-import { useNotify } from '@/shared/lib/use-notify';
 import { ApiError, ApiErrorCode } from '@/shared/transport/graphql';
+import { useNotify } from '../project-ui';
 
 type ExceptionMessageHandlers = Partial<{
   [Code in ApiErrorCode]: (exception: ApiError<Code>) => ReactNode;

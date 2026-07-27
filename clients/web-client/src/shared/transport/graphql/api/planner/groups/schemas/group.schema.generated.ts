@@ -67,14 +67,14 @@ export type GetDetailedGroupByIdQuery = {
       items: Array<{
         id: string;
         name: string;
-        status: Types.TaskStatus;
-        priority: Types.TaskPriority;
         description: string | null;
-        startDate: string | null;
+        priority: Types.TaskPriority;
+        status: Types.TaskStatus;
+        groupId: number | null;
         deadline: string | null;
+        startDate: string | null;
         endDate: string | null;
         cancelReason: string | null;
-        groupId: number | null;
       }>;
     };
   };
@@ -190,18 +190,7 @@ export const GetDetailedGroupByIdDocument = {
                         name: { kind: 'Name', value: 'items' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
-                          ],
+                          selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
                         },
                       },
                     ],
@@ -210,6 +199,26 @@ export const GetDetailedGroupByIdDocument = {
               ],
             },
           },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TaskFragment' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSchema' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
         ],
       },
     },

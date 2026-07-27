@@ -24,6 +24,7 @@ interface VerticalDnDProps<T extends HasId> {
     readonly handleProps: HandleProps;
   }) => ReactNode;
   readonly className?: string;
+  readonly disabledDragging?: boolean;
 
   /** Чтобы не стартовать dnd от лёгкого тапа/скролла */
   readonly activationDistance?: number;

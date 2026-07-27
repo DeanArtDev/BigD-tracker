@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { GroupTaskCount } from '@/feature/planner/group-delete/group-task-count';
-import { MaybePromise, useNotify } from '@/shared/lib';
-import { useConfirmDialog } from '@/shared/project-ui';
+import { MaybePromise } from '@/shared/lib';
+import { useConfirmDialog, useNotify } from '@/shared/project-ui';
 import { GroupCacheManager } from '@/shared/transport/graphql';
 import { useGroupDelete } from './api/use-group-delete';
 

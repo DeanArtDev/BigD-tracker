@@ -2,34 +2,56 @@ import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
+import { useNotify } from '@/shared/project-ui';
+import {
+  GroupCacheManager,
+  InboxGroupCacheManager,
+  PlannerInitCacheManager,
+  TaskCacheManager,
+} from '@/shared/transport/graphql';
 import { useTaskUnassign } from './api/use-task-unassign';
 
 function useTaskUnassignFromGroup() {
+  const { promise } = useNotify();
+
   const { unassignTask, client, ...rest } = useTaskUnassign();
   const [loading, setLoading] = useState(false);
 
   const unassignTaskFromGroup = useCallback(
     async (
       { groupId, taskId }: { taskId: TaskId; groupId: GroupId },
-      params?: { onSuccess?: (data: { taskId: TaskId }) => MaybePromise<void> },
+      params?: { onSuccess?: (data: { taskId: TaskId }) => MaybePromise<void>; showToast?: boolean },
     ) => {
-      try {
-        setLoading(true);
+      const { showToast = true, onSuccess } = params ?? {};
 
-        const result = await unassignTask({
-          variables: { input: { groupId, taskId } },
-          awaitRefetchQueries: true,
-        });
+      const mutation = async () => {
+        try {
+          setLoading(true);
 
-        if (result?.data != null) {
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-          await params?.onSuccess?.({ taskId });
+          const result = await unassignTask({
+            variables: { input: { groupId, taskId } },
+            awaitRefetchQueries: true,
+          });
+
+          if (result?.data != null) {
+            GroupCacheManager.removeTaskFromGroup(client.cache, { groupId, taskId });
+            TaskCacheManager.refetchAssignableTasks(client);
+
+            PlannerInitCacheManager.refetch(client);
+            InboxGroupCacheManager.removeTask(client.cache, { inboxId: groupId, taskId });
+
+            await onSuccess?.({ taskId });
+          }
+        } finally {
+          setLoading(false);
         }
-      } finally {
-        setLoading(false);
-      }
+      };
+
+      const ranMutation = mutation();
+      if (showToast) promise(ranMutation);
+      return ranMutation;
     },
-    [unassignTask],
+    [client, promise, unassignTask],
   );
 
   return {

@@ -1,8 +1,9 @@
 import { useCallback, useState } from 'react';
+import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
-import { useNotify } from '@/shared/lib';
-import { useConfirmDialog } from '@/shared/project-ui';
-import { PlannerInitCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
+import { MaybePromise } from '@/shared/lib';
+import { useConfirmDialog, useNotify } from '@/shared/project-ui';
+import { GroupCacheManager, PlannerInitCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
 import { Typography } from '@/shared/ui-kit';
 import { useTaskDelete } from './api/use-task-delete';
 
@@ -14,16 +15,22 @@ function useTaskDeleteFeature() {
   const [loading, setLoading] = useState(false);
 
   const deleteTaskHandler = useCallback(
-    (id: TaskId) => {
+    (
+      input: { taskId: TaskId; groupId?: GroupId },
+      params?: { onSuccess?: () => MaybePromise<void>; showToast?: boolean; onCancel?: () => void },
+    ) => {
       viaConfirmation({
         isNeedConfirm: () => true,
-
+        cancel: params?.onCancel,
         callback: async () => {
-          promise(async () => {
+          const { showToast = true, onSuccess } = params ?? {};
+
+          const mutation = async () => {
             try {
               setLoading(true);
+              const { taskId, groupId } = input;
               const response = await deleteTask({
-                variables: { input: { id } },
+                variables: { input: { id: taskId } },
                 awaitRefetchQueries: true,
               });
 
@@ -31,12 +38,20 @@ function useTaskDeleteFeature() {
                 const id = response.data?.deleteTask.id;
                 if (id == null) return;
                 PlannerInitCacheManager.refetch(rest.client);
+                if (groupId != null) {
+                  GroupCacheManager.removeTaskFromGroup(rest.client.cache, { taskId, groupId });
+                }
                 TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
+                await onSuccess?.();
               }
             } finally {
               setLoading(false);
             }
-          });
+          };
+
+          const ranMutation = mutation();
+          if (showToast) promise(ranMutation);
+          return ranMutation;
         },
 
         dialog: {

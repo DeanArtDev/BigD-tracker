@@ -4,15 +4,9 @@ import { SearchX } from 'lucide-react';
 import { memo } from 'react';
 import { useGroupListDrawerContext } from '@/entity/planner/groups';
 import { TaskList } from '@/entity/planner/tasks';
-import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
-import { useTaskCopyFeature } from '@/feature/planner/task-copy';
-import { useTaskDeleteFeature } from '@/feature/planner/task-delete';
-import { useTaskFinishFeature } from '@/feature/planner/task-finish';
-import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
 import { useTaskUpdateContext } from '@/feature/planner/task-update';
-import { useNotify } from '@/shared/lib';
-import { GroupCacheManager, InboxGroupCacheManager, PlannerInitCacheManager } from '@/shared/transport/graphql';
 import { DataLoader } from '@/shared/ui-kit';
+import { useTaskActionsFeature } from '@/widget/planner/task-actions';
 import { useInboxQueryByUrlQuery } from '../_model/use-inbox-query-by-url-query';
 
 const InboxTaskList = memo(function InboxTaskListMemo() {
@@ -26,13 +20,16 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
     fetchMore,
   } = useInboxQueryByUrlQuery();
 
-  const { deleteTask, loading: isTaskDeleteLoading } = useTaskDeleteFeature();
-  const { assignToGroup, client, loading: isTaskAssignLoading } = useTaskAssignToGroupFeature();
-  const { unassignTaskFromGroup, loading: isTaskUnassignLoading } = useTaskUnassignFromGroup();
-  const { copyTask, loading: isTaskCopyLoading } = useTaskCopyFeature();
-  const { finishTask, loading: isTaskFinishLoading, taskFinishDialogHolder } = useTaskFinishFeature();
+  const {
+    taskFinishDialogHolder,
+    isActionLoading,
+    taskFinishHandler,
+    taskAssignHandler,
+    taskDeleteHandler,
+    taskUnassignHandler,
+    taskCopyHandler,
+  } = useTaskActionsFeature();
 
-  const { promise } = useNotify();
   const { openGroupList } = useGroupListDrawerContext();
 
   const { openTaskUpdate } = useTaskUpdateContext();
@@ -40,47 +37,28 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
   const tasks = data.tasks ?? [];
   const count = tasks?.length ?? 0;
   const hasNextPage = data.meta?.hasNextPage ?? false;
-  const isActionLoading =
-    isTaskFinishLoading || isTaskDeleteLoading || isTaskUnassignLoading || isTaskAssignLoading || isTaskCopyLoading;
 
   return (
     <>
       <TaskList
         tasks={tasks}
-        onTaskContentClick={openTaskUpdate}
+        onTaskContentClick={(task) => {
+          if (isActionLoading) return;
+          openTaskUpdate(task);
+        }}
         dropdownProps={{
           onAssign: (task, groupInfo) => {
-            promise(
-              assignToGroup(
-                { groupId: groupInfo.id, task },
-                {
-                  onSuccess: () => {
-                    PlannerInitCacheManager.refetch(client);
-                    InboxGroupCacheManager.refetch(client);
-                    GroupCacheManager.refetchGroupTasks(client, { groupId: groupInfo.id });
-                  },
-                },
-              ),
-            );
+            taskAssignHandler({ groupId: groupInfo.id, task });
           },
         }}
         menuProps={{
           loading: isActionLoading,
-          onDelete: async (task) => void deleteTask(task.id),
-          onCopy: async (task) => void copyTask(task.id),
-          onFinish: (task) => void finishTask(task.id),
+          onDelete: async (task) => void taskDeleteHandler({ groupId: task?.groupId, taskId: task.id }),
+          onCopy: async (task) => void taskCopyHandler(task.id),
+          onFinish: (task) => void taskFinishHandler(task.id),
           onUnassign: async (task) => {
             if (task.groupId != null) {
-              promise(
-                unassignTaskFromGroup(
-                  { groupId: task.groupId, taskId: task.id },
-                  {
-                    onSuccess: () => {
-                      InboxGroupCacheManager.refetch(client);
-                    },
-                  },
-                ),
-              );
+              taskUnassignHandler({ groupId: task.groupId, taskId: task.id });
             }
           },
           onAssign: (task) => {
@@ -88,7 +66,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
               selectedGroupIds: data.id != null ? [data.id] : [],
               cb: async (group) => {
                 if (task.groupId != group.id) {
-                  promise(assignToGroup({ groupId: group.id, task }));
+                  taskAssignHandler({ groupId: group.id, task });
                 }
               },
             });

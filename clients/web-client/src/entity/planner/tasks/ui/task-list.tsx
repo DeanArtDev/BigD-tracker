@@ -4,7 +4,7 @@ import { MaybePromise } from '@/shared/lib';
 import { AppTooltip } from '@/shared/project-ui';
 import { Button, DataLoader, VirtualizedInfinityScroll, VirtualizedInfinityScrollProps } from '@/shared/ui-kit';
 import { DataLoaderProps } from '@/shared/ui-kit';
-import { Task, TaskDomain } from '../model';
+import { Task, TaskActionType, TaskDomain } from '../model';
 import { TaskActionsDropdown } from './task-actions-dropdown';
 import { TaskCard } from './task-card';
 
@@ -55,6 +55,11 @@ function TaskList({
         renderItem={(virtualItem) => {
           const task = tasks[virtualItem.index];
           if (task == null) return null;
+          const isAllowAssign = TaskDomain.isAllowTaskAction(
+            TaskActionType.Assign,
+            task.status,
+            TaskDomain.parseId(task.id).type,
+          );
 
           return (
             <TaskCard
@@ -65,17 +70,20 @@ function TaskList({
               deadline={task.deadline ?? undefined}
               afterHeaderSlot={() => (
                 <div className="flex gap-1">
-                  <GroupListDropdown
-                    selectedGroupId={task.groupId}
-                    trigger={
-                      <Button size="icon-sm" variant="ghost" disabled={menuProps?.loading}>
-                        <AppTooltip content="Переместить в группу" delayDuration={2000} asChild>
-                          <FolderOutput />
-                        </AppTooltip>
-                      </Button>
-                    }
-                    onSelect={(groupInfo) => void dropdownProps?.onAssign?.(task, groupInfo)}
-                  />
+                  {isAllowAssign && (
+                    <GroupListDropdown
+                      selectedGroupId={task.groupId}
+                      trigger={
+                        <Button size="icon-sm" variant="ghost" disabled={menuProps?.loading}>
+                          <AppTooltip content="Переместить в группу" delayDuration={2000} asChild>
+                            <FolderOutput />
+                          </AppTooltip>
+                        </Button>
+                      }
+                      onSelect={(groupInfo) => void dropdownProps?.onAssign?.(task, groupInfo)}
+                    />
+                  )}
+
                   <TaskActionsDropdown
                     taskStatus={task.status}
                     hasGroup={task.groupId != null}

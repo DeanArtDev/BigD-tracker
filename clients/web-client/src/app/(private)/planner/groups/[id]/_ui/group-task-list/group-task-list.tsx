@@ -1,12 +1,11 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { GroupId } from '@/entity/planner/groups';
+import { GroupId, useGroupListDrawerContext } from '@/entity/planner/groups';
 import { useGroupUpdateFeature } from '@/feature/planner/group-update';
-import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
 import { useTaskUpdateContext } from '@/feature/planner/task-update';
-import { GroupCacheManager } from '@/shared/transport/graphql';
 import { DataLoader, ScrollAreaNativeVertical } from '@/shared/ui-kit';
+import { useTaskActionsFeature } from '@/widget/planner/task-actions';
 import { EmptyTasksElement } from './empty-tasks-element';
 import { GroupTaskListForm } from './group-task-list-form';
 import { GroupTaskListHeader } from './group-task-list-header';
@@ -21,7 +20,16 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
   const { openTaskUpdate } = useTaskUpdateContext();
 
   const { updateGroup } = useGroupUpdateFeature();
-  const { unassignTaskFromGroup, client, loading: isTaskUnassignLoading } = useTaskUnassignFromGroup();
+  const { openGroupList } = useGroupListDrawerContext();
+
+  const {
+    taskFinishDialogHolder,
+    taskFinishHandler,
+    taskUnassignHandler,
+    taskDeleteHandler,
+    taskAssignHandler,
+    taskCopyHandler,
+  } = useTaskActionsFeature();
   const [targetTask, setTargetTask] = useState<DetailedGroupTask | null>(null);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -42,22 +50,38 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
               <GroupTaskListForm
                 tasks={tasks}
                 loadingTaskId={targetTask?.id}
-                onContentClick={(task) => void openTaskUpdate(task)}
-                onHeaderClick={() => void console.log('header click')}
-                onUnassign={(task) => {
-                  if (isTaskUnassignLoading) return;
+                onHeaderClick={() => void console.log('Header clicked')}
+                onDelete={(task) => {
                   setTargetTask(task);
-                  unassignTaskFromGroup(
-                    { taskId: task.id, groupId },
-                    {
-                      onSuccess: () => {
-                        GroupCacheManager.refetchGroupTasks(client, { groupId });
-                        setTargetTask(null);
-                      },
-                    },
+                  taskDeleteHandler(
+                    { groupId: task?.groupId, taskId: task.id },
+                    { onSuccess: () => void setTargetTask(null), onCancel: () => void setTargetTask(null) },
                   );
                 }}
-                onTasksUpdate={(ids) => {
+                onFinish={async (task) => {
+                  setTargetTask(task);
+                  taskFinishHandler(task.id, () => void setTargetTask(null));
+                }}
+                onAssign={(task) =>
+                  void openGroupList({
+                    selectedGroupIds: [groupId],
+                    cb: async (group) => {
+                      if (task.groupId != group.id) {
+                        setTargetTask(task);
+                        await taskAssignHandler({ groupId: group.id, task });
+                        setTargetTask(null);
+                      }
+                    },
+                  })
+                }
+                onCopy={(task) => void taskCopyHandler(task.id)}
+                onContentClick={(task) => void openTaskUpdate(task)}
+                onUnassign={async (task) => {
+                  setTargetTask(task);
+                  await taskUnassignHandler({ taskId: task.id, groupId });
+                  setTargetTask(null);
+                }}
+                onTasksOrderUpdate={(ids) => {
                   if (group != null) {
                     updateGroup({
                       id: group.id,
@@ -72,6 +96,8 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
           </ul>
         </ScrollAreaNativeVertical>
       </DataLoader>
+
+      {taskFinishDialogHolder}
     </div>
   );
 }

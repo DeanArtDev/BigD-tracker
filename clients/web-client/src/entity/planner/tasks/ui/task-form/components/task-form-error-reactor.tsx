@@ -3,7 +3,7 @@
 import { isEmpty } from 'lodash-es';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useNotify } from '@/shared/lib';
+import { useNotify } from '@/shared/project-ui';
 import { TaskFormData } from '../context/task-form-provider';
 
 function TaskFormErrorReactor() {

@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
 import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
-import { GroupCacheManager, InboxGroupCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
 import { Dialog, DialogContent, DialogTrigger } from '@/shared/ui-kit';
 import { AssignableTaskSearch } from './assignable-task-search';
 
@@ -13,7 +12,7 @@ interface AssignTaskToGroupDialogProps {
 }
 
 function AssignTaskToGroupDialog({ groupId, trigger, open, onOpenChange }: AssignTaskToGroupDialogProps) {
-  const { assignToGroup, loading, client } = useTaskAssignToGroupFeature();
+  const { assignToGroup, loading } = useTaskAssignToGroupFeature();
   const [isSearchResultBlocked, setIsSearchResultBlocked] = useState(false);
 
   return (
@@ -29,14 +28,8 @@ function AssignTaskToGroupDialog({ groupId, trigger, open, onOpenChange }: Assig
             assignToGroup(
               { groupId, task },
               {
-                onSuccess: ({ groupId, task }) => {
+                onSuccess: () => {
                   onOpenChange(false);
-                  InboxGroupCacheManager.refetch(client, { inboxId: task?.groupId });
-
-                  GroupCacheManager.refetchGroupTasks(client, { groupId });
-                  GroupCacheManager.refetchGroupTasks(client, { groupId: task?.groupId });
-
-                  TaskCacheManager.refetchTask(client, { taskId: task.id });
                   setIsSearchResultBlocked(false);
                 },
               },

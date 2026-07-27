@@ -10,9 +10,6 @@ class GetInboxResponse {
 
   @Field()
   name: string;
-
-  @Field(() => Int)
-  taskCount: number;
 }
 
 @InputType()

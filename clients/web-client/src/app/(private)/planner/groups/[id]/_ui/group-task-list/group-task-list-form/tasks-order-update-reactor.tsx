@@ -6,14 +6,14 @@ import { GroupTaskListSchemaFormData } from './group-task-list.form';
 
 const SAVE_DELAY_MS = 1000;
 
-interface TasksUpdateReactorProps {
-  readonly onTasksUpdate: (tasksIds: { id: TaskId }[]) => void;
+interface TasksOrderUpdateReactorProps {
+  readonly onTasksOrderUpdate: (tasksIds: { id: TaskId }[]) => void;
 }
 
-function TasksUpdateReactor({ onTasksUpdate }: TasksUpdateReactorProps) {
+function TasksOrderUpdateReactor({ onTasksOrderUpdate }: TasksOrderUpdateReactorProps) {
   const { subscribe, reset } = useFormContext<GroupTaskListSchemaFormData>();
 
-  const onTasksUpdateEvent = useEffectEvent(onTasksUpdate);
+  const onTasksUpdateEvent = useEffectEvent(onTasksOrderUpdate);
 
   useEffect(() => {
     const debouncedUpdate = debounce((value: GroupTaskListSchemaFormData['tasks']) => {
@@ -41,4 +41,4 @@ function TasksUpdateReactor({ onTasksUpdate }: TasksUpdateReactorProps) {
   return null;
 }
 
-export { TasksUpdateReactor, type TasksUpdateReactorProps };
+export { TasksOrderUpdateReactor, type TasksOrderUpdateReactorProps };

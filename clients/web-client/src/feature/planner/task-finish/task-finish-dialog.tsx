@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TaskId } from '@/entity/planner/tasks';
+import { MaybePromise } from '@/shared/lib';
 import { AppDialog } from '@/shared/project-ui';
 import { TaskFinishStatus } from '@/shared/transport/graphql';
 import {
@@ -20,7 +21,7 @@ interface TaskFinishDialogProps {
   readonly taskId?: TaskId;
   readonly loading?: boolean;
   readonly onOpenChange?: (value: boolean) => void;
-  readonly onFinish?: (data: { status: TaskFinishStatus; reason?: string }) => void;
+  readonly onFinish?: (data: { status: TaskFinishStatus; reason?: string }) => MaybePromise<void>;
 }
 
 function TaskFinishDialog({ open, loading = false, onOpenChange, onFinish }: TaskFinishDialogProps) {
@@ -113,7 +114,7 @@ function TaskFinishDialog({ open, loading = false, onOpenChange, onFinish }: Tas
             >
               Отмена
             </Button>
-            <ButtonLoading loading={loading} onClick={() => void onFinish?.({ reason, status })}>
+            <ButtonLoading loading={loading} onClick={async () => await onFinish?.({ reason, status })}>
               Завершить
             </ButtonLoading>
           </div>

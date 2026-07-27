@@ -6,7 +6,7 @@ import { WithReferenceList } from '../../../types';
 import { shapeGetPlannerInitOptions } from '../../planner-init';
 
 type InboxGroupTasksCache = WithReferenceList<GetInboxResponse['tasks'], 'items'>;
-type GroupInboxCacheCache = Override<GetInboxResponse, { tasks: InboxGroupTasksCache }>;
+type GroupInboxCache = Override<GetInboxResponse, { tasks: InboxGroupTasksCache }>;
 
 class InboxGroupCacheManager {
   static readonly #inboxTypename: GetInboxResponse['__typename'] = 'GetInboxResponse';
@@ -40,7 +40,7 @@ class InboxGroupCacheManager {
     const clonedTaskCacheId = cache.identify({ __typename: TaskCacheManager.taskTypename, id: clonedTaskId });
     if (clonedTaskCacheId == null) return false;
 
-    return cache.modify<GroupInboxCacheCache>({
+    return cache.modify<GroupInboxCache>({
       id: inboxCacheId,
       fields: {
         tasks(existingTasks, { isReference, readField, toReference }) {
@@ -60,6 +60,28 @@ class InboxGroupCacheManager {
               clonedTaskRef,
               ...existingTasks.items.slice(originalTaskIndex + 1),
             ],
+          };
+        },
+      },
+    });
+  }
+
+  static removeTask(cache: ApolloCache, input: { inboxId: number; taskId: string }): boolean {
+    const inboxCacheId = cache.identify({ __typename: this.#inboxTypename, id: input.inboxId });
+    if (inboxCacheId == null) return false;
+    const taskCacheId = cache.identify({ __typename: TaskCacheManager.taskTypename, id: input.taskId });
+    if (taskCacheId == null) return false;
+
+    return cache.modify<GroupInboxCache>({
+      id: inboxCacheId,
+      fields: {
+        tasks(existingTasks, { isReference, readField, toReference }) {
+          if (existingTasks == null || isReference(existingTasks)) return existingTasks;
+          const taskRef = toReference(taskCacheId);
+
+          return {
+            ...existingTasks,
+            items: existingTasks.items.filter((task) => readField('id', task) !== readField('id', taskRef)),
           };
         },
       },

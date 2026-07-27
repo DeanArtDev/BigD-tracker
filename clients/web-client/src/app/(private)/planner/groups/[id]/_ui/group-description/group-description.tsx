@@ -13,7 +13,7 @@ interface GroupDescriptionProps {
 const SAVE_DELAY_TIME = 3000;
 
 function GroupDescription({ groupId }: GroupDescriptionProps) {
-  const { updateGroup } = useGroupUpdateFeature({ showToast: false });
+  const { updateGroup } = useGroupUpdateFeature();
   const { group } = useGetDetailedGroupSuspense({ groupId });
 
   const initialValueRef = useRef(group?.description);
@@ -26,7 +26,10 @@ function GroupDescription({ groupId }: GroupDescriptionProps) {
       try {
         setLoadingStatus();
         const value = wysiwygController.current?.getStateAsString?.();
-        await updateGroup({ id: group.id, name: group.name, description: value ?? null, taskIds: undefined });
+        await updateGroup(
+          { id: group.id, name: group.name, description: value ?? null, taskIds: undefined },
+          { showToast: false },
+        );
         setSuccessStatus();
       } catch {
         setErrorStatus();
