@@ -1,2 +1,1 @@
 export * from './auth-illustration-panel';
-export * from './login-form';
