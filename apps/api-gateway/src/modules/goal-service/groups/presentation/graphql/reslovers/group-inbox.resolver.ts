@@ -1,7 +1,7 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { AvailableToViewTasksStatuses, GoalGetGroupInBox, GoalGetTasks } from '@big-d/api-contracts';
+import { AvailableToViewTasksStatuses, GoalGetGroupInBox, GoalGetTasksCursor } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TaskMapper, TasksConnection } from '@/modules/goal-service/tasks';
@@ -34,19 +34,22 @@ export class GroupInboxResolver {
 
     const s = status?.filter((i) => AvailableToViewTasksStatuses.includes(i)) ?? AvailableToViewTasksStatuses;
 
-    const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: {
-        userId: uid,
-        search,
-        filter: {
-          groupIds: [inboxResponse.id],
-          limit,
-          cursor,
-          status: s,
-          priority: priority?.map(TaskMapper.fromClientPriorityToServer),
+    const { data } = await this.goalClient.send<GoalGetTasksCursor.Response, GoalGetTasksCursor.Request>(
+      GoalGetTasksCursor.pattern,
+      {
+        data: {
+          userId: uid,
+          search,
+          filter: {
+            groupIds: [inboxResponse.id],
+            limit,
+            cursor,
+            status: s,
+            priority: priority?.map(TaskMapper.fromClientPriorityToServer),
+          },
         },
       },
-    });
+    );
 
     return {
       items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),

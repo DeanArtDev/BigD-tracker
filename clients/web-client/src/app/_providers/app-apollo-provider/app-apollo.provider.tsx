@@ -11,6 +11,10 @@ import {
   GetGroupListQueryVariables,
   GetInboxQuery,
   GetInboxQueryVariables,
+  GetTasksCursorQuery,
+  GetTasksCursorQueryVariables,
+  GetTasksPerPageQuery,
+  GetTasksPerPageQueryVariables,
   retryLink,
   TaskSchema,
 } from '@/shared/transport/graphql';
@@ -78,6 +82,59 @@ const getGroupListPolicy: FieldPolicy<
   },
 };
 
+const getTasksCursorPolicy: FieldPolicy<
+  GetTasksCursorQuery['getTasksCursor'],
+  GetTasksCursorQuery['getTasksCursor'],
+  GetTasksCursorQuery['getTasksCursor'],
+  FieldReadFunctionOptions,
+  FieldMergeFunctionOptions<object, Partial<GetTasksCursorQueryVariables>>
+> = {
+  keyArgs: ['input', ['search', 'status', 'priority', 'groupIds', 'ids']],
+
+  merge(existing, incoming, { variables, readField }) {
+    const existingItems = existing?.items ?? [];
+    const incomingItems = incoming?.items ?? [];
+    const seen = new Set(existingItems.map((item) => readField('id', item)));
+    const items = [...existingItems, ...incomingItems.filter((item) => !seen.has(readField('id', item)))];
+
+    const isInitialRequest = variables?.input?.cursor == null;
+    const hasCache = existing?.items != null;
+
+    return {
+      ...incoming,
+      items,
+      meta: {
+        ...incoming.meta,
+        hasNextPage: isInitialRequest && hasCache ? existing.meta.hasNextPage : incoming.meta.hasNextPage,
+        endCursor: isInitialRequest && hasCache ? existing.meta.endCursor : incoming.meta.endCursor,
+      },
+    };
+  },
+};
+
+const getTasksPerPagePolicy: FieldPolicy<
+  GetTasksPerPageQuery['getTasksPerPage'],
+  GetTasksPerPageQuery['getTasksPerPage'],
+  GetTasksPerPageQuery['getTasksPerPage'],
+  FieldReadFunctionOptions,
+  FieldMergeFunctionOptions<object, Partial<GetTasksPerPageQueryVariables>>
+> = {
+  keyArgs: ['input', ['search', 'status', 'priority', 'groupIds', 'ids', 'sort', 'recurring']],
+
+  merge(existing, incoming, { variables, readField }) {
+    const isInitialRequest = variables?.input?.page === 1;
+    const existingItems = isInitialRequest ? [] : (existing?.items ?? []);
+    const incomingItems = incoming?.items ?? [];
+    const seen = new Set(existingItems.map((item) => readField('id', item)));
+    const items = [...existingItems, ...incomingItems.filter((item) => !seen.has(readField('id', item)))];
+
+    return {
+      ...incoming,
+      items,
+    };
+  },
+};
+
 function makeClient() {
   const httpLink = createHttpLink({
     headers: {
@@ -95,6 +152,8 @@ function makeClient() {
         Query: {
           fields: {
             getGroupList: getGroupListPolicy,
+            getTasksCursor: getTasksCursorPolicy,
+            getTasksPerPage: getTasksPerPagePolicy,
             getTaskById: {
               read(_existing, { args, toReference }) {
                 const id = args?.id;

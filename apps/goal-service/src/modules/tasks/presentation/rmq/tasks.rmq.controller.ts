@@ -7,6 +7,8 @@ import {
   GetTasksByRangeHandler,
   GetTasksByRangeQuery,
   GetTasksHandler,
+  GetTasksPerPageHandler,
+  GetTasksPerPageQuery,
   GetTasksQuery,
 } from '@/modules/tasks/application/queries';
 import {
@@ -31,7 +33,8 @@ import {
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalGetTaskById,
-  GoalGetTasks,
+  GoalGetTasksCursor,
+  GoalGetTasksPerPage,
   GoalGetTasksByRange,
   GoalReplaceTask,
   GoalTaskRecovery,
@@ -162,8 +165,8 @@ export class TasksRmqController {
     };
   }
 
-  @MessagePattern(GoalGetTasks.pattern)
-  async getTasks(@Payload() { data: payload }: GoalGetTasks.Request): Promise<GoalGetTasks.Response> {
+  @MessagePattern(GoalGetTasksCursor.pattern)
+  async getTasksCursor(@Payload() { data: payload }: GoalGetTasksCursor.Request): Promise<GoalGetTasksCursor.Response> {
     const { userId, order, filter, search } = payload;
     const { ids, groupIds, priority, status, limit, cursor } = filter ?? {};
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
@@ -198,6 +201,32 @@ export class TasksRmqController {
       data: {
         items: tasks,
         meta: { endCursor: nextCursor, hasNextPage: hasNext },
+      },
+    };
+  }
+
+  @MessagePattern(GoalGetTasksPerPage.pattern)
+  async getTasksPerPage(
+    @Payload() { data: payload }: GoalGetTasksPerPage.Request,
+  ): Promise<GoalGetTasksPerPage.Response> {
+    const { userId, order, filter, search, sort, page, perPage } = payload;
+
+    const tasks = await this.queryBus.execute<GetTasksPerPageQuery, ReturnHandlerType<typeof GetTasksPerPageHandler>>(
+      new GetTasksPerPageQuery({
+        userId,
+        order,
+        filter,
+        search,
+        sort,
+        page,
+        perPage,
+      }),
+    );
+
+    return {
+      data: {
+        items: tasks,
+        meta: { nextPage: tasks.length >= perPage },
       },
     };
   }

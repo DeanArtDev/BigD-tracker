@@ -9,4 +9,5 @@ export * from './app-drawer';
 export * from './vertical-dnd';
 export * from './navigation-progress';
 export * from './app-link';
+export * from './app-search-input';
 export * from './app-toaster';

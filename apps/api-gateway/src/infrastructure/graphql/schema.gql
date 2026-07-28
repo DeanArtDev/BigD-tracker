@@ -30,7 +30,6 @@ input GetGroupTasksInput {
 type GetInboxResponse {
   id: Int!
   name: String!
-  taskCount: Int!
   tasks(input: GetInboxTasksInput): TasksConnection!
 }
 
@@ -51,14 +50,32 @@ input GetTaskByIdInput {
   id: String!
 }
 
-input GetTasksInput {
+input GetTasksCursorInput {
   cursor: String
   groupIds: [Int!]
   ids: [String!]
   limit: Int!
-  priority: [Int!]
+  priority: [TaskPriority!]
   search: String
   status: [TaskStatus!]
+}
+
+input GetTasksPerPageInput {
+  groupIds: [Int!]
+  ids: [String!]
+  page: Int!
+  perPage: Int!
+  priority: [TaskPriority!]
+  recurring: Boolean
+  search: String
+  sort: GetTasksPerPageSortInput
+  status: [TaskStatus!]
+}
+
+input GetTasksPerPageSortInput {
+  deadline: SortDirection
+  priority: SortDirection
+  startDate: SortDirection
 }
 
 input GroupCreateInput {
@@ -194,7 +211,10 @@ type Query {
   getTaskById(input: GetTaskByIdInput!): TaskSchema!
 
   """Получение списка дел"""
-  getTasks(input: GetTasksInput!): TasksConnection!
+  getTasksCursor(input: GetTasksCursorInput!): TasksConnection!
+
+  """Получение списка дел с постраничной пагинацией"""
+  getTasksPerPage(input: GetTasksPerPageInput!): TasksPerPageConnection!
   me: MeRes!
 }
 
@@ -207,6 +227,12 @@ enum RecurrenceFrequency {
   SECONDLY
   WEEKLY
   YEARLY
+}
+
+"""Направление сортировки"""
+enum SortDirection {
+  ASC
+  DESC
 }
 
 input TaskAssignInput {
@@ -328,4 +354,13 @@ input TaskUpdateInput {
 type TasksConnection {
   items: [TaskSchema!]!
   meta: CursorPaginationMeta!
+}
+
+type TasksPerPageConnection {
+  items: [TaskSchema!]!
+  meta: TasksPerPageMeta!
+}
+
+type TasksPerPageMeta {
+  nextPage: Boolean!
 }

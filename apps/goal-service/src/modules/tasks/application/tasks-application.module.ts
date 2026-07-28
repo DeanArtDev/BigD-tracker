@@ -15,6 +15,8 @@ import {
   GetTaskByIdHandler,
   GetTasksQuery,
   GetTasksHandler,
+  GetTasksPerPageQuery,
+  GetTasksPerPageHandler,
   GetGroupListHandler,
   GetGroupListQuery,
   GetGroupInfoQuery,
@@ -94,6 +96,7 @@ const queries = [
   GetTasksQuery,
   GetGroupListQuery,
   GetGroupInfoQuery,
+  GetTasksPerPageQuery,
 ];
 const commands = [
   CreateTaskCommand,
@@ -136,6 +139,7 @@ const handlers = [
   GetDiaryTasksHandler,
   GetTaskByIdHandler,
   GetTasksHandler,
+  GetTasksPerPageHandler,
   GetGroupListHandler,
   GetGroupInfoHandler,
 ];

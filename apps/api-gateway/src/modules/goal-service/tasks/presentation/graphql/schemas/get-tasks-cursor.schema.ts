@@ -1,27 +1,24 @@
-import { AvailableToViewTasksStatuses, TaskStatus } from '@big-d/api-contracts';
+import { TaskPriority, TaskStatus } from '@big-d/api-contracts';
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { CursorPaginationInput } from '@shared/graphql';
-import { IsArray, IsEnum, IsIn, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString, Length } from 'class-validator';
 
 @InputType()
-class GetTasksInput extends CursorPaginationInput {
+class GetTasksCursorInput extends CursorPaginationInput {
   @Field(() => String, { nullable: true })
   @Length(0, 50)
   @IsOptional()
   @IsString()
   search?: string;
 
-  @Field(() => [Int], { nullable: true })
-  @Min(1, { each: true })
-  @Max(4, { each: true })
+  @Field(() => [TaskPriority], { nullable: true })
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  priority?: number[];
+  @IsEnum(TaskPriority, { each: true })
+  priority?: TaskPriority[];
 
   @Field(() => [TaskStatus], { nullable: true })
   @IsOptional()
-  @IsIn(AvailableToViewTasksStatuses, { each: true })
   @IsArray()
   @IsEnum(TaskStatus, { each: true })
   status?: TaskStatus[];
@@ -39,4 +36,4 @@ class GetTasksInput extends CursorPaginationInput {
   ids?: string[];
 }
 
-export { GetTasksInput };
+export { GetTasksCursorInput };

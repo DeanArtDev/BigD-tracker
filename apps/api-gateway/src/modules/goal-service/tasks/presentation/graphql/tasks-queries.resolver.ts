@@ -2,15 +2,18 @@ import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { TaskMapper } from '../mappers/task.mapper';
-import {
-  AvailableToViewTasksStatuses,
-  GoalGetAssignableTasks,
-  GoalGetTaskById,
-  GoalGetTasks,
-} from '@big-d/api-contracts';
+import { GoalGetAssignableTasks, GoalGetTaskById, GoalGetTasksCursor, GoalGetTasksPerPage } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { GetAssignableTasksInput, GetTaskByIdInput, GetTasksInput, TaskSchema, TasksConnection } from './schemas';
+import {
+  GetAssignableTasksInput,
+  GetTaskByIdInput,
+  GetTasksCursorInput,
+  GetTasksPerPageInput,
+  TaskSchema,
+  TasksConnection,
+  TasksPerPageConnection,
+} from './schemas';
 
 @Resolver(() => TaskSchema)
 class TasksQueriesResolver {
@@ -40,28 +43,64 @@ class TasksQueriesResolver {
   @Query(() => TasksConnection, {
     description: 'Получение списка дел',
   })
-  async getTasks(
+  async getTasksCursor(
     @TokenPayload() { uid }: AccessTokenPayload,
-    @Args('input') input: GetTasksInput,
+    @Args('input') input: GetTasksCursorInput,
   ): Promise<TasksConnection> {
     const { status, limit, cursor, search, priority, groupIds, ids } = input;
-    const availableStatuses =
-      status?.filter((i) => AvailableToViewTasksStatuses.includes(i)) ?? AvailableToViewTasksStatuses;
 
-    const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: {
-        userId: uid,
-        search,
-        filter: {
-          limit,
-          cursor,
-          priority,
-          status: availableStatuses,
-          groupIds,
-          ids,
+    const { data } = await this.goalClient.send<GoalGetTasksCursor.Response, GoalGetTasksCursor.Request>(
+      GoalGetTasksCursor.pattern,
+      {
+        data: {
+          userId: uid,
+          search,
+          filter: {
+            limit,
+            cursor,
+            priority: priority?.map(TaskMapper.fromClientPriorityToServer),
+            status,
+            groupIds,
+            ids,
+          },
         },
       },
-    });
+    );
+
+    return {
+      items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),
+      meta: data.meta,
+    };
+  }
+
+  @Query(() => TasksPerPageConnection, {
+    description: 'Получение списка дел с постраничной пагинацией',
+  })
+  async getTasksPerPage(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Args('input') input: GetTasksPerPageInput,
+  ): Promise<TasksPerPageConnection> {
+    const { status, page, perPage, search, sort, recurring, priority, groupIds, ids } = input;
+
+    const { data } = await this.goalClient.send<GoalGetTasksPerPage.Response, GoalGetTasksPerPage.Request>(
+      GoalGetTasksPerPage.pattern,
+      {
+        data: {
+          userId: uid,
+          page,
+          perPage,
+          search,
+          sort,
+          filter: {
+            recurring,
+            priority: priority?.map(TaskMapper.fromClientPriorityToServer),
+            status,
+            groupIds,
+            ids,
+          },
+        },
+      },
+    );
 
     return {
       items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),

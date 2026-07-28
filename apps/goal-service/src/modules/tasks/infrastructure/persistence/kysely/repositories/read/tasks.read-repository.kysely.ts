@@ -1,5 +1,11 @@
 import { TaskView } from '@/modules/tasks/application/dto';
-import { TaskDatabase, TasksReadRepository, TasksSorting, TaskTransaction } from '@/modules/tasks/application/ports';
+import {
+  TaskDatabase,
+  TasksPagination,
+  TasksReadRepository,
+  TasksSorting,
+  TaskTransaction,
+} from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import {
   GroupTaskOrder,
@@ -128,22 +134,43 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
 
   async getMany(
     specifications: TasksSpecification,
-    params: { limit: number; sort?: SortDirection; order?: 'group' },
+    params: TasksPagination & {
+      idSort?: SortDirection;
+      order?: 'group';
+      sort?: TasksSorting;
+    },
     trx?: TaskTransaction,
   ): Promise<TaskView[]> {
     return await this.errorCatcher('tasks.get-many.read', async () => {
+      const page = params.page ?? 1;
+      const limit = params.perPage ?? params.limit;
+
       const tasks = await leftJoinTaskRecurrences(tasksWithStatusQuery(this.db, trx))
         .where((eb) => specifications.toExpr(eb))
         .$if(params.order === GroupTaskOrder.Group, (qb) =>
           qb.innerJoin('task_to_group as ttg', 'tasks.id', 'ttg.task_id').orderBy('ttg.position', 'asc'),
         )
-        .$if(params.order == null, (qb) => {
+        .$if(params.order == null && params.sort == null, (qb) => {
           return qb.orderBy('id', (ob) => {
-            if (params.sort === SortDirection.DESC) return ob.desc();
+            if (params.idSort === SortDirection.DESC) return ob.desc();
             return ob.asc();
           });
         })
-        .limit(params.limit)
+        .$if(params.sort?.priority != null, (qb) => qb.orderBy('tasks.priority', toLower(params.sort!.priority)))
+        .$if(params.sort?.deadline != null, (qb) =>
+          qb.orderBy('tasks.deadline', (ob) => {
+            if (params.sort!.deadline === SortDirection.ASC) return ob.asc().nullsLast();
+            return ob.desc().nullsFirst();
+          }),
+        )
+        .$if(params.sort?.startDate != null, (qb) =>
+          qb.orderBy('tasks.start_date', (ob) => {
+            if (params.sort!.startDate === SortDirection.ASC) return ob.asc().nullsLast();
+            return ob.desc().nullsFirst();
+          }),
+        )
+        .limit(limit)
+        .$if(page > 1, (qb) => qb.offset((page - 1) * limit))
         .execute();
 
       return tasks.map((task) => {

@@ -51,7 +51,7 @@ function TaskList({
       <VirtualizedInfinityScroll
         infinityScrollOptions={{ bottomGap: 400 }}
         {...virtualizerProps}
-        virtualizerOptions={{ gap: 0, overscan: 5, ...virtualizerProps.virtualizerOptions }}
+        virtualizerOptions={{ gap: 0, overscan: 7, ...virtualizerProps.virtualizerOptions }}
         renderItem={(virtualItem) => {
           const task = tasks[virtualItem.index];
           if (task == null) return null;
