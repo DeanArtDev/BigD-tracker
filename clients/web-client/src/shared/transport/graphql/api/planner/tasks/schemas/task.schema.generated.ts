@@ -15,8 +15,39 @@ export type GetTaskByIdInput = {
   id: string;
 };
 
+export type GetTasksCursorInput = {
+  cursor?: string | null | undefined;
+  groupIds?: Array<number> | null | undefined;
+  ids?: Array<string> | null | undefined;
+  limit: number;
+  priority?: Array<TaskPriority> | null | undefined;
+  search?: string | null | undefined;
+  status?: Array<TaskStatus> | null | undefined;
+};
+
+export type GetTasksPerPageInput = {
+  groupIds?: Array<number> | null | undefined;
+  ids?: Array<string> | null | undefined;
+  page: number;
+  perPage: number;
+  priority?: Array<TaskPriority> | null | undefined;
+  recurring?: boolean | null | undefined;
+  search?: string | null | undefined;
+  sort?: GetTasksPerPageSortInput | null | undefined;
+  status?: Array<TaskStatus> | null | undefined;
+};
+
+export type GetTasksPerPageSortInput = {
+  deadline?: SortDirection | null | undefined;
+  priority?: SortDirection | null | undefined;
+  startDate?: SortDirection | null | undefined;
+};
+
 /** Частота повторения дела */
 export type RecurrenceFrequency = 'DAILY' | 'HOURLY' | 'MINUTELY' | 'MONTHLY' | 'SECONDLY' | 'WEEKLY' | 'YEARLY';
+
+/** Направление сортировки */
+export type SortDirection = 'ASC' | 'DESC';
 
 export type TaskAssignInput = {
   groupId: number;
@@ -90,6 +121,50 @@ export type GetAssignableTasksQueryVariables = Exact<{
 
 export type GetAssignableTasksQuery = {
   getAssignableTasks: Array<{ id: string; name: string; groupId: number | null; priority: Types.TaskPriority }>;
+};
+
+export type GetTasksCursorQueryVariables = Exact<{
+  input: Types.GetTasksCursorInput;
+}>;
+
+export type GetTasksCursorQuery = {
+  getTasksCursor: {
+    items: Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      priority: Types.TaskPriority;
+      status: Types.TaskStatus;
+      groupId: number | null;
+      deadline: string | null;
+      startDate: string | null;
+      endDate: string | null;
+      cancelReason: string | null;
+    }>;
+    meta: { endCursor: string | null; hasNextPage: boolean };
+  };
+};
+
+export type GetTasksPerPageQueryVariables = Exact<{
+  input: Types.GetTasksPerPageInput;
+}>;
+
+export type GetTasksPerPageQuery = {
+  getTasksPerPage: {
+    items: Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      priority: Types.TaskPriority;
+      status: Types.TaskStatus;
+      groupId: number | null;
+      deadline: string | null;
+      startDate: string | null;
+      endDate: string | null;
+      cancelReason: string | null;
+    }>;
+    meta: { nextPage: boolean };
+  };
 };
 
 export type CreateTaskMutationVariables = Exact<{
@@ -237,6 +312,163 @@ export const GetAssignableTasksDocument = {
     },
   ],
 } as unknown as DocumentNode<GetAssignableTasksQuery, GetAssignableTasksQueryVariables>;
+export const GetTasksCursorDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetTasksCursor' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetTasksCursorInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTasksCursor' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'meta' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TaskFragment' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSchema' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetTasksCursorQuery, GetTasksCursorQueryVariables>;
+export const GetTasksPerPageDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetTasksPerPage' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetTasksPerPageInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTasksPerPage' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'meta' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'nextPage' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TaskFragment' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSchema' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetTasksPerPageQuery, GetTasksPerPageQueryVariables>;
 export const CreateTaskDocument = {
   kind: 'Document',
   definitions: [

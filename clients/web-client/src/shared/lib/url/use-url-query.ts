@@ -6,6 +6,7 @@ import qs from 'qs';
 import { type Dispatch, type SetStateAction, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { z } from 'zod';
 import { getEnvConfigClient } from '@/shared/lib';
+import { useIsMounted } from '@/shared/lib/application-status';
 
 type UrlAllowedQueryTypes = z.ZodObject<{ [key: string]: z.ZodType }>;
 
@@ -73,9 +74,10 @@ function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(
   const queryString = searchParams.toString();
 
   const pathname = usePathname();
+  const isMounted = useIsMounted();
 
   useLayoutEffect(() => {
-    if (defaultInitRef.current != null) {
+    if (defaultInitRef.current != null && !isMounted) {
       const prevValue = qs.parse(queryString, { ignoreQueryPrefix: true, interpretNumericEntities: true });
       const defaultQuery = qs.stringify(
         { ...prevValue, ...defaultInitRef.current },
@@ -87,7 +89,7 @@ function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(
       history.replaceState(null, '', pathname + defaultQuery);
       firstResponse.current = false;
     }
-  }, [pathname, queryString]);
+  }, [pathname, queryString, isMounted]);
 
   const withDefault = firstResponse.current ? defaultInitRef.current : currentQuery;
   return defaultInit == null ? currentQuery : withDefault;

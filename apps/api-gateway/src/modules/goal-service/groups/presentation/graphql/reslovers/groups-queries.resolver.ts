@@ -8,7 +8,7 @@ import {
   GoalGetGroup,
   GoalGetGroupInfo,
   GoalGetGroupList,
-  GoalGetTasks,
+  GoalGetTasksCursor,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Int, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
@@ -97,17 +97,20 @@ export class GroupsQueriesResolver {
     @Parent() group: GroupSchema,
     @Args('input', { nullable: true }) input?: GetGroupTasksInput,
   ): Promise<TasksConnection> {
-    const { data } = await this.goalClient.send<GoalGetTasks.Response, GoalGetTasks.Request>(GoalGetTasks.pattern, {
-      data: {
-        userId: uid,
-        order: input?.order,
-        filter: {
-          groupIds: [group.id],
-          limit: 10000,
-          status: AvailableToViewTasksStatuses,
+    const { data } = await this.goalClient.send<GoalGetTasksCursor.Response, GoalGetTasksCursor.Request>(
+      GoalGetTasksCursor.pattern,
+      {
+        data: {
+          userId: uid,
+          order: input?.order,
+          filter: {
+            groupIds: [group.id],
+            limit: 10000,
+            status: AvailableToViewTasksStatuses,
+          },
         },
       },
-    });
+    );
 
     return {
       items: data.items.map(TaskMapper.fromServerTaskDtoToClientDto),

@@ -48,6 +48,8 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
           />
         )}
 
+        <TaskFormParamsSettings />
+
         {!description.hidden && (
           <WysiwygForm
             name="description"
@@ -60,8 +62,6 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
             }}
           />
         )}
-
-        <TaskFormParamsSettings />
       </form>
 
       <TaskFormErrorReactor />

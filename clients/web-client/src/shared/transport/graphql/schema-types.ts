@@ -39,7 +39,6 @@ export type GetInboxResponse = {
   __typename?: 'GetInboxResponse';
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  taskCount: Scalars['Int']['output'];
   tasks: TasksConnection;
 };
 
@@ -65,14 +64,32 @@ export type GetTaskByIdInput = {
   id: Scalars['String']['input'];
 };
 
-export type GetTasksInput = {
+export type GetTasksCursorInput = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   groupIds?: InputMaybe<Array<Scalars['Int']['input']>>;
   ids?: InputMaybe<Array<Scalars['String']['input']>>;
   limit: Scalars['Int']['input'];
-  priority?: InputMaybe<Array<Scalars['Int']['input']>>;
+  priority?: InputMaybe<Array<TaskPriority>>;
   search?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Array<TaskStatus>>;
+};
+
+export type GetTasksPerPageInput = {
+  groupIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  page: Scalars['Int']['input'];
+  perPage: Scalars['Int']['input'];
+  priority?: InputMaybe<Array<TaskPriority>>;
+  recurring?: InputMaybe<Scalars['Boolean']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<GetTasksPerPageSortInput>;
+  status?: InputMaybe<Array<TaskStatus>>;
+};
+
+export type GetTasksPerPageSortInput = {
+  deadline?: InputMaybe<SortDirection>;
+  priority?: InputMaybe<SortDirection>;
+  startDate?: InputMaybe<SortDirection>;
 };
 
 export type GroupCreateInput = {
@@ -250,7 +267,9 @@ export type Query = {
   /** Получение дела по id */
   getTaskById: TaskSchema;
   /** Получение списка дел */
-  getTasks: TasksConnection;
+  getTasksCursor: TasksConnection;
+  /** Получение списка дел с постраничной пагинацией */
+  getTasksPerPage: TasksPerPageConnection;
   me: MeRes;
 };
 
@@ -270,8 +289,12 @@ export type QueryGetTaskByIdArgs = {
   input: GetTaskByIdInput;
 };
 
-export type QueryGetTasksArgs = {
-  input: GetTasksInput;
+export type QueryGetTasksCursorArgs = {
+  input: GetTasksCursorInput;
+};
+
+export type QueryGetTasksPerPageArgs = {
+  input: GetTasksPerPageInput;
 };
 
 /** Частота повторения дела */
@@ -283,6 +306,12 @@ export enum RecurrenceFrequency {
   Secondly = 'SECONDLY',
   Weekly = 'WEEKLY',
   Yearly = 'YEARLY',
+}
+
+/** Направление сортировки */
+export enum SortDirection {
+  Asc = 'ASC',
+  Desc = 'DESC',
 }
 
 export type TaskAssignInput = {
@@ -406,4 +435,15 @@ export type TasksConnection = {
   __typename?: 'TasksConnection';
   items: Array<TaskSchema>;
   meta: CursorPaginationMeta;
+};
+
+export type TasksPerPageConnection = {
+  __typename?: 'TasksPerPageConnection';
+  items: Array<TaskSchema>;
+  meta: TasksPerPageMeta;
+};
+
+export type TasksPerPageMeta = {
+  __typename?: 'TasksPerPageMeta';
+  nextPage: Scalars['Boolean']['output'];
 };

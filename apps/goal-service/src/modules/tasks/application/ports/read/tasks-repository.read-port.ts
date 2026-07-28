@@ -9,10 +9,26 @@ interface TasksSorting {
   readonly startDate?: SortDirection;
 }
 
+type TasksPagination =
+  | {
+      readonly limit: number;
+      readonly page?: never;
+      readonly perPage?: never;
+    }
+  | {
+      readonly limit?: never;
+      readonly page: number;
+      readonly perPage: number;
+    };
+
 interface TasksReadRepository {
   getMany(
     specifications: TasksSpecification,
-    params: { limit: number; sort?: SortDirection; order?: 'group' },
+    params: TasksPagination & {
+      readonly idSort?: SortDirection;
+      readonly order?: 'group';
+      readonly sort?: TasksSorting;
+    },
     trx?: TaskTransaction,
   ): Promise<TaskView[]>;
 
@@ -28,4 +44,4 @@ interface TasksReadRepository {
   isTaskIntoGroup(input: { taskId: number; groupId: number }, trx?: TaskTransaction): Promise<boolean>;
 }
 
-export { TasksReadRepository, TasksSorting };
+export { TasksPagination, TasksReadRepository, TasksSorting };

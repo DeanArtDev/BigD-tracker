@@ -24,6 +24,7 @@ export * from './ui/command';
 export * from './ui/combobox';
 export * from './ui/multi-select';
 export * from './ui/toggle-group';
+export * from './ui/tabs';
 export * from './ui/input';
 export * from './ui/input-group';
 export * from './ui/dialog';

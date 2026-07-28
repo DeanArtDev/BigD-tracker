@@ -1,6 +1,6 @@
 'use client';
 
-import { Folder, Inbox } from 'lucide-react';
+import { Folder, Inbox, ListChecks } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
 import { RoutePaths, routes } from '@/shared/routes';
 import { Badge, DataLoader, Typography, useSidebar } from '@/shared/ui-kit';
@@ -45,6 +45,12 @@ function useNavItems(): PlannerSidebarNavPath[] {
         title: <span>Группы</span>,
         icon: <Folder />,
         path: routes.plannerGroupList.path,
+      },
+
+      {
+        title: <span>Дела</span>,
+        icon: <ListChecks />,
+        path: routes.plannerTasks.path,
       },
     ],
     [inboxTaskCount, loading, open],

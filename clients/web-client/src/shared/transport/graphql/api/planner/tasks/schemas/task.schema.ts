@@ -11,6 +11,35 @@ const GET_ASSIGNABLE_TASKS_QUERY = gql`
   }
 `;
 
+const GET_TASKS_CURSOR_QUERY = gql`
+  query GetTasksCursor($input: GetTasksCursorInput!) {
+    getTasksCursor(input: $input) {
+      items {
+        ...TaskFragment
+      }
+
+      meta {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+const GET_TASKS_PER_PAGE_QUERY = gql`
+  query GetTasksPerPage($input: GetTasksPerPageInput!) {
+    getTasksPerPage(input: $input) {
+      items {
+        ...TaskFragment
+      }
+
+      meta {
+        nextPage
+      }
+    }
+  }
+`;
+
 const TASK_CREATE_MUTATION = gql`
   mutation CreateTask($input: TaskCreateInput!) {
     createTask(input: $input) {
@@ -89,4 +118,6 @@ export {
   TASK_FINISH_MUTATION,
   TASK_UPDATE_MUTATION,
   GET_ASSIGNABLE_TASKS_QUERY,
+  GET_TASKS_CURSOR_QUERY,
+  GET_TASKS_PER_PAGE_QUERY,
 };

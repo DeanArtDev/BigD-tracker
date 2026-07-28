@@ -9,6 +9,7 @@ export * from './assign-task-to-inbox.dto';
 export * from './unassign-task-from-group.dto';
 export * from './get-task-by-id.dto';
 export * from './get-tasks.dto';
+export * from './get-tasks-per-page.dto';
 export * from './get-assignable-tasks.dto';
 export * from './finish-task.dto';
 export * from './complete-delete-task.dto';

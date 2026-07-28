@@ -1,7 +1,7 @@
 import { GetTasksReq, GetTasksRes } from './dtos';
 
-export namespace GoalGetTasks {
-  export const pattern = 'goal.get-tasks.query';
+export namespace GoalGetTasksCursor {
+  export const pattern = 'goal.get-tasks-cursor.query';
 
   export class Request extends GetTasksReq {}
 
