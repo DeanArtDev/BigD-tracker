@@ -19,6 +19,7 @@ const GRAPHQL_PATH = '/graphql';
         const IS_PROD_STAGE = config.get<boolean>('IS_PROD_STAGE');
 
         return {
+          fieldResolverEnhancers: ['filters'],
           autoSchemaFile: join(process.cwd(), './src/infrastructure/graphql/schema.gql'),
           sortSchema: true,
           playground: false,

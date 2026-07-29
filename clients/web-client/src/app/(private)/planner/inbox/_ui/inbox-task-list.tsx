@@ -83,7 +83,6 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
           onNextPageLoad: fetchMore,
         }}
         dataLoaderProps={{
-          isError,
           isLoading: initialLoading,
           isEmpty,
           emptyElement: (

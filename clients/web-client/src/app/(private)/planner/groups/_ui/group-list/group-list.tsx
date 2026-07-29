@@ -21,7 +21,7 @@ function GroupList() {
     <DataLoader
       isLoading={initialLoading}
       isEmpty={isEmpty && hasSearch}
-      isError={isError}
+      isError={isError && groups.length <= 0}
       errorElement={<DataLoader.Error onRetry={refetch} />}
       emptyElement={
         <DataLoader.Empty
