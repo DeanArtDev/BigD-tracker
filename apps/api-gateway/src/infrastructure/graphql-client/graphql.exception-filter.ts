@@ -6,15 +6,6 @@ import { GqlExceptionFilter } from '@nestjs/graphql';
 import { ApiGatewayRequestContext } from '@shared/request-context';
 import { GraphQLError } from 'graphql';
 
-export type GqlErrorCode =
-  | 'UNAUTHENTICATED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'VALIDATION'
-  | 'CONFLICT'
-  | 'BAD_REQUEST'
-  | 'INTERNAL';
-
 @Catch()
 export class GraphQLExceptionFilter implements GqlExceptionFilter {
   catch(exc: unknown): AppGraphQLError {

@@ -9,6 +9,7 @@ const retryableErrorCodes = new Set<string>([
   exceptionCode.invalidRpcResponse.code,
   exceptionCode.serviceUnavailable.code,
   exceptionCode.internalGateway.code,
+  exceptionCode.requestDataValidation.code,
 ]);
 
 const retryByExceptionCodeLink = new RetryLink({
