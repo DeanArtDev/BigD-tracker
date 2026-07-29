@@ -12,7 +12,7 @@ function useGetTasksPerPage<BrandGroup extends Brand<number, string>, BrandTask 
 ) {
   const result = useQuery(
     ...shapeGetTasksPerPageOptions<BrandGroup, BrandTask>(input).query({
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'cache-first',
     }),
   );
 

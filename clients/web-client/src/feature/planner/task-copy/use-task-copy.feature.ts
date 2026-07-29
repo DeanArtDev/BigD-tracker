@@ -26,7 +26,14 @@ function useTaskCopyFeature() {
           });
 
           const taskData = response.data?.copyTask;
-          if (taskData?.groupId != null) {
+          if (taskData == null) return;
+
+          TaskCacheManager.insertTaskAfterTargetIntoTasksPerPage(rest.client.cache, {
+            targetTaskId: id,
+            clonedTaskId: taskData.id,
+          });
+
+          if (taskData.groupId != null) {
             PlannerInitCacheManager.refetch(rest.client);
             InboxGroupCacheManager.insertTaskAfterTarget(rest.client.cache, {
               targetTaskId: id,

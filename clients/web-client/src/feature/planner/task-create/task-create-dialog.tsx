@@ -11,6 +11,7 @@ import {
 } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import { AppDialog, useConfirmDialog, useNotify } from '@/shared/project-ui';
+import { TaskCacheManager } from '@/shared/transport/graphql';
 import { useTaskCreate } from './api/use-task-create';
 import { SuccessHandler } from './context/task-create.context';
 
@@ -68,7 +69,7 @@ interface TaskCreateDialogProps {
 function TaskCreateDialog(props: TaskCreateDialogProps) {
   const { groupId, open, onOpenChange, onSuccess } = props;
 
-  const { loading, createTask } = useTaskCreate();
+  const { loading, client, createTask } = useTaskCreate();
 
   const { promise } = useNotify();
 
@@ -87,6 +88,8 @@ function TaskCreateDialog(props: TaskCreateDialogProps) {
 
                 onCompleted: async ({ createTask: ok }) => {
                   if (ok != null) {
+                    TaskCacheManager.refetchAssignableTasks(client);
+                    await TaskCacheManager.refetchGetTasksPerPage(client);
                     await onSuccess?.(ok);
                     close();
                   }

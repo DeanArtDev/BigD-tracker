@@ -21,7 +21,6 @@ const clientConfig = getEnvConfigClient();
 
 function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes>(
   schema: TSchema,
-  defaultInit?: TValue<TSchema>,
 ): UseUrlQueryResponse<TSchema> {
   const searchParams = useSearchParams();
   const queryString = searchParams.toString();
@@ -58,15 +57,10 @@ function useUrlQuery<TSchema extends UrlAllowedQueryTypes = UrlAllowedQueryTypes
     return successData as TValue<TSchema>;
   }, [queryString, schema]);
 
-  const searchQueryWithDefaultUntilFirstSet = useDefaultResponse<TSchema>(searchQuery, defaultInit);
-
-  return [searchQueryWithDefaultUntilFirstSet, setSearchQuery];
+  return [searchQuery, setSearchQuery];
 }
 
-function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(
-  currentQuery: TValue<TSchema> | undefined,
-  defaultInit?: TValue<TSchema>,
-): TValue<TSchema> | undefined {
+function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(defaultInit?: TValue<TSchema>) {
   const defaultInitRef = useRef(defaultInit);
   const firstResponse = useRef(true);
 
@@ -90,9 +84,6 @@ function useDefaultResponse<TSchema extends UrlAllowedQueryTypes>(
       firstResponse.current = false;
     }
   }, [pathname, queryString, isMounted]);
-
-  const withDefault = firstResponse.current ? defaultInitRef.current : currentQuery;
-  return defaultInit == null ? currentQuery : withDefault;
 }
 
 export { type UseUrlQueryResponse, type UrlAllowedQueryTypes, useUrlQuery };
