@@ -1,5 +1,5 @@
 import { FolderOutput } from 'lucide-react';
-import { GroupInfo, GroupListDropdown } from '@/entity/planner/groups';
+import { GroupInfo, GroupListDropdown, GroupTaskIndication } from '@/entity/planner/groups';
 import { MaybePromise } from '@/shared/lib';
 import { AppTooltip } from '@/shared/project-ui';
 import { Button, DataLoader, VirtualizedInfinityScroll, VirtualizedInfinityScrollProps } from '@/shared/ui-kit';
@@ -68,6 +68,7 @@ function TaskList({
               priority={task.priority}
               status={task.status}
               deadline={task.deadline ?? undefined}
+              beforeBottomRowSlot={() => <GroupTaskIndication className="ml-2" groupId={task.groupId} />}
               afterHeaderSlot={() => (
                 <div className="flex gap-1">
                   {isAllowAssign && (

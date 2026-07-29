@@ -24,6 +24,7 @@ interface TaskCardProps {
   readonly repeatable?: boolean;
 
   readonly afterHeaderSlot?: ({ variant }: { variant: TaskCardVariant }) => ReactNode;
+  readonly beforeBottomRowSlot?: ({ variant }: { variant: TaskCardVariant }) => ReactNode;
   readonly ref?: Ref<HTMLDivElement>;
   readonly style?: CSSProperties;
 
@@ -44,6 +45,8 @@ function TaskCard(props: TaskCardProps) {
     repeatable = false,
     deadline,
     afterHeaderSlot,
+    beforeBottomRowSlot,
+
     onHeaderClick,
     onContentClick,
   } = props;
@@ -97,6 +100,8 @@ function TaskCard(props: TaskCardProps) {
       </CardTitle>
 
       <CardContent className="flex flex-wrap gap-3 p-0 pr-1.5 min-h-5 items-center">
+        {beforeBottomRowSlot?.({ variant })}
+
         {deadline != null && (
           <Badge variant={isDeadlineSoon && showIndications ? 'destructive' : 'outline'}>
             <Timer />

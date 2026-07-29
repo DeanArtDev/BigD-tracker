@@ -2,10 +2,10 @@
 
 import { ArrowDownWideNarrow, ArrowUpDown, ArrowUpNarrowWide } from 'lucide-react';
 import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
-import { TasksSort, useTasksUrlQuery } from '../_model/use-tasks-url-query';
+import { TasksSort, useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
 
 function TasksSortSelect() {
-  const [searchQuery, setSearchQuery] = useTasksUrlQuery();
+  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('current');
 
   return (
     <Select

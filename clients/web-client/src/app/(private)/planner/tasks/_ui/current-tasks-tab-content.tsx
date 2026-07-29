@@ -10,7 +10,7 @@ import { TasksRecurrenceSelect } from './tasks-recurrence-select';
 import { TasksSearch } from './tasks-search';
 import { TasksSortSelect } from './tasks-sort-select';
 import { useGetTasksPerPageInfinity } from '../_model/use-get-tasks-per-page-infinity';
-import { TasksRecurrence, TasksSort, useTasksUrlQuery } from '../_model/use-tasks-url-query';
+import { TasksRecurrence, TasksSort, useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
 
 const currentTaskStatuses: TaskStatus[] = [
   TaskStatus.NotStarted,
@@ -33,7 +33,7 @@ const tasksRecurrenceMap: Record<TasksRecurrence, boolean> = {
 };
 
 function CurrentTasksTabContent() {
-  const [searchQuery, setSearchQuery] = useTasksUrlQuery();
+  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('current', { tab: 1 });
   const selectedPriorities = searchQuery?.priority ?? [];
   const selectedStatuses = (searchQuery?.status ?? []).filter((status) => currentTaskStatuses.includes(status));
   const selectedGroupIds = (searchQuery?.groupIds ?? []) as GroupId[];
@@ -55,7 +55,7 @@ function CurrentTasksTabContent() {
   return (
     <>
       <div className="flex gap-5 items-center">
-        <TasksSearch />
+        <TasksSearch tab="current" />
 
         <TaskPriorityPicker
           className="ml-auto"
@@ -90,6 +90,7 @@ function CurrentTasksTabContent() {
         onRetry={refetch}
         virtualizerProps={{
           className: 'h-full',
+          isError,
           hasNextPage: meta?.nextPage ?? false,
           isLoadingNextPage: loading,
           onNextPageLoad: fetchMore,
@@ -100,7 +101,6 @@ function CurrentTasksTabContent() {
           },
         }}
         dataLoaderProps={{
-          isError,
           isLoading: initialLoading,
           isEmpty,
           emptyElement: <DataLoader.Empty title="Дел пока нет" />,

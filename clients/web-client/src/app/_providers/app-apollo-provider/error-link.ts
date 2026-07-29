@@ -31,6 +31,11 @@ const reactorErrorLink = new ErrorLink(({ error, operation, forward }) => {
   if (unauthError != null) {
     return from(refresh()).pipe(
       switchMap(({ data, errors }) => {
+        /*TODO:
+         *
+         * [] если forward(operation) вернет ошибку то он не попадает в следующий retryLink FIXME:
+         *
+         * */
         if (data != null) return forward(operation);
         if (errors != null) report(unauthError);
         return throwError(() => unauthError);

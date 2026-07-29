@@ -1,10 +1,10 @@
 'use client';
 
 import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
-import { TasksRecurrence, useTasksUrlQuery } from '../_model/use-tasks-url-query';
+import { TasksRecurrence, useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
 
 function TasksRecurrenceSelect() {
-  const [searchQuery, setSearchQuery] = useTasksUrlQuery();
+  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('current');
 
   return (
     <Select
