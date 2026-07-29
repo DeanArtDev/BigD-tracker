@@ -1,4 +1,5 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupInboxReadRepositoryKysely } from '../group-inbox.read-repository.kysely';
 
@@ -21,7 +22,7 @@ describe('GroupInboxReadRepositoryKysely', () => {
             "g"."name" = $1
             and "g"."user_id" = $2
         `,
-          parameters: ['IN_BOX', 77],
+          parameters: [groupsQuerySpec.inboxName, 77],
         });
       },
     );
@@ -45,7 +46,7 @@ describe('GroupInboxReadRepositoryKysely', () => {
             "g"."name" = $1
             and "g"."user_id" = $2
         `,
-          parameters: ['IN_BOX', 77],
+          parameters: [groupsQuerySpec.inboxName, 77],
         });
       },
     );

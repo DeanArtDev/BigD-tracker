@@ -1,5 +1,6 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
 import { GroupById, GroupByUserId, groupsCombinators } from '@/modules/tasks/application/specifications';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
 import { GroupStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
@@ -93,7 +94,7 @@ describe('GroupWriteRepositoryKysely', () => {
             and "user_id" = $4
             and "name" not in ($5)
         `,
-          parameters: ['Group Name', 'Desc', 901, 77, 'IN_BOX'],
+          parameters: ['Group Name', 'Desc', 901, 77, groupsQuerySpec.inboxName],
         });
         expectSqlQuery(recorder.queries[1], {
           sql: `

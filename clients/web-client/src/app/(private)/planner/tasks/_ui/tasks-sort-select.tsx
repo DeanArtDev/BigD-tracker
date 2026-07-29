@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowDownWideNarrow, ArrowUpDown, ArrowUpNarrowWide, X } from 'lucide-react';
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
+import { ArrowDownWideNarrow, ArrowUpDown, ArrowUpNarrowWide } from 'lucide-react';
+import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
 import { TasksSort, useTasksUrlQuery } from '../_model/use-tasks-url-query';
 
 function TasksSortSelect() {
@@ -18,7 +18,7 @@ function TasksSortSelect() {
       }}
     >
       <div className="relative">
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px] hover:bg-muted data-placeholder:hover:text-foreground">
           <SelectValue
             aria-placeholder="Сортировка"
             placeholder={
@@ -31,21 +31,15 @@ function TasksSortSelect() {
         </SelectTrigger>
 
         {searchQuery?.sort != null && (
-          <Button
-            type="button"
-            size="icon-sm"
-            variant="destructive"
-            className="absolute -top-2.5 -right-2.5 size-5.5 rounded-xl p-0"
-            onClick={(event) => {
-              event.stopPropagation();
+          <FilterResetButton
+            className="absolute -top-2.5 -right-2.5"
+            onReset={() => {
               setSearchQuery((previousQuery) => ({
                 ...previousQuery,
                 sort: undefined,
               }));
             }}
-          >
-            <X className="size-4" />
-          </Button>
+          />
         )}
       </div>
 

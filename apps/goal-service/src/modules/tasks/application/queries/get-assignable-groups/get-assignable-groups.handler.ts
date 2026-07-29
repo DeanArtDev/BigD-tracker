@@ -36,9 +36,6 @@ export class GetAssignableGroupsHandler implements IQueryHandler<GetAssignableGr
         t,
       );
 
-      /**
-       * Если группа не состоит в начатых целях
-       * */
       const groupById = groupBy(statusInfo, (info) => info.groupId);
       return infoGroups.filter((group) => {
         const goalParent = groupById[group.id.toString()];

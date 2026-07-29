@@ -1,4 +1,5 @@
 import { TasksDB } from '@/modules/tasks/application/ports';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupInboxWriteRepositoryKysely } from '../group-inbox.write-repository.kysely';
 
@@ -11,7 +12,7 @@ describe('GroupInboxWriteRepositoryKysely', () => {
           rows: [{ id: 1, name: 'IN_PROGRESS' }],
         });
         recorder.enqueueResult({
-          rows: [{ id: 10, name: 'IN_BOX', user_id: 77 }],
+          rows: [{ id: 10, name: groupsQuerySpec.inboxName, user_id: 77 }],
         });
 
         await repository.createInbox({ userId: 77 });
@@ -38,7 +39,7 @@ describe('GroupInboxWriteRepositoryKysely', () => {
             "name",
             "user_id"
         `,
-          parameters: ['IN_BOX', 77, 1],
+          parameters: [groupsQuerySpec.inboxName, 77, 1],
         });
       },
     );

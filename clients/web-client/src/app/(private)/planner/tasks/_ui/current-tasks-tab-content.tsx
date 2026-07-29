@@ -1,8 +1,11 @@
 'use client';
 
+import { GroupId } from '@/entity/planner/groups';
 import { TaskList, TaskPriorityPicker, TaskStatusSelect } from '@/entity/planner/tasks';
+import { useDebounce } from '@/shared/lib';
 import { GetTasksPerPageSortInput, SortDirection, TaskStatus } from '@/shared/transport/graphql';
 import { DataLoader } from '@/shared/ui-kit';
+import { TasksGroupsSelect } from './tasks-groups-select';
 import { TasksRecurrenceSelect } from './tasks-recurrence-select';
 import { TasksSearch } from './tasks-search';
 import { TasksSortSelect } from './tasks-sort-select';
@@ -33,13 +36,20 @@ function CurrentTasksTabContent() {
   const [searchQuery, setSearchQuery] = useTasksUrlQuery();
   const selectedPriorities = searchQuery?.priority ?? [];
   const selectedStatuses = (searchQuery?.status ?? []).filter((status) => currentTaskStatuses.includes(status));
+  const selectedGroupIds = (searchQuery?.groupIds ?? []) as GroupId[];
 
   const { tasks, meta, loading, initialLoading, isEmpty, isError, fetchMore, refetch } = useGetTasksPerPageInfinity({
-    status: selectedStatuses.length > 0 ? selectedStatuses : currentTaskStatuses,
-    priority: selectedPriorities,
     search: searchQuery?.search,
-    sort: searchQuery?.sort == null ? undefined : tasksSortMap[searchQuery.sort],
-    recurring: searchQuery?.recurring == null ? undefined : tasksRecurrenceMap[searchQuery.recurring],
+    ...useDebounce(
+      {
+        status: selectedStatuses.length > 0 ? selectedStatuses : currentTaskStatuses,
+        priority: selectedPriorities,
+        sort: searchQuery?.sort == null ? undefined : tasksSortMap[searchQuery.sort],
+        recurring: searchQuery?.recurring == null ? undefined : tasksRecurrenceMap[searchQuery.recurring],
+        groupIds: selectedGroupIds,
+      },
+      700,
+    ),
   });
 
   return (
@@ -69,6 +79,8 @@ function CurrentTasksTabContent() {
         />
 
         <TasksRecurrenceSelect />
+
+        <TasksGroupsSelect />
 
         <TasksSortSelect />
       </div>

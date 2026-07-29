@@ -39,5 +39,6 @@ export * from './ui/radio-group';
 export * from './ui/breadcrumb';
 export * from './ui/resizable';
 export * from './ui/virtualized-list-layout';
+export * from './ui/filter-reset-button';
 
 export * from './lib/utils';
