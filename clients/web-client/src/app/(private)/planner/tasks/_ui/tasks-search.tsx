@@ -1,10 +1,10 @@
 'use client';
 
 import { AppSearchInput } from '@/shared/project-ui';
-import { useTasksUrlQuery } from '../_model/use-tasks-url-query';
+import { TasksTab, useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
 
-function TasksSearch() {
-  const [searchQuery, setSearchQuery] = useTasksUrlQuery();
+function TasksSearch({ tab }: { tab: TasksTab }) {
+  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery(tab);
 
   return (
     <AppSearchInput

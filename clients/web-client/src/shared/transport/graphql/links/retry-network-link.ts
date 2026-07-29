@@ -1,7 +1,7 @@
 import { ServerError } from '@apollo/client';
 import { RetryLink } from '@apollo/client/link/retry';
 
-const retryLink = new RetryLink({
+const retryNetworkLink = new RetryLink({
   delay: {
     initial: 3000,
     max: 5000,
@@ -20,4 +20,4 @@ const retryLink = new RetryLink({
   },
 });
 
-export { retryLink };
+export { retryNetworkLink };

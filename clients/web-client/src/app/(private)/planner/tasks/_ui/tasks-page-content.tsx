@@ -39,11 +39,11 @@ function TasksPageContent() {
           <CurrentTasksTabContent />
         </TabsContent>
 
-        <TabsContent value="2" className="min-h-0 flex">
+        <TabsContent value="2" className="min-h-0 flex flex-col gap-4">
           <ArchivedTasksTabContent />
         </TabsContent>
 
-        <TabsContent value="3" className="min-h-0 flex">
+        <TabsContent value="3" className="min-h-0 flex flex-col gap-4">
           <DeletedTasksTabContent />
         </TabsContent>
       </Tabs>

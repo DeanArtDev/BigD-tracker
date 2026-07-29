@@ -7,4 +7,5 @@ export {
   GroupListDropdown,
   GroupNameEditor,
   GroupActionsDropdown,
+  GroupTaskIndication,
 } from './ui';

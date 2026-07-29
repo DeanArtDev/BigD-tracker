@@ -15,7 +15,8 @@ import {
   GetTasksCursorQueryVariables,
   GetTasksPerPageQuery,
   GetTasksPerPageQueryVariables,
-  retryLink,
+  retryByExceptionCodeLink,
+  retryNetworkLink,
   TaskSchema,
 } from '@/shared/transport/graphql';
 import { reactorErrorLink } from './error-link';
@@ -119,7 +120,7 @@ const getTasksPerPagePolicy: FieldPolicy<
   FieldReadFunctionOptions,
   FieldMergeFunctionOptions<object, Partial<GetTasksPerPageQueryVariables>>
 > = {
-  keyArgs: ['input', ['search', 'status', 'priority', 'groupIds', 'ids', 'sort', 'recurring']],
+  keyArgs: false,
 
   merge(existing, incoming, { variables, readField }) {
     const isInitialRequest = variables?.input?.page === 1;
@@ -172,7 +173,7 @@ function makeClient() {
         },
       },
     }),
-    link: ApolloLink.from([reactorErrorLink, retryLink, cookieAccessLink, httpLink]),
+    link: ApolloLink.from([retryByExceptionCodeLink, reactorErrorLink, retryNetworkLink, cookieAccessLink, httpLink]),
   });
 }
 
