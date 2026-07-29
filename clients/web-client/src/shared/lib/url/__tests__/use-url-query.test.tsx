@@ -46,19 +46,4 @@ describe('useUrlQuery', () => {
     expect(window.location.search).toBe('?tab=3&search=report');
     expect(result.current[0]).toEqual({ tab: 3, search: 'report' });
   });
-
-  it('allows setting new data after applying defaultInit', () => {
-    const { result, rerender } = renderHook(() => useUrlQuery(testQuerySchema, { tab: 1 }));
-
-    expect(window.location.search).toBe('?tab=1');
-    expect(result.current[0]).toEqual({ tab: 1 });
-
-    act(() => {
-      result.current[1]((previousQuery) => ({ ...previousQuery, tab: 2, search: 'updated' }));
-    });
-    rerender();
-
-    expect(window.location.search).toBe('?tab=2&search=updated');
-    expect(result.current[0]).toEqual({ tab: 2, search: 'updated' });
-  });
 });

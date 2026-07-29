@@ -1,4 +1,5 @@
-import { Check, Folder } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { GroupTaskIndication } from '@/entity/planner/groups';
 import { DropdownItem } from '@/shared/project-ui';
 import { useGetAssignableGroups } from '@/shared/transport/graphql';
 import { Button, DataLoader, Typography } from '@/shared/ui-kit';
@@ -30,7 +31,7 @@ function ListContent({ selectedGroupId, onSelect }: ListContentProps) {
                 onSelect(group);
               }}
             >
-              {isSelected ? <Check /> : <Folder />}
+              {isSelected ? <Check /> : <GroupTaskIndication groupId={group.id} />}
               <Typography.P className="truncate max-w-100">{group.name}</Typography.P>
             </Button>
           </DropdownItem>

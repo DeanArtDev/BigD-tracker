@@ -61,7 +61,7 @@ function ArchivedTasksTabContent() {
           isError,
           isLoading: initialLoading,
           isEmpty,
-          emptyElement: <DataLoader.Empty title="Дел пока нет" />,
+          emptyElement: <DataLoader.Empty title="Дел в архиве пока нет" />,
         }}
       />
     </>

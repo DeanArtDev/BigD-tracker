@@ -20,11 +20,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/shared/ui-kit';
-import { useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
+import { useGetTasksPerPageCurrent } from '../../_model/use-get-tasks-per-page-current';
 
 function TasksGroupsSelect() {
-  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('current');
-  const selectedGroupIds = (searchQuery?.groupIds ?? []) as GroupId[];
+  const { selectedGroupIds, setSearchQuery } = useGetTasksPerPageCurrent();
+
   const { groups, loading } = useGetAssignableGroups<GroupId>();
   const availableGroups = groups.items;
 

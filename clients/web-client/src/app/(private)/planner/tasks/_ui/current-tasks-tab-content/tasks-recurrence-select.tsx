@@ -1,14 +1,15 @@
 'use client';
 
 import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
-import { TasksRecurrence, useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
+import { useGetTasksPerPageCurrent } from '../../_model/use-get-tasks-per-page-current';
+import { TasksRecurrence } from '../../_model/use-tasks-url-query';
 
 function TasksRecurrenceSelect() {
-  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('current');
+  const { setSearchQuery, recurring } = useGetTasksPerPageCurrent();
 
   return (
     <Select
-      value={searchQuery?.recurring ?? ''}
+      value={recurring ?? ''}
       onValueChange={(value) => {
         setSearchQuery((previousQuery) => ({
           ...previousQuery,
@@ -21,7 +22,7 @@ function TasksRecurrenceSelect() {
           <SelectValue placeholder="Повторяемость" />
         </SelectTrigger>
 
-        {searchQuery?.recurring != null && (
+        {recurring != null && (
           <FilterResetButton
             className="absolute -top-2.5 -right-2.5"
             onReset={() => {

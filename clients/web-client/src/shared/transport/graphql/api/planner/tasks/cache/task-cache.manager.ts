@@ -1,6 +1,18 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
-import { type Query, shapeGetAssignableTasksOptions, shapeGetTasksPerPageOptions } from '@/shared/transport/graphql';
-import type { TaskSchema } from '../../../../schema-types';
+import { Override } from '@/shared/lib';
+import {
+  type GetTasksPerPageQueryVariables,
+  type Query,
+  shapeGetAssignableTasksOptions,
+  shapeGetTasksPerPageOptions,
+  TaskStatus,
+} from '@/shared/transport/graphql';
+import type { TaskSchema, TasksPerPageConnection } from '../../../../schema-types';
+import { WithReferenceList } from '../../../types';
+
+type TasksPerPageCache = WithReferenceList<TasksPerPageConnection, 'items'>;
+type RootQueryCache = Override<Query, { getTasksPerPage: TasksPerPageCache }>;
+type TasksPerPageCacheStorage = Pick<GetTasksPerPageQueryVariables['input'], 'status'>;
 
 class TaskCacheManager {
   static readonly taskTypename: TaskSchema['__typename'] = 'TaskSchema';
@@ -44,10 +56,62 @@ class TaskCacheManager {
     });
   }
 
+  static dropDeletedGetTasksPerPage(client: ApolloClient) {
+    client.cache.modify<RootQueryCache>({
+      id: 'ROOT_QUERY',
+      fields: {
+        getTasksPerPage(existing, { DELETE, storage }) {
+          const { status } = storage as TasksPerPageCacheStorage;
+          return status?.includes(TaskStatus.Deleted) ? DELETE : existing;
+        },
+      },
+    });
+    client.cache.gc();
+  }
+
   static removeTask(cache: ApolloCache, { taskId }: { taskId: string }) {
     const id = cache.identify({ __typename: this.taskTypename, id: taskId });
     if (id != null) cache.evict({ id });
   }
+
+  static insertTaskAfterTargetIntoTasksPerPage(
+    cache: ApolloCache,
+    {
+      targetTaskId,
+      clonedTaskId,
+    }: {
+      targetTaskId: TaskSchema['id'];
+      clonedTaskId: TaskSchema['id'];
+    },
+  ): boolean {
+    const clonedTaskCacheId = cache.identify({ __typename: TaskCacheManager.taskTypename, id: clonedTaskId });
+    if (clonedTaskCacheId == null) return false;
+
+    return cache.modify<RootQueryCache>({
+      id: 'ROOT_QUERY',
+      fields: {
+        getTasksPerPage(existingTasks, { isReference, readField, toReference }) {
+          if (existingTasks == null || isReference(existingTasks)) return existingTasks;
+          const clonedTaskRef = toReference(clonedTaskCacheId);
+          if (clonedTaskRef == null) return existingTasks;
+
+          const originalTaskIndex = existingTasks.items.findIndex(
+            (taskRef) => readField('id', taskRef) === targetTaskId,
+          );
+          if (originalTaskIndex < 0) return existingTasks;
+
+          return {
+            ...existingTasks,
+            items: [
+              ...existingTasks.items.slice(0, originalTaskIndex + 1),
+              clonedTaskRef,
+              ...existingTasks.items.slice(originalTaskIndex + 1),
+            ],
+          };
+        },
+      },
+    });
+  }
 }
 
-export { TaskCacheManager };
+export { TaskCacheManager, type TasksPerPageCacheStorage };

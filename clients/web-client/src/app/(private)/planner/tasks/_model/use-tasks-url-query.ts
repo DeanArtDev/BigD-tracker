@@ -36,15 +36,14 @@ type UseTasksUrlQuery = z.infer<typeof tasksUrlQuerySchema>;
 type TasksSort = NonNullable<TasksTabUrlQuery['sort']>;
 type TasksRecurrence = NonNullable<TasksTabUrlQuery['recurring']>;
 
-function useTasksUrlQuery(init?: { tab: UseTasksUrlQuery['tab'] }) {
-  return useUrlQuery(tasksUrlQuerySchema, init);
+function useTasksUrlQuery() {
+  return useUrlQuery(tasksUrlQuerySchema);
 }
 
 function useTasksTabUrlQuery<TTab extends TasksTab>(
   tab: TTab,
-  init?: { tab: UseTasksUrlQuery['tab'] },
 ): [UseTasksUrlQuery[TTab] | undefined, Dispatch<SetStateAction<TasksTabUrlQuery>>] {
-  const [searchQuery, setSearchQuery] = useTasksUrlQuery(init);
+  const [searchQuery, setSearchQuery] = useTasksUrlQuery();
 
   const setTabSearchQuery = useCallback<Dispatch<SetStateAction<TasksTabUrlQuery>>>(
     (value) => {

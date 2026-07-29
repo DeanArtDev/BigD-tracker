@@ -42,6 +42,7 @@ function useTaskDeleteFeature() {
                   GroupCacheManager.removeTaskFromGroup(rest.client.cache, { taskId, groupId });
                 }
                 TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
+                TaskCacheManager.dropDeletedGetTasksPerPage(rest.client);
                 await onSuccess?.();
               }
             } finally {

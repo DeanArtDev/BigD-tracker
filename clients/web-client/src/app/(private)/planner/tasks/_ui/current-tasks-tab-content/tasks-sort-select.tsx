@@ -1,15 +1,16 @@
 'use client';
 
 import { ArrowDownWideNarrow, ArrowUpDown, ArrowUpNarrowWide } from 'lucide-react';
+import { useGetTasksPerPageCurrent } from '@/app/(private)/planner/tasks/_model/use-get-tasks-per-page-current';
 import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
-import { TasksSort, useTasksTabUrlQuery } from '../_model/use-tasks-url-query';
+import { TasksSort } from '../../_model/use-tasks-url-query';
 
 function TasksSortSelect() {
-  const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('current');
+  const { setSearchQuery, sort } = useGetTasksPerPageCurrent();
 
   return (
     <Select
-      value={searchQuery?.sort ?? ''}
+      value={sort ?? ''}
       onValueChange={(value) => {
         setSearchQuery((previousQuery) => ({
           ...previousQuery,
@@ -30,7 +31,7 @@ function TasksSortSelect() {
           />
         </SelectTrigger>
 
-        {searchQuery?.sort != null && (
+        {sort != null && (
           <FilterResetButton
             className="absolute -top-2.5 -right-2.5"
             onReset={() => {

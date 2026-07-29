@@ -18,6 +18,7 @@ import {
   retryByExceptionCodeLink,
   retryNetworkLink,
   TaskSchema,
+  type TasksPerPageCacheStorage,
 } from '@/shared/transport/graphql';
 import { reactorErrorLink } from './error-link';
 
@@ -120,10 +121,14 @@ const getTasksPerPagePolicy: FieldPolicy<
   FieldReadFunctionOptions,
   FieldMergeFunctionOptions<object, Partial<GetTasksPerPageQueryVariables>>
 > = {
-  keyArgs: false,
+  keyArgs: ['input', ['search', 'status', 'priority', 'groupIds', 'ids', 'sort', 'recurring']],
 
-  merge(existing, incoming, { variables, readField }) {
-    const isInitialRequest = variables?.input?.page === 1;
+  merge(existing, incoming, { args, readField, storage }) {
+    const input = (args as GetTasksPerPageQueryVariables | null)?.input;
+    const cacheStorage = storage as TasksPerPageCacheStorage;
+    cacheStorage.status = input?.status;
+
+    const isInitialRequest = input?.page === 1;
     const existingItems = isInitialRequest ? [] : (existing?.items ?? []);
     const incomingItems = incoming?.items ?? [];
     const seen = new Set(existingItems.map((item) => readField('id', item)));
