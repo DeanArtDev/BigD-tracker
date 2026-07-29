@@ -6,6 +6,7 @@ import {
   GroupByUserId,
   groupsCombinators,
 } from '@/modules/tasks/application/specifications';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { GroupStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupsReadRepositoryKysely } from '../groups.read-repository.kysely';
@@ -42,8 +43,13 @@ describe('GroupsReadRepositoryKysely', () => {
               and "group_statuses"."name" in ($2)
               and "groups"."name" ilike $3
             )
+          order by
+            case
+              when "groups"."name" = $4 then 0
+              else 1
+            end
         `,
-          parameters: [7, GroupStatus.NOT_STARTED, '%Team%'],
+          parameters: [7, GroupStatus.NOT_STARTED, '%Team%', groupsQuerySpec.inboxName],
         });
       },
     );
@@ -73,7 +79,7 @@ describe('GroupsReadRepositoryKysely', () => {
             and "g"."name" = $2
             and "g"."user_id" = $3
         `,
-          parameters: ['IN_BOX', 'Work', 77],
+          parameters: [groupsQuerySpec.inboxName, 'Work', 77],
         });
       },
     );

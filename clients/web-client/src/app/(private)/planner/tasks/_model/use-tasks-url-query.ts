@@ -20,6 +20,7 @@ const tasksUrlQuerySchema = z.object({
     .optional(),
   sort: z.enum(tasksSortValues).optional(),
   recurring: z.enum(tasksRecurrenceValues).optional(),
+  groupIds: z.coerce.number().array().optional(),
 });
 
 type UseTasksUrlQuery = z.infer<typeof tasksUrlQuerySchema>;

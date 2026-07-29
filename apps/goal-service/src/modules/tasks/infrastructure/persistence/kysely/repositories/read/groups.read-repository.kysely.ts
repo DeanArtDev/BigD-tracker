@@ -1,6 +1,7 @@
 import { GroupInfoView, GroupView } from '@/modules/tasks/application/dto';
 import { GroupsReadRepository, TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
+import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { GroupStatus, SortDirection } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
@@ -19,6 +20,7 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
     return await this.errorCatcher('groups.get-info', async () => {
       const groups = await groupWithStatusQuery(this.db, trx)
         .where((eb) => specifications.toExpr(eb))
+        .orderBy((eb) => eb.case().when('groups.name', '=', groupsQuerySpec.inboxName).then(0).else(1).end())
         .execute();
 
       return groups.map((group) => {

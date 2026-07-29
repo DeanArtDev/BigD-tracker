@@ -1,4 +1,4 @@
-pnpm test:all --no-cache;
-pnpm format:all --no-cache;
-pnpm lint:all --no-cache;
-pnpm type:check:all --no-cache;
+pnpm test:all --cache=local:r,remote:r;
+pnpm format:all --cache=local:r,remote:r;
+pnpm lint:all --cache=local:r,remote:r;
+pnpm type:check:all --cache=local:r,remote:r;

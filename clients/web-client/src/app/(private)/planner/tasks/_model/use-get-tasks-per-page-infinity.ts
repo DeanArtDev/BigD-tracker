@@ -11,8 +11,9 @@ function useGetTasksPerPageInfinity(input: {
   search?: string;
   sort?: GetTasksPerPageSortInput;
   recurring?: boolean;
+  groupIds?: GroupId[];
 }) {
-  const { status, priority, search, sort, recurring } = input;
+  const { status, priority, search, sort, recurring, groupIds } = input;
   const inputKey = JSON.stringify(input);
   const pageRef = useRef(1);
 
@@ -24,6 +25,7 @@ function useGetTasksPerPageInfinity(input: {
     search,
     sort,
     recurring,
+    groupIds,
   });
 
   useEffect(() => {
@@ -48,6 +50,7 @@ function useGetTasksPerPageInfinity(input: {
               search,
               sort,
               recurring,
+              groupIds,
             },
           },
         })
