@@ -15,6 +15,7 @@ import {
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
+import { TaskMapper } from '../mappers/task.mapper';
 import {
   TaskAssignInput,
   TaskCompleteDeleteInput,
@@ -23,10 +24,9 @@ import {
   TaskDeleteInput,
   TaskFinishInput,
   TaskRecoveryInput,
-  TaskUpdateInput,
   TaskUnassignInput,
+  TaskUpdateInput,
 } from './schemas';
-import { TaskMapper } from '../mappers/task.mapper';
 
 @Resolver(() => TaskSchema)
 class TasksMutationsResolver {
@@ -163,13 +163,13 @@ class TasksMutationsResolver {
     return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
-  @Mutation(() => Int, {
+  @Mutation(() => TaskSchema, {
     description: 'Восстановление дела',
   })
   async taskRecovery(
     @Args('input') input: TaskRecoveryInput,
     @TokenPayload() { uid }: AccessTokenPayload,
-  ): Promise<GoalTaskRecovery.Response['data']['id']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalTaskRecovery.Response, GoalTaskRecovery.Request>(
       GoalTaskRecovery.pattern,
       {
@@ -181,7 +181,7 @@ class TasksMutationsResolver {
       },
     );
 
-    return data.id;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 
   @Mutation(() => TaskSchema, {

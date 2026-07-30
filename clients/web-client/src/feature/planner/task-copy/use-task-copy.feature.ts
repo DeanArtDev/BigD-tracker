@@ -32,6 +32,8 @@ function useTaskCopyFeature() {
             targetTaskId: id,
             clonedTaskId: taskData.id,
           });
+          TaskCacheManager.refetchAssignableTasks(rest.client);
+          TaskCacheManager.dropCurrentGetTasksPerPage(rest.client);
 
           if (taskData.groupId != null) {
             PlannerInitCacheManager.refetch(rest.client);
@@ -44,7 +46,6 @@ function useTaskCopyFeature() {
               clonedTaskId: taskData.id,
               groupId: taskData.groupId,
             });
-            TaskCacheManager.refetchAssignableTasks(rest.client);
           }
         } finally {
           setLoading(false);

@@ -1,4 +1,5 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
+import { currentTasksStatuses } from '@/entity/planner/tasks/model';
 import { Override } from '@/shared/lib';
 import {
   type GetTasksPerPageQueryVariables,
@@ -66,7 +67,18 @@ class TaskCacheManager {
         },
       },
     });
-    client.cache.gc();
+  }
+
+  static dropCurrentGetTasksPerPage(client: ApolloClient) {
+    client.cache.modify<RootQueryCache>({
+      id: 'ROOT_QUERY',
+      fields: {
+        getTasksPerPage(existing, { DELETE, storage }) {
+          const { status } = storage as TasksPerPageCacheStorage;
+          return status?.every((status) => currentTasksStatuses.includes(status)) ? DELETE : existing;
+        },
+      },
+    });
   }
 
   static removeTask(cache: ApolloCache, { taskId }: { taskId: string }) {

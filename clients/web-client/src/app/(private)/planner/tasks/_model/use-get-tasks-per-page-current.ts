@@ -1,16 +1,10 @@
+import { useState } from 'react';
+import { useDebounce } from 'react-use';
 import { GroupId } from '@/entity/planner/groups';
-import { useDebounce } from '@/shared/lib';
-import { GetTasksPerPageSortInput, SortDirection, TaskStatus } from '@/shared/transport/graphql';
+import { currentTasksStatuses } from '@/entity/planner/tasks/model';
+import { GetTasksPerPageSortInput, SortDirection } from '@/shared/transport/graphql';
 import { useGetTasksPerPageInfinity } from './use-get-tasks-per-page-infinity';
 import { TasksRecurrence, TasksSort, useTasksTabUrlQuery } from './use-tasks-url-query';
-
-const currentTaskStatuses: TaskStatus[] = [
-  TaskStatus.NotStarted,
-  TaskStatus.InProgress,
-  TaskStatus.Completed,
-  TaskStatus.Overdue,
-  TaskStatus.Canceled,
-];
 
 const tasksSortMap: Record<TasksSort, GetTasksPerPageSortInput> = {
   startDateAsc: { startDate: SortDirection.Asc },
@@ -30,21 +24,24 @@ function useGetTasksPerPageCurrent() {
   const selectedPriorities = searchQuery?.priority ?? [];
   const sort = searchQuery?.sort;
   const recurring = searchQuery?.recurring;
-  const selectedStatuses = (searchQuery?.status ?? []).filter((status) => currentTaskStatuses.includes(status));
+  const selectedStatuses = (searchQuery?.status ?? []).filter((status) => currentTasksStatuses.includes(status));
   const selectedGroupIds = (searchQuery?.groupIds ?? []) as GroupId[];
+
+  const requestParams = {
+    status: selectedStatuses.length > 0 ? selectedStatuses : currentTasksStatuses,
+    priority: selectedPriorities,
+    sort: searchQuery?.sort == null ? undefined : tasksSortMap[searchQuery.sort],
+    recurring: searchQuery?.recurring == null ? undefined : tasksRecurrenceMap[searchQuery.recurring],
+    groupIds: selectedGroupIds,
+  };
+  const requestParamsKey = JSON.stringify(requestParams);
+  const [debouncedRequestParams, setDebouncedRequestParams] = useState(requestParams);
+
+  useDebounce(() => void setDebouncedRequestParams(requestParams), 500, [requestParamsKey]);
 
   const { tasks, meta, loading, initialLoading, isEmpty, isError, fetchMore, refetch } = useGetTasksPerPageInfinity({
     search: searchQuery?.search,
-    ...useDebounce(
-      {
-        status: selectedStatuses.length > 0 ? selectedStatuses : currentTaskStatuses,
-        priority: selectedPriorities,
-        sort: searchQuery?.sort == null ? undefined : tasksSortMap[searchQuery.sort],
-        recurring: searchQuery?.recurring == null ? undefined : tasksRecurrenceMap[searchQuery.recurring],
-        groupIds: selectedGroupIds,
-      },
-      500,
-    ),
+    ...debouncedRequestParams,
   });
 
   return {

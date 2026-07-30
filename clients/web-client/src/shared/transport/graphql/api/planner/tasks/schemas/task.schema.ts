@@ -100,6 +100,14 @@ const TASK_FINISH_MUTATION = gql`
   }
 `;
 
+const TASK_RECOVERY_MUTATION = gql`
+  mutation TaskRecovery($input: TaskRecoveryInput!) {
+    taskRecovery(input: $input) {
+      ...TaskFragment
+    }
+  }
+`;
+
 const TASK_BY_ID_QUERY = gql`
   query TaskById($input: GetTaskByIdInput!) {
     getTaskById(input: $input) {
@@ -116,6 +124,7 @@ export {
   TASK_COPY_MUTATION,
   TASK_BY_ID_QUERY,
   TASK_FINISH_MUTATION,
+  TASK_RECOVERY_MUTATION,
   TASK_UPDATE_MUTATION,
   GET_ASSIGNABLE_TASKS_QUERY,
   GET_TASKS_CURSOR_QUERY,

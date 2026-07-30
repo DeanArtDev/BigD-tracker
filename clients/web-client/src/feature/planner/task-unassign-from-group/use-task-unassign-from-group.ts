@@ -36,6 +36,7 @@ function useTaskUnassignFromGroup() {
           if (result?.data != null) {
             GroupCacheManager.removeTaskFromGroup(client.cache, { groupId, taskId });
             TaskCacheManager.refetchAssignableTasks(client);
+            TaskCacheManager.dropCurrentGetTasksPerPage(client);
 
             PlannerInitCacheManager.refetch(client);
             InboxGroupCacheManager.removeTask(client.cache, { inboxId: groupId, taskId });

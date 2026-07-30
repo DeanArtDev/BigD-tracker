@@ -61,6 +61,7 @@ function TaskList({
               status={task.status}
               name={task.name}
               deadline={task.deadline ?? undefined}
+              startDate={task.startDate ?? undefined}
               afterHeaderSlot={({ variant }) => {
                 const isDisabled = variant === 'disabled';
 

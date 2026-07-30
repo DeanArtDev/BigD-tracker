@@ -46,7 +46,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Recover])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.Recover, taskStatus, taskType),
+      allow: onRecover != null && TaskDomain.isAllowTaskAction(TaskActionType.Recover, taskStatus, taskType),
     },
 
     {
@@ -55,7 +55,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Finish])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.Finish, taskStatus, taskType),
+      allow: onFinish != null && TaskDomain.isAllowTaskAction(TaskActionType.Finish, taskStatus, taskType),
     },
 
     {
@@ -64,7 +64,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Clone])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.Clone, taskStatus, taskType),
+      allow: onCopy != null && TaskDomain.isAllowTaskAction(TaskActionType.Clone, taskStatus, taskType),
     },
 
     {
@@ -73,7 +73,8 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Unassign])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.Unassign, taskStatus, taskType) && hasGroup,
+      allow:
+        onUnassign != null && TaskDomain.isAllowTaskAction(TaskActionType.Unassign, taskStatus, taskType) && hasGroup,
     },
 
     {
@@ -82,10 +83,10 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Assign])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.Assign, taskStatus, taskType),
+      allow: onAssign != null && TaskDomain.isAllowTaskAction(TaskActionType.Assign, taskStatus, taskType),
     },
 
-    { element: <DropdownMenuSeparator key="separator-1" />, allow: true },
+    { element: <DropdownMenuSeparator key="separator-1" />, allow: onDelete != null || onDeleteComplete != null },
 
     {
       element: (
@@ -98,7 +99,8 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.DeleteComplete])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.DeleteComplete, taskStatus, taskType),
+      allow:
+        onDeleteComplete != null && TaskDomain.isAllowTaskAction(TaskActionType.DeleteComplete, taskStatus, taskType),
     },
 
     {
@@ -107,7 +109,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Delete])}
         </TaskAction>
       ),
-      allow: TaskDomain.isAllowTaskAction(TaskActionType.Delete, taskStatus, taskType),
+      allow: onDelete != null && TaskDomain.isAllowTaskAction(TaskActionType.Delete, taskStatus, taskType),
     },
   ];
 

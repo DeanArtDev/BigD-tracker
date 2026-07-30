@@ -83,6 +83,11 @@ export type TaskFinishStatus = 'CANCELED' | 'COMPLETED' | 'OVERDUE';
 /** Приоритеты дела */
 type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
 
+export type TaskRecoveryInput = {
+  groupId: number;
+  id: string;
+};
+
 /** День недели повторения дела */
 export type TaskRecurrenceWeekday = 'FR' | 'MO' | 'SA' | 'SU' | 'TH' | 'TU' | 'WE';
 
@@ -247,6 +252,25 @@ export type TaskFinishMutationVariables = Exact<{
 }>;
 
 export type TaskFinishMutation = { finishTask: { id: string; status: Types.TaskStatus; cancelReason: string | null } };
+
+export type TaskRecoveryMutationVariables = Exact<{
+  input: Types.TaskRecoveryInput;
+}>;
+
+export type TaskRecoveryMutation = {
+  taskRecovery: {
+    id: string;
+    name: string;
+    description: string | null;
+    priority: Types.TaskPriority;
+    status: Types.TaskStatus;
+    groupId: number | null;
+    deadline: string | null;
+    startDate: string | null;
+    endDate: string | null;
+    cancelReason: string | null;
+  };
+};
 
 export type TaskByIdQueryVariables = Exact<{
   input: Types.GetTaskByIdInput;
@@ -801,6 +825,66 @@ export const TaskFinishDocument = {
     },
   ],
 } as unknown as DocumentNode<TaskFinishMutation, TaskFinishMutationVariables>;
+export const TaskRecoveryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'TaskRecovery' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskRecoveryInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'taskRecovery' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TaskFragment' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSchema' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TaskRecoveryMutation, TaskRecoveryMutationVariables>;
 export const TaskByIdDocument = {
   kind: 'Document',
   definitions: [

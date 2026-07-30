@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsInt, IsString, ValidateNested } from 'class-validator';
+import { IsInt, ValidateNested } from 'class-validator';
+import { TaskDto } from './task.dto';
 
 class TaskRecoveryReqData {
   @ApiProperty({ example: 1 })
@@ -18,19 +19,12 @@ class TaskRecoveryReq {
   data: TaskRecoveryReqData;
 }
 
-class TaskRecoveryResData {
-  @ApiProperty({ example: 123 })
-  @Expose()
-  @IsString()
-  id: string;
-}
-
 class TaskRecoveryRes {
   @ApiProperty({ description: 'Ответ сервера' })
   @Expose()
   @ValidateNested()
-  @Type(() => TaskRecoveryResData)
-  data: TaskRecoveryResData;
+  @Type(() => TaskDto)
+  data: TaskDto;
 }
 
 export { TaskRecoveryReq, TaskRecoveryRes };

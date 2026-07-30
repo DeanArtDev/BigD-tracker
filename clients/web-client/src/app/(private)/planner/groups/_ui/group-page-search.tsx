@@ -6,6 +6,7 @@ function GroupPageSearch() {
 
   return (
     <AppSearchInput
+      className="max-w-[420px] w-full"
       value={searchQuery?.search}
       placeholder="Поиск по имени группы..."
       onSearch={(search) => setSearchQuery({ search })}

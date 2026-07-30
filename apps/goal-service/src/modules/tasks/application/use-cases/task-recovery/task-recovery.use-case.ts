@@ -1,7 +1,8 @@
-import { TaskFactory, TaskIdBuilder } from '@/modules/tasks/domain';
+import { TaskFactory } from '@/modules/tasks/domain';
 import { TasksToken } from '@/modules/tasks/tokens';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
+import { TasksViewMapper, TaskView } from '../../dto';
 import { ExceptionTaskUnprocessable } from '../../exceptions';
 import { TaskDatabase, TasksWriteRepository } from '../../ports';
 import { GroupCheckerService, TaskCheckerService, TaskTypeService } from '../../services';
@@ -18,7 +19,7 @@ class TaskRecoveryUseCase {
     private readonly taskTypeService: TaskTypeService,
   ) {}
 
-  async execute({ input }: TaskRecoveryCommand): Promise<{ id: string }> {
+  async execute({ input }: TaskRecoveryCommand): Promise<TaskView> {
     return this.db.runTransaction(async (trx) => {
       const { taskId, userId, groupId } = input;
       const { isOrigin, data } = this.taskTypeService.getType({ taskId });
@@ -28,8 +29,8 @@ class TaskRecoveryUseCase {
         const recoveredTask = TaskFactory.recovery(task);
         await this.groupCheckerService.ensureGroupExists({ groupId, userId }, { trx, includeInbox: true });
         TaskFactory.assignToGroup(recoveredTask, groupId);
-        await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
-        return { id: TaskIdBuilder.wrapOriginId(recoveredTask.id) };
+        const savedTask = await this.tasksWriteRepo.replaceTask(recoveredTask, trx);
+        return TasksViewMapper.fromAggregateToView(savedTask, null);
       }
 
       throw new ExceptionTaskUnprocessable({ taskId, message: 'Не валидный id' });
