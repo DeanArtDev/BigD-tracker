@@ -1,5 +1,5 @@
-import { useTaskFromContext } from '@/entity/planner/tasks';
 import { ButtonLoading } from '@/shared/ui-kit';
+import { useTaskFromContext } from '../context/task-form-provider';
 
 function TaskFormFooter() {
   const { formId, formState } = useTaskFromContext();

@@ -3,32 +3,37 @@
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { type PropsWithChildren, useCallback, useId, useMemo } from 'react';
 import { DefaultValues, FormProvider, useForm } from 'react-hook-form';
-import { Task, TaskFormData } from '@/entity/planner/tasks';
+import { Brand } from '@/shared/lib';
 import timeAndDate from '@/shared/lib/time';
 import { TaskPriority } from '@/shared/transport/graphql';
-import { taskFormSchema, TaskSubmitFormData } from './task-form-schema';
+import { TaskFormData, taskFormSchema, TaskSubmitFormData } from './task-form-schema';
 import { taskFormContext, TaskFromContext } from './task-from.context';
+import { Task } from '../../../../model';
 
-const defaultValues: DefaultValues<TaskFormData> = {
-  name: undefined,
-  priority: TaskPriority.Delete,
-  description: undefined,
-  deadline: undefined,
-  startDate: undefined,
-  groupId: undefined,
-  isDescriptionDirty: false,
-};
-
-type TaskFormProviderProps = PropsWithChildren<{
+type TaskFormProviderProps<BrandGroup extends Brand<number, string>> = PropsWithChildren<{
   readonly loading?: boolean;
-  readonly task?: Task;
+  readonly task?: Task<BrandGroup>;
 }>;
 
-function TaskFormProvider({ task, loading, children }: TaskFormProviderProps) {
+function TaskFormProvider<BrandGroup extends Brand<number, string>>({
+  task,
+  loading,
+  children,
+}: TaskFormProviderProps<BrandGroup>) {
   const formId = useId();
   const isEdit = task != null;
 
-  const values: TaskFormData | undefined = isEdit
+  const defaultValues: DefaultValues<TaskFormData<BrandGroup>> = {
+    name: undefined,
+    priority: TaskPriority.Delete,
+    description: undefined,
+    deadline: undefined,
+    startDate: undefined,
+    groupId: undefined,
+    isDescriptionDirty: false,
+  };
+
+  const values: TaskFormData<BrandGroup> | undefined = isEdit
     ? {
         name: task.name ?? undefined,
         priority: task.priority,
@@ -41,15 +46,16 @@ function TaskFormProvider({ task, loading, children }: TaskFormProviderProps) {
       }
     : undefined;
 
-  const form = useForm<TaskFormData, unknown, TaskSubmitFormData>({
-    resolver: standardSchemaResolver(taskFormSchema),
+  const form = useForm<TaskFormData<BrandGroup>, unknown, TaskSubmitFormData<BrandGroup>>({
+    resolver: standardSchemaResolver<TaskFormData<BrandGroup>, unknown, TaskSubmitFormData<BrandGroup>>(
+      taskFormSchema<BrandGroup>(),
+    ),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     disabled: loading,
     values,
     defaultValues,
   });
-
   const resetToInit = useCallback(() => {
     void form.reset(undefined, {
       keepDirty: false,
@@ -68,4 +74,4 @@ function TaskFormProvider({ task, loading, children }: TaskFormProviderProps) {
   );
 }
 
-export { TaskFormProvider, type TaskFormProviderProps, defaultValues };
+export { TaskFormProvider, type TaskFormProviderProps };

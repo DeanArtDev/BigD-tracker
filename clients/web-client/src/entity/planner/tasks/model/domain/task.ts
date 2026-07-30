@@ -1,6 +1,5 @@
-import { GroupId } from '@/entity/planner/groups';
-import { Brand, DeepReadonly } from '@/shared/lib';
-import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
+import { Brand, DeepReadonly, Override } from '@/shared/lib';
+import { TaskSchema } from '@/shared/transport/graphql';
 
 type TaskId = Brand<string, 'TaskId'>;
 
@@ -8,18 +7,10 @@ type BrandTask<TData extends Record<string, unknown>> = Omit<DeepReadonly<TData>
   readonly id: TaskId;
 };
 
-interface Task {
-  readonly id: TaskId;
-  readonly name: string;
-  readonly description?: string | null;
-  readonly groupId?: GroupId;
-  readonly priority: TaskPriority;
-  readonly cancelReason?: string | null;
-  readonly startDate?: string | null;
-  readonly deadline?: string | null;
-  readonly endDate?: string | null;
-  readonly status: TaskStatus;
-}
+type Task<BrandGroup extends Brand<number, string> = Brand<number, string>> = Override<
+  BrandTask<NonNullable<Omit<TaskSchema, 'userId' | 'weight'>>>,
+  { groupId?: BrandGroup }
+>;
 
 enum TaskType {
   Original = 'ORIGINAL',

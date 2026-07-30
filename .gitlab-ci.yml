@@ -134,6 +134,8 @@ lint:
   stage: monorepo
   tags: [docker]
   extends: .install_environment
+  variables:
+    GIT_STRATEGY: clone
   script:
     - pnpm run format:all --concurrency=1
     - pnpm run lint:all --concurrency=1
@@ -143,6 +145,8 @@ test:
   stage: monorepo
   tags: [docker]
   extends: .install_environment
+  variables:
+    GIT_STRATEGY: clone
   script:
     - pnpm run test:all --concurrency=1
 

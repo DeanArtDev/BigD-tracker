@@ -3,8 +3,8 @@ import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { MaybePromise } from '@/shared/lib';
+import { FormErrorReactor } from '@/shared/project-ui/form';
 import { InputForm } from '@/shared/ui-kit/form';
-import { GroupFormErrorReactor } from './group-form-error-reactor';
 
 interface GroupFormProps {
   readonly loading: boolean;
@@ -41,7 +41,7 @@ function GroupForm({ loading, onSubmit }: GroupFormProps) {
         <Button className="hidden" type="submit" />
       </form>
 
-      <GroupFormErrorReactor />
+      <FormErrorReactor />
     </FormProvider>
   );
 }

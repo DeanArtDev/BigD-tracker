@@ -10,17 +10,17 @@ import {
   TaskSubmitFormData,
   useTaskFromContext,
 } from '@/entity/planner/tasks';
-import { MaybePromise } from '@/shared/lib';
+import { Brand, MaybePromise } from '@/shared/lib';
 import { AppDialog, useConfirmDialog, useNotify } from '@/shared/project-ui';
 import { useTaskUpdate } from './api/use-task-update';
 
-interface ComponentProps {
+interface ComponentProps<TGroupId extends Brand<number, string>> {
   readonly open: boolean;
   readonly onOpenChange: (value: boolean) => void;
-  readonly onSubmit: (taskFormData: TaskSubmitFormData, close: () => void) => MaybePromise<void>;
+  readonly onSubmit: (taskFormData: TaskSubmitFormData<TGroupId>, close: () => void) => MaybePromise<void>;
 }
 
-function Component({ open, onOpenChange, onSubmit }: ComponentProps) {
+function Component<TGroupId extends Brand<number, string>>({ open, onOpenChange, onSubmit }: ComponentProps<TGroupId>) {
   const { viaConfirmation } = useConfirmDialog();
   const {
     resetToInit,
@@ -38,7 +38,7 @@ function Component({ open, onOpenChange, onSubmit }: ComponentProps) {
       open={open}
       title="Редактирование дела"
       content={
-        <TaskForm
+        <TaskForm<TGroupId>
           className="px-4 py-2"
           groupSlot={<GroupLabelBadge groupId={getValues('groupId') as GroupId} />}
           onSubmit={(taskFormData) => void onSubmit(taskFormData, close)}
@@ -64,15 +64,15 @@ function Component({ open, onOpenChange, onSubmit }: ComponentProps) {
   );
 }
 
-interface TaskUpdateDialogProps {
-  readonly open: ComponentProps['open'];
-  readonly task: Task | undefined;
+interface TaskUpdateDialogProps<TGroupId extends Brand<number, string>> {
+  readonly open: ComponentProps<TGroupId>['open'];
+  readonly task: Task<TGroupId> | undefined;
 
-  readonly onOpenChange: ComponentProps['onOpenChange'];
+  readonly onOpenChange: ComponentProps<TGroupId>['onOpenChange'];
   readonly onSuccess?: () => MaybePromise<void>;
 }
 
-function TaskUpdateDialog(props: TaskUpdateDialogProps) {
+function TaskUpdateDialog(props: TaskUpdateDialogProps<GroupId>) {
   const { task, open, onOpenChange, onSuccess } = props;
 
   const { loading, updateTask } = useTaskUpdate();
@@ -80,9 +80,9 @@ function TaskUpdateDialog(props: TaskUpdateDialogProps) {
   const { promise } = useNotify();
 
   return (
-    <TaskFormProvider task={task} loading={loading}>
+    <TaskFormProvider<GroupId> task={task} loading={loading}>
       <TaskFormFieldProvider taskStatus={task?.status}>
-        <Component
+        <Component<GroupId>
           open={open}
           onOpenChange={onOpenChange}
           onSubmit={async (taskFormData, close) => {

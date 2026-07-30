@@ -1,49 +1,53 @@
-import { FolderOutput } from 'lucide-react';
-import { GroupInfo, GroupListDropdown, GroupTaskIndication } from '@/entity/planner/groups';
-import { MaybePromise } from '@/shared/lib';
-import { AppTooltip } from '@/shared/project-ui';
-import { Button, DataLoader, VirtualizedInfinityScroll, VirtualizedInfinityScrollProps } from '@/shared/ui-kit';
-import { DataLoaderProps } from '@/shared/ui-kit';
-import { Task, TaskActionType, TaskDomain } from '../model';
+import { ReactNode } from 'react';
+import { Brand, MaybePromise } from '@/shared/lib';
+import {
+  DataLoader,
+  DataLoaderProps,
+  VirtualizedInfinityScroll,
+  VirtualizedInfinityScrollProps,
+} from '@/shared/ui-kit';
+import { Task, TaskDomain } from '../model';
 import { TaskActionsDropdown } from './task-actions-dropdown';
 import { TaskCard } from './task-card';
 
-type TaskListProps = {
-  readonly tasks: Task[];
+type TaskListProps<BrandGroup extends Brand<number, string>> = {
+  readonly tasks: Task<BrandGroup>[];
   readonly virtualizerProps: Omit<VirtualizedInfinityScrollProps, 'renderItem'>;
   readonly dataLoaderProps?: DataLoaderProps;
 
   readonly menuProps?: {
     readonly loading?: boolean;
-    readonly onDelete?: (task: Task) => MaybePromise<void>;
-    readonly onClone?: (task: Task) => MaybePromise<void>;
-    readonly onAssign?: (task: Task) => MaybePromise<void>;
-    readonly onUnassign?: (task: Task) => MaybePromise<void>;
-    readonly onFinish?: (task: Task) => MaybePromise<void>;
-    readonly onRecover?: (task: Task) => MaybePromise<void>;
+    readonly onDelete?: (task: Task<BrandGroup>) => MaybePromise<void>;
+    readonly onClone?: (task: Task<BrandGroup>) => MaybePromise<void>;
+    readonly onAssign?: (task: Task<BrandGroup>) => MaybePromise<void>;
+    readonly onUnassign?: (task: Task<BrandGroup>) => MaybePromise<void>;
+    readonly onFinish?: (task: Task<BrandGroup>) => MaybePromise<void>;
+    readonly onRecover?: (task: Task<BrandGroup>) => MaybePromise<void>;
   };
 
-  readonly dropdownProps?: {
-    readonly onAssign?: (task: Task, groupInfo: GroupInfo) => MaybePromise<void>;
+  readonly slots?: {
+    readonly beforeCardBottomRowSlot?: (task: Task<BrandGroup>) => ReactNode;
+    readonly beforeCardMenuSlot?: (task: Task<BrandGroup>) => ReactNode;
   };
 
   readonly onRetry?: () => void;
-  readonly onTaskContentClick?: (task: Task) => void;
-  readonly onTaskHeaderClick?: (task: Task) => void;
+  readonly onTaskContentClick?: (task: Task<BrandGroup>) => void;
+  readonly onTaskHeaderClick?: (task: Task<BrandGroup>) => void;
 };
 
-function TaskList({
+function TaskList<BrandGroup extends Brand<number, string>>({
   tasks,
   virtualizerProps,
   dataLoaderProps = {},
   menuProps,
-  dropdownProps,
+
+  slots,
 
   onRetry,
   onTaskHeaderClick,
   onTaskContentClick,
-}: TaskListProps) {
-  const handlerOrEmpty = (task: Task, handler?: (task: Task) => MaybePromise<void>) =>
+}: TaskListProps<BrandGroup>) {
+  const handlerOrEmpty = (task: Task<BrandGroup>, handler?: (task: Task<BrandGroup>) => MaybePromise<void>) =>
     handler != null ? () => handler(task) : undefined;
 
   return (
@@ -59,9 +63,6 @@ function TaskList({
         renderItem={(virtualItem) => {
           const task = tasks[virtualItem.index];
           if (task == null) return null;
-          const isAllowAssign =
-            menuProps?.onAssign != null &&
-            TaskDomain.isAllowTaskAction(TaskActionType.Assign, task.status, TaskDomain.parseId(task.id).type);
 
           return (
             <TaskCard
@@ -70,22 +71,10 @@ function TaskList({
               priority={task.priority}
               status={task.status}
               deadline={task.deadline ?? undefined}
-              beforeBottomRowSlot={() => <GroupTaskIndication className="ml-2" groupId={task.groupId} />}
+              beforeBottomRowSlot={() => slots?.beforeCardBottomRowSlot?.(task)}
               afterHeaderSlot={() => (
                 <div className="flex gap-1">
-                  {isAllowAssign && (
-                    <GroupListDropdown
-                      selectedGroupId={task.groupId}
-                      trigger={
-                        <Button size="icon-sm" variant="ghost" disabled={menuProps?.loading}>
-                          <AppTooltip content="Переместить в группу" delayDuration={2000} asChild>
-                            <FolderOutput />
-                          </AppTooltip>
-                        </Button>
-                      }
-                      onSelect={(groupInfo) => void dropdownProps?.onAssign?.(task, groupInfo)}
-                    />
-                  )}
+                  {slots?.beforeCardMenuSlot?.(task)}
 
                   <TaskActionsDropdown
                     taskStatus={task.status}

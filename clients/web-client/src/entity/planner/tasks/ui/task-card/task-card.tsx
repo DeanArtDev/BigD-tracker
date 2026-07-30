@@ -2,11 +2,11 @@
 
 import { Flag, Repeat2, Timer } from 'lucide-react';
 import { CSSProperties, ReactNode, Ref } from 'react';
-import { TaskDomain, TaskId } from '@/entity/planner/tasks';
 import { TimeHelper } from '@/shared/lib/time';
 import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { Badge, Card, CardContent, CardTitle, cn, Typography } from '@/shared/ui-kit';
 import { TaskUtils } from '../../lib/utils';
+import { TaskDomain, TaskId } from '../../model';
 import { TaskStatusIndication } from '../task-status-indication';
 
 type TaskCardVariant = 'default' | 'disabled';
