@@ -4,10 +4,9 @@ import { isEmpty } from 'lodash-es';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useNotify } from '@/shared/project-ui';
-import { GroupFormData } from './group-form';
 
-function GroupFormErrorReactor() {
-  const { subscribe } = useFormContext<GroupFormData>();
+function FormErrorReactor() {
+  const { subscribe } = useFormContext();
   const { dismiss, warning } = useNotify();
 
   useEffect(() => {
@@ -16,10 +15,11 @@ function GroupFormErrorReactor() {
     const unsubscribe = subscribe({
       formState: { errors: true },
       callback: (data) => {
-        const errors = Array.from(Object.values(data.errors ?? {})).filter((e) => e.message != null);
+        const errors = Array.from(Object.values(data.errors ?? {}));
 
         for (const error of errors) {
-          if (!isEmpty(error)) {
+          console.log(error, isErrorWithMessage(error));
+          if (!isEmpty(error) && isErrorWithMessage(error)) {
             if (toastIds.get(error.message ?? '') != null) return;
 
             const currentId = warning({
@@ -56,4 +56,8 @@ function GroupFormErrorReactor() {
   return null;
 }
 
-export { GroupFormErrorReactor };
+function isErrorWithMessage(error: unknown): error is { message: string } {
+  return typeof error === 'object' && error != null && 'message' in error;
+}
+
+export { FormErrorReactor };

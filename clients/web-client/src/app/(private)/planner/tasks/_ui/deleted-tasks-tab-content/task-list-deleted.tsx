@@ -1,9 +1,11 @@
+import { FolderOutput } from 'lucide-react';
 import { useState } from 'react';
-import { useGroupListDrawerContext } from '@/entity/planner/groups';
-import { TaskId, TaskList } from '@/entity/planner/tasks';
+import { GroupListDropdown, GroupTaskIndication, useGroupListDrawerContext } from '@/entity/planner/groups';
+import { TaskActionType, TaskDomain, TaskId, TaskList } from '@/entity/planner/tasks';
 import { TaskRecoveryDialog } from '@/feature/planner/task-recovery';
 import { useTaskUpdateContext } from '@/feature/planner/task-update';
-import { DataLoader } from '@/shared/ui-kit';
+import { AppTooltip } from '@/shared/project-ui';
+import { Button, DataLoader } from '@/shared/ui-kit';
 import { useTaskActionsFeature } from '@/widget/planner/task-actions';
 import { useGetTasksPerPageDeleted } from '../../_model/use-get-tasks-per-page-deleted';
 
@@ -49,7 +51,6 @@ function TaskListDeleted() {
           isEmpty,
           emptyElement: <DataLoader.Empty title="Дел пока нет" />,
         }}
-        dropdownProps={{ onAssign: (task, { id }) => void taskAssignHandler({ task, groupId: id }) }}
         menuProps={{
           loading: isActionLoading,
           onClone: (task) => void taskCloneHandler(task.id),
@@ -67,6 +68,31 @@ function TaskListDeleted() {
                 }
               },
             });
+          },
+        }}
+        slots={{
+          beforeCardBottomRowSlot: (task) => <GroupTaskIndication className="ml-2" groupId={task.groupId} />,
+          beforeCardMenuSlot: (task) => {
+            const isAllowAssign = TaskDomain.isAllowTaskAction(
+              TaskActionType.Assign,
+              task.status,
+              TaskDomain.parseId(task.id).type,
+            );
+
+            if (!isAllowAssign) return null;
+            return (
+              <GroupListDropdown
+                selectedGroupId={task.groupId}
+                trigger={
+                  <Button size="icon-sm" variant="ghost" disabled={isActionLoading}>
+                    <AppTooltip content="Переместить в группу" delayDuration={2000} asChild>
+                      <FolderOutput />
+                    </AppTooltip>
+                  </Button>
+                }
+                onSelect={(groupInfo) => void taskAssignHandler({ groupId: groupInfo.id, task })}
+              />
+            );
           },
         }}
         onTaskContentClick={openTaskUpdate}

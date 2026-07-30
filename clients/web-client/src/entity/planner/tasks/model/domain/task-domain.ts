@@ -1,6 +1,6 @@
-import { getTasksStatusCount } from '@/entity/planner/tasks/model/domain/helpers/get-tasks-status-count';
 import timeAndDate from '@/shared/lib/time';
 import { TaskStatus } from '@/shared/transport/graphql';
+import { getTasksStatusCount } from './helpers/get-tasks-status-count';
 import { TaskIdParser } from './helpers/taks-id-parser';
 import { getTaskFieldsToChangeByStatus } from './helpers/task-fields-to-change-by-status';
 import { taskActionByStatusesAvailability } from './maps/task-action-to-status-availability';

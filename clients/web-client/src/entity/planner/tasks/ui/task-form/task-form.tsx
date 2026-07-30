@@ -3,22 +3,21 @@
 import { ReactNode } from 'react';
 import { MaybePromise } from '@/shared/lib';
 import { useWysiwygController } from '@/shared/project-ui';
-import { WysiwygForm } from '@/shared/project-ui/form';
+import { FormErrorReactor, WysiwygForm } from '@/shared/project-ui/form';
 import { cn } from '@/shared/ui-kit';
 import { InputForm } from '@/shared/ui-kit/form';
-import { TaskFormErrorReactor } from './components/task-form-error-reactor';
 import { TaskFormParamsSettings } from './components/task-form-params-settings';
 import { useTaskFormFieldContext } from './context/task-form-field-provider';
-import { TaskSubmitFormData, useTaskFromContext } from './context/task-form-provider';
+import { GroupBrand, TaskSubmitFormData, useTaskFromContext } from './context/task-form-provider';
 
-interface TaskFormProps {
+interface TaskFormProps<TGroupId extends GroupBrand> {
   readonly className?: string;
   readonly groupSlot?: ReactNode;
-  readonly onSubmit: (taskFormData: TaskSubmitFormData) => MaybePromise<void>;
+  readonly onSubmit: (taskFormData: TaskSubmitFormData<TGroupId>) => MaybePromise<void>;
 }
 
-function TaskForm({ className, groupSlot, onSubmit }: TaskFormProps) {
-  const { formId, handleSubmit, setValue } = useTaskFromContext();
+function TaskForm<TGroupId extends GroupBrand>({ className, groupSlot, onSubmit }: TaskFormProps<TGroupId>) {
+  const { formId, handleSubmit, setValue } = useTaskFromContext<TGroupId>();
   const { wysiwygController } = useWysiwygController();
 
   const { fieldsState } = useTaskFormFieldContext();
@@ -66,7 +65,7 @@ function TaskForm({ className, groupSlot, onSubmit }: TaskFormProps) {
         )}
       </form>
 
-      <TaskFormErrorReactor />
+      <FormErrorReactor />
     </>
   );
 }

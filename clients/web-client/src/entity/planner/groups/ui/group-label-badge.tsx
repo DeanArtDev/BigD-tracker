@@ -6,7 +6,9 @@ import { Badge, DataLoader, Typography } from '@/shared/ui-kit';
 function GroupLabelBadge({ groupId }: { groupId?: GroupId }) {
   const { groups, loading, isError } = useGetAssignableGroups<GroupId>();
   const group = groupId != null ? groups.byId[groupId] : undefined;
+  const isEmpty = group == null;
 
+  if (isEmpty) return null;
   return (
     <div className="grid grid-cols-[max-content_1fr] gap-2 items-center">
       <Typography.H6 className="font-medium">Группа:</Typography.H6>

@@ -2,7 +2,7 @@
 
 import { useFormContext, useFormState } from 'react-hook-form';
 import { createStrictContext, useStrictContext } from '@/shared/lib';
-import { TaskFormData, TaskSubmitFormData } from './task-form-schema';
+import { GroupBrand, TaskFormData, TaskSubmitFormData } from './task-form-schema';
 
 interface TaskFromContext {
   readonly formId: string;
@@ -11,13 +11,13 @@ interface TaskFromContext {
 
 const taskFormContext = createStrictContext<TaskFromContext>();
 
-const useTaskFromContext = () => {
+const useTaskFromContext = <TGroupId extends GroupBrand = GroupBrand>() => {
   return {
     ...useStrictContext<TaskFromContext>(taskFormContext),
-    ...useFormContext<TaskFormData, unknown, TaskSubmitFormData>(),
+    ...useFormContext<TaskFormData<TGroupId>, unknown, TaskSubmitFormData<TGroupId>>(),
   };
 };
 
-const useTaskFormState = () => useFormState<TaskFormData>();
+const useTaskFormState = <TGroupId extends GroupBrand = GroupBrand>() => useFormState<TaskFormData<TGroupId>>();
 
 export { useTaskFromContext, useTaskFormState, taskFormContext, type TaskFromContext };

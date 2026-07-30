@@ -1,11 +1,12 @@
 'use client';
 
-import { SearchX } from 'lucide-react';
+import { FolderOutput, SearchX } from 'lucide-react';
 import { memo } from 'react';
-import { useGroupListDrawerContext } from '@/entity/planner/groups';
-import { TaskList } from '@/entity/planner/tasks';
+import { GroupListDropdown, GroupTaskIndication, useGroupListDrawerContext } from '@/entity/planner/groups';
+import { TaskActionType, TaskDomain, TaskList } from '@/entity/planner/tasks';
 import { useTaskUpdateContext } from '@/feature/planner/task-update';
-import { DataLoader } from '@/shared/ui-kit';
+import { AppTooltip } from '@/shared/project-ui';
+import { Button, DataLoader } from '@/shared/ui-kit';
 import { useTaskActionsFeature } from '@/widget/planner/task-actions';
 import { useInboxQueryByUrlQuery } from '../_model/use-inbox-query-by-url-query';
 
@@ -45,11 +46,6 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
         onTaskContentClick={(task) => {
           if (isActionLoading) return;
           openTaskUpdate(task);
-        }}
-        dropdownProps={{
-          onAssign: (task, groupInfo) => {
-            taskAssignHandler({ groupId: groupInfo.id, task });
-          },
         }}
         menuProps={{
           loading: isActionLoading,
@@ -92,6 +88,31 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
               icon={<SearchX className="size-7 text-muted-foreground" strokeWidth={2} />}
             />
           ),
+        }}
+        slots={{
+          beforeCardBottomRowSlot: (task) => <GroupTaskIndication className="ml-2" groupId={task.groupId} />,
+          beforeCardMenuSlot: (task) => {
+            const isAllowAssign = TaskDomain.isAllowTaskAction(
+              TaskActionType.Assign,
+              task.status,
+              TaskDomain.parseId(task.id).type,
+            );
+
+            if (!isAllowAssign) return null;
+            return (
+              <GroupListDropdown
+                selectedGroupId={task.groupId}
+                trigger={
+                  <Button size="icon-sm" variant="ghost" disabled={isActionLoading}>
+                    <AppTooltip content="Переместить в группу" delayDuration={2000} asChild>
+                      <FolderOutput />
+                    </AppTooltip>
+                  </Button>
+                }
+                onSelect={(groupInfo) => void taskAssignHandler({ groupId: groupInfo.id, task })}
+              />
+            );
+          },
         }}
         onRetry={refetch}
       />
