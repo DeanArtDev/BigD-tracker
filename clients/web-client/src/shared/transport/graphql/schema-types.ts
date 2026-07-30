@@ -171,10 +171,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Добавить дело в группу */
   assignTaskToGroup: TaskSchema;
+  /** Клонирование дела */
+  cloneTask: TaskSchema;
   /** Полное удаление дела */
   completeDeleteTask: Scalars['Int']['output'];
-  /** Копирование дела */
-  copyTask: TaskSchema;
   /** Создание группы */
   createGroup: GroupSchema;
   /** Создание дела */
@@ -205,12 +205,12 @@ export type MutationAssignTaskToGroupArgs = {
   input: TaskAssignInput;
 };
 
-export type MutationCompleteDeleteTaskArgs = {
-  input: TaskCompleteDeleteInput;
+export type MutationCloneTaskArgs = {
+  input: TaskCloneInput;
 };
 
-export type MutationCopyTaskArgs = {
-  input: TaskCopyInput;
+export type MutationCompleteDeleteTaskArgs = {
+  input: TaskCompleteDeleteInput;
 };
 
 export type MutationCreateGroupArgs = {
@@ -319,11 +319,11 @@ export type TaskAssignInput = {
   taskId: Scalars['String']['input'];
 };
 
-export type TaskCompleteDeleteInput = {
+export type TaskCloneInput = {
   id: Scalars['String']['input'];
 };
 
-export type TaskCopyInput = {
+export type TaskCompleteDeleteInput = {
   id: Scalars['String']['input'];
 };
 

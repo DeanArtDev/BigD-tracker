@@ -1,5 +1,6 @@
 'use client';
 
+import { GroupId, GroupLabelBadge } from '@/entity/planner/groups';
 import {
   Task,
   TaskForm,
@@ -24,6 +25,7 @@ function Component({ open, onOpenChange, onSubmit }: ComponentProps) {
   const {
     resetToInit,
     formState: { isDirty },
+    getValues,
   } = useTaskFromContext();
 
   const close = () => {
@@ -35,7 +37,13 @@ function Component({ open, onOpenChange, onSubmit }: ComponentProps) {
     <AppDialog
       open={open}
       title="Редактирование дела"
-      content={<TaskForm className="px-4 py-2" onSubmit={(taskFormData) => void onSubmit(taskFormData, close)} />}
+      content={
+        <TaskForm
+          className="px-4 py-2"
+          groupSlot={<GroupLabelBadge groupId={getValues('groupId') as GroupId} />}
+          onSubmit={(taskFormData) => void onSubmit(taskFormData, close)}
+        />
+      }
       footer={<TaskFormFooter />}
       onOpenChange={(value) => {
         if (!value && isDirty) {

@@ -21,7 +21,7 @@ interface TaskActionsDropdownProps {
   readonly onRecover?: () => MaybePromise<void>;
   readonly onDelete?: () => MaybePromise<void>;
   readonly onDeleteComplete?: () => MaybePromise<void>;
-  readonly onCopy?: () => MaybePromise<void>;
+  readonly onClone?: () => MaybePromise<void>;
 }
 
 function TaskActionsDropdown({
@@ -34,7 +34,7 @@ function TaskActionsDropdown({
   onFinish,
   onDelete,
   onRecover,
-  onCopy,
+  onClone,
   onAssign,
   onUnassign,
   onDeleteComplete,
@@ -60,11 +60,11 @@ function TaskActionsDropdown({
 
     {
       element: (
-        <TaskAction action={TaskActionType.Clone} key="clone" onClick={onCopy}>
+        <TaskAction action={TaskActionType.Clone} key="clone" onClick={onClone}>
           {capitalize(taskActionToHumanize[TaskActionType.Clone])}
         </TaskAction>
       ),
-      allow: onCopy != null && TaskDomain.isAllowTaskAction(TaskActionType.Clone, taskStatus, taskType),
+      allow: onClone != null && TaskDomain.isAllowTaskAction(TaskActionType.Clone, taskStatus, taskType),
     },
 
     {

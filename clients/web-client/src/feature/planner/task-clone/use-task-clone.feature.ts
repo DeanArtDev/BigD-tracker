@@ -7,25 +7,25 @@ import {
   PlannerInitCacheManager,
   TaskCacheManager,
 } from '@/shared/transport/graphql';
-import { useTaskCopy } from './api/use-task-copy';
+import { useTaskClone } from './api/use-task-clone';
 
-function useTaskCopyFeature() {
-  const { copyTask, ...rest } = useTaskCopy();
+function useTaskCloneFeature() {
+  const { cloneTask, ...rest } = useTaskClone();
   const { promise } = useNotify();
 
   const [loading, setLoading] = useState(false);
 
-  const copyTaskHandler = useCallback(
+  const cloneTaskHandler = useCallback(
     (id: TaskId) => {
       promise(async () => {
         try {
           setLoading(true);
-          const response = await copyTask({
+          const response = await cloneTask({
             variables: { input: { id } },
             awaitRefetchQueries: true,
           });
 
-          const taskData = response.data?.copyTask;
+          const taskData = response.data?.cloneTask;
           if (taskData == null) return;
 
           TaskCacheManager.insertTaskAfterTargetIntoTasksPerPage(rest.client.cache, {
@@ -52,10 +52,10 @@ function useTaskCopyFeature() {
         }
       });
     },
-    [copyTask, promise, rest.client],
+    [cloneTask, promise, rest.client],
   );
 
-  return { copyTask: copyTaskHandler, ...rest, loading: loading || rest.loading };
+  return { cloneTask: cloneTaskHandler, ...rest, loading: loading || rest.loading };
 }
 
-export { useTaskCopyFeature };
+export { useTaskCloneFeature };

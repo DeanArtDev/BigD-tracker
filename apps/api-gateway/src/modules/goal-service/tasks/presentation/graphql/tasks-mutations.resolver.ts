@@ -19,7 +19,7 @@ import { TaskMapper } from '../mappers/task.mapper';
 import {
   TaskAssignInput,
   TaskCompleteDeleteInput,
-  TaskCopyInput,
+  TaskCloneInput,
   TaskCreateInput,
   TaskDeleteInput,
   TaskFinishInput,
@@ -105,10 +105,10 @@ class TasksMutationsResolver {
   }
 
   @Mutation(() => TaskSchema, {
-    description: 'Копирование дела',
+    description: 'Клонирование дела',
   })
-  async copyTask(
-    @Args('input') input: TaskCopyInput,
+  async cloneTask(
+    @Args('input') input: TaskCloneInput,
     @TokenPayload() { uid }: AccessTokenPayload,
   ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalCloneTask.Response, GoalCloneTask.Request>(GoalCloneTask.pattern, {

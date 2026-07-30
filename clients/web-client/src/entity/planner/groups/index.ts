@@ -8,4 +8,5 @@ export {
   GroupNameEditor,
   GroupActionsDropdown,
   GroupTaskIndication,
+  GroupLabelBadge,
 } from './ui';

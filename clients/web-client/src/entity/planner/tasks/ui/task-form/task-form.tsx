@@ -1,5 +1,6 @@
 'use client';
 
+import { ReactNode } from 'react';
 import { MaybePromise } from '@/shared/lib';
 import { useWysiwygController } from '@/shared/project-ui';
 import { WysiwygForm } from '@/shared/project-ui/form';
@@ -12,10 +13,11 @@ import { TaskSubmitFormData, useTaskFromContext } from './context/task-form-prov
 
 interface TaskFormProps {
   readonly className?: string;
+  readonly groupSlot?: ReactNode;
   readonly onSubmit: (taskFormData: TaskSubmitFormData) => MaybePromise<void>;
 }
 
-function TaskForm({ className, onSubmit }: TaskFormProps) {
+function TaskForm({ className, groupSlot, onSubmit }: TaskFormProps) {
   const { formId, handleSubmit, setValue } = useTaskFromContext();
   const { wysiwygController } = useWysiwygController();
 
@@ -48,7 +50,7 @@ function TaskForm({ className, onSubmit }: TaskFormProps) {
           />
         )}
 
-        <TaskFormParamsSettings />
+        <TaskFormParamsSettings groupSlot={groupSlot} />
 
         {!description.hidden && (
           <WysiwygForm

@@ -7,7 +7,7 @@ import {
   groupsCombinators,
 } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
-import { GroupStatus } from '@big-d/api-contracts';
+import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupsReadRepositoryKysely } from '../groups.read-repository.kysely';
 
@@ -161,11 +161,14 @@ describe('GroupsReadRepositoryKysely', () => {
           sql: `
           select count("tasks"."id") as "taskCount"
           from "tasks"
+          inner join "task_statuses"
+            on "tasks"."status_id" = "task_statuses"."id"
           where
             "tasks"."group_id" = $1
             and "tasks"."user_id" = $2
+            and "task_statuses"."name" not in ($3, $4)
         `,
-          parameters: [42, 5],
+          parameters: [42, 5, TaskStatus.DELETED, TaskStatus.ARCHIVED],
         });
       },
     );

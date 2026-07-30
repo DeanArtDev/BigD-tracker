@@ -148,11 +148,11 @@ type Mutation {
   """Добавить дело в группу"""
   assignTaskToGroup(input: TaskAssignInput!): TaskSchema!
 
+  """Клонирование дела"""
+  cloneTask(input: TaskCloneInput!): TaskSchema!
+
   """Полное удаление дела"""
   completeDeleteTask(input: TaskCompleteDeleteInput!): Int!
-
-  """Копирование дела"""
-  copyTask(input: TaskCopyInput!): TaskSchema!
 
   """Создание группы"""
   createGroup(input: GroupCreateInput!): GroupSchema!
@@ -240,11 +240,11 @@ input TaskAssignInput {
   taskId: String!
 }
 
-input TaskCompleteDeleteInput {
+input TaskCloneInput {
   id: String!
 }
 
-input TaskCopyInput {
+input TaskCompleteDeleteInput {
   id: String!
 }
 

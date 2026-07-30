@@ -2,7 +2,7 @@ export * from './task.schema';
 export * from './task-connection.schema';
 export * from './task-complete-delete.schema';
 export * from './task-create.schema';
-export * from './task-copy.schema';
+export * from './task-clone.schema';
 export * from './task-delete.schema';
 export * from './task-finish.schema';
 export * from './get-assignable-tasks.schema';

@@ -14,7 +14,7 @@ function TaskListCurrent() {
     taskAssignHandler,
     taskDeleteHandler,
     taskUnassignHandler,
-    taskCopyHandler,
+    taskCloneHandler,
     taskFinishHandler,
   } = useTaskActionsFeature();
 
@@ -40,7 +40,7 @@ function TaskListCurrent() {
         menuProps={{
           loading: isActionLoading,
           onDelete: async (task) => void taskDeleteHandler({ groupId: task?.groupId, taskId: task.id }),
-          onCopy: async (task) => void taskCopyHandler(task.id),
+          onClone: async (task) => void taskCloneHandler(task.id),
           onFinish: (task) => void taskFinishHandler(task.id),
           onUnassign: async (task) => {
             if (task.groupId != null) {

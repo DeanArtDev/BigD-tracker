@@ -1,12 +1,12 @@
 import { useMutation } from '@apollo/client/react';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
-import { shapeTaskCopyOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
+import { shapeTaskCloneOptions, useExtendApolloErrorResult } from '@/shared/transport/graphql';
 
-function useTaskCopy() {
-  const [copyTask, rest] = useMutation(...shapeTaskCopyOptions());
+function useTaskClone() {
+  const [cloneTask, rest] = useMutation(...shapeTaskCloneOptions());
   const { appErrors } = useExtendApolloErrorResult(rest.error);
   useExceptionNotificator({ exception: appErrors.at(-1) });
-  return { copyTask, ...rest };
+  return { cloneTask, ...rest };
 }
 
-export { useTaskCopy };
+export { useTaskClone };
