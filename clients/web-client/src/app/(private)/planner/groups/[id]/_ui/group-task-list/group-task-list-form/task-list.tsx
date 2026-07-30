@@ -10,7 +10,7 @@ interface TaskListProps {
   readonly loadingTaskId?: TaskId;
 
   readonly onDelete?: (task: GroupTaskListSchemaFormData['tasks'][0]) => MaybePromise<void>;
-  readonly onCopy?: (task: GroupTaskListSchemaFormData['tasks'][0]) => MaybePromise<void>;
+  readonly onClone?: (task: GroupTaskListSchemaFormData['tasks'][0]) => MaybePromise<void>;
   readonly onAssign?: (task: GroupTaskListSchemaFormData['tasks'][0]) => MaybePromise<void>;
   readonly onFinish?: (task: GroupTaskListSchemaFormData['tasks'][0]) => MaybePromise<void>;
 
@@ -25,7 +25,7 @@ function TaskList({
   onHeaderClick,
   onUnassign,
   onDelete,
-  onCopy,
+  onClone,
   onAssign,
   onFinish,
 }: TaskListProps) {
@@ -107,7 +107,7 @@ function TaskList({
                       onDelete={() => void onDelete?.(task)}
                       onFinish={() => void onFinish?.(task)}
                       onAssign={() => void onAssign?.(task)}
-                      onCopy={() => void onCopy?.(task)}
+                      onClone={() => void onClone?.(task)}
                       onUnassign={() => void onUnassign?.(task)}
                     />
                   </div>

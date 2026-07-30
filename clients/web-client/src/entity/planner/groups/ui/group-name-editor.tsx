@@ -2,6 +2,7 @@
 
 import { Check, X } from 'lucide-react';
 import { useState } from 'react';
+import { useNotify } from '@/shared/project-ui';
 import { Button, Input } from '@/shared/ui-kit';
 
 interface GroupNameEditorProps {
@@ -16,8 +17,19 @@ interface GroupNameEditorProps {
 function GroupNameEditor({ name, isEdit, className, loading, onNameChange, onIsEditChange }: GroupNameEditorProps) {
   const [draftName, setDraftName] = useState(name);
 
-  const isNameValid = draftName.trim().length > 3;
+  const [isNameInvalid, setIsNameInvalid] = useState(false);
   const isNameChange = draftName !== name;
+
+  const { warning } = useNotify();
+
+  const validate = (value: string) => {
+    if (value.length < 3 || value.length > 255) {
+      warning({ message: 'Длинна имени не меньше 3 и не больше 255 символов', duration: 5000, position: 'top-center' });
+      setIsNameInvalid(true);
+      return false;
+    }
+    return true;
+  };
 
   return (
     <div className={className}>
@@ -35,33 +47,38 @@ function GroupNameEditor({ name, isEdit, className, loading, onNameChange, onIsE
             className="font-normal ml-1"
             disabled={loading}
             value={draftName}
-            aria-invalid={!isNameValid}
+            aria-invalid={isNameInvalid}
             placeholder="Поиск по группам"
             onChange={(evt) => {
               evt.preventDefault();
               evt.stopPropagation();
+              setIsNameInvalid(false);
               setDraftName(evt.target.value);
             }}
             onKeyDown={(evt) => {
-              if (!isNameChange) return;
+              if (!isNameChange || isNameInvalid) return;
               if (evt.key !== 'Enter') return;
               evt.preventDefault();
               evt.stopPropagation();
-              onNameChange(draftName);
-              onIsEditChange?.(false);
+              if (validate(draftName)) {
+                onNameChange(draftName);
+                onIsEditChange?.(false);
+              }
             }}
           />
 
           <div className="flex gap-1">
             <Button
-              disabled={!isNameValid || !isNameChange}
+              disabled={isNameInvalid || !isNameChange}
               variant="outline"
               size="icon-sm"
               onClick={(evt) => {
                 evt.preventDefault();
                 evt.stopPropagation();
-                onNameChange(draftName);
-                onIsEditChange?.(false);
+                if (validate(draftName)) {
+                  onNameChange(draftName);
+                  onIsEditChange?.(false);
+                }
               }}
             >
               <Check />

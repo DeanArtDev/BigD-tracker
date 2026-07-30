@@ -49,8 +49,8 @@ const TASK_CREATE_MUTATION = gql`
 `;
 
 const TASK_COPY_MUTATION = gql`
-  mutation CopyTask($input: TaskCopyInput!) {
-    copyTask(input: $input) {
+  mutation CloneTask($input: TaskCloneInput!) {
+    cloneTask(input: $input) {
       ...TaskFragment
     }
   }

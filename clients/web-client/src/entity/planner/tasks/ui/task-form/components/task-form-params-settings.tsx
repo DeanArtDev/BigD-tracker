@@ -1,16 +1,15 @@
 'use client';
 
 import { ChevronsUpDown } from 'lucide-react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Button, cn, Collapsible, CollapsibleContent, CollapsibleTrigger, Typography } from '@/shared/ui-kit';
 import { DateAndTimePicker } from './date-and-time-picker';
-import { Group } from './group';
 import { Priority } from './priority';
 import { TaskStatusIndication } from '../../task-status-indication';
 import { useTaskFormFieldContext } from '../context/task-form-field-provider';
 import { useTaskFromContext } from '../context/task-form-provider';
 
-function TaskFormParamsSettings() {
+function TaskFormParamsSettings({ groupSlot }: { groupSlot?: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const { formState, getValues } = useTaskFromContext();
   const { fieldsState } = useTaskFormFieldContext();
@@ -45,7 +44,7 @@ function TaskFormParamsSettings() {
         <div className="grid grid-cols-2 gap-3 justify-between">
           <Priority />
 
-          <Group />
+          {groupSlot}
         </div>
 
         {(!deadline.hidden || !startDate.hidden) && (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDebounce } from 'react-use';
 import { GroupId } from '@/entity/planner/groups';
-import { currentTasksStatuses } from '@/entity/planner/tasks/model';
+import { currentTasksStatuses } from '@/entity/planner/tasks';
 import { GetTasksPerPageSortInput, SortDirection } from '@/shared/transport/graphql';
 import { useGetTasksPerPageInfinity } from './use-get-tasks-per-page-infinity';
 import { TasksRecurrence, TasksSort, useTasksTabUrlQuery } from './use-tasks-url-query';

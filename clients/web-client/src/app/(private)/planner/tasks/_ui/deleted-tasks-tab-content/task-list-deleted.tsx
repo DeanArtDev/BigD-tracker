@@ -24,7 +24,7 @@ function TaskListDeleted() {
   const [open, setOpen] = useState(false);
   const [recoveryTaskData, setRecoveryTaskData] = useState<{ taskId: TaskId }>();
 
-  const { taskRecoveryHandler, taskCopyHandler, taskAssignHandler, taskFinishDialogHolder, isActionLoading } =
+  const { taskRecoveryHandler, taskCloneHandler, taskAssignHandler, taskFinishDialogHolder, isActionLoading } =
     useTaskActionsFeature();
 
   return (
@@ -52,7 +52,7 @@ function TaskListDeleted() {
         dropdownProps={{ onAssign: (task, { id }) => void taskAssignHandler({ task, groupId: id }) }}
         menuProps={{
           loading: isActionLoading,
-          onCopy: (task) => void taskCopyHandler(task.id),
+          onClone: (task) => void taskCloneHandler(task.id),
           onRecover: (task) => {
             setOpen(true);
             setRecoveryTaskData({ taskId: task.id });

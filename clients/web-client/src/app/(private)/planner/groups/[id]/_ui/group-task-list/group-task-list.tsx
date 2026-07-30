@@ -28,7 +28,7 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
     taskUnassignHandler,
     taskDeleteHandler,
     taskAssignHandler,
-    taskCopyHandler,
+    taskCloneHandler,
   } = useTaskActionsFeature();
   const [targetTask, setTargetTask] = useState<DetailedGroupTask | null>(null);
 
@@ -74,7 +74,7 @@ function GroupTaskList({ groupId }: GroupTaskListProps) {
                     },
                   })
                 }
-                onCopy={(task) => void taskCopyHandler(task.id)}
+                onClone={(task) => void taskCloneHandler(task.id)}
                 onContentClick={(task) => void openTaskUpdate(task)}
                 onUnassign={async (task) => {
                   setTargetTask(task);

@@ -2,7 +2,7 @@ import { GroupInfoView, GroupView } from '@/modules/tasks/application/dto';
 import { GroupsReadRepository, TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
-import { GroupStatus, SortDirection } from '@big-d/api-contracts';
+import { GroupStatus, SortDirection, TaskStatus } from '@big-d/api-contracts';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
@@ -77,9 +77,11 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
       const result = await this.db
         .qb(trx)
         .selectFrom('tasks')
+        .innerJoin('task_statuses', 'tasks.status_id', 'task_statuses.id')
         .select((eb) => eb.fn.count<number>('tasks.id').as('taskCount'))
         .where('tasks.group_id', '=', input.groupId)
         .where('tasks.user_id', '=', input.userId)
+        .where('task_statuses.name', 'not in', [TaskStatus.DELETED, TaskStatus.ARCHIVED])
         .executeTakeFirstOrThrow();
 
       return { taskCount: Number(result.taskCount) };

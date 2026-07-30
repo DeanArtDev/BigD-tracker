@@ -54,7 +54,7 @@ export type TaskAssignInput = {
   taskId: string;
 };
 
-export type TaskCopyInput = {
+export type TaskCloneInput = {
   id: string;
 };
 
@@ -191,12 +191,12 @@ export type CreateTaskMutation = {
   };
 };
 
-export type CopyTaskMutationVariables = Exact<{
-  input: Types.TaskCopyInput;
+export type CloneTaskMutationVariables = Exact<{
+  input: Types.TaskCloneInput;
 }>;
 
-export type CopyTaskMutation = {
-  copyTask: {
+export type CloneTaskMutation = {
+  cloneTask: {
     id: string;
     name: string;
     description: string | null;
@@ -550,18 +550,18 @@ export const CreateTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateTaskMutation, CreateTaskMutationVariables>;
-export const CopyTaskDocument = {
+export const CloneTaskDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'mutation',
-      name: { kind: 'Name', value: 'CopyTask' },
+      name: { kind: 'Name', value: 'CloneTask' },
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskCopyInput' } } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskCloneInput' } } },
         },
       ],
       selectionSet: {
@@ -569,7 +569,7 @@ export const CopyTaskDocument = {
         selections: [
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'copyTask' },
+            name: { kind: 'Name', value: 'cloneTask' },
             arguments: [
               {
                 kind: 'Argument',
@@ -606,7 +606,7 @@ export const CopyTaskDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<CopyTaskMutation, CopyTaskMutationVariables>;
+} as unknown as DocumentNode<CloneTaskMutation, CloneTaskMutationVariables>;
 export const UpdateTaskDocument = {
   kind: 'Document',
   definitions: [

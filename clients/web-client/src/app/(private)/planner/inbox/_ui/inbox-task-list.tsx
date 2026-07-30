@@ -27,7 +27,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
     taskAssignHandler,
     taskDeleteHandler,
     taskUnassignHandler,
-    taskCopyHandler,
+    taskCloneHandler,
   } = useTaskActionsFeature();
 
   const { openGroupList } = useGroupListDrawerContext();
@@ -54,7 +54,7 @@ const InboxTaskList = memo(function InboxTaskListMemo() {
         menuProps={{
           loading: isActionLoading,
           onDelete: async (task) => void taskDeleteHandler({ groupId: task?.groupId, taskId: task.id }),
-          onCopy: async (task) => void taskCopyHandler(task.id),
+          onClone: async (task) => void taskCloneHandler(task.id),
           onFinish: (task) => void taskFinishHandler(task.id),
           onUnassign: async (task) => {
             if (task.groupId != null) {
