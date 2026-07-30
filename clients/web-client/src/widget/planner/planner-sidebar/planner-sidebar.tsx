@@ -12,6 +12,7 @@ import {
 } from '@/shared/ui-kit';
 import { PlannerSidebarNavList } from './planner-sidebar-nav-list';
 import { PlannerSidebarTrigger } from './planner-sidebar-trigger';
+import { usePlannerSidebarState } from './view-model/use-planner-sidebar-state';
 
 function PlannerSidebar({
   content,
@@ -22,8 +23,15 @@ function PlannerSidebar({
   content: ReactNode;
   defaultOpen?: boolean;
 }) {
+  const { open, setOpen } = usePlannerSidebarState(defaultOpen);
+
   return (
-    <SidebarProvider className="flex flex-col h-screen overscroll-y-auto" defaultOpen={defaultOpen}>
+    <SidebarProvider
+      className="flex flex-col h-screen overscroll-y-auto"
+      defaultOpen={defaultOpen}
+      open={open}
+      onOpenChange={setOpen}
+    >
       {headerSlot}
 
       <div className="grid grow grid-cols-[min-content_1fr] min-h-0">

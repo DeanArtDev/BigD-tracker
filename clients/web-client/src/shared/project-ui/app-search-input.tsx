@@ -15,7 +15,7 @@ function AppSearchInput({ value, placeholder, className, onSearch }: AppSearchIn
   const [draftSearch, setDraftSearch] = useState(value ?? '');
 
   return (
-    <InputGroup className={cn('max-w-[420px] w-full', className)}>
+    <InputGroup className={cn('w-fit', className)}>
       <InputGroupInput
         placeholder={placeholder}
         value={draftSearch}

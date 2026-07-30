@@ -8,6 +8,7 @@ function TasksSearch({ tab }: { tab: TasksTab }) {
 
   return (
     <AppSearchInput
+      className="max-w-[420px] w-full"
       value={searchQuery?.search}
       placeholder="Поиск по имени..."
       onSearch={(search) => {

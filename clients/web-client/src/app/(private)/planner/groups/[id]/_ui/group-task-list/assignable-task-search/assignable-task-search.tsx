@@ -1,9 +1,9 @@
 import { Search } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
+import { useDebounce } from 'react-use';
 import { AssignableTask, useGetAssignableTasks } from '@/app/(private)/planner/groups/[id]/_api';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
-import { useDebounce } from '@/shared/lib';
 import { useGetAssignableGroups } from '@/shared/transport/graphql';
 import { Card, CardContent, cn, DataLoader, ScrollAreaNativeVertical } from '@/shared/ui-kit';
 import { GroupedTaskList } from './ui/grouped-task-list';
@@ -17,7 +17,8 @@ interface AssignableTaskSearchProps {
 
 function AssignableTaskSearch({ groupId, loading, onTaskSelect }: AssignableTaskSearchProps) {
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 700);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  useDebounce(() => void setDebouncedSearch(search), 700, [search]);
 
   const { assignableTasks, loading: isAssignableTasksLoading } = useGetAssignableTasks({
     search: debouncedSearch,

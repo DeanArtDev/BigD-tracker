@@ -1,6 +1,6 @@
 'use client';
 
-import { Repeat2, Timer } from 'lucide-react';
+import { Flag, Repeat2, Timer } from 'lucide-react';
 import { CSSProperties, ReactNode, Ref } from 'react';
 import { TaskDomain, TaskId } from '@/entity/planner/tasks';
 import { TimeHelper } from '@/shared/lib/time';
@@ -21,6 +21,7 @@ interface TaskCardProps {
   readonly variant?: TaskCardVariant;
 
   readonly deadline?: string;
+  readonly startDate?: string;
   readonly repeatable?: boolean;
 
   readonly afterHeaderSlot?: ({ variant }: { variant: TaskCardVariant }) => ReactNode;
@@ -44,6 +45,7 @@ function TaskCard(props: TaskCardProps) {
     className,
     repeatable = false,
     deadline,
+    startDate,
     afterHeaderSlot,
     beforeBottomRowSlot,
 
@@ -102,9 +104,16 @@ function TaskCard(props: TaskCardProps) {
       <CardContent className="flex flex-wrap gap-3 p-0 pr-1.5 min-h-5 items-center">
         {beforeBottomRowSlot?.({ variant })}
 
+        {startDate != null && (
+          <Badge variant="outline">
+            <Timer />
+            {TaskUtils.formatTaskDate(startDate)}
+          </Badge>
+        )}
+
         {deadline != null && (
           <Badge variant={isDeadlineSoon && showIndications ? 'destructive' : 'outline'}>
-            <Timer />
+            <Flag />
             {TaskUtils.formatTaskDate(deadline)}
           </Badge>
         )}

@@ -160,13 +160,13 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
         .$if(params.sort?.deadline != null, (qb) =>
           qb.orderBy('tasks.deadline', (ob) => {
             if (params.sort!.deadline === SortDirection.ASC) return ob.asc().nullsLast();
-            return ob.desc().nullsFirst();
+            return ob.desc().nullsLast();
           }),
         )
         .$if(params.sort?.startDate != null, (qb) =>
           qb.orderBy('tasks.start_date', (ob) => {
             if (params.sort!.startDate === SortDirection.ASC) return ob.asc().nullsLast();
-            return ob.desc().nullsFirst();
+            return ob.desc().nullsLast();
           }),
         )
         .limit(limit)

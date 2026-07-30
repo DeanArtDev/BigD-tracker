@@ -5,8 +5,12 @@ import { useOnUnmount } from '@/shared/lib/application-status';
 import { ApiError, ApiErrorCode } from '@/shared/transport/graphql';
 import { useNotify } from '../project-ui';
 
-type ExceptionMessageHandlers = Partial<{
-  [Code in ApiErrorCode]: (exception: ApiError<Code>) => ReactNode;
+type ExceptionMessageHandler<Code extends ApiErrorCode> = (exception: ApiError<Code>) => ReactNode;
+
+type ExceptionMessageHandlers = {
+  anyException?: ExceptionMessageHandler<ApiErrorCode>;
+} & Partial<{
+  [Code in ApiErrorCode]: ExceptionMessageHandler<Code>;
 }>;
 
 interface ExceptionNotificatorProps {
@@ -20,9 +24,11 @@ function handleExceptionMessage<Code extends ApiErrorCode>(
   exception: ApiError<Code>,
   messageHandlers: ExceptionMessageHandlers | undefined,
 ): ReactNode {
-  const handler = messageHandlers?.[exception.code] as ((exception: ApiError<Code>) => ReactNode) | undefined;
-
-  return handler?.(exception);
+  const topPriorityMessage = (messageHandlers?.[exception.code] as ExceptionMessageHandler<Code> | undefined)?.(
+    exception,
+  );
+  const lowPriorityMessage = messageHandlers?.['anyException']?.(exception);
+  return topPriorityMessage ?? lowPriorityMessage;
 }
 
 function useExceptionNotificator({ exception, messageHandlers }: ExceptionNotificatorProps) {

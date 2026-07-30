@@ -34,9 +34,9 @@ const TaskStatusIndication = memo(function TaskStatusIndicationMemo({
       <StatusIcon
         className={cn(
           {
-            'size-3 stroke-3': size === 'sm',
-            'size-4 stroke-3': size === 'md',
-            'size-4.5 stroke-3': size === 'lg',
+            'size-3 stroke-2': size === 'sm',
+            'size-4 stroke-2': size === 'md',
+            'size-4.5 stroke-2': size === 'lg',
           },
           className,
         )}

@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsString, ValidateNested } from 'class-validator';
+import { TaskDto } from './task.dto';
 
 class TaskRecoveryReqData {
   @IsInt()
@@ -18,15 +19,10 @@ class TaskRecoveryReq {
   data: TaskRecoveryReqData;
 }
 
-class TaskRecoveryResData {
-  @IsString()
-  id: string;
-}
-
 class TaskRecoveryRes {
   @ValidateNested()
-  @Type(() => TaskRecoveryResData)
-  data: TaskRecoveryResData;
+  @Type(() => TaskDto)
+  data: TaskDto;
 }
 
 export { TaskRecoveryReq, TaskRecoveryRes };

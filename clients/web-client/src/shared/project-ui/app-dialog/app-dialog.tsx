@@ -22,12 +22,24 @@ interface AppDialogProps {
   readonly className?: string;
   readonly modal?: boolean;
   readonly open?: boolean;
+  readonly verticalScroll?: boolean;
 
   readonly onOpenChange?: (value: boolean) => void;
 }
 
 function AppDialog(props: AppDialogProps) {
-  const { title, content, footer, description = '', className, trigger, modal, open, onOpenChange } = props;
+  const {
+    title,
+    content,
+    footer,
+    description = '',
+    className,
+    verticalScroll = true,
+    trigger,
+    modal,
+    open,
+    onOpenChange,
+  } = props;
 
   return (
     <Dialog open={open} modal={modal} onOpenChange={onOpenChange}>
@@ -56,7 +68,11 @@ function AppDialog(props: AppDialogProps) {
           )}
         </DialogHeader>
 
-        <ScrollAreaNativeVertical className="h-fit max-h-[65vh]">{content}</ScrollAreaNativeVertical>
+        {verticalScroll ? (
+          <ScrollAreaNativeVertical className="h-fit max-h-[65vh]">{content}</ScrollAreaNativeVertical>
+        ) : (
+          content
+        )}
 
         {footer && <DialogFooter className="m-0 mt-auto">{footer}</DialogFooter>}
       </DialogContent>

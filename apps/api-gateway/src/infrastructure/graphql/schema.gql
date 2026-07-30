@@ -175,7 +175,7 @@ type Mutation {
   refresh: Boolean!
 
   """Восстановление дела"""
-  taskRecovery(input: TaskRecoveryInput!): Int!
+  taskRecovery(input: TaskRecoveryInput!): TaskSchema!
 
   """Удалить дело из группы"""
   unassignTaskToGroup(input: TaskUnassignInput!): TaskSchema!

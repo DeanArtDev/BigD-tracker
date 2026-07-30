@@ -28,6 +28,7 @@ function AssignTaskToGroupDialog({ groupId, trigger, open, onOpenChange }: Assig
             assignToGroup(
               { groupId, task },
               {
+                showToast: false,
                 onSuccess: () => {
                   onOpenChange(false);
                   setIsSearchResultBlocked(false);

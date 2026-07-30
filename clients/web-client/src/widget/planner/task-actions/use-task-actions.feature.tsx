@@ -2,6 +2,7 @@ import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-gr
 import { useTaskCopyFeature } from '@/feature/planner/task-copy';
 import { useTaskDeleteFeature } from '@/feature/planner/task-delete';
 import { useTaskFinishFeature } from '@/feature/planner/task-finish';
+import { useTaskRecovery } from '@/feature/planner/task-recovery';
 import { useTaskUnassignFromGroup } from '@/feature/planner/task-unassign-from-group';
 
 function useTaskActionsFeature() {
@@ -10,9 +11,15 @@ function useTaskActionsFeature() {
   const { deleteTask, client, loading: isTaskDeleteLoading } = useTaskDeleteFeature();
   const { copyTask, loading: isTaskCopyLoading } = useTaskCopyFeature();
   const { finishTask, loading: isTaskFinishLoading, taskFinishDialogHolder } = useTaskFinishFeature();
+  const { recoveryTask, loading: isTaskRecoveryLoading } = useTaskRecovery();
 
   const isActionLoading =
-    isTaskFinishLoading || isTaskDeleteLoading || isTaskUnassignLoading || isTaskAssignLoading || isTaskCopyLoading;
+    isTaskFinishLoading ||
+    isTaskDeleteLoading ||
+    isTaskUnassignLoading ||
+    isTaskAssignLoading ||
+    isTaskCopyLoading ||
+    isTaskRecoveryLoading;
 
   return {
     client,
@@ -25,6 +32,7 @@ function useTaskActionsFeature() {
     taskUnassignHandler: unassignTaskFromGroup,
     taskCopyHandler: copyTask,
     taskFinishHandler: finishTask,
+    taskRecoveryHandler: recoveryTask,
   };
 }
 

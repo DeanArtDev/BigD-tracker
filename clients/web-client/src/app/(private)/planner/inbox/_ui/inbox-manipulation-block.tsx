@@ -21,7 +21,12 @@ const InboxManipulationBlock = memo(function InboxManipulationBlockMemo() {
 
   return (
     <div className="flex gap-5 items-center">
-      <AppSearchInput value={filter.search} placeholder="Поиск по имени..." onSearch={setSearch} />
+      <AppSearchInput
+        className="max-w-[420px] w-full"
+        value={filter.search}
+        placeholder="Поиск по имени..."
+        onSearch={setSearch}
+      />
 
       <TaskPriorityPicker
         className="ml-auto"

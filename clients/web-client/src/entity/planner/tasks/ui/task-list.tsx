@@ -20,6 +20,7 @@ type TaskListProps = {
     readonly onAssign?: (task: Task) => MaybePromise<void>;
     readonly onUnassign?: (task: Task) => MaybePromise<void>;
     readonly onFinish?: (task: Task) => MaybePromise<void>;
+    readonly onRecover?: (task: Task) => MaybePromise<void>;
   };
 
   readonly dropdownProps?: {
@@ -42,6 +43,9 @@ function TaskList({
   onTaskHeaderClick,
   onTaskContentClick,
 }: TaskListProps) {
+  const handlerOrEmpty = (task: Task, handler?: (task: Task) => MaybePromise<void>) =>
+    handler != null ? () => handler(task) : undefined;
+
   return (
     <DataLoader
       loadingElement={<DataLoader.Loading />}
@@ -55,11 +59,9 @@ function TaskList({
         renderItem={(virtualItem) => {
           const task = tasks[virtualItem.index];
           if (task == null) return null;
-          const isAllowAssign = TaskDomain.isAllowTaskAction(
-            TaskActionType.Assign,
-            task.status,
-            TaskDomain.parseId(task.id).type,
-          );
+          const isAllowAssign =
+            menuProps?.onAssign != null &&
+            TaskDomain.isAllowTaskAction(TaskActionType.Assign, task.status, TaskDomain.parseId(task.id).type);
 
           return (
             <TaskCard
@@ -90,11 +92,12 @@ function TaskList({
                     hasGroup={task.groupId != null}
                     loading={menuProps?.loading ?? false}
                     taskType={TaskDomain.parseId(task.id).type}
-                    onDelete={() => void menuProps?.onDelete?.(task)}
-                    onFinish={() => void menuProps?.onFinish?.(task)}
-                    onAssign={() => void menuProps?.onAssign?.(task)}
-                    onCopy={() => void menuProps?.onCopy?.(task)}
-                    onUnassign={() => void menuProps?.onUnassign?.(task)}
+                    onDelete={handlerOrEmpty(task, menuProps?.onDelete)}
+                    onFinish={handlerOrEmpty(task, menuProps?.onFinish)}
+                    onAssign={handlerOrEmpty(task, menuProps?.onAssign)}
+                    onCopy={handlerOrEmpty(task, menuProps?.onCopy)}
+                    onUnassign={handlerOrEmpty(task, menuProps?.onUnassign)}
+                    onRecover={handlerOrEmpty(task, menuProps?.onRecover)}
                   />
                 </div>
               )}

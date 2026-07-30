@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
+import { useDebounce } from 'react-use';
 import { TaskList, TaskPriorityPicker } from '@/entity/planner/tasks';
-import { useDebounce } from '@/shared/lib';
 import { TaskStatus } from '@/shared/transport/graphql';
 import { DataLoader } from '@/shared/ui-kit';
 import { TasksSearch } from './tasks-search';
@@ -14,15 +15,13 @@ function ArchivedTasksTabContent() {
   const [searchQuery, setSearchQuery] = useTasksTabUrlQuery('archived');
   const selectedPriorities = searchQuery?.priority ?? [];
 
+  const [debouncedRequestParams, setDebouncedRequestParams] = useState({ priority: selectedPriorities });
+  useDebounce(() => void setDebouncedRequestParams({ priority: selectedPriorities }), 700, [...selectedPriorities]);
+
   const { tasks, meta, loading, initialLoading, isEmpty, isError, fetchMore, refetch } = useGetTasksPerPageInfinity({
     search: searchQuery?.search,
-    ...useDebounce(
-      {
-        status: archivedTaskStatuses,
-        priority: selectedPriorities,
-      },
-      700,
-    ),
+    status: archivedTaskStatuses,
+    ...debouncedRequestParams,
   });
 
   return (

@@ -188,7 +188,7 @@ export type Mutation = {
   /** Продление токена сессии, необходимы access и refresh токены одновременно */
   refresh: Scalars['Boolean']['output'];
   /** Восстановление дела */
-  taskRecovery: Scalars['Int']['output'];
+  taskRecovery: TaskSchema;
   /** Удалить дело из группы */
   unassignTaskToGroup: TaskSchema;
   /** Редактирование группы */
