@@ -44,6 +44,7 @@ function useTaskDeleteFeature() {
                 TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
                 TaskCacheManager.dropDeletedGetTasksPerPage(rest.client);
                 await onSuccess?.();
+                rest.client.cache.gc();
               }
             } finally {
               setLoading(false);

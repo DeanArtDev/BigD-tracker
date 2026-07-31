@@ -1,0 +1,58 @@
+.df-context-menu {
+  border: 0;
+  background-color: transparent;
+  padding: 0;
+}
+
+.diary-calendar {
+  --df-color-primary: var(--primary);
+
+  #dayflow-add-event-btn {
+    margin-left: 10px;
+  }
+
+  .df-calendar-wrapper {
+    display: flex;
+    flex: 1 1 0;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    > .df-calendar-container {
+      --df-calendar-height: 100%;
+
+      flex: 1 1 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      min-height: 0;
+    }
+  }
+
+  .df-right-panel-layout .df-mini-calendar-body {
+    display: none;
+  }
+
+  .diary-year-view {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .diary-year-view-mode-tabs {
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    z-index: 40;
+    transform: translateX(-50%);
+  }
+}
+
+.df-context-menu-content:has(> .diary-grid-context-menu) {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}

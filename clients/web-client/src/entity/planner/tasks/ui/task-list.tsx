@@ -23,6 +23,7 @@ type TaskListProps<BrandGroup extends Brand<number, string>> = {
     readonly onUnassign?: (task: Task<BrandGroup>) => MaybePromise<void>;
     readonly onFinish?: (task: Task<BrandGroup>) => MaybePromise<void>;
     readonly onRecover?: (task: Task<BrandGroup>) => MaybePromise<void>;
+    readonly onDeleteComplete?: (task: Task<BrandGroup>) => MaybePromise<void>;
   };
 
   readonly slots?: {
@@ -82,6 +83,7 @@ function TaskList<BrandGroup extends Brand<number, string>>({
                     loading={menuProps?.loading ?? false}
                     taskType={TaskDomain.parseId(task.id).type}
                     onDelete={handlerOrEmpty(task, menuProps?.onDelete)}
+                    onDeleteComplete={handlerOrEmpty(task, menuProps?.onDeleteComplete)}
                     onFinish={handlerOrEmpty(task, menuProps?.onFinish)}
                     onAssign={handlerOrEmpty(task, menuProps?.onAssign)}
                     onClone={handlerOrEmpty(task, menuProps?.onClone)}

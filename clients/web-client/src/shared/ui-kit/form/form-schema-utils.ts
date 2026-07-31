@@ -31,7 +31,7 @@ const transformToPlaceholder = {
   optional: <T>(value: T): T | undefined => (value == null || value === '' ? undefined : value),
 
   isoDate: (value: Date | string | null | undefined): string | undefined =>
-    value == null ? undefined : new Date(value).toISOString(),
+    value == null ? undefined : timeAndDate(value).toISOString(),
 };
 
 const transformPrimitive = {
@@ -54,7 +54,7 @@ const transformDate = {
   },
 
   dateToISOSFormat: (value: Date | string | null | undefined): string | undefined =>
-    value == null ? undefined : new Date(value).toISOString(),
+    value == null ? undefined : timeAndDate(value).toISOString(),
 };
 
 export { transformToPlaceholder, schemaPlaceholderValues, transformPrimitive, transformDate, formElementsValues };

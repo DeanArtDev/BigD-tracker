@@ -58,6 +58,10 @@ export type TaskCloneInput = {
   id: string;
 };
 
+export type TaskCompleteDeleteInput = {
+  id: string;
+};
+
 export type TaskCreateInput = {
   deadline?: string | null | undefined;
   description?: string | null | undefined;
@@ -234,6 +238,12 @@ export type DeleteTaskMutationVariables = Exact<{
 }>;
 
 export type DeleteTaskMutation = { deleteTask: { id: string } };
+
+export type CompleteDeleteTaskMutationVariables = Exact<{
+  input: Types.TaskCompleteDeleteInput;
+}>;
+
+export type CompleteDeleteTaskMutation = { completeDeleteTask: number };
 
 export type TaskAssignMutationVariables = Exact<{
   input: Types.TaskAssignInput;
@@ -701,6 +711,42 @@ export const DeleteTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<DeleteTaskMutation, DeleteTaskMutationVariables>;
+export const CompleteDeleteTaskDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CompleteDeleteTask' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskCompleteDeleteInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'completeDeleteTask' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CompleteDeleteTaskMutation, CompleteDeleteTaskMutationVariables>;
 export const TaskAssignDocument = {
   kind: 'Document',
   definitions: [
