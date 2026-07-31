@@ -1,8 +1,8 @@
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Badge } from './badge';
 import { Button } from './button';
-import { FilterResetButton } from './filter-reset-button';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { ResetButton } from './reset-button';
 
 interface Option<Value extends string = string> {
   readonly label: string;
@@ -46,7 +46,7 @@ function MultiSelect<Value extends string = string>({
           <div className="flex flex-wrap gap-1 group absolute size-5 top-[-10px] right-[-10px] items-center justify-center">
             {selectedOptions.length > 0 ? (
               <>
-                <FilterResetButton
+                <ResetButton
                   className="hidden justify-center group-hover:flex"
                   onReset={() => {
                     onChange([]);

@@ -11,3 +11,4 @@ export * from './navigation-progress';
 export * from './app-link';
 export * from './app-search-input';
 export * from './app-toaster';
+export * from './date-and-time-picker';

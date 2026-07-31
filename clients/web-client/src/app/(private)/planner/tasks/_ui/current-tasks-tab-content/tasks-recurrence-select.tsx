@@ -1,6 +1,6 @@
 'use client';
 
-import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
+import { ResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
 import { useGetTasksPerPageCurrent } from '../../_model/use-get-tasks-per-page-current';
 import { TasksRecurrence } from '../../_model/use-tasks-url-query';
 
@@ -23,7 +23,7 @@ function TasksRecurrenceSelect() {
         </SelectTrigger>
 
         {recurring != null && (
-          <FilterResetButton
+          <ResetButton
             className="absolute -top-2.5 -right-2.5"
             onReset={() => {
               setSearchQuery((previousQuery) => ({

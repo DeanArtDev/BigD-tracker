@@ -72,6 +72,12 @@ const TASK_DELETE_MUTATION = gql`
   }
 `;
 
+const TASK_COMPLETE_DELETE_MUTATION = gql`
+  mutation CompleteDeleteTask($input: TaskCompleteDeleteInput!) {
+    completeDeleteTask(input: $input)
+  }
+`;
+
 const TASK_ASSIGN_MUTATION = gql`
   mutation TaskAssign($input: TaskAssignInput!) {
     assignTaskToGroup(input: $input) {
@@ -118,6 +124,7 @@ const TASK_BY_ID_QUERY = gql`
 
 export {
   TASK_CREATE_MUTATION,
+  TASK_COMPLETE_DELETE_MUTATION,
   TASK_DELETE_MUTATION,
   TASK_ASSIGN_MUTATION,
   TASK_UNASSIGN_MUTATION,

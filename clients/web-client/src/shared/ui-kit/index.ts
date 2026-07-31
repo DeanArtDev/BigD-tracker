@@ -15,6 +15,7 @@ export * from './ui/toggle';
 export * from './ui/popover';
 export * from './ui/avatar';
 export * from './ui/dropdown-menu';
+export * from './ui/context-menu';
 export * from './ui/data-loader';
 export * from './ui/scroll-area-native-vertical';
 export * from './ui/scroll-area-native-horizontal';
@@ -39,6 +40,6 @@ export * from './ui/radio-group';
 export * from './ui/breadcrumb';
 export * from './ui/resizable';
 export * from './ui/virtualized-list-layout';
-export * from './ui/filter-reset-button';
+export * from './ui/reset-button';
 
 export * from './lib/utils';

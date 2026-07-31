@@ -1,6 +1,6 @@
 'use client';
 
-import { Folder, Inbox, ListChecks } from 'lucide-react';
+import { CalendarDays, Folder, Inbox, ListChecks } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
 import { RoutePaths, routes } from '@/shared/routes';
 import { Badge, DataLoader, Typography, useSidebar } from '@/shared/ui-kit';
@@ -51,6 +51,12 @@ function useNavItems(): PlannerSidebarNavPath[] {
         title: <span>Дела</span>,
         icon: <ListChecks />,
         path: routes.plannerTasks.path,
+      },
+
+      {
+        title: <span>Ежедневник</span>,
+        icon: <CalendarDays />,
+        path: routes.plannerDiary.path,
       },
     ],
     [inboxTaskCount, loading, open],

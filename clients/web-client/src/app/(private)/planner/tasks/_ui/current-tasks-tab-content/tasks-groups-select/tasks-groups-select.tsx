@@ -2,7 +2,7 @@
 
 import { ChevronsUpDown, FolderSearch } from 'lucide-react';
 import { GroupId } from '@/entity/planner/groups';
-import { Badge, Button, FilterResetButton, Popover, PopoverContent, PopoverTrigger } from '@/shared/ui-kit';
+import { Badge, Button, ResetButton, Popover, PopoverContent, PopoverTrigger } from '@/shared/ui-kit';
 import { TasksGroupsSelectContent } from './tasks-groups-select-content';
 import { useTasksTabUrlQuery } from '../../../_model/use-tasks-url-query';
 
@@ -24,7 +24,7 @@ function TasksGroupsSelect() {
 
           {hasSelectedGroups && (
             <div className="group absolute -top-2.5 -right-2.5 flex size-5 items-center justify-center">
-              <FilterResetButton
+              <ResetButton
                 className="hidden group-hover:flex"
                 onReset={() => {
                   setSearchQuery((previousQuery) => ({

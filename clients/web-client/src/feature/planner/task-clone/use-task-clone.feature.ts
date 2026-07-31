@@ -47,6 +47,8 @@ function useTaskCloneFeature() {
               groupId: taskData.groupId,
             });
           }
+
+          rest.client.cache.gc();
         } finally {
           setLoading(false);
         }

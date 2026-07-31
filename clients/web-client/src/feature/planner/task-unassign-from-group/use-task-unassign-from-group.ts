@@ -42,6 +42,7 @@ function useTaskUnassignFromGroup() {
             InboxGroupCacheManager.removeTask(client.cache, { inboxId: groupId, taskId });
 
             await onSuccess?.({ taskId });
+            client.cache.gc();
           }
         } finally {
           setLoading(false);

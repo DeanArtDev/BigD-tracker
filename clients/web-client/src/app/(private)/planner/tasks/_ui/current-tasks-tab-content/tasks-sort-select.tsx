@@ -2,7 +2,7 @@
 
 import { ArrowDownWideNarrow, ArrowUpDown, ArrowUpNarrowWide } from 'lucide-react';
 import { useGetTasksPerPageCurrent } from '@/app/(private)/planner/tasks/_model/use-get-tasks-per-page-current';
-import { FilterResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
+import { ResetButton, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui-kit';
 import { TasksSort } from '../../_model/use-tasks-url-query';
 
 function TasksSortSelect() {
@@ -32,7 +32,7 @@ function TasksSortSelect() {
         </SelectTrigger>
 
         {sort != null && (
-          <FilterResetButton
+          <ResetButton
             className="absolute -top-2.5 -right-2.5"
             onReset={() => {
               setSearchQuery((previousQuery) => ({

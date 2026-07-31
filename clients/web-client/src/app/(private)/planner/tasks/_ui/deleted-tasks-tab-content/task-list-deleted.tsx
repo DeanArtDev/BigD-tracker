@@ -26,8 +26,14 @@ function TaskListDeleted() {
   const [open, setOpen] = useState(false);
   const [recoveryTaskData, setRecoveryTaskData] = useState<{ taskId: TaskId }>();
 
-  const { taskRecoveryHandler, taskCloneHandler, taskAssignHandler, taskFinishDialogHolder, isActionLoading } =
-    useTaskActionsFeature();
+  const {
+    taskRecoveryHandler,
+    taskCompleteDeleteHandler,
+    taskCloneHandler,
+    taskAssignHandler,
+    taskFinishDialogHolder,
+    isActionLoading,
+  } = useTaskActionsFeature();
 
   return (
     <>
@@ -54,6 +60,7 @@ function TaskListDeleted() {
         menuProps={{
           loading: isActionLoading,
           onClone: (task) => void taskCloneHandler(task.id),
+          onDeleteComplete: (task) => void taskCompleteDeleteHandler(task.id, { showToast: false }),
           onRecover: (task) => {
             setOpen(true);
             setRecoveryTaskData({ taskId: task.id });

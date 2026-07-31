@@ -18,7 +18,6 @@ function FormErrorReactor() {
         const errors = Array.from(Object.values(data.errors ?? {}));
 
         for (const error of errors) {
-          console.log(error, isErrorWithMessage(error));
           if (!isEmpty(error) && isErrorWithMessage(error)) {
             if (toastIds.get(error.message ?? '') != null) return;
 

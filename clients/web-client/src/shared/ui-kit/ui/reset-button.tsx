@@ -1,13 +1,16 @@
 import { X } from 'lucide-react';
+import { ComponentProps } from 'react';
 import { Button } from './button';
 import { cn } from '../lib/utils';
 
-interface FilterResetButtonProps {
+type ResetButtonProps = ComponentProps<typeof Button> & {
   readonly className?: string;
+  readonly show?: boolean;
   readonly onReset: () => void;
-}
+};
 
-function FilterResetButton({ className, onReset }: FilterResetButtonProps) {
+function ResetButton({ show, className, onReset }: ResetButtonProps) {
+  if (!show) return null;
   return (
     <Button
       type="button"
@@ -25,4 +28,4 @@ function FilterResetButton({ className, onReset }: FilterResetButtonProps) {
   );
 }
 
-export { FilterResetButton, type FilterResetButtonProps };
+export { ResetButton, type ResetButtonProps };

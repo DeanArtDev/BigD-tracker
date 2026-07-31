@@ -3,11 +3,11 @@ import { TaskId } from '@/entity/planner/tasks';
 import { TaskFinishDialog } from '@/feature/planner/task-finish/task-finish-dialog';
 import { MaybePromise } from '@/shared/lib';
 import { useNotify } from '@/shared/project-ui';
-import { TaskFinishStatus } from '@/shared/transport/graphql';
+import { InboxGroupCacheManager, TaskCacheManager, TaskFinishStatus } from '@/shared/transport/graphql';
 import { useTaskFinish } from './api/use-task-finish';
 
 function useTaskFinishFeature() {
-  const { finishTask, ...rest } = useTaskFinish();
+  const { finishTask, client, ...rest } = useTaskFinish();
   const { promise } = useNotify();
   const [taskFinishData, setTaskFinishData] = useState<{ taskId: TaskId; onSuccess?: () => MaybePromise<void> }>();
 
@@ -23,9 +23,13 @@ function useTaskFinishFeature() {
           variables: { input: { id, reason, type: status } },
           awaitRefetchQueries: true,
         });
+
         if (response.data !== null) {
           setTaskFinishData(undefined);
+          TaskCacheManager.dropCurrentGetTasksPerPage(client);
+          InboxGroupCacheManager.refetch(client);
           await options?.onSuccess?.();
+          client.cache.gc();
         }
       };
 
@@ -33,7 +37,7 @@ function useTaskFinishFeature() {
       promise(ranMutation);
       return ranMutation;
     },
-    [finishTask, promise],
+    [promise, finishTask, client],
   );
 
   const taskFinishDialogHolder = (
