@@ -12,7 +12,6 @@ interface TaskOverrodeState {
   name: string;
   description?: string;
   priority: number;
-  weight: number;
   cancelReason?: string;
   startDate: string;
   deadline: string;

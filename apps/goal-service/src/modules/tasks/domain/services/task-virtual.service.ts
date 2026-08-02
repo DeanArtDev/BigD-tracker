@@ -119,7 +119,6 @@ class TaskVirtualService {
       name: sourceTask.name,
       description: sourceTask.description,
       priority: sourceTask.priority,
-      weight: sourceTask.weight,
       startDate: DateVo.format(startDate),
       deadline: DateVo.format(deadline),
     });

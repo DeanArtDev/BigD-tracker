@@ -69,7 +69,6 @@ describe('GroupsInboxRmqController (rmq e2e)', () => {
             name: taskView.name,
             description: taskView.description,
             priority: taskView.priority,
-            weight: taskView.weight,
             cancelReason: taskView.cancelReason,
             endDate: taskView.endDate,
             status: taskView.status,

@@ -14,7 +14,6 @@ function tasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
       'tasks.name as name',
       'tasks.description as description',
       'tasks.priority as priority',
-      'tasks.weight as weight',
       'tasks.cancel_reason as cancel_reason',
       'tasks.start_date as start_date',
       'tasks.end_date as end_date',

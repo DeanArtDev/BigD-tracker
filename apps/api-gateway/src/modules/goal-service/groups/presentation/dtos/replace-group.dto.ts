@@ -1,18 +1,7 @@
 import { TaskRecurrencyDto } from '@/modules/goal-service/tasks';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsInt,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsInt, IsObject, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
 import { GroupResSingle } from './shared/group-response.dto';
 
 class ReplaceGroupTask {
@@ -38,13 +27,6 @@ class ReplaceGroupTask {
   @Max(4)
   @IsInt()
   priority: number;
-
-  @ApiProperty({ example: 100, description: 'От 0 до 100' })
-  @Expose()
-  @Min(0)
-  @Max(100)
-  @IsNumber()
-  weight: number;
 
   @ApiPropertyOptional({
     type: TaskRecurrencyDto,

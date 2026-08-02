@@ -1,4 +1,4 @@
-import { Priority, Task, TaskIdBuilder, TaskOverride, Weight } from '@/modules/tasks/domain';
+import { Priority, Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
 import { TaskFinishStatus, TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
@@ -38,7 +38,6 @@ function restoreSavedOverride(override: TaskOverride, id: number): TaskOverride 
       name: Name.restore(override.name),
       description: override.description,
       priority: Priority.restore(override.priority),
-      weight: Weight.restore(override.weight),
       cancelReason: override.cancelReason,
       startDate: override.startDate != null ? DateVo.restore(override.startDate) : undefined,
       deadline: override.deadline != null ? DateVo.restore(override.deadline) : undefined,
@@ -67,7 +66,6 @@ describe('FinishTaskUseCase', () => {
       name: 'Origin task',
       description: 'origin description',
       priority: 3,
-      weight: 5,
       startDate: '2026-03-12T09:00',
       deadline: '2026-03-12T18:00',
       status: TaskStatus.IN_PROGRESS,
@@ -133,7 +131,6 @@ describe('FinishTaskUseCase', () => {
       name: 'Origin task',
       description: 'origin description',
       priority: 3,
-      weight: 5,
       startDate: '2026-03-12T09:00',
       deadline: '2026-03-12T18:00',
       endDate: DateVo.format(finishedAt.toISOString()),
@@ -180,7 +177,6 @@ describe('FinishTaskUseCase', () => {
       name: 'Virtual source',
       description: 'virtual source description',
       priority: 3,
-      weight: 5,
       startDate: '2026-03-01T10:00',
       deadline: '2026-03-02T12:00',
       status: TaskStatus.IN_PROGRESS,
@@ -251,7 +247,6 @@ describe('FinishTaskUseCase', () => {
       name: 'Virtual source',
       description: 'virtual source description',
       priority: 3,
-      weight: 5,
       startDate: DateVo.format(recurrenceStart),
       deadline: '2026-03-13T12:00',
       endDate: DateVo.format(finishedAt.toISOString()),
@@ -299,7 +294,6 @@ describe('FinishTaskUseCase', () => {
       name: 'Source task',
       description: 'source task description',
       priority: 3,
-      weight: 5,
       startDate: '2026-03-01T10:00',
       deadline: '2026-03-02T12:00',
       status: TaskStatus.IN_PROGRESS,
@@ -311,7 +305,6 @@ describe('FinishTaskUseCase', () => {
         name: 'Override task',
         description: 'override description',
         priority: 4,
-        weight: 6,
         startDate: '2026-03-12T09:30',
         deadline: '2026-03-13T13:45',
         status: TaskStatus.IN_PROGRESS,
@@ -389,7 +382,6 @@ describe('FinishTaskUseCase', () => {
       name: 'Override task',
       description: 'override description',
       priority: 4,
-      weight: 6,
       startDate: '2026-03-12T09:30',
       deadline: '2026-03-13T13:45',
       endDate: DateVo.format(finishedAt.toISOString()),

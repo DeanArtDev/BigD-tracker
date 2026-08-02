@@ -2,7 +2,7 @@ import { TaskFinishStatus, TaskRecurrenceStatus, TaskStatus } from '@big-d/api-c
 import { DateVo, MonthdaysVo, Name, timeAndDate, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 import { maxBy } from 'lodash';
 import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
-import { Priority, Weight } from '../aggregates/task/value-objects';
+import { Priority } from '../aggregates/task/value-objects';
 import { ExceptionTaskDomainInvalidInvariant } from '../exceptions';
 
 interface TaskWithRecurrenceInput {
@@ -372,7 +372,6 @@ class TaskWithRecurrenceService {
           groupId: override.groupId,
           description: override.description,
           priority: Priority.create(override.priority),
-          weight: Weight.create(override.weight),
           startDate: DateVo.create(override.startDate),
           deadline: DateVo.create(override.deadline),
           status: override.status,

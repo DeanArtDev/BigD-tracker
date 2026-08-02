@@ -29,7 +29,6 @@ class TaskOverride {
       name: task.name,
       description: task.description,
       priority: task.priority,
-      weight: task.weight,
       cancelReason: task.cancelReason,
       startDate: assertInput.startDate,
       endDate: task.endDate,
@@ -56,7 +55,6 @@ class TaskOverride {
       name: task.name,
       description: task.description,
       priority: task.priority,
-      weight: task.weight,
       cancelReason: task.cancelReason,
       startDate: assertInput.startDate,
       endDate: task.endDate,
@@ -77,7 +75,6 @@ class TaskOverride {
     this.#state.name = task.name;
     this.#state.description = task.description;
     this.#state.priority = task.priority;
-    this.#state.weight = task.weight;
     this.#state.cancelReason = task.cancelReason;
     this.#state.startDate = assertInput.startDate;
     this.#state.endDate = task.endDate;
@@ -127,9 +124,6 @@ class TaskOverride {
   }
   get priority() {
     return this.#state.priority;
-  }
-  get weight() {
-    return this.#state.weight;
   }
   get cancelReason() {
     return this.#state.cancelReason;

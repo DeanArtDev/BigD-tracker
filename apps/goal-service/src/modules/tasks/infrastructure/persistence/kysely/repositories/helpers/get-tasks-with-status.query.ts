@@ -11,7 +11,6 @@ function getTasksWithStatusQuery(db: TaskDatabase, trx?: TaskTransaction) {
       't.name as name',
       't.description as description',
       't.priority as priority',
-      't.weight as weight',
       't.cancel_reason as cancel_reason',
       't.start_date as start_date',
       't.end_date as end_date',

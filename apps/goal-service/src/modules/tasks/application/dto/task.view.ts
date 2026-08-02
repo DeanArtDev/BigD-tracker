@@ -21,7 +21,6 @@ interface TaskViewState {
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
-  readonly weight: number;
   readonly cancelReason?: string;
   readonly startDate?: DateVo;
   readonly deadline?: DateVo;
@@ -36,7 +35,6 @@ class TaskView {
     public readonly userId: number,
     public readonly name: string,
     public readonly priority: number,
-    public readonly weight: number,
     public readonly status: TaskStatus,
     public readonly groupId?: number,
     public readonly description?: string,
@@ -67,7 +65,6 @@ class TaskView {
       input.userId,
       input.name,
       input.priority,
-      input.weight,
       input.status,
       input.groupId,
       input.description,

@@ -33,7 +33,6 @@ type TaskFormSubmitDate = {
   priority: number;
   deadline?: string;
   startDate?: string;
-  weight: number;
   description?: string;
 } & (
   | {
@@ -122,7 +121,6 @@ function Component(props: TaskFormProps) {
 
             const submitData = {
               name: formData.name,
-              weight: formData.weight,
               startDate: startDate != null ? dateToTaskStandard(startDate) : undefined,
               deadline: formData.deadline != null ? dateToTaskStandard(formData.deadline) : undefined,
               description,
@@ -197,7 +195,7 @@ function Component(props: TaskFormProps) {
 }
 
 function TaskForm(props: TaskFormProps) {
-  const options = merge({}, { visibility: { recurrence: true, weight: true } }, props?.options);
+  const options = merge({}, { visibility: { recurrence: true } }, props?.options);
 
   return (
     <TaskFieldsRulesProvider status={props.task?.status} type={props.task?.type} options={options}>

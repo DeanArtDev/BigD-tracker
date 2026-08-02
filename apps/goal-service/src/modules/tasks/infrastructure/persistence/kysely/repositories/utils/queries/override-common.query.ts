@@ -19,7 +19,6 @@ function overrideCommonQuery(db: TaskDatabase, trx?: TaskTransaction) {
       'tasks_recurrences_overrides.name as name',
       'tasks_recurrences_overrides.description as description',
       'tasks_recurrences_overrides.priority as priority',
-      'tasks_recurrences_overrides.weight as weight',
       'tasks_recurrences_overrides.group_id as group_id',
       'tasks_recurrences_overrides.cancel_reason as cancel_reason',
       'tasks_recurrences_overrides.start_date as start_date',

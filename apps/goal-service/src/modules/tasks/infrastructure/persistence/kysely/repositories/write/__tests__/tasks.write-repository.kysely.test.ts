@@ -21,7 +21,6 @@ describe('TasksWriteRepositoryKysely', () => {
             "tasks"."name" as "name",
             "tasks"."description" as "description",
             "tasks"."priority" as "priority",
-            "tasks"."weight" as "weight",
             "tasks"."cancel_reason" as "cancel_reason",
             "tasks"."start_date" as "start_date",
             "tasks"."end_date" as "end_date",
@@ -76,7 +75,6 @@ describe('TasksWriteRepositoryKysely', () => {
               name: 'Task name',
               description: null,
               priority: 2,
-              weight: 1,
               cancel_reason: null,
               start_date: null,
               end_date: null,
@@ -101,8 +99,8 @@ describe('TasksWriteRepositoryKysely', () => {
         });
         expectSqlQuery(recorder.queries[1], {
           sql: `
-          insert into "tasks" ("name", "user_id", "priority", "weight", "status_id")
-          values ($1, $2, $3, $4, $5)
+          insert into "tasks" ("name", "user_id", "priority", "status_id")
+          values ($1, $2, $3, $4)
           returning
             "id",
             "user_id",
@@ -110,13 +108,12 @@ describe('TasksWriteRepositoryKysely', () => {
             "name",
             "description",
             "priority",
-            "weight",
             "cancel_reason",
             "start_date",
             "end_date",
             "deadline"
         `,
-          parameters: ['Task name', 77, 2, 1, 1],
+          parameters: ['Task name', 77, 2, 1],
         });
       },
     );
@@ -138,7 +135,6 @@ describe('TasksWriteRepositoryKysely', () => {
               name: 'Task name',
               description: null,
               priority: 2,
-              weight: 1,
               cancel_reason: null,
               start_date: null,
               end_date: null,
@@ -172,8 +168,8 @@ describe('TasksWriteRepositoryKysely', () => {
         });
         expectSqlQuery(recorder.queries[1], {
           sql: `
-          insert into "tasks" ("name", "user_id", "group_id", "priority", "weight", "status_id")
-          values ($1, $2, $3, $4, $5, $6)
+          insert into "tasks" ("name", "user_id", "group_id", "priority", "status_id")
+          values ($1, $2, $3, $4, $5)
           returning
             "id",
             "user_id",
@@ -181,13 +177,12 @@ describe('TasksWriteRepositoryKysely', () => {
             "name",
             "description",
             "priority",
-            "weight",
             "cancel_reason",
             "start_date",
             "end_date",
             "deadline"
         `,
-          parameters: ['Task name', 77, 9, 2, 1, 1],
+          parameters: ['Task name', 77, 9, 2, 1],
         });
         expectSqlQuery(recorder.queries[2], {
           sql: `
@@ -240,7 +235,6 @@ describe('TasksWriteRepositoryKysely', () => {
               name: 'Task name',
               description: null,
               priority: 2,
-              weight: 1,
               cancel_reason: null,
               start_date: null,
               end_date: null,
@@ -291,14 +285,13 @@ describe('TasksWriteRepositoryKysely', () => {
             "description" = $2,
             "group_id" = $3,
             "priority" = $4,
-            "weight" = $5,
-            "start_date" = $6,
-            "deadline" = $7,
-            "cancel_reason" = $8,
-            "status_id" = $9
+            "start_date" = $5,
+            "deadline" = $6,
+            "cancel_reason" = $7,
+            "status_id" = $8
           where
-            "id" = $10
-            and "user_id" = $11
+            "id" = $9
+            and "user_id" = $10
           returning
             "id",
             "user_id",
@@ -306,13 +299,12 @@ describe('TasksWriteRepositoryKysely', () => {
             "name",
             "description",
             "priority",
-            "weight",
             "cancel_reason",
             "start_date",
             "end_date",
             "deadline"
         `,
-          parameters: ['Task name', null, null, 2, 1, null, null, null, 2, 11, 77],
+          parameters: ['Task name', null, null, 2, null, null, null, 2, 11, 77],
         });
         expectSqlQuery(recorder.queries[4], {
           sql: `
@@ -355,7 +347,6 @@ describe('TasksWriteRepositoryKysely', () => {
               name: 'Task name',
               description: null,
               priority: 2,
-              weight: 1,
               cancel_reason: null,
               start_date: null,
               end_date: null,
@@ -427,14 +418,13 @@ describe('TasksWriteRepositoryKysely', () => {
             "description" = $2,
             "group_id" = $3,
             "priority" = $4,
-            "weight" = $5,
-            "start_date" = $6,
-            "deadline" = $7,
-            "cancel_reason" = $8,
-            "status_id" = $9
+            "start_date" = $5,
+            "deadline" = $6,
+            "cancel_reason" = $7,
+            "status_id" = $8
           where
-            "id" = $10
-            and "user_id" = $11
+            "id" = $9
+            and "user_id" = $10
           returning
             "id",
             "user_id",
@@ -442,13 +432,12 @@ describe('TasksWriteRepositoryKysely', () => {
             "name",
             "description",
             "priority",
-            "weight",
             "cancel_reason",
             "start_date",
             "end_date",
             "deadline"
         `,
-          parameters: ['Task name', null, 9, 2, 1, null, null, null, 2, 11, 77],
+          parameters: ['Task name', null, 9, 2, null, null, null, 2, 11, 77],
         });
         expectSqlQuery(recorder.queries[6], {
           sql: `

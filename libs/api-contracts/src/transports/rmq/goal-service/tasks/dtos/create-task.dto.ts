@@ -19,10 +19,6 @@ class CreateTaskReqData {
   priority?: number;
 
   @IsOptional()
-  @IsInt()
-  weight?: number;
-
-  @IsOptional()
   @IsString()
   description?: string;
 

@@ -3,10 +3,10 @@ import { DateVo, Name } from '@big-d/api-utils';
 import { futureDate } from '@shared/__tests__';
 import { TaskFactory } from '../tasks.factory';
 import { Task } from '../tasks.aggregate';
-import { Priority, Weight } from '../value-objects';
+import { Priority } from '../value-objects';
 
 describe('TaskFactory', () => {
-  it('creates task with default priority and weight', () => {
+  it('creates task with default priority', () => {
     const task = TaskFactory.create({
       userId: 21,
       name: 'Factory task',
@@ -14,7 +14,6 @@ describe('TaskFactory', () => {
     });
 
     expect(task.priority).toBe(4);
-    expect(task.weight).toBe(100);
     expect(task.status).toBe(TaskStatus.NOT_STARTED);
   });
 
@@ -59,7 +58,6 @@ describe('TaskFactory', () => {
       name: 'Updated',
       description: 'After update',
       priority: 2,
-      weight: 70,
       startDate: futureDate(3),
       deadline: futureDate(4),
     });
@@ -67,7 +65,6 @@ describe('TaskFactory', () => {
     expect(task.name).toBe('Updated');
     expect(task.description).toBe('After update');
     expect(task.priority).toBe(2);
-    expect(task.weight).toBe(70);
     expect(task.startDate).toBe(DateVo.create(futureDate(3)).value);
     expect(task.deadline).toBe(DateVo.create(futureDate(4)).value);
   });
@@ -79,7 +76,6 @@ describe('TaskFactory', () => {
       name: Name.create('Inbox'),
       description: 'Before update',
       priority: Priority.create(3),
-      weight: Weight.create(80),
       status: TaskStatus.COMPLETED,
     });
 
@@ -92,6 +88,5 @@ describe('TaskFactory', () => {
     expect(updated.name).toBe('Inbox updated');
     expect(updated.description).toBe('After update');
     expect(updated.priority).toBe(3);
-    expect(updated.weight).toBe(80);
   });
 });

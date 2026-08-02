@@ -9,7 +9,7 @@ function getMinutes(step: number, currentMinute: number) {
   return minutes.includes(currentMinute) ? minutes : [...minutes, currentMinute].toSorted((a, b) => a - b);
 }
 
-function getDefaultValue(value: Date | undefined, defaultTime: DateAndTimePickerProps['defaultTime']) {
+function getDefaultValue(value: Date | undefined | null, defaultTime: DateAndTimePickerProps['defaultTime']) {
   if (value != null) return value;
 
   const current = timeAndDate();

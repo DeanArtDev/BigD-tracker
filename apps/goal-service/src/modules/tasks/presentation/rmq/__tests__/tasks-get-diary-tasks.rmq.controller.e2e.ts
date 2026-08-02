@@ -40,7 +40,6 @@ const toDiaryTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   name: taskView.name,
   description: taskView.description,
   priority: taskView.priority,
-  weight: taskView.weight,
   cancelReason: taskView.cancelReason,
   startDate: taskView.startDate,
   deadline: taskView.deadline,
@@ -98,7 +97,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Recurring task',
         description: 'repeat',
         priority: 2,
-        weight: 4,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
       });
@@ -120,7 +118,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Regular task',
         description: 'single',
         priority: 3,
-        weight: 2,
         status: TaskStatus.IN_PROGRESS,
         startDate: '2026-03-02T09:00:00.000Z',
         deadline: '2026-03-02T11:00:00.000Z',
@@ -179,7 +176,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Recurring task',
         description: 'repeat',
         priority: 2,
-        weight: 4,
         status: TaskStatus.IN_PROGRESS,
         startDate: '2026-03-02T10:15',
         deadline: '2026-03-02T12:00',
@@ -193,7 +189,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Recurring task',
         description: 'repeat',
         priority: 2,
-        weight: 4,
         status: TaskStatus.IN_PROGRESS,
         startDate: '2026-03-03T10:15',
         deadline: '2026-03-03T12:00',
@@ -213,7 +208,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Recurring task A',
         description: 'repeat A',
         priority: 2,
-        weight: 4,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
       });
@@ -223,7 +217,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Recurring task B',
         description: 'repeat B',
         priority: 3,
-        weight: 5,
         startDate: '2026-03-02T10:15:00.000Z',
         deadline: '2026-03-02T12:00:00.000Z',
       });
@@ -259,7 +252,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Override for A',
           description: 'override A',
           priority: 1,
-          weight: 7,
           startDate: '2026-03-02T08:45:00.000Z',
           deadline: '2026-03-02T11:30:00.000Z',
           status: TaskStatus.IN_PROGRESS,
@@ -276,7 +268,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Override for B',
           description: 'override B',
           priority: 4,
-          weight: 9,
           startDate: '2026-03-02T16:20:00.000Z',
           deadline: '2026-03-02T17:00:00.000Z',
           status: TaskStatus.IN_PROGRESS,
@@ -319,7 +310,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Override for A',
         description: 'override A',
         priority: 1,
-        weight: 7,
         startDate: '2026-03-02T08:45',
       });
       expect(res.data.items[1]).toMatchObject({
@@ -332,7 +322,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Override for B',
         description: 'override B',
         priority: 4,
-        weight: 9,
         startDate: '2026-03-02T16:20',
       });
     });

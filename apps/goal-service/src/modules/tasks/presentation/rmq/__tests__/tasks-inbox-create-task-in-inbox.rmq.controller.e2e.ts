@@ -23,7 +23,6 @@ const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   name: taskView.name,
   description: taskView.description,
   priority: taskView.priority,
-  weight: taskView.weight,
   cancelReason: taskView.cancelReason,
   endDate: taskView.endDate,
   status: taskView.status,
@@ -66,7 +65,7 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
   describe(`${GoalCreateTaskInInbox.pattern}`, () => {
     test('should create task in inbox', async () => {
       const userId = 101;
-      const createdTask = getTask({ id: 9001, userId, name: 'Inbox Task', weight: 2 });
+      const createdTask = getTask({ id: 9001, userId, name: 'Inbox Task' });
       const inboxGroup = getGroupInboxView({ id: 777, userId });
       const taskView = getTaskView({ id: createdTask.id, userId, name: createdTask.name });
 
@@ -80,7 +79,6 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
           userId,
           name: 'Inbox Task',
           priority: 2,
-          weight: 2,
         },
       });
 
@@ -152,7 +150,6 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
           userId,
           name: 'Inbox Task',
           priority: 2,
-          weight: 2,
         },
       });
 
@@ -193,7 +190,6 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
           userId,
           name: 'Inbox Task',
           priority: 2,
-          weight: 2,
         },
       });
 
@@ -232,7 +228,6 @@ describe('TasksInboxRmqController (rmq e2e)', () => {
           userId,
           name: 'Inbox Task',
           priority: 2,
-          weight: 2,
         },
       });
 

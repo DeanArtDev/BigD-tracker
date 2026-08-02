@@ -9,7 +9,7 @@ import {
 import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { timeAndDate } from '@big-d/api-utils';
 import { Task, TaskIdBuilder, TaskRecurrence } from '../../aggregates/task';
-import { Priority, Weight } from '../../aggregates/task/value-objects';
+import { Priority } from '../../aggregates/task/value-objects';
 import { TaskVirtualService } from '../task-virtual.service';
 
 function buildTask(
@@ -21,7 +21,6 @@ function buildTask(
     name: Name.create('Task'),
     description: 'desc',
     priority: Priority.create(1),
-    weight: Weight.create(1),
     startDate: input.startDate != null ? DateVo.restore(input.startDate) : undefined,
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
     endDate: undefined,
@@ -125,7 +124,6 @@ describe('TaskVirtualService', () => {
     expect(result.task.name).toBe('Task');
     expect(result.task.description).toBe('desc');
     expect(result.task.priority).toBe(1);
-    expect(result.task.weight).toBe(1);
     expect(result.task.startDate).toBe(DateVo.format(expectedStart.toISOString()));
     expect(result.task.deadline).toBe(DateVo.format(expectedDeadline.toISOString()));
     expect(result.task.endDate).toBeUndefined();
@@ -178,7 +176,6 @@ describe('TaskVirtualService', () => {
     expect(result.override.name).toBe('Task');
     expect(result.override.description).toBe('desc');
     expect(result.override.priority).toBe(1);
-    expect(result.override.weight).toBe(1);
     expect(result.override.cancelReason).toBeUndefined();
     expect(result.override.startDate).toBe(DateVo.format(expectedStart.toISOString()));
     expect(result.override.deadline).toBe(DateVo.format(expectedDeadline.toISOString()));
@@ -220,7 +217,6 @@ describe('TaskVirtualService', () => {
     expect(result.override.name).toBe('Task');
     expect(result.override.description).toBe('desc');
     expect(result.override.priority).toBe(1);
-    expect(result.override.weight).toBe(1);
     expect(result.override.cancelReason).toBeUndefined();
     expect(result.override.startDate).toBe(DateVo.format(expectedStart.toISOString()));
     expect(result.override.deadline).toBe(DateVo.format(expectedDeadline.toISOString()));
@@ -262,7 +258,6 @@ describe('TaskVirtualService', () => {
     expect(result.override.name).toBe('Task');
     expect(result.override.description).toBe('desc');
     expect(result.override.priority).toBe(1);
-    expect(result.override.weight).toBe(1);
     expect(result.override.cancelReason).toBeUndefined();
     expect(result.override.startDate).toBe(DateVo.format(expectedStart.toISOString()));
     expect(result.override.deadline).toBe(DateVo.format(expectedDeadline.toISOString()));

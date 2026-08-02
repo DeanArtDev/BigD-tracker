@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { ReactNode } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 import {
   cn,
   Dialog,
@@ -13,6 +12,10 @@ import {
 } from '@/shared/ui-kit';
 import { isToasterClosest } from '../app-toaster';
 
+type DataAttributes = {
+  readonly [key: `data-${string}`]: string | number | boolean | undefined;
+};
+
 interface AppDialogProps {
   readonly title: ReactNode;
   readonly description?: string;
@@ -23,6 +26,7 @@ interface AppDialogProps {
   readonly modal?: boolean;
   readonly open?: boolean;
   readonly verticalScroll?: boolean;
+  readonly contentProps?: ComponentProps<typeof DialogContent> & DataAttributes;
 
   readonly onOpenChange?: (value: boolean) => void;
 }
@@ -37,6 +41,7 @@ function AppDialog(props: AppDialogProps) {
     verticalScroll = true,
     trigger,
     modal,
+    contentProps,
     open,
     onOpenChange,
   } = props;
@@ -46,6 +51,7 @@ function AppDialog(props: AppDialogProps) {
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
       <DialogContent
+        {...contentProps}
         className={cn('sm:max-w-200 p-0 gap-0', className)}
         onPointerDownOutside={(evt) => {
           if (isToasterClosest(evt)) {

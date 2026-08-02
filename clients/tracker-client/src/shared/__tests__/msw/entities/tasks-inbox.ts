@@ -10,7 +10,6 @@ function getInboxTaskFixture(fixture: InboxTaskFixture): ApiSchemas['TaskDto'] {
     name: fixture.name,
     userId: fixture.userId ?? 1,
     priority: fixture.priority ?? 2,
-    weight: fixture.weight ?? 1,
     status: fixture.status ?? 'NOT_STARTED',
     groupId: fixture.groupId,
     description: fixture.description,

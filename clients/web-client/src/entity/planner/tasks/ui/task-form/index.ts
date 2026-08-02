@@ -5,6 +5,7 @@ export {
   TaskFormProvider,
   withTaskFormProvider,
   type TaskFormData,
+  type TaskFormProviderProps,
   type TaskSubmitFormData,
 } from './context/task-form-provider';
 export {

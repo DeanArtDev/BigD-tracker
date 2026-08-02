@@ -2,13 +2,12 @@ import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exce
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
-import { Priority, Weight } from './value-objects';
+import { Priority } from './value-objects';
 
 interface PartlyFields {
   readonly id: number;
   readonly status: TaskStatus;
   readonly priority: Priority;
-  readonly weight: Weight;
 }
 
 const taskAsserts = {
@@ -41,14 +40,6 @@ const taskAsserts = {
       throw new ExceptionTaskDomainInvalidInvariant({
         message: `Field can't be updated at this status: ${currentState.status}`,
         field: 'priority',
-        taskId: currentState.id,
-      });
-    }
-
-    if (patch.weight != null && !currentState.weight?.equals(patch.weight)) {
-      throw new ExceptionTaskDomainInvalidInvariant({
-        message: `Field can't be updated at this status: ${currentState.status}`,
-        field: 'weight',
         taskId: currentState.id,
       });
     }

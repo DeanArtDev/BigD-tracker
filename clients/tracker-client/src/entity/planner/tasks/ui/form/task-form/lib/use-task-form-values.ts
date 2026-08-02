@@ -16,7 +16,6 @@ function useTaskFormValues({ task, defaultValue }: UseTaskFormValuesProps) {
     : {
         name: undefined,
         description: undefined,
-        weight: 100,
         priority: TaskPriority.DELETE.toString(),
         isDescriptionDirty: false,
         startDate: defaultValue?.startDate,
@@ -39,7 +38,6 @@ function useTaskFormValues({ task, defaultValue }: UseTaskFormValuesProps) {
         description: task.description,
         priority: task.priority?.toString(),
         isDescriptionDirty: false,
-        weight: task.weight,
         type: task.type,
         isRecurrence: task.recurrence != null,
         recurrence: {

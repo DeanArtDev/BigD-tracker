@@ -27,15 +27,17 @@ function useViews({ yearViewMode }: { yearViewMode: YearViewMode }) {
         showEventDots: true,
         scrollToCurrentTime: true,
         showWeekends: true,
+        gridDateDoubleClick: 'none',
       }),
       createMonthView({
         showEventDots: true,
         showWeekNumbers: true,
         showMonthIndicator: true,
-        gridDateDoubleClick: 'day-view',
+        gridDateClick: 'day-view',
+        gridDateDoubleClick: 'none',
       }),
       getYearViewConfig({ yearViewMode }),
-      createAgendaView({ showEmptyDays: true, daysToShow: 30 }),
+      createAgendaView({ showEmptyDays: true, daysToShow: 30, gridDateClick: 'day-view', gridDateDoubleClick: 'none' }),
     ];
   }, [yearViewMode]);
 }
@@ -43,7 +45,8 @@ function useViews({ yearViewMode }: { yearViewMode: YearViewMode }) {
 function getYearViewConfig({ yearViewMode }: { yearViewMode?: YearViewMode }): CalendarView {
   const yearView = createYearView({
     mode: yearViewMode,
-    gridDateDoubleClick: 'day-view',
+    gridDateClick: 'day-view',
+    gridDateDoubleClick: 'none',
     showTimedEventsInYearView: true,
     startOfWeek: 7,
     showEventDots: true,

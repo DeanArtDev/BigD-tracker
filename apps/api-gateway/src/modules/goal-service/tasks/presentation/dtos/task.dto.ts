@@ -1,7 +1,7 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
 import { buildTaskDateTimeApiProperty } from './task-date-time';
@@ -64,13 +64,6 @@ class TaskDto {
   @IsOptional()
   @IsString()
   deadline?: string;
-
-  @ApiProperty({ example: 100, description: 'От 0 до 100' })
-  @Expose()
-  @Min(0)
-  @Max(100)
-  @IsNumber()
-  weight: number;
 
   @ApiPropertyOptional({ example: 'Описание причины не выполнения дела' })
   @Expose()

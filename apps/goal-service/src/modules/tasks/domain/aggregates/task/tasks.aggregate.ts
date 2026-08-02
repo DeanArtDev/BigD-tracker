@@ -5,7 +5,7 @@ import { ExceptionTaskDomainInvalidInvariant } from '../../exceptions';
 import { allowedTaskStatusByAction, allowTaskStatusTransitions, TaskStatusActions } from '../../specifications';
 import { taskAsserts } from './tasks.invariants';
 import { TaskCreateInput, TaskReplaceInput, TaskRestoreInput, TaskState } from './tasks.types';
-import { Priority, Weight } from './value-objects';
+import { Priority } from './value-objects';
 
 class Task extends AggregateRoot {
   #state: TaskState;
@@ -29,7 +29,6 @@ class Task extends AggregateRoot {
       name: input.name,
       description: input.description,
       priority: input.priority,
-      weight: input.weight,
       cancelReason: input.cancelReason,
       startDate: input.startDate,
       deadline: input.deadline,
@@ -50,7 +49,6 @@ class Task extends AggregateRoot {
       name: input.name,
       description: input.description,
       priority: input.priority,
-      weight: input.weight,
       startDate,
       deadline,
       status: Task.calculateStatusByDates({ startDate }),
@@ -66,7 +64,6 @@ class Task extends AggregateRoot {
       this.#state.name = input.name;
       this.#state.description = input.description;
       this.#state.priority = input.priority;
-      this.#state.weight = input.weight;
       this.#state.groupId = input.groupId;
       this.#state.startDate = startDate;
       this.#state.deadline = deadline;
@@ -83,11 +80,9 @@ class Task extends AggregateRoot {
           id: this.#state.id,
           status: this.#state.status,
           priority: this.#state.priority,
-          weight: this.#state.weight,
         },
         {
           priority: input.priority,
-          weight: input.weight,
         },
       );
 
@@ -128,7 +123,6 @@ class Task extends AggregateRoot {
   public recovery(): this {
     if (this.#isAllowTo('RECOVERY')) {
       this.#state.priority = Priority.defaultValue();
-      this.#state.weight = Weight.defaultValue();
       this.#state.startDate = undefined;
       this.#state.deadline = undefined;
       return this.#setStatus(TaskStatus.NOT_STARTED);
@@ -178,7 +172,6 @@ class Task extends AggregateRoot {
         name: this.#state.name,
         description: this.#state.description,
         priority: this.#state.priority,
-        weight: this.#state.weight,
         deadline: this.#state.deadline,
         startDate,
         status: Task.calculateStatusByDates({ startDate }),
@@ -224,9 +217,6 @@ class Task extends AggregateRoot {
   }
   get priority() {
     return this.#state.priority.value;
-  }
-  get weight() {
-    return this.#state.weight.value;
   }
   get cancelReason() {
     return this.#state.cancelReason;

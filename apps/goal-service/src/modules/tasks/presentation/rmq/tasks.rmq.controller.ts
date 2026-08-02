@@ -69,7 +69,6 @@ export class TasksRmqController {
           startDate: payload.startDate,
           deadline: payload.deadline,
           recurrence: payload.recurrence,
-          weight: payload.weight,
         }),
       ),
     };
@@ -95,7 +94,6 @@ export class TasksRmqController {
           name: payload.name,
           id: payload.id,
           userId: payload.userId,
-          weight: payload.weight,
           description: payload.description,
           priority: payload.priority,
           startDate: payload.startDate,

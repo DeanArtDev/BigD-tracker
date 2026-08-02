@@ -22,7 +22,6 @@ class TaskFactory {
       type: taskDomainModule.parseId(overrides.id ?? id, overrides?.recurrence).type,
       priority: TaskPriority.PLAN,
       status: TaskStatus.NOT_STARTED,
-      weight: 100,
       recurrence: undefined,
       ...overrides,
     };
@@ -39,7 +38,6 @@ class TaskFactory {
       endDate: undefined,
       startDate: undefined,
       deadline: undefined,
-      weight: 1,
       cancelReason: undefined,
       recurrence: undefined,
       type: taskDomainModule.parseId(overrides.id ?? id, overrides?.recurrence).type,

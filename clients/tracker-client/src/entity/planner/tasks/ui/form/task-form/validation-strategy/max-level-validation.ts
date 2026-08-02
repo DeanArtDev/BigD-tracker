@@ -19,12 +19,6 @@ const maxLevelValidation = z
 
     type: z.enum(TaskType).optional(),
 
-    weight: z
-      .number({ error: '' })
-      .max(100, { error: 'Не больше 100' })
-      .positive({ error: 'Только больше 0' })
-      .transform(transformPlaceholder.percentNumber),
-
     startDate: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),
 
     deadline: z.date().optional().or(z.literal(formPlaceholderValues.date)).transform(formTransform.dateToISOSFormat),

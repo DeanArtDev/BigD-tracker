@@ -8,7 +8,7 @@ type BrandTask<TData extends Record<string, unknown>> = Omit<DeepReadonly<TData>
 };
 
 type Task<BrandGroup extends Brand<number, string> = Brand<number, string>> = Override<
-  BrandTask<NonNullable<Omit<TaskSchema, 'userId' | 'weight'>>>,
+  BrandTask<Omit<TaskSchema, 'userId'>>,
   { groupId?: BrandGroup }
 >;
 

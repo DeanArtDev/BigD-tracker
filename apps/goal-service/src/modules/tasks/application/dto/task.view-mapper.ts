@@ -10,7 +10,6 @@ interface TackPlain {
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
-  readonly weight: number;
   readonly cancelReason?: string;
   readonly startDate?: string;
   readonly deadline?: string;
@@ -29,7 +28,6 @@ class TasksViewMapper {
       name: agr.name,
       description: agr.description,
       priority: agr.priority,
-      weight: agr.weight,
       cancelReason: agr.cancelReason,
       startDate: agr.startDate != null ? DateVo.create(DateVo.format(agr.startDate)) : undefined,
       deadline: agr.deadline != null ? DateVo.create(DateVo.format(agr.deadline)) : undefined,
@@ -58,7 +56,6 @@ class TasksViewMapper {
       name: plain.name,
       description: plain.description,
       priority: plain.priority,
-      weight: plain.weight,
       cancelReason: plain.cancelReason,
       startDate: plain.startDate != null ? DateVo.create(DateVo.format(plain.startDate)) : undefined,
       deadline: plain.deadline != null ? DateVo.create(DateVo.format(plain.deadline)) : undefined,
@@ -79,7 +76,6 @@ class TasksViewMapper {
       name: override.name,
       description: override.description,
       priority: override.priority,
-      weight: override.weight,
       cancelReason: override.cancelReason,
       startDate: override.startDate != null ? DateVo.create(DateVo.format(override.startDate)) : undefined,
       deadline: override.deadline != null ? DateVo.create(DateVo.format(override.deadline)) : undefined,

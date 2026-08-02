@@ -1,6 +1,6 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
-import { Priority, Weight } from './value-objects';
+import { Priority } from './value-objects';
 
 interface TaskState {
   readonly id: number;
@@ -9,7 +9,6 @@ interface TaskState {
   name: Name;
   description?: string;
   priority: Priority;
-  weight: Weight;
   cancelReason?: string;
   startDate?: DateVo;
   deadline?: DateVo;
@@ -24,7 +23,6 @@ interface TaskCreateInput {
   readonly name: Name;
   readonly description?: string;
   readonly priority: Priority;
-  readonly weight: Weight;
   readonly startDate?: DateVo;
   readonly deadline?: DateVo;
   readonly recurrenceId?: number;
@@ -37,7 +35,6 @@ interface TaskRestoreInput {
   readonly name: Name;
   readonly description?: string;
   readonly priority: Priority;
-  readonly weight: Weight;
   readonly cancelReason?: string;
   readonly startDate?: DateVo;
   readonly deadline?: DateVo;
@@ -51,7 +48,6 @@ interface TaskReplaceInput {
   readonly name: Name;
   readonly description?: string;
   readonly priority: Priority;
-  readonly weight: Weight;
   readonly startDate?: DateVo;
   readonly deadline?: DateVo;
   readonly recurrenceId?: number;

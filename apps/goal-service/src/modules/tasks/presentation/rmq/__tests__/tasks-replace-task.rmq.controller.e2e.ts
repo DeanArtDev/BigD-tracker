@@ -90,7 +90,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Updated',
           description: 'Updated desc',
           priority: 2,
-          weight: 5,
         },
       });
 
@@ -106,7 +105,6 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(replacedTaskArg.name).toBe('Updated');
       expect(replacedTaskArg.description).toBe('Updated desc');
       expect(replacedTaskArg.priority).toBe(2);
-      expect(replacedTaskArg.weight).toBe(5);
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: {
@@ -115,7 +113,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Updated',
           description: 'Updated desc',
           priority: 2,
-          weight: 5,
           cancelReason: undefined,
           endDate: undefined,
           status: TaskStatus.NOT_STARTED,
@@ -135,7 +132,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Old',
         description: 'Old desc',
         priority: 1,
-        weight: 2,
         status: TaskStatus.NOT_STARTED,
       });
 
@@ -150,7 +146,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Updated recurring',
           description: 'Updated desc',
           priority: 4,
-          weight: 5,
           startDate,
           deadline,
           recurrence: {
@@ -174,7 +169,6 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(replacedTaskArg.name).toBe('Updated recurring');
       expect(replacedTaskArg.description).toBe('Updated desc');
       expect(replacedTaskArg.priority).toBe(4);
-      expect(replacedTaskArg.weight).toBe(5);
       expect(replacedTaskArg.startDate).toBe(startDate);
       expect(replacedTaskArg.deadline).toBe(deadline);
       expect(replacedTaskArg.endDate).toBeUndefined();
@@ -196,7 +190,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Updated recurring',
           description: 'Updated desc',
           priority: 4,
-          weight: 5,
           startDate,
           deadline,
           status: TaskStatus.IN_PROGRESS,
@@ -215,7 +208,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           priority: 2,
-          weight: 3,
         },
       });
 
@@ -233,7 +225,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         code: exceptionCode.taskInvariantFailed.code,
         key: 'INVARIANT_FAILED',
         kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'weight', taskId },
+        details: { field: 'status', taskId },
       });
     });
 
@@ -241,7 +233,7 @@ describe('TasksRmqController (rmq e2e)', () => {
       const userId = 35;
       const taskId = 4015;
       tasksWriteRepoMock.getTaskById.mockResolvedValueOnce(
-        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED, weight: 1 }),
+        getTask({ id: taskId, userId, status: TaskStatus.COMPLETED }),
       );
 
       const payload: GoalReplaceTask.Request = buildPayload({
@@ -250,7 +242,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           priority: 2,
-          weight: 4,
         },
       });
 
@@ -267,7 +258,7 @@ describe('TasksRmqController (rmq e2e)', () => {
         code: exceptionCode.taskInvariantFailed.code,
         key: 'INVARIANT_FAILED',
         kind: RmqErrorKind.DOMAIN_INVARIANT_VIOLATION,
-        details: { field: 'weight', taskId },
+        details: { field: 'priority', taskId },
       });
     });
 
@@ -282,7 +273,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           priority: 2,
-          weight: 3,
         },
       });
 
@@ -313,7 +303,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           priority: 2,
-          weight: 3,
         },
       });
 
@@ -349,7 +338,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           priority: 2,
-          weight: 3,
           recurrence: {
             frequency: RecurrenceFrequency.DAILY,
             startDate: '2026-03-02T10:15:00.000Z',
@@ -389,7 +377,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Updated',
           priority: 2,
-          weight: 3,
           recurrence: {
             frequency: RecurrenceFrequency.DAILY,
             startDate: '2026-03-02T10:15:00.000Z',

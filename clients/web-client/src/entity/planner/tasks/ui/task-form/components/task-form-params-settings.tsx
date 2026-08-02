@@ -10,9 +10,12 @@ import { useTaskFormFieldContext } from '../context/task-form-field-provider';
 import { useTaskFromContext } from '../context/task-form-provider';
 
 function TaskFormParamsSettings({ groupSlot }: { groupSlot?: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { fieldsState, blockState } = useTaskFormFieldContext();
+  const {
+    params: { collapsed },
+  } = blockState;
+  const [isOpen, setIsOpen] = useState(!collapsed);
   const { formState, getValues } = useTaskFromContext();
-  const { fieldsState } = useTaskFormFieldContext();
   const { startDate, deadline } = fieldsState;
 
   const taskStatus = getValues('status');
@@ -49,9 +52,13 @@ function TaskFormParamsSettings({ groupSlot }: { groupSlot?: ReactNode }) {
 
         {(!deadline.hidden || !startDate.hidden) && (
           <div className="grid grid-cols-2 gap-3">
-            {!startDate.hidden && <DateAndTimePicker disabled={startDate.disabled} name="startDate" />}
+            {!startDate.hidden && (
+              <DateAndTimePicker disabled={startDate.disabled} clearable={startDate?.clearable} name="startDate" />
+            )}
 
-            {!deadline.hidden && <DateAndTimePicker disabled={deadline.disabled} name="deadline" />}
+            {!deadline.hidden && (
+              <DateAndTimePicker disabled={deadline.disabled} clearable={startDate?.clearable} name="deadline" />
+            )}
           </div>
         )}
       </CollapsibleContent>

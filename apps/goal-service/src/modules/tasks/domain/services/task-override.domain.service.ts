@@ -1,4 +1,4 @@
-import { Priority, TaskIdBuilder, Weight } from '@/modules/tasks/domain';
+import { Priority, TaskIdBuilder } from '@/modules/tasks/domain';
 import { TaskFinishStatus, taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task, TaskFactory, TaskOverride, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
@@ -108,7 +108,6 @@ class TaskOverrideDomainService {
       userId: number;
       description?: string;
       priority: number;
-      weight: number;
       startDate?: string;
       deadline?: string;
     };
@@ -146,7 +145,6 @@ class TaskOverrideDomainService {
       userId: number;
       description?: string;
       priority: number;
-      weight: number;
       startDate?: string;
       deadline?: string;
     };
@@ -187,7 +185,6 @@ class TaskOverrideDomainService {
       name: Name.restore(override.name),
       description: override.description,
       priority: Priority.restore(override.priority),
-      weight: Weight.restore(override.weight),
       cancelReason: override.cancelReason,
       startDate: override.startDate != null ? DateVo.restore(override.startDate) : undefined,
       deadline: override.deadline != null ? DateVo.restore(override.deadline) : undefined,

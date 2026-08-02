@@ -32,7 +32,6 @@ function TaskFieldsRulesProvider({ status, type, options, children }: PropsWithC
         deadline: createRule({ type: rulesType, isDisabled }),
         startDate: createRule({ type: rulesType, isDisabled }),
         priority: createRule({ type: rulesType, isDisabled }),
-        weight: createRule({ type: rulesType, isDisabled }),
         recurrence: createRule({
           type: isVirtual || isOverride ? 'hidden' : rulesType,
           isDisabled: isVirtual || isOverride ? true : isDisabled,

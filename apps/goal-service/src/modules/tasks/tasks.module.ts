@@ -11,7 +11,7 @@ import { TasksPresentationModule } from './presentation/tasks-presentation.modul
  * TODO: -- TASKS INBOX --
  *   [] дело перемещенное в INBOX должно менять статус NOT_STARTED, обнулять start_date
  *   - так же дело не может быть перемещено в INBOX если оно уже завершено
- *   [] когда таска из другой группы перемещается в INBOX weight становится дефолтным а recurrence зануляется
+ *   [] когда таска из другой группы перемещается в INBOX recurrence зануляется
  *
  *
  **/

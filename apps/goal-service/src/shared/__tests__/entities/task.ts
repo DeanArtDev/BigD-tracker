@@ -1,7 +1,7 @@
 import { TaskView } from '@/modules/tasks/application/dto';
 import { TaskRecurrenceValues } from '@/modules/tasks/application/types';
 import { Task, TaskIdBuilder, TaskRecurrence } from '@/modules/tasks/domain';
-import { Priority, Weight } from '@/modules/tasks/domain';
+import { Priority } from '@/modules/tasks/domain';
 import { RecurrenceFrequency, TaskRecurrenceStatus, TaskRecurrenceWeekday, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, MonthdaysVo, Name, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
 
@@ -66,7 +66,6 @@ const getTask = (
     name: string;
     description?: string;
     priority: number;
-    weight: number;
     startDate?: string;
     deadline?: string;
     status: TaskStatus;
@@ -80,7 +79,6 @@ const getTask = (
     name: Name.restore(data.name ?? 'Task name'),
     description: data.description,
     priority: Priority.restore(data.priority ?? 2),
-    weight: Weight.restore(data.weight ?? 1),
     startDate: data.startDate != null ? DateVo.restore(data.startDate) : undefined,
     deadline: data.deadline != null ? DateVo.restore(data.deadline) : undefined,
     endDate: undefined,
@@ -97,7 +95,6 @@ const getTaskView = (
     name: string;
     description?: string;
     priority: number;
-    weight: number;
     cancelReason?: string;
     startDate?: string;
     endDate?: string;
@@ -114,7 +111,6 @@ const getTaskView = (
     name: data.name ?? 'Task name',
     description: data.description,
     priority: data.priority ?? 2,
-    weight: data.weight ?? 1,
     cancelReason: data.cancelReason,
     startDate: data.startDate != null ? DateVo.restore(data.startDate) : undefined,
     deadline: data.deadline != null ? DateVo.restore(data.deadline) : undefined,

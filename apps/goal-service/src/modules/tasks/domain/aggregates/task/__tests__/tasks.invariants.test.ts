@@ -2,7 +2,7 @@ import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo } from '@big-d/api-utils';
 import { futureDate, pastDate } from '@shared/__tests__';
 import { assertTaskReplace, taskAsserts } from '../tasks.invariants';
-import { Priority, Weight } from '../value-objects';
+import { Priority } from '../value-objects';
 
 describe('task invariants', () => {
   beforeEach(() => {
@@ -97,11 +97,9 @@ describe('task invariants', () => {
           id: 1,
           status: TaskStatus.COMPLETED,
           priority: Priority.create(2),
-          weight: Weight.create(10),
         },
         {
           priority: Priority.create(3),
-          weight: Weight.create(10),
         },
       ),
     ).toThrow();

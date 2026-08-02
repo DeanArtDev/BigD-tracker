@@ -135,7 +135,6 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             "tasks_recurrences_overrides"."name" as "name",
             "tasks_recurrences_overrides"."description" as "description",
             "tasks_recurrences_overrides"."priority" as "priority",
-            "tasks_recurrences_overrides"."weight" as "weight",
             "tasks_recurrences_overrides"."group_id" as "group_id",
             "tasks_recurrences_overrides"."cancel_reason" as "cancel_reason",
             "tasks_recurrences_overrides"."start_date" as "start_date",
@@ -327,7 +326,6 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
           rows: [
             {
               id: 15,
-              weight: 1,
               recurrence_id: 21,
               cancel_reason: null,
               name: 'Task name',
@@ -394,29 +392,26 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
               "description",
               "priority",
               "status_id",
-              "weight",
               "override_type_id",
               "recurrence_start"
             )
           values
-            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
           on conflict ("recurrence_id", "recurrence_start")
           do update set
-            "cancel_reason" = $15,
-            "group_id" = $16,
-            "name" = $17,
-            "deadline" = $18,
-            "end_date" = $19,
-            "start_date" = $20,
-            "description" = $21,
-            "priority" = $22,
-            "status_id" = $23,
-            "weight" = $24,
-            "override_type_id" = $25,
-            "recurrence_start" = $26
+            "cancel_reason" = $14,
+            "group_id" = $15,
+            "name" = $16,
+            "deadline" = $17,
+            "end_date" = $18,
+            "start_date" = $19,
+            "description" = $20,
+            "priority" = $21,
+            "status_id" = $22,
+            "override_type_id" = $23,
+            "recurrence_start" = $24
           returning
             "id",
-            "weight",
             "group_id",
             "recurrence_id",
             "cancel_reason",
@@ -443,7 +438,6 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             2,
             1,
             1,
-            1,
             '2026-01-10T10:00',
             null,
             null,
@@ -453,7 +447,6 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             '2026-01-10T10:00',
             null,
             2,
-            1,
             1,
             1,
             '2026-01-10T10:00',

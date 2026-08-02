@@ -27,10 +27,10 @@ function TaskInboxCreateController() {
           <Plus className="size-6" />
         </Button>
       }
-      options={{ visibility: { recurrence: false, weight: false } }}
+      options={{ visibility: { recurrence: false } }}
       onOpenChange={setOpen}
       onSubmit={(formData) => {
-        const { isRecurrence: _, weight: __, ...data } = formData;
+        const { isRecurrence: _, ...data } = formData;
 
         createInboxTask(
           { body: { data } },

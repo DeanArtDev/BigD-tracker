@@ -1390,11 +1390,6 @@ export interface components {
              * @example 2026-03-11T21:04
              */
             deadline?: string;
-            /**
-             * @description От 0 до 100
-             * @example 100
-             */
-            weight: number;
             /** @example Описание причины не выполнения дела */
             cancelReason?: string;
             /**
@@ -1542,11 +1537,6 @@ export interface components {
              * @example 2
              */
             priority?: number;
-            /**
-             * @description От 0 до 100
-             * @example 100
-             */
-            weight: number;
             /** @description Паттерн повторения дела */
             recurrence?: components["schemas"]["TaskRecurrencyDto"];
         };
@@ -1695,11 +1685,6 @@ export interface components {
              * @example 2
              */
             priority?: number;
-            /**
-             * @description От 0 до 100
-             * @example 100
-             */
-            weight?: number;
             /** @example Описание дела */
             description?: string;
             /**
@@ -1798,11 +1783,6 @@ export interface components {
              * @example 2
              */
             priority: number;
-            /**
-             * @description От 0 до 100
-             * @example 100
-             */
-            weight: number;
             /**
              * @description Абсолютная точка во времени без локализации и без таймзоны. Формат: 2026-03-11T21:04
              * @example 2026-03-11T21:04

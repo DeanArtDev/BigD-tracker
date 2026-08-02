@@ -30,7 +30,6 @@ describe('TaskInboxCreateController integration', () => {
           userId: 1,
           name: expectedName,
           priority: 4,
-          weight: 1,
           status: 'NOT_STARTED',
         },
       },
@@ -78,7 +77,6 @@ describe('TaskInboxCreateController integration', () => {
           description: expect.any(String),
         },
       });
-      expect(requestSpy.getLastBody()).not.toHaveProperty('data.weight');
     });
   });
 });
