@@ -30,7 +30,6 @@ class TaskMapper {
       id: task.id,
       userId: task.userId,
       name: task.name,
-      weight: task.weight,
       status: task.status,
       groupId: task.groupId,
       description: task.description,

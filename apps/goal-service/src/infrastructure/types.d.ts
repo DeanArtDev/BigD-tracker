@@ -120,7 +120,6 @@ export interface Tasks {
   status_id: number;
   updated_at: Generated<Timestamp>;
   user_id: number;
-  weight: Generated<number>;
 }
 
 export interface TasksRecurrences {
@@ -159,7 +158,6 @@ export interface TasksRecurrencesOverrides {
   status_id: number;
   updated_at: Generated<Timestamp>;
   user_id: number;
-  weight: Generated<number>;
 }
 
 export interface TasksRecurrencesOverrideTypes {

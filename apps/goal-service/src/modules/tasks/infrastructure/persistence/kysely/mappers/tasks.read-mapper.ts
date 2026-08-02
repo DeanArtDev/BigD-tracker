@@ -10,7 +10,6 @@ interface RawTask {
   readonly name: string;
   readonly description: string | null;
   readonly priority: number;
-  readonly weight: number;
   readonly cancel_reason: string | null;
   readonly start_date: Date | null;
   readonly end_date: Date | null;
@@ -51,7 +50,6 @@ class TasksReadKyselyMapper {
       name: raw.name,
       description: raw.description ?? undefined,
       priority: raw.priority,
-      weight: raw.weight,
       cancelReason: raw.cancel_reason ?? undefined,
       startDate: raw.start_date != null ? DateVo.create(DateVo.format(raw.start_date)) : undefined,
       deadline: raw.deadline != null ? DateVo.create(DateVo.format(raw.deadline)) : undefined,

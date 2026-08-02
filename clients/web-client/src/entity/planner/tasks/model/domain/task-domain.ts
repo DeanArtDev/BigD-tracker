@@ -1,5 +1,5 @@
 import timeAndDate from '@/shared/lib/time';
-import { TaskStatus } from '@/shared/transport/graphql';
+import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { getTasksStatusCount } from './helpers/get-tasks-status-count';
 import { TaskIdParser } from './helpers/taks-id-parser';
 import { getTaskFieldsToChangeByStatus } from './helpers/task-fields-to-change-by-status';
@@ -41,6 +41,11 @@ class TaskDomain {
   static isAllowAccentIndicationTask(status: TaskStatus, type: TaskType): boolean {
     return taskIndicationByStatus[status] && taskIndicationByType[type];
   }
+
+  static defaultFields = {
+    status: TaskStatus.NotStarted,
+    priority: TaskPriority.Delete,
+  } as const;
 }
 
 export { TaskDomain };

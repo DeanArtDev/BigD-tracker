@@ -200,7 +200,6 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
     readonly name: string;
     readonly description: string | null;
     readonly priority: number;
-    readonly weight: number;
     readonly cancel_reason: string | null;
     readonly start_date: Date | null;
     readonly end_date: Date | null;
@@ -224,7 +223,6 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
       name: raw.name,
       description: raw.description,
       priority: raw.priority,
-      weight: raw.weight,
       cancel_reason: raw.cancel_reason,
       start_date: raw.start_date,
       end_date: raw.end_date,

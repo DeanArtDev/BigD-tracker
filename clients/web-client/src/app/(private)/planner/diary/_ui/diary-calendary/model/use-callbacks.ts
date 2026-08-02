@@ -1,15 +1,21 @@
 import { CalendarCallbacks, CalendarType, Event, EventChange, UseCalendarAppReturn, ViewType } from '@dayflow/core';
 import { useMemo } from 'react';
+import { MaybePromise } from '@/shared/lib';
+import { DiaryDialogActions, type DiaryEvent } from './diary-dialog-actions';
+
+function withDiaryEvent(callback: (event: DiaryEvent) => MaybePromise<void>): (event: Event) => MaybePromise<void> {
+  return (event) => callback(DiaryDialogActions.withTaskMeta(event));
+}
 
 function useCallbacks({ calendar }: { calendar: UseCalendarAppReturn | null }) {
   return useMemo<CalendarCallbacks>(
     () => ({
-      onEventCreate: async (event: Event) => {
+      onEventCreate: withDiaryEvent(async (event) => {
         await new Promise((resolve) => {
           setTimeout(resolve, 500);
         });
         console.log('create event:', event);
-      },
+      }),
       onEventClick: (event: Event) => {
         console.log('click event:', event);
       },
@@ -18,12 +24,9 @@ function useCallbacks({ calendar }: { calendar: UseCalendarAppReturn | null }) {
         // You could use the event element as an anchor for a custom popover here
         return true;
       },
-      onEventUpdate: async (event: Event) => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 1500);
-        });
+      onEventUpdate: withDiaryEvent(async (event) => {
         console.log('update event:', event);
-      },
+      }),
       onEventDelete: async (eventId: string) => {
         await new Promise((resolve) => {
           setTimeout(resolve, 1500);

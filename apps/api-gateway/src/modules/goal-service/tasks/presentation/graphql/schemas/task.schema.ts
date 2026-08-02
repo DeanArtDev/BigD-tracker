@@ -1,6 +1,6 @@
 import { TaskPriority, TaskStatus } from '@big-d/api-contracts';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
 
 registerEnumType(TaskStatus, {
@@ -41,12 +41,6 @@ class TaskSchema {
   @Field(() => TaskPriority)
   @IsEnum(TaskPriority)
   priority: TaskPriority;
-
-  @Field(() => Int)
-  @Min(0)
-  @Max(100)
-  @IsInt()
-  weight: number;
 
   @Field({ nullable: true })
   @IsAbsoluteDateTimeWithoutTimezone()

@@ -9,7 +9,6 @@ describe('TaskView', () => {
       userId: 77,
       name: 'Task',
       priority: 1,
-      weight: 1,
       status: TaskStatus.IN_PROGRESS,
       recurrence: {
         startDate: DateVo.restore('2026-03-02T10:00:00.000Z'),
@@ -28,7 +27,6 @@ describe('TaskView', () => {
       userId: 77,
       name: 'Task',
       priority: 1,
-      weight: 1,
       status: TaskStatus.IN_PROGRESS,
       recurrence: {
         startDate: DateVo.restore('2026-03-02T10:00:00.000Z'),

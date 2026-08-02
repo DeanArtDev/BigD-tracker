@@ -213,7 +213,6 @@ export class TasksOverridesWriteRepositoryKysely
         description: override.description ?? null,
         priority: override.priority,
         status_id,
-        weight: override.weight,
         override_type_id: overrideType.id,
         recurrence_start: override.recurrenceStart,
       };
@@ -229,7 +228,6 @@ export class TasksOverridesWriteRepositoryKysely
         .onConflict((oc) => oc.columns(['recurrence_id', 'recurrence_start']).doUpdateSet(upsertData))
         .returning([
           'id',
-          'weight',
           'group_id',
           'recurrence_id',
           'cancel_reason',
@@ -277,7 +275,6 @@ export class TasksOverridesWriteRepositoryKysely
           description: override.description ?? null,
           priority: override.priority,
           status_id,
-          weight: override.weight,
           override_type_id: overrideType.id,
           recurrence_start: override.recurrenceStart,
         })

@@ -8,7 +8,6 @@ export class CreateTaskCommand {
       readonly groupId?: number;
       readonly description?: string;
       readonly priority?: number;
-      readonly weight?: number;
       readonly startDate?: string;
       readonly deadline?: string;
       readonly recurrence?: TaskRecurrenceValues;

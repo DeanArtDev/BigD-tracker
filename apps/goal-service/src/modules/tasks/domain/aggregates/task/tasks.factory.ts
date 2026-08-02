@@ -2,7 +2,7 @@ import { TaskFinishStatus } from '@big-d/api-contracts';
 import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { Task } from './tasks.aggregate';
 import { TaskCreateInput, TaskReplaceInput } from './tasks.types';
-import { Priority, Weight } from './value-objects';
+import { Priority } from './value-objects';
 
 interface TaskFactoryCreateInput {
   readonly userId: number;
@@ -10,7 +10,6 @@ interface TaskFactoryCreateInput {
   readonly name: string;
   readonly description?: string;
   readonly priority?: number;
-  readonly weight?: number;
   readonly startDate?: string;
   readonly deadline?: string;
   readonly recurrenceId?: number;
@@ -20,7 +19,6 @@ interface TaskFactoryReplaceInput {
   readonly name: string;
   readonly description?: string;
   readonly priority: number;
-  readonly weight: number;
   readonly startDate?: string;
   readonly deadline?: string;
   readonly recurrenceId?: number;
@@ -42,7 +40,6 @@ class TaskFactory {
       name: Name.create(input.name),
       description: input.description,
       priority: input.priority != null ? Priority.create(input.priority) : Priority.defaultValue(),
-      weight: input.weight != null ? Weight.create(input.weight) : Weight.defaultValue(),
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
       recurrenceId: input.recurrenceId,
@@ -61,7 +58,6 @@ class TaskFactory {
       name: Name.create(input.name),
       description: input.description,
       priority: Priority.create(input.priority),
-      weight: Weight.create(input.weight),
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
       recurrenceId: input.recurrenceId,
@@ -81,7 +77,6 @@ class TaskFactory {
       description: input.description,
       priority: Priority.create(input.priority),
       groupId: task.groupId,
-      weight: Weight.create(task.weight),
       startDate: input.startDate != null ? DateVo.create(input.startDate) : undefined,
       deadline: input.deadline != null ? DateVo.create(input.deadline) : undefined,
     };

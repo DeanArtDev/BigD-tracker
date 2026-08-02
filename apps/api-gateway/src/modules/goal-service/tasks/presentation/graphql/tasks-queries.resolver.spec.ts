@@ -45,7 +45,6 @@ describe('TasksQueriesResolver', () => {
           userId: 42,
           name: 'Assignable task',
           priority: 2,
-          weight: 50,
           status: TaskStatus.NOT_STARTED,
         },
       ],
@@ -70,7 +69,6 @@ describe('TasksQueriesResolver', () => {
         userId: 42,
         name: 'Assignable task',
         priority: TaskPriority.Plan,
-        weight: 50,
         status: TaskStatus.NOT_STARTED,
       },
     ]);

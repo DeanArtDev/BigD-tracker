@@ -91,7 +91,7 @@ function TaskUpdateDialog(props: TaskUpdateDialogProps<GroupId>) {
 
             promise(async () => {
               const response = await updateTask({
-                variables: { input: { id: task.id, weight: 100, name, description, deadline, startDate, priority } },
+                variables: { input: { id: task.id, name, description, deadline, startDate, priority } },
               });
 
               if (response.data?.updateTask != null) {

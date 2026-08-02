@@ -8,7 +8,6 @@ describe('CreateTaskReq', () => {
       data: {
         name: 'Task',
         priority: 4,
-        weight: 100,
         startDate: '2026-03-12T02:03',
         deadline: '2026-03-12T04:04',
       },
@@ -22,7 +21,6 @@ describe('CreateTaskReq', () => {
       data: {
         name: 'Task',
         priority: 4,
-        weight: 100,
         startDate: '2026-03-12T02:03Z',
         deadline: '2026-03-12T04:04',
       },
@@ -41,7 +39,6 @@ describe('CreateTaskReq', () => {
       data: {
         name: 'Task',
         priority: 4,
-        weight: 100,
         startDate: '2026-03-12T02:03',
         deadline: '2026-03-12T04:04:05',
       },

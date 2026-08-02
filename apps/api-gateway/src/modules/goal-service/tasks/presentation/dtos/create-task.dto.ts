@@ -24,13 +24,6 @@ class CreateTaskReqData {
   @IsInt()
   priority?: number;
 
-  @ApiPropertyOptional({ example: 100, description: 'От 0 до 100' })
-  @IsOptional()
-  @Min(0)
-  @Max(100)
-  @IsInt()
-  weight?: number;
-
   @ApiPropertyOptional({ example: 'Описание дела' })
   @IsOptional()
   @IsString()

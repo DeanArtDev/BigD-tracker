@@ -13,7 +13,6 @@ interface TaskFormFiledRuleMap {
   readonly deadline: TaskFormRule;
   readonly startDate: TaskFormRule;
   readonly priority: TaskFormRule;
-  readonly weight: TaskFormRule;
   readonly recurrence: TaskFormRule;
 }
 
@@ -22,7 +21,6 @@ interface TaskFieldsRulesContext {
   readonly rules?: TaskFormFiledRuleMap;
   readonly visibility: {
     readonly recurrence: boolean;
-    readonly weight: boolean;
   };
 }
 

@@ -22,7 +22,7 @@ function TaskInboxUpdateController({ inboxTask, onCancel, onSuccess }: TaskInbox
     <TaskFormDialog
       task={inboxTask ?? undefined}
       open={open}
-      options={{ visibility: { recurrence: false, weight: false } }}
+      options={{ visibility: { recurrence: false } }}
       loading={isInboxTaskUpdatePending}
       footerSidebarSlot={() =>
         inboxTask != null && (
@@ -40,7 +40,7 @@ function TaskInboxUpdateController({ inboxTask, onCancel, onSuccess }: TaskInbox
       onOpenChange={(isOpen) => {
         !isOpen && onCancel?.();
       }}
-      onSubmit={({ weight: _, ...data }) => {
+      onSubmit={(data) => {
         if (inboxTask == null) return;
 
         updateInboxTask(

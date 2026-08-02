@@ -8,7 +8,7 @@ import {
 } from '@big-d/api-contracts';
 import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { Task, TaskIdBuilder, TaskOverride, TaskRecurrence } from '../../aggregates/task';
-import { Priority, Weight } from '../../aggregates/task/value-objects';
+import { Priority } from '../../aggregates/task/value-objects';
 import { TaskOverrideDomainService } from '../task-override.domain.service';
 
 function buildTask(
@@ -20,7 +20,6 @@ function buildTask(
     name: Name.create('Source task'),
     description: 'source desc',
     priority: Priority.create(1),
-    weight: Weight.create(1),
     startDate: input.startDate != null ? DateVo.restore(input.startDate) : undefined,
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
     endDate: undefined,
@@ -62,7 +61,6 @@ function buildOverride(
       name: Name.create('Override task'),
       description: 'override desc',
       priority: Priority.create(4),
-      weight: Weight.create(9),
       startDate: DateVo.restore(input.startDate ?? '2026-03-12T09:30'),
       deadline: DateVo.restore(input.deadline ?? '2026-03-12T13:45'),
       endDate: undefined,
@@ -180,7 +178,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.task.name).toBe('Override task');
     expect(result.task.description).toBe('override desc');
     expect(result.task.priority).toBe(4);
-    expect(result.task.weight).toBe(9);
     expect(result.task.startDate).toBe('2026-03-12T09:30');
     expect(result.task.deadline).toBe('2026-03-12T13:45');
     expect(result.task.endDate).toBeUndefined();
@@ -290,7 +287,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.overrideToDelete.name).toBe('Override task');
     expect(result.overrideToDelete.description).toBe('override desc');
     expect(result.overrideToDelete.priority).toBe(4);
-    expect(result.overrideToDelete.weight).toBe(9);
     expect(result.overrideToDelete.cancelReason).toBeUndefined();
     expect(result.overrideToDelete.startDate).toBe('2026-03-12T09:30');
     expect(result.overrideToDelete.deadline).toBe('2026-03-12T13:45');
@@ -353,7 +349,6 @@ describe('TaskOverrideDomainService', () => {
         name: 'Created override',
         description: 'patched desc',
         priority: 4,
-        weight: 7,
         startDate: '2026-03-12T08:15',
         deadline: '2026-03-12T14:30',
       },
@@ -366,7 +361,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.overrideToCreate.name).toBe('Created override');
     expect(result.overrideToCreate.description).toBe('patched desc');
     expect(result.overrideToCreate.priority).toBe(4);
-    expect(result.overrideToCreate.weight).toBe(7);
     expect(result.overrideToCreate.startDate).toBe('2026-03-12T08:15');
     expect(result.overrideToCreate.deadline).toBe('2026-03-12T14:30');
   });
@@ -400,7 +394,6 @@ describe('TaskOverrideDomainService', () => {
         name: 'Replaced override',
         description: 'next desc',
         priority: 2,
-        weight: 3,
         startDate: '2026-03-12T07:00',
         deadline: '2026-03-12T15:00',
       },
@@ -413,7 +406,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.overrideToReplace.name).toBe('Replaced override');
     expect(result.overrideToReplace.description).toBe('next desc');
     expect(result.overrideToReplace.priority).toBe(2);
-    expect(result.overrideToReplace.weight).toBe(3);
     expect(result.overrideToReplace.startDate).toBe('2026-03-12T07:00');
     expect(result.overrideToReplace.deadline).toBe('2026-03-12T15:00');
   });
@@ -458,7 +450,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.override.name).toBe('Override task');
     expect(result.override.description).toBe('override desc');
     expect(result.override.priority).toBe(4);
-    expect(result.override.weight).toBe(9);
     expect(result.override.cancelReason).toBeUndefined();
     expect(result.override.startDate).toBe('2026-03-12T09:30');
     expect(result.override.deadline).toBe('2026-03-13T13:45');
@@ -507,7 +498,6 @@ describe('TaskOverrideDomainService', () => {
     expect(result.override.name).toBe('Override task');
     expect(result.override.description).toBe('override desc');
     expect(result.override.priority).toBe(4);
-    expect(result.override.weight).toBe(9);
     expect(result.override.cancelReason).toBeUndefined();
     expect(result.override.startDate).toBe('2026-03-12T09:30');
     expect(result.override.deadline).toBe('2026-03-12T11:45');

@@ -1,4 +1,4 @@
-import { Priority, Task, TaskOverride, TaskRecurrence, Weight } from '@/modules/tasks/domain';
+import { Priority, Task, TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import {
   RecurrenceFrequency,
   TaskOverrideType,
@@ -15,7 +15,6 @@ interface RawTask {
   readonly name: string;
   readonly description: string | null;
   readonly priority: number;
-  readonly weight: number;
   readonly cancel_reason: string | null;
   readonly start_date: Date | null;
   readonly end_date: Date | null;
@@ -56,7 +55,6 @@ class TasksWriteKyselyMapper {
       name: Name.restore(raw.name),
       description: raw.description ?? undefined,
       priority: Priority.restore(raw.priority),
-      weight: Weight.restore(raw.weight),
       cancelReason: raw.cancel_reason ?? undefined,
       startDate: raw.start_date != null ? DateVo.restore(raw.start_date.toISOString()) : undefined,
       deadline: raw.deadline != null ? DateVo.restore(raw.deadline.toISOString()) : undefined,

@@ -27,7 +27,6 @@ const toTaskResponse = (taskView: ReturnType<typeof getTaskView>) => ({
   name: taskView.name,
   description: taskView.description,
   priority: taskView.priority,
-  weight: taskView.weight,
   cancelReason: taskView.cancelReason,
   endDate: taskView.endDate,
   status: taskView.status,

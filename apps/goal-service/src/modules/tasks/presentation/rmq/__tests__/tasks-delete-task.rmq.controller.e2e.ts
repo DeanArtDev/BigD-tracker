@@ -204,7 +204,6 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(overrideArg.name).toBe('Virtual source');
       expect(overrideArg.description).toBeUndefined();
       expect(overrideArg.priority).toBe(2);
-      expect(overrideArg.weight).toBe(1);
       expect(overrideArg.cancelReason).toBeUndefined();
       expect(overrideArg.startDate).toBe(DateVo.format(expectedStart.toISOString()));
       expect(overrideArg.deadline).toBe(DateVo.format(expectedDeadline.toISOString()));
@@ -230,7 +229,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         name: 'Source task',
         description: 'source description',
         priority: 3,
-        weight: 5,
         startDate: '2026-03-01T10:00:00.000Z',
         deadline: '2026-03-01T12:00:00.000Z',
         status: TaskStatus.IN_PROGRESS,
@@ -249,7 +247,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           name: 'Override task',
           description: 'override description',
           priority: 4,
-          weight: 9,
           startDate: '2026-03-12T09:30:00.000Z',
           deadline: '2026-03-12T13:45:00.000Z',
           status: TaskStatus.IN_PROGRESS,
@@ -288,7 +285,6 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(overrideArg.name).toBe('Override task');
       expect(overrideArg.description).toBe('override description');
       expect(overrideArg.priority).toBe(4);
-      expect(overrideArg.weight).toBe(9);
       expect(overrideArg.cancelReason).toBeUndefined();
       expect(overrideArg.startDate).toBe('2026-03-12T09:30');
       expect(overrideArg.deadline).toBe('2026-03-12T13:45');

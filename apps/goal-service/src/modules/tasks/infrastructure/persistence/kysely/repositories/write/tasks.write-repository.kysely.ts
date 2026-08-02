@@ -47,7 +47,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           user_id: task.userId,
           group_id: task.groupId,
           priority: task.priority,
-          weight: task.weight,
           status_id,
         })
         .returning([
@@ -57,7 +56,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           'name',
           'description',
           'priority',
-          'weight',
           'cancel_reason',
           'start_date',
           'end_date',
@@ -89,7 +87,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           description: task.description ?? null,
           group_id: task.groupId ?? null,
           priority: task.priority,
-          weight: task.weight,
           start_date: task.startDate ?? null,
           end_date: task.endDate,
           deadline: task.deadline ?? null,
@@ -103,7 +100,6 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
           'name',
           'description',
           'priority',
-          'weight',
           'cancel_reason',
           'start_date',
           'end_date',

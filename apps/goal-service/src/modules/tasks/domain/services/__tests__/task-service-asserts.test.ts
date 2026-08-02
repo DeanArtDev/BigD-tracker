@@ -1,7 +1,7 @@
 import { TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { Task, TaskIdBuilder } from '../../aggregates/task';
-import { Priority, Weight } from '../../aggregates/task/value-objects';
+import { Priority } from '../../aggregates/task/value-objects';
 import { taskServiceAsserts } from '../task-service-asserts';
 
 function buildTask(
@@ -13,7 +13,6 @@ function buildTask(
     name: Name.create('Task'),
     description: 'desc',
     priority: Priority.create(1),
-    weight: Weight.create(1),
     startDate: input.startDate != null ? DateVo.restore(input.startDate) : undefined,
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
     endDate: undefined,

@@ -12,7 +12,6 @@ function taskDtoToEntity(dto: ApiSchemas['TaskDto']): TaskEntity {
     description: dto.description,
     endDate: dto.endDate,
     cancelReason: dto.cancelReason,
-    weight: dto.weight,
     startDate: dto.startDate,
     deadline: dto.deadline,
     type: taskDomainModule.parseId(dto.id, dto.recurrence).type,

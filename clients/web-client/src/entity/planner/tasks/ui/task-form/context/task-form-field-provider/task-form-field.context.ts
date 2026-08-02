@@ -8,12 +8,15 @@ interface FieldState {
 }
 
 interface TaskFromFieldContext {
+  readonly blockState: {
+    readonly params: { collapsed: boolean; disabled: boolean };
+  };
   readonly fieldsState: {
     readonly name: FieldState;
     readonly description: FieldState;
     readonly recurrence: FieldState;
-    readonly startDate: FieldState;
-    readonly deadline: FieldState;
+    readonly startDate: FieldState & { readonly clearable?: boolean };
+    readonly deadline: FieldState & { readonly clearable?: boolean };
     readonly reason: FieldState;
     readonly priority: FieldState;
   };

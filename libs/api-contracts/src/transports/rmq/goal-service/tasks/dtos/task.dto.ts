@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsISO8601, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsISO8601, IsObject, IsOptional, IsString } from 'class-validator';
 import { TaskStatus } from '../types';
 import { TaskRecurrencyDto } from './task-recurrency.dto';
 
@@ -23,9 +23,6 @@ class TaskDto {
 
   @IsInt()
   priority: number;
-
-  @IsNumber()
-  weight: number;
 
   @IsISO8601()
   @IsOptional()

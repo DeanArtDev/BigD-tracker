@@ -70,7 +70,6 @@ describe('TasksRmqController (rmq e2e)', () => {
         id: taskId,
         userId,
         name: 'Old',
-        weight: 4,
         priority: 1,
         status: TaskStatus.COMPLETED,
       });
@@ -86,7 +85,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           id: taskId,
           userId,
           name: 'Inbox Updated',
-          weight: 4,
           priority: 1,
           status: TaskStatus.COMPLETED,
         }),
@@ -116,7 +114,6 @@ describe('TasksRmqController (rmq e2e)', () => {
       expect(updatedTaskArg.name).toBe('Inbox Updated');
       expect(updatedTaskArg.description).toBe('Updated inbox');
       expect(updatedTaskArg.priority).toBe(1);
-      expect(updatedTaskArg.weight).toBe(4);
       expect(trxArg).toEqual(expectTransaction());
       expect(res).toEqual({
         data: {
@@ -124,7 +121,6 @@ describe('TasksRmqController (rmq e2e)', () => {
           userId,
           name: 'Inbox Updated',
           priority: 1,
-          weight: 4,
           status: existingTask.status,
           recurrence: undefined,
         },

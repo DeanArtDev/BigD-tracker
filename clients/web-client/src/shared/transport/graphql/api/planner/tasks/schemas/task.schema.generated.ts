@@ -121,7 +121,6 @@ export type TaskUpdateInput = {
   priority: TaskPriority;
   recurrence?: TaskRecurrencyInput | null | undefined;
   startDate?: string | null | undefined;
-  weight: number;
 };
 
 export type GetAssignableTasksQueryVariables = Exact<{

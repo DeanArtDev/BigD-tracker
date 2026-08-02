@@ -8,7 +8,7 @@ import {
 } from '@big-d/api-contracts';
 import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
 import { Task, TaskOverride, TaskRecurrence } from '../../aggregates/task';
-import { Priority, Weight } from '../../aggregates/task/value-objects';
+import { Priority } from '../../aggregates/task/value-objects';
 import { TaskWithRecurrenceService } from '../task-with-recurrence.service';
 
 const buildPatternShaper =
@@ -33,7 +33,6 @@ function buildTask(
     name: Name.create('Task'),
     description: 'desc',
     priority: Priority.create(1),
-    weight: Weight.create(1),
     cancelReason: input.cancelReason,
     startDate: input.startDate != null ? DateVo.restore(input.startDate) : undefined,
     deadline: input.deadline != null ? DateVo.restore(input.deadline) : undefined,
@@ -164,7 +163,6 @@ describe('TaskWithRecurrenceService', () => {
           name: 'Task',
           description: 'desc',
           priority: 1,
-          weight: 1,
         },
         currentRecurrence: undefined,
         recurrencePatch: {
@@ -186,7 +184,6 @@ describe('TaskWithRecurrenceService', () => {
           name: 'Task',
           description: 'desc',
           priority: 1,
-          weight: 1,
         },
         currentRecurrence: undefined,
         recurrencePatch: {
@@ -251,7 +248,6 @@ describe('TaskWithRecurrenceService', () => {
           name: 'Task',
           description: 'desc',
           priority: 1,
-          weight: 1,
           startDate: '2023-01-01T01:00',
         },
         currentRecurrence: undefined,
@@ -273,7 +269,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-01T05:00',
       },
       currentRecurrence: undefined,
@@ -318,7 +313,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-01T05:00',
         deadline: '2023-01-01T08:00',
       },
@@ -353,7 +347,6 @@ describe('TaskWithRecurrenceService', () => {
           name: 'Updated task',
           description: 'new desc',
           priority: 2,
-          weight: 3,
         },
         currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-03T12:00' }),
         currentOverrides: [buildOverride({ recurrenceId: 999, status: TaskStatus.IN_PROGRESS })],
@@ -370,7 +363,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-01T05:00',
       },
       currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-01T15:00' }),
@@ -416,7 +408,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-01T05:00',
         deadline: '2023-01-01T10:00',
       },
@@ -449,7 +440,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-03T05:00',
       },
       currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-03T12:00' }),
@@ -480,7 +470,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
       },
       currentRecurrence: buildStoredRecurrence({ id: recurrenceId, startDate: '2023-01-03T12:00' }),
       currentOverrides: [
@@ -517,7 +506,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-03T05:00',
       },
       currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-01T12:00:00.000Z' }),
@@ -571,7 +559,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-03T05:00',
       },
       currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-01T12:00:00.000Z' }),
@@ -596,7 +583,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
       },
       currentRecurrence: buildStoredRecurrence({ startDate: '2023-01-03T12:00' }),
       currentOverrides: [
@@ -626,7 +612,6 @@ describe('TaskWithRecurrenceService', () => {
         name: 'Updated task',
         description: 'new desc',
         priority: 2,
-        weight: 3,
         startDate: '2023-01-01T05:00',
       },
       currentRecurrence: undefined,

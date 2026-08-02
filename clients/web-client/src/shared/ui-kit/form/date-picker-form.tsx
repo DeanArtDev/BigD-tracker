@@ -4,6 +4,7 @@ import type { FieldValues, Path } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import timeAndDate from '@/shared/lib/time';
 import { DateAndTimePicker, type DateAndTimePickerProps } from '@/shared/project-ui';
+import { formElementsValues } from '@/shared/ui-kit/form/form-schema-utils';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 
 type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = Omit<
@@ -18,7 +19,7 @@ type DatePickerFormProps<FormValues extends FieldValues = FieldValues> = Omit<
     readonly picker?: string;
     readonly wrapper?: string;
   };
-  readonly onBeforeValueChange?: (current: Date | undefined, previous?: Date) => Date | undefined;
+  readonly onBeforeValueChange?: (current: Date | null, previous?: Date) => Date | null;
 };
 
 function DatePickerForm<FormValues extends FieldValues = FieldValues>({
@@ -49,8 +50,12 @@ function DatePickerForm<FormValues extends FieldValues = FieldValues>({
               className={classNames?.picker}
               disabled={disabled || field.disabled}
               popoverProps={popoverProps}
-              value={field.value}
-              onChange={(nextValue) => field.onChange(onBeforeValueChange(nextValue, field.value))}
+              value={field.value ?? formElementsValues.datePicker.value}
+              onChange={(nextValue) =>
+                field.onChange(
+                  onBeforeValueChange(nextValue ?? formElementsValues.datePicker.changeResult, field.value),
+                )
+              }
             />
 
             {isErrorMessage && <FieldError errors={[fieldState.error]} />}

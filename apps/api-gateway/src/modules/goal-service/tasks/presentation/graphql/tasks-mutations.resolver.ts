@@ -73,7 +73,6 @@ class TasksMutationsResolver {
           priority: TaskMapper.fromClientPriorityToServer(input.priority),
           name: input.name,
           description: input.description,
-          weight: input.weight,
           startDate: input.startDate,
           deadline: input.deadline,
           recurrence: input.recurrence,

@@ -6,9 +6,10 @@ interface DateAndTimePickerProps {
   readonly max?: Date;
   readonly min?: Date;
   readonly disabled?: boolean;
+  readonly clearable?: boolean;
 }
 
-function DateAndTimePicker({ name, disabled, min, max }: DateAndTimePickerProps) {
+function DateAndTimePicker({ name, disabled, clearable = true, min, max }: DateAndTimePickerProps) {
   const isStartDate = name === 'startDate';
 
   return (
@@ -22,7 +23,7 @@ function DateAndTimePicker({ name, disabled, min, max }: DateAndTimePickerProps)
         name={name}
         min={min}
         max={max}
-        clearable
+        clearable={clearable}
         popoverProps={{ modal: true }}
         classNames={{ wrapper: 'col-span-4' }}
         isErrorMessage={false}

@@ -88,7 +88,6 @@ describe('TaskInboxUpdateController integration', () => {
           deadline: '2026-03-06T23:59',
         },
       });
-      expect(requestSpy.getLastBody()).not.toHaveProperty('data.weight');
     });
   });
 });

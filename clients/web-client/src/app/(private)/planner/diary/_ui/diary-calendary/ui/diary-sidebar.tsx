@@ -15,6 +15,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/shared/ui-kit';
+import { EMPTY_GROUP_ID } from '../model';
 
 const DIARY_SIDEBAR_MINI_WIDTH = '50px';
 
@@ -22,6 +23,8 @@ function DiarySidebar(props: CalendarSidebarRenderProps) {
   const { app, calendars, toggleAll, toggleCalendarVisibility, isCollapsed, setCollapsed, showEventDots } = props;
   const allCalendarsVisible = calendars.every((calendar) => calendar.isVisible !== false);
   const toggleAllLabel = allCalendarsVisible ? 'Скрыть' : 'Показать';
+
+  const isOnlyOneGroup = calendars.length <= 1;
 
   return (
     <aside
@@ -34,7 +37,7 @@ function DiarySidebar(props: CalendarSidebarRenderProps) {
           isCollapsed ? 'flex-col justify-center gap-1 px-1' : 'justify-between px-2',
         )}
       >
-        {!isCollapsed && (
+        {!isCollapsed && !isOnlyOneGroup && (
           <AppTooltip side="right" content={toggleAllLabel}>
             <Button
               aria-label={toggleAllLabel}
@@ -62,62 +65,67 @@ function DiarySidebar(props: CalendarSidebarRenderProps) {
         </Button>
       </header>
 
-      <SidebarContent>
-        <SidebarGroup className={cn(isCollapsed && 'p-1')}>
-          {!isCollapsed && <SidebarGroupLabel>Мои календари</SidebarGroupLabel>}
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
-              {calendars.map((calendar) => {
-                const isVisible = calendar.isVisible !== false;
+      {!isOnlyOneGroup && (
+        <SidebarContent>
+          <SidebarGroup className={cn(isCollapsed && 'p-1')}>
+            {!isCollapsed && <SidebarGroupLabel>Группы</SidebarGroupLabel>}
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-1">
+                {calendars.map((calendar) => {
+                  const isVisible = calendar.isVisible !== false;
+                  if (calendar.id === EMPTY_GROUP_ID) return null;
 
-                return (
-                  <SidebarMenuItem className={cn(isCollapsed && 'flex justify-center')} key={calendar.id}>
-                    <AppTooltip skip={!isCollapsed} side="right" content={calendar.name}>
-                      <Button
-                        aria-checked={isVisible}
-                        aria-label={`${isVisible ? 'Скрыть' : 'Показать'} календарь ${calendar.name}`}
-                        className={cn(
-                          'h-8 w-full justify-start gap-2 overflow-hidden px-2 font-normal',
-                          isCollapsed && 'size-8 justify-center p-0',
-                        )}
-                        onClick={() => toggleCalendarVisibility(calendar.id, !isVisible)}
-                        role="checkbox"
-                        variant="ghost"
-                      >
-                        {calendar.icon ? (
-                          <span
-                            aria-hidden="true"
-                            className={cn(
-                              'flex size-5 shrink-0 items-center justify-center rounded-full text-xs transition-opacity',
-                              !isVisible && 'opacity-30',
-                            )}
-                            style={{ backgroundColor: calendar.colors.lineColor }}
-                          >
-                            {calendar.icon}
-                          </span>
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            className={cn(
-                              'size-3 shrink-0 rounded-full transition-opacity',
-                              !isVisible && 'opacity-30',
-                            )}
-                            style={{ backgroundColor: calendar.colors.lineColor }}
-                          />
-                        )}
+                  return (
+                    <SidebarMenuItem className={cn(isCollapsed && 'flex justify-center')} key={calendar.id}>
+                      <AppTooltip skip={!isCollapsed} side="right" content={calendar.name}>
+                        <Button
+                          aria-checked={isVisible}
+                          aria-label={`${isVisible ? 'Скрыть' : 'Показать'} группы ${calendar.name}`}
+                          className={cn(
+                            'h-8 w-full justify-start gap-2 overflow-hidden px-2 font-normal',
+                            isCollapsed && 'size-8 justify-center p-0',
+                          )}
+                          onClick={() => toggleCalendarVisibility(calendar.id, !isVisible)}
+                          role="checkbox"
+                          variant="ghost"
+                        >
+                          {calendar.icon ? (
+                            <span
+                              aria-hidden="true"
+                              className={cn(
+                                'flex size-5 shrink-0 items-center justify-center rounded-full text-xs transition-opacity',
+                                !isVisible && 'opacity-30',
+                              )}
+                              style={{ backgroundColor: calendar.colors.lineColor }}
+                            >
+                              {calendar.icon}
+                            </span>
+                          ) : (
+                            <span
+                              aria-hidden="true"
+                              className={cn(
+                                'size-3 shrink-0 rounded-full transition-opacity',
+                                !isVisible && 'opacity-30',
+                              )}
+                              style={{ backgroundColor: calendar.colors.lineColor }}
+                            />
+                          )}
 
-                        {!isCollapsed && (
-                          <span className={cn('truncate', !isVisible && 'text-muted-foreground')}>{calendar.name}</span>
-                        )}
-                      </Button>
-                    </AppTooltip>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+                          {!isCollapsed && (
+                            <span className={cn('truncate', !isVisible && 'text-muted-foreground')}>
+                              {calendar.name}
+                            </span>
+                          )}
+                        </Button>
+                      </AppTooltip>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      )}
 
       {!isCollapsed && (
         <div className="df-sidebar-mini-calendar mt-auto shrink-0">

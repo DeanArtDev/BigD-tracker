@@ -1,4 +1,4 @@
-import { Priority, Task, TaskIdBuilder, TaskOverride, Weight } from '@/modules/tasks/domain';
+import { Priority, Task, TaskIdBuilder, TaskOverride } from '@/modules/tasks/domain';
 import { TaskOverrideType, TaskStatus } from '@big-d/api-contracts';
 import { DateVo, Name } from '@big-d/api-utils';
 import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
@@ -41,7 +41,6 @@ function restoreSavedOverride(override: TaskOverride, id: number): TaskOverride 
       name: Name.restore(override.name),
       description: override.description,
       priority: Priority.restore(override.priority),
-      weight: Weight.restore(override.weight),
       cancelReason: override.cancelReason,
       startDate: override.startDate != null ? DateVo.restore(override.startDate) : undefined,
       deadline: override.deadline != null ? DateVo.restore(override.deadline) : undefined,
@@ -62,7 +61,6 @@ describe('SoftDeleteTaskUseCase', () => {
       name: 'Origin task',
       description: 'Description',
       priority: 3,
-      weight: 5,
       startDate: '2026-08-10T10:00',
       deadline: '2026-08-10T12:00',
       status: TaskStatus.DELETED,
@@ -99,7 +97,6 @@ describe('SoftDeleteTaskUseCase', () => {
       name: 'Origin task',
       description: 'Description',
       priority: 3,
-      weight: 5,
       startDate: '2026-08-10T10:00',
       deadline: '2026-08-10T12:00',
       status: TaskStatus.DELETED,
@@ -125,7 +122,6 @@ describe('SoftDeleteTaskUseCase', () => {
       name: 'Virtual source',
       description: 'Virtual description',
       priority: 2,
-      weight: 4,
       startDate: '2026-08-01T10:00',
       deadline: '2026-08-01T12:00',
     });
@@ -166,7 +162,6 @@ describe('SoftDeleteTaskUseCase', () => {
       name: 'Virtual source',
       description: 'Virtual description',
       priority: 2,
-      weight: 4,
       startDate: recurrenceStart,
       deadline: '2026-08-12T12:00',
       status: TaskStatus.DELETED,
@@ -202,7 +197,6 @@ describe('SoftDeleteTaskUseCase', () => {
         name: 'Override task',
         description: 'Override description',
         priority: 4,
-        weight: 6,
         startDate: recurrenceStart,
         deadline: '2026-08-12T13:00',
       }),
@@ -247,7 +241,6 @@ describe('SoftDeleteTaskUseCase', () => {
       name: 'Override task',
       description: 'Override description',
       priority: 4,
-      weight: 6,
       startDate: recurrenceStart,
       deadline: '2026-08-12T13:00',
       status: TaskStatus.DELETED,

@@ -401,7 +401,6 @@ export type TaskSchema = {
   startDate?: Maybe<Scalars['String']['output']>;
   status: TaskStatus;
   userId: Scalars['Int']['output'];
-  weight: Scalars['Int']['output'];
 };
 
 /** Статусы дела */
@@ -428,7 +427,6 @@ export type TaskUpdateInput = {
   priority: TaskPriority;
   recurrence?: InputMaybe<TaskRecurrencyInput>;
   startDate?: InputMaybe<Scalars['String']['input']>;
-  weight: Scalars['Int']['input'];
 };
 
 export type TasksConnection = {

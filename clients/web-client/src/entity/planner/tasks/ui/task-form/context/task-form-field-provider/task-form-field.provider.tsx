@@ -10,9 +10,15 @@ interface TaskFormFieldProviderProps {
   readonly children: ReactNode;
   readonly taskStatus?: TaskStatus;
   readonly defaultFieldsState?: DeepPartial<TaskFromFieldContext['fieldsState']>;
+  readonly blockState?: DeepPartial<TaskFromFieldContext['blockState']>;
 }
 
-function TaskFormFieldProvider({ children, taskStatus, defaultFieldsState }: TaskFormFieldProviderProps) {
+function TaskFormFieldProvider({
+  children,
+  taskStatus,
+  defaultFieldsState,
+  blockState: bs,
+}: TaskFormFieldProviderProps) {
   const value = useMemo<TaskFromFieldContext>(() => {
     const domainAvailability: ReturnType<typeof TaskDomain.fieldsToChangeByStatus> =
       taskStatus != null
@@ -42,8 +48,10 @@ function TaskFormFieldProvider({ children, taskStatus, defaultFieldsState }: Tas
       defaultFieldsState,
     );
 
-    return { fieldsState };
-  }, [defaultFieldsState, taskStatus]);
+    const blockState = merge({}, { params: { disabled: false, collapsed: true } }, bs);
+
+    return { fieldsState, blockState };
+  }, [defaultFieldsState, taskStatus, bs]);
 
   return <taskFormFieldContext.Provider value={value}>{children}</taskFormFieldContext.Provider>;
 }

@@ -18,7 +18,7 @@ interface DateAndTimePickerProps {
   readonly minuteStep?: number;
   readonly onChange: (value?: Date) => void;
   readonly popoverProps?: Omit<ComponentProps<typeof Popover>, 'open' | 'onOpenChange'>;
-  readonly value?: Date;
+  readonly value?: Date | null | undefined;
 }
 
 export type { DateAndTimePickerProps };

@@ -11,7 +11,6 @@ interface TaskInboxEntity {
   readonly deadline: TaskDto['deadline'];
   readonly description: TaskDto['description'];
   readonly priority: TaskDto['priority'];
-  readonly weight: TaskDto['weight'];
   readonly recurrence: TaskDto['recurrence'];
   readonly status: TaskStatus;
   readonly type: TaskType;
