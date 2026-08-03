@@ -6,6 +6,7 @@ export * from './task-clone.schema';
 export * from './task-delete.schema';
 export * from './task-finish.schema';
 export * from './get-assignable-tasks.schema';
+export * from './get-diary-tasks.schema';
 export * from './get-task-by-id.schema';
 export * from './get-tasks-cursor.schema';
 export * from './get-tasks-per-page.schema';

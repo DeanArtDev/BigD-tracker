@@ -2,7 +2,7 @@
 
 import type { Event as DayflowEvent, ViewType } from '@dayflow/core';
 import { createStrictContext, useStrictContext } from '@/shared/lib';
-import type { DiaryDialogDefaultValues } from '../model/diary-dialog-actions';
+import { DiaryDialogDefaultValues } from '../model/types';
 
 interface DiaryDialogOpenParams {
   readonly allDay?: boolean;

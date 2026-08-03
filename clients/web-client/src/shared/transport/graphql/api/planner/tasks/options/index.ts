@@ -1,4 +1,5 @@
 export * from './shape-get-assignable-tasks.options';
+export * from './shape-get-diary-tasks.options';
 export * from './shape-get-task-by-id.options';
 export * from './shape-get-tasks-cursor.options';
 export * from './shape-get-tasks-per-page.options';

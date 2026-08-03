@@ -11,6 +11,14 @@ const GET_ASSIGNABLE_TASKS_QUERY = gql`
   }
 `;
 
+const GET_DIARY_TASKS_QUERY = gql`
+  query GetDiaryTasks($input: GetDiaryTasksInput!) {
+    getDiaryTasks(input: $input) {
+      ...TaskFragment
+    }
+  }
+`;
+
 const GET_TASKS_CURSOR_QUERY = gql`
   query GetTasksCursor($input: GetTasksCursorInput!) {
     getTasksCursor(input: $input) {
@@ -134,6 +142,7 @@ export {
   TASK_RECOVERY_MUTATION,
   TASK_UPDATE_MUTATION,
   GET_ASSIGNABLE_TASKS_QUERY,
+  GET_DIARY_TASKS_QUERY,
   GET_TASKS_CURSOR_QUERY,
   GET_TASKS_PER_PAGE_QUERY,
 };

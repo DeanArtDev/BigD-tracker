@@ -2,48 +2,24 @@ import {
   createEvent,
   dateToPlainDate,
   dateToZonedDateTime,
+  type Event as DayflowEvent,
   generateUniKey,
   temporalToDate,
-  type Event as DayflowEvent,
   ViewType,
 } from '@dayflow/core';
 import { GroupId } from '@/entity/planner/groups';
-import { Task, TaskDomain, TaskId } from '@/entity/planner/tasks';
-import { Override } from '@/shared/lib';
+import { TaskDomain, TaskId } from '@/entity/planner/tasks';
 import timeAndDate from '@/shared/lib/time';
 import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from './constants';
-
-interface DiaryDialogDefaultValues {
-  readonly deadline?: Date;
-  readonly description?: string;
-  readonly groupId?: GroupId;
-  readonly name?: string;
-  readonly priority?: TaskPriority;
-  readonly startDate?: Date;
-  readonly status?: TaskStatus;
-}
-
-interface DiaryDialogCreateParams {
-  readonly allDay?: boolean;
-  readonly calendarId: string;
-  readonly date: Date;
-  readonly defaultValues?: DiaryDialogDefaultValues;
-  readonly viewType?: ViewType;
-}
-
-interface DiaryDialogPasteParams {
-  readonly calendarId: string;
-  readonly date: Date;
-  readonly timeZone: string;
-  readonly viewType?: ViewType;
-}
-
-type TaskUpdateData = Override<Task<GroupId>, { startDate: string; deadline: string }>;
-
-type DiaryEventMeta = Pick<Task<GroupId>, 'priority' | 'status'> & Record<string, unknown>;
-
-type DiaryEvent = Override<DayflowEvent, { meta: DiaryEventMeta }>;
+import {
+  DiaryDialogCreateParams,
+  DiaryDialogPasteParams,
+  DiaryEvent,
+  DiaryEventMeta,
+  EventTask,
+  TaskUpdateData,
+} from './types';
 
 class DiaryDialogActions {
   static create({ allDay, calendarId, date, defaultValues, viewType }: DiaryDialogCreateParams): DiaryEvent {
@@ -67,6 +43,7 @@ class DiaryDialogActions {
         calendarId,
       }),
       meta: {
+        id: undefined,
         priority: defaultValues?.priority ?? TaskDomain.defaultFields.priority,
         status: defaultValues?.status ?? TaskDomain.defaultFields.status,
       },
@@ -106,7 +83,7 @@ class DiaryDialogActions {
     };
   }
 
-  static mapEventToTask(event: DayflowEvent): Task<GroupId> {
+  static mapEventToTask(event: DiaryEvent): EventTask {
     const start = timeAndDate(temporalToDate(event.start));
     let end = timeAndDate(temporalToDate(event.end));
 
@@ -115,7 +92,7 @@ class DiaryDialogActions {
     const meta = DiaryDialogActions.getTaskMeta(event);
 
     return {
-      id: event.id as TaskId,
+      id: meta.id,
       name: event.title,
       description: event.description,
       status: meta.status,
@@ -129,7 +106,7 @@ class DiaryDialogActions {
   static mapTaskToEvent(task: TaskUpdateData): DiaryEvent {
     return {
       ...createEvent({
-        id: task.id,
+        id: encodeURIComponent(task.id),
         title: task.name,
         description: task.description ?? undefined,
         start: timeAndDate(task.startDate).toDate(),
@@ -138,6 +115,7 @@ class DiaryDialogActions {
         calendarId: task.groupId?.toString() ?? EMPTY_GROUP_ID,
       }),
       meta: {
+        id: task.id,
         priority: task.priority,
         status: task.status,
       },
@@ -149,11 +127,13 @@ class DiaryDialogActions {
   }
 
   private static getTaskMeta(event: DayflowEvent): DiaryEventMeta {
+    const id = event.meta?.id;
     const status = event.meta?.status;
     const priority = event.meta?.priority;
 
     return {
       ...event.meta,
+      id: id != null && typeof id === 'string' ? (id as TaskId) : undefined,
       status: Object.values(TaskStatus).includes(status as TaskStatus)
         ? (status as TaskStatus)
         : TaskDomain.defaultFields.status,
@@ -171,11 +151,4 @@ class DiaryDialogActions {
   }
 }
 
-export {
-  DiaryDialogActions,
-  type DiaryDialogCreateParams,
-  type DiaryDialogDefaultValues,
-  type DiaryDialogPasteParams,
-  type DiaryEvent,
-  type DiaryEventMeta,
-};
+export { DiaryDialogActions };

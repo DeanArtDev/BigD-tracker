@@ -3,19 +3,26 @@
 import { clipboardStore, type EventDetailDialogProps } from '@dayflow/core';
 import { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { Task, TaskSubmitFormData } from '@/entity/planner/tasks';
+import { TaskSubmitFormData } from '@/entity/planner/tasks';
+import timeAndDate from '@/shared/lib/time';
 import { useNotify } from '@/shared/project-ui';
 import { useDiaryContext } from './context';
 import { diaryDialogContext, type DiaryDialogContext, useDiaryDialogContext } from './diary-dialog.context';
-import { DiaryDialogActions, type DiaryEvent } from '../model/diary-dialog-actions';
+import { DiaryDialogActions } from '../model/diary-dialog-actions';
+import { DiaryEvent, EventTask } from '../model/types';
 import { DiaryEventDialog } from '../ui/diary-event-dialog';
 
 interface DiaryDialogState {
   readonly event: DiaryEvent;
   readonly mode: 'create' | 'update';
-  readonly task: Task<GroupId>;
+  readonly task: EventTask;
 }
 
+/*TODO:
+ *
+ * [] dbClick по гриду создает виртуальный event но в этот момент реальной таски еще нет
+ *
+ * */
 function DiaryDialogProvider({ children }: PropsWithChildren) {
   const {
     calendar: { app },
@@ -26,9 +33,10 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
 
   const openDiaryDialog = useCallback<DiaryDialogContext['openDiaryDialog']>(
     (event, params) => {
-      let dialogEvent = event ? DiaryDialogActions.withTaskMeta(event) : undefined;
+      const isUpdate = event != null && params?.defaultValues == null;
+      const isCreate = event == null;
 
-      if (!dialogEvent) {
+      if (isCreate) {
         const requestedCalendarId = params?.calendarId ?? params?.defaultValues?.groupId?.toString();
         const registry = app.getCalendarRegistry();
         const calendar = requestedCalendarId
@@ -37,22 +45,18 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
         const targetCalendar = calendar ?? registry.getDefaultWritableCalendar();
         if (!targetCalendar) return;
 
-        dialogEvent = DiaryDialogActions.create({
+        const createdEvent = DiaryDialogActions.create({
           allDay: params?.allDay,
           calendarId: targetCalendar.id,
           date: params?.date ?? app.getCurrentDate(),
           defaultValues: params?.defaultValues,
           viewType: params?.viewType,
         });
-      }
 
-      const task = DiaryDialogActions.mapEventToTask(dialogEvent);
-      const isUpdate = event != null && params?.defaultValues == null;
-      const isCreate = event == null;
+        const task = DiaryDialogActions.mapEventToTask(createdEvent);
 
-      if (isCreate) {
         setDialogState({
-          event: dialogEvent,
+          event: createdEvent,
           mode: 'create',
           task: {
             ...task,
@@ -60,8 +64,12 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
             priority: params?.defaultValues?.priority ?? task.priority,
           },
         });
-      } else if (isUpdate) {
-        setDialogState({ event: dialogEvent, mode: 'update', task });
+      }
+
+      if (isUpdate) {
+        const e = DiaryDialogActions.withTaskMeta(event);
+        const task = DiaryDialogActions.mapEventToTask(e);
+        setDialogState({ event: e, mode: 'update', task });
       }
 
       setOpen(true);
@@ -97,7 +105,7 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
     if (!dialogState) return;
 
     const { startDate, deadline } = task;
-    if (startDate != null && deadline != null) {
+    if (startDate != null && deadline != null && dialogState.task.id != null) {
       const event = DiaryDialogActions.update({
         ...task,
         startDate,
@@ -132,6 +140,25 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
     [closeDiaryDialog, openDiaryDialog, pasteEvent, hasEventToPaste],
   );
 
+  const taskToChange = useMemo(() => {
+    if (dialogState?.task == null) return undefined;
+    if (dialogState.event.meta.id != null) {
+      return { task: { ...dialogState.task, id: dialogState.event.meta.id }, defaultValues: undefined };
+    }
+    const { task } = dialogState;
+
+    return {
+      task: undefined,
+      defaultValues: {
+        ...task,
+        name: task.name ?? undefined,
+        description: task.description ?? undefined,
+        startDate: task.startDate != null ? timeAndDate(task.startDate).toDate() : undefined,
+        deadline: task.deadline != null ? timeAndDate(task.deadline).toDate() : undefined,
+      },
+    };
+  }, [dialogState]);
+
   return (
     <diaryDialogContext.Provider value={value}>
       {children}
@@ -141,7 +168,8 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
           key={dialogState.event.id}
           app={app}
           open={open}
-          task={dialogState.task}
+          defaultValues={taskToChange?.defaultValues}
+          task={taskToChange?.task}
           title={dialogState.mode === 'create' ? 'Создание дела' : 'Редактирование дела'}
           onAnimationEnd={completeClosing}
           onOpenChange={setOpen}

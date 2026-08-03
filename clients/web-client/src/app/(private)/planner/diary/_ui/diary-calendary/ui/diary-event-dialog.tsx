@@ -3,10 +3,12 @@
 import type { ICalendarApp } from '@dayflow/core';
 import type { KeyboardShortcutsService } from '@dayflow/plugin-keyboard-shortcuts';
 import { type ReactNode, useEffect } from 'react';
+import { DefaultValues } from 'react-hook-form';
 import { GroupId } from '@/entity/planner/groups';
 import {
   Task,
   TaskForm,
+  TaskFormData,
   TaskFormFieldProvider,
   TaskFormFooter,
   TaskFormProvider,
@@ -70,12 +72,22 @@ interface DiaryEventDialogProps {
   readonly open: boolean;
   readonly task?: Task<GroupId>;
   readonly title: ReactNode;
+  readonly defaultValues?: DefaultValues<TaskFormData<GroupId>>;
   readonly onAnimationEnd: () => void;
   readonly onOpenChange: (open: boolean) => void;
   readonly onSubmit: DiaryEventDialogContentProps['onSubmit'];
 }
 
-function DiaryEventDialog({ app, open, task, title, onAnimationEnd, onOpenChange, onSubmit }: DiaryEventDialogProps) {
+function DiaryEventDialog({
+  app,
+  open,
+  task,
+  title,
+  defaultValues,
+  onAnimationEnd,
+  onOpenChange,
+  onSubmit,
+}: DiaryEventDialogProps) {
   useEffect(() => {
     const keyboardShortcuts = app?.getPlugin<KeyboardShortcutsService>('keyboard-shortcuts');
     const wasEnabled = keyboardShortcuts?.isEnabled() ?? false;
@@ -88,7 +100,7 @@ function DiaryEventDialog({ app, open, task, title, onAnimationEnd, onOpenChange
   }, [app]);
 
   return (
-    <TaskFormProvider<GroupId> task={task}>
+    <TaskFormProvider<GroupId> task={task} defaultValues={defaultValues}>
       <TaskFormFieldProvider
         taskStatus={task?.status}
         defaultFieldsState={{ startDate: { clearable: false }, deadline: { clearable: false } }}

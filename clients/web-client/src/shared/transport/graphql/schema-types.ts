@@ -21,6 +21,15 @@ export type GetAssignableTasksInput = {
   search: Scalars['String']['input'];
 };
 
+export type GetDiaryTasksInput = {
+  /** Начало диапазона дат */
+  from: Scalars['String']['input'];
+  /** IDs групп */
+  group?: InputMaybe<Array<Scalars['Int']['input']>>;
+  /** Конец диапазона дат */
+  to: Scalars['String']['input'];
+};
+
 export type GetGroupInput = {
   groupId: Scalars['Int']['input'];
 };
@@ -258,6 +267,8 @@ export type Query = {
   getAssignableGroups: Array<GroupInfoSchema>;
   /** Получение списка дел, доступных для назначения в группу */
   getAssignableTasks: Array<TaskSchema>;
+  /** Получение дел для ежедневника */
+  getDiaryTasks: Array<TaskSchema>;
   /** Получение группы */
   getGroup: GroupSchema;
   /** Получение списка групп */
@@ -275,6 +286,10 @@ export type Query = {
 
 export type QueryGetAssignableTasksArgs = {
   input: GetAssignableTasksInput;
+};
+
+export type QueryGetDiaryTasksArgs = {
+  input: GetDiaryTasksInput;
 };
 
 export type QueryGetGroupArgs = {

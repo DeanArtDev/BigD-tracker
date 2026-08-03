@@ -13,17 +13,19 @@ import { Task } from '../../../../model';
 type TaskFormProviderProps<BrandGroup extends Brand<number, string>> = PropsWithChildren<{
   readonly loading?: boolean;
   readonly task?: Task<BrandGroup>;
+  readonly defaultValues?: Omit<DefaultValues<TaskFormData<BrandGroup>>, 'isDescriptionDirty'>;
 }>;
 
 function TaskFormProvider<BrandGroup extends Brand<number, string>>({
   task,
   loading,
+  defaultValues,
   children,
 }: TaskFormProviderProps<BrandGroup>) {
   const formId = useId();
   const isEdit = task != null;
 
-  const defaultValues: DefaultValues<TaskFormData<BrandGroup>> = {
+  const dF: DefaultValues<TaskFormData<BrandGroup>> = {
     name: undefined,
     priority: TaskPriority.Delete,
     description: undefined,
@@ -31,6 +33,7 @@ function TaskFormProvider<BrandGroup extends Brand<number, string>>({
     startDate: undefined,
     groupId: undefined,
     isDescriptionDirty: false,
+    ...defaultValues,
   };
 
   const values: TaskFormData<BrandGroup> | undefined = isEdit
@@ -54,7 +57,7 @@ function TaskFormProvider<BrandGroup extends Brand<number, string>>({
     reValidateMode: 'onSubmit',
     disabled: loading,
     values,
-    defaultValues,
+    defaultValues: dF,
   });
   const resetToInit = useCallback(() => {
     void form.reset(undefined, {

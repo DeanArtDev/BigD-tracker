@@ -1,6 +1,6 @@
 import { type ICalendarApp, LocaleProvider, MiniCalendar } from '@dayflow/core';
 import { type CalendarSidebarRenderProps } from '@dayflow/plugin-sidebar';
-import { Eye, EyeOff, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Eye, EyeOff, PanelLeftClose, PanelLeftOpen, Ungroup } from 'lucide-react';
 import { h, render } from 'preact';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import timeAndDate from '@/shared/lib/time';
@@ -73,7 +73,7 @@ function DiarySidebar(props: CalendarSidebarRenderProps) {
               <SidebarMenu className="gap-1">
                 {calendars.map((calendar) => {
                   const isVisible = calendar.isVisible !== false;
-                  if (calendar.id === EMPTY_GROUP_ID) return null;
+                  const isGroupFree = calendar.id === EMPTY_GROUP_ID;
 
                   return (
                     <SidebarMenuItem className={cn(isCollapsed && 'flex justify-center')} key={calendar.id}>
@@ -100,6 +100,13 @@ function DiarySidebar(props: CalendarSidebarRenderProps) {
                             >
                               {calendar.icon}
                             </span>
+                          ) : isGroupFree ? (
+                            <Ungroup
+                              className={cn(
+                                'size-4 shrink-0 rounded-full transition-opacity',
+                                !isVisible && 'opacity-30',
+                              )}
+                            />
                           ) : (
                             <span
                               aria-hidden="true"

@@ -1,6 +1,12 @@
 import { AppRmqClient } from '@/infrastructure/rmq-clients';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalGetAssignableTasks, GoalGetTasksCursor, TaskPriority, TaskStatus } from '@big-d/api-contracts';
+import {
+  GoalGetAssignableTasks,
+  GoalGetDiaryTasks,
+  GoalGetTasksCursor,
+  TaskPriority,
+  TaskStatus,
+} from '@big-d/api-contracts';
 import { TasksQueriesResolver } from './tasks-queries.resolver';
 
 describe('TasksQueriesResolver', () => {
@@ -72,5 +78,53 @@ describe('TasksQueriesResolver', () => {
         status: TaskStatus.NOT_STARTED,
       },
     ]);
+  });
+
+  test('gets diary tasks and maps them to the GraphQL schema', async () => {
+    const send = jest.fn().mockResolvedValue({
+      data: {
+        items: [
+          {
+            id: 'o::2',
+            userId: 42,
+            name: 'Diary task',
+            priority: 1,
+            status: TaskStatus.NOT_STARTED,
+            recurrence: {
+              frequency: 'DAILY',
+              interval: 1,
+            },
+          },
+        ],
+      },
+    });
+    const resolver = new TasksQueriesResolver({ send } as unknown as AppRmqClient);
+
+    const result = await resolver.getDiaryTasks({ uid: 42 } as AccessTokenPayload, {
+      from: '2026-08-01',
+      to: '2026-08-31',
+      group: [7, 8],
+    });
+
+    expect(send).toHaveBeenCalledWith(GoalGetDiaryTasks.pattern, {
+      data: {
+        userId: 42,
+        filter: {
+          from: '2026-08-01',
+          to: '2026-08-31',
+          group: [7, 8],
+        },
+      },
+    });
+    expect(result).toEqual([
+      {
+        id: 'o::2',
+        userId: 42,
+        name: 'Diary task',
+        priority: TaskPriority.Do,
+        status: TaskStatus.NOT_STARTED,
+      },
+    ]);
+    expect(result[0]).not.toHaveProperty('recurrence');
   });
 });

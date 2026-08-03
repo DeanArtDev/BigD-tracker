@@ -22,9 +22,13 @@ function usePlugins() {
         showEventDots: true,
         render: (props) => <DiarySidebar {...props} />,
       }),
+
       createKeyboardShortcutsPlugin({
         callbacks: {
-          undo: (app) => void app.undo(),
+          undo: (app) => {
+            console.log('undo:', app);
+            app.undo();
+          },
           delete: (app, event) => {
             if (!event) return;
             app.deleteEvent(event.id);
