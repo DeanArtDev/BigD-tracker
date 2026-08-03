@@ -1,6 +1,6 @@
 'use client';
 
-import { clipboardStore, type Event } from '@dayflow/core';
+import { clipboardStore, type Event, ViewType } from '@dayflow/core';
 import { Check, Copy, Folder, Scissors, Trash2 } from 'lucide-react';
 import { type RefObject, useEffect, useRef, useState } from 'react';
 import {
@@ -34,7 +34,7 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
       const target = contextMenuEvent.target;
       if (!(target instanceof Element)) return;
 
-      const eventElement = target.closest<HTMLElement>('[data-event-id][data-view]');
+      const eventElement = target.closest<HTMLElement>('[data-event-id]');
       if (!eventElement || !container.contains(eventElement)) return;
 
       const calendarEvent = app.getEvents().find(({ id }) => id === eventElement.dataset.eventId);
@@ -43,6 +43,7 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
       contextMenuEvent.preventDefault();
       contextMenuEvent.stopPropagation();
       setEvent(calendarEvent);
+      app.selectEvent(calendarEvent.id);
 
       const eventRect = eventElement.getBoundingClientRect();
       const clientX = contextMenuEvent.clientX || eventRect.left + eventRect.width / 2;

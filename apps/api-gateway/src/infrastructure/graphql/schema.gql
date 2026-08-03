@@ -13,6 +13,17 @@ input GetAssignableTasksInput {
   search: String!
 }
 
+input GetDiaryTasksInput {
+  """Начало диапазона дат"""
+  from: String!
+
+  """IDs групп"""
+  group: [Int!]
+
+  """Конец диапазона дат"""
+  to: String!
+}
+
 input GetGroupInput {
   groupId: Int!
 }
@@ -198,6 +209,9 @@ type Query {
 
   """Получение списка дел, доступных для назначения в группу"""
   getAssignableTasks(input: GetAssignableTasksInput!): [TaskSchema!]!
+
+  """Получение дел для ежедневника"""
+  getDiaryTasks(input: GetDiaryTasksInput!): [TaskSchema!]!
 
   """Получение группы"""
   getGroup(input: GetGroupInput!): GroupSchema!

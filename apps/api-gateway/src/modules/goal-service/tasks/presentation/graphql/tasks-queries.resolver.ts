@@ -2,11 +2,18 @@ import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import { TaskMapper } from '../mappers/task.mapper';
-import { GoalGetAssignableTasks, GoalGetTaskById, GoalGetTasksCursor, GoalGetTasksPerPage } from '@big-d/api-contracts';
+import {
+  GoalGetAssignableTasks,
+  GoalGetDiaryTasks,
+  GoalGetTaskById,
+  GoalGetTasksCursor,
+  GoalGetTasksPerPage,
+} from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
   GetAssignableTasksInput,
+  GetDiaryTasksInput,
   GetTaskByIdInput,
   GetTasksCursorInput,
   GetTasksPerPageInput,
@@ -38,6 +45,30 @@ class TasksQueriesResolver {
     );
 
     return data.map(TaskMapper.fromServerTaskDtoToClientDto);
+  }
+
+  @Query(() => [TaskSchema], {
+    description: 'Получение дел для ежедневника',
+  })
+  async getDiaryTasks(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Args('input') { from, to, group }: GetDiaryTasksInput,
+  ): Promise<TaskSchema[]> {
+    const { data } = await this.goalClient.send<GoalGetDiaryTasks.Response, GoalGetDiaryTasks.Request>(
+      GoalGetDiaryTasks.pattern,
+      {
+        data: {
+          userId: uid,
+          filter: {
+            from,
+            to,
+            group,
+          },
+        },
+      },
+    );
+
+    return data.items.map(TaskMapper.fromServerTaskDtoToClientDto);
   }
 
   @Query(() => TasksConnection, {

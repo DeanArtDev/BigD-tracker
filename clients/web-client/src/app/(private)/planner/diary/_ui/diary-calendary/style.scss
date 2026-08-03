@@ -7,6 +7,20 @@
 .diary-calendar {
   --df-color-primary: var(--primary);
 
+  .df-agenda-event {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .df-agenda-badge {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   #dayflow-add-event-btn {
     margin-left: 10px;
   }

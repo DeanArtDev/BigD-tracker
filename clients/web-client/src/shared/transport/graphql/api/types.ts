@@ -1,6 +1,6 @@
 import type { DocumentNode, OperationVariables, TypedDocumentNode } from '@apollo/client';
 import type { Reference } from '@apollo/client/cache';
-import { useMutation, useQuery, useSuspenseQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation, useQuery, useSuspenseQuery } from '@apollo/client/react';
 import { AnyObject } from '@/shared/lib';
 
 type AppQueryOptions<TData = unknown, TVariables extends OperationVariables = OperationVariables> = useQuery.Options<
@@ -27,6 +27,16 @@ type AppSuspenseQueryOptionsResponse<TData = unknown, TVariables extends Operati
   AppSuspenseQueryOptions<TVariables>,
 ];
 
+type AppLazyQueryOptionsResponse<TVariables extends OperationVariables = OperationVariables> = useLazyQuery.ExecOptions<
+  NoInfer<TVariables>
+>;
+
+type AppQueryOptionsResponseMap<TData = unknown, TVariables extends OperationVariables = OperationVariables> = {
+  query: AppQueryOptionsResponse<TData, TVariables>;
+  suspense: AppSuspenseQueryOptionsResponse<TData, TVariables>;
+  lazy: AppLazyQueryOptionsResponse<TVariables>;
+};
+
 type AppMutationOptionsResponse<TData = unknown, TVariables extends OperationVariables = OperationVariables> = [
   DocumentNode | TypedDocumentNode<TData, TVariables>,
   AppMutationOptions<TData, TVariables>,
@@ -36,4 +46,11 @@ type WithReferenceList<T extends AnyObject, K extends keyof T> = Omit<T, K> & {
   [P in K]: Reference[];
 };
 
-export type { AppQueryOptionsResponse, AppSuspenseQueryOptionsResponse, WithReferenceList, AppMutationOptionsResponse };
+export type {
+  AppLazyQueryOptionsResponse,
+  AppMutationOptionsResponse,
+  AppQueryOptionsResponse,
+  AppQueryOptionsResponseMap,
+  AppSuspenseQueryOptionsResponse,
+  WithReferenceList,
+};

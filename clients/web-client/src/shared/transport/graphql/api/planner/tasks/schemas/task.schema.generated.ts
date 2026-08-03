@@ -11,6 +11,15 @@ export type GetAssignableTasksInput = {
   search: string;
 };
 
+export type GetDiaryTasksInput = {
+  /** Начало диапазона дат */
+  from: string;
+  /** IDs групп */
+  group?: Array<number> | null | undefined;
+  /** Конец диапазона дат */
+  to: string;
+};
+
 export type GetTaskByIdInput = {
   id: string;
 };
@@ -129,6 +138,25 @@ export type GetAssignableTasksQueryVariables = Exact<{
 
 export type GetAssignableTasksQuery = {
   getAssignableTasks: Array<{ id: string; name: string; groupId: number | null; priority: Types.TaskPriority }>;
+};
+
+export type GetDiaryTasksQueryVariables = Exact<{
+  input: Types.GetDiaryTasksInput;
+}>;
+
+export type GetDiaryTasksQuery = {
+  getDiaryTasks: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+    priority: Types.TaskPriority;
+    status: Types.TaskStatus;
+    groupId: number | null;
+    deadline: string | null;
+    startDate: string | null;
+    endDate: string | null;
+    cancelReason: string | null;
+  }>;
 };
 
 export type GetTasksCursorQueryVariables = Exact<{
@@ -345,6 +373,66 @@ export const GetAssignableTasksDocument = {
     },
   ],
 } as unknown as DocumentNode<GetAssignableTasksQuery, GetAssignableTasksQueryVariables>;
+export const GetDiaryTasksDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetDiaryTasks' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetDiaryTasksInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getDiaryTasks' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TaskFragment' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSchema' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetDiaryTasksQuery, GetDiaryTasksQueryVariables>;
 export const GetTasksCursorDocument = {
   kind: 'Document',
   definitions: [

@@ -1,5 +1,22 @@
+import { notFound } from 'next/navigation';
+import { z } from 'zod';
+import { withValidatedUrlData } from '@/shared/lib/url';
+import { diaryUrlSchema } from './_model';
+import { DiaryTasksPrefetch } from './_prefetches/diary-tasks.prefetch';
 import { DiaryPageContent } from './_ui/diary-page-content';
 
-export default function DiaryPage() {
-  return <DiaryPageContent />;
+function Component({ searchParams }: { searchParams?: z.infer<typeof diaryUrlSchema> }) {
+  const input =
+    searchParams?.from != null && searchParams?.to != null
+      ? { from: searchParams.from, to: searchParams.to }
+      : undefined;
+
+  return (
+    <DiaryTasksPrefetch view={searchParams?.view} input={input}>
+      <DiaryPageContent />
+    </DiaryTasksPrefetch>
+  );
 }
+
+const DiaryPage = withValidatedUrlData({ searchParams: diaryUrlSchema }, Component, notFound);
+export default DiaryPage;

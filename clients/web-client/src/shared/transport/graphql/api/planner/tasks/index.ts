@@ -1,6 +1,8 @@
 export type {
   CreateTaskMutation,
   GetAssignableTasksQuery,
+  GetDiaryTasksQuery,
+  GetDiaryTasksQueryVariables,
   GetTasksCursorQuery,
   GetTasksCursorQueryVariables,
   GetTasksPerPageQuery,
