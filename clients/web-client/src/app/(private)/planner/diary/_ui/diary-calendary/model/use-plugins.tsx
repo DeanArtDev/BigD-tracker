@@ -1,20 +1,33 @@
+import { ICalendarApp } from '@dayflow/core';
 import { createDragPlugin } from '@dayflow/plugin-drag';
 import { createKeyboardShortcutsPlugin } from '@dayflow/plugin-keyboard-shortcuts';
 import { createSidebarPlugin } from '@dayflow/plugin-sidebar';
 import { useMemo } from 'react';
 import { DIARY_SIDEBAR_MINI_WIDTH, DiarySidebar } from '../ui';
+import { useEventUpdate } from './callbacks/use-event-update';
 
-function usePlugins() {
+interface UsePluginsParams {
+  readonly getApp: () => ICalendarApp | undefined;
+}
+
+function usePlugins({ getApp }: UsePluginsParams) {
+  const updateEvent = useEventUpdate({ getApp });
+
   return useMemo(
     () => [
       createDragPlugin({
-        onEventDrop: (updatedEvent) => {
-          console.log('onEventDrop:', updatedEvent);
+        onEventDrop: async (updatedEvent, originEvent) => {
+          const app = getApp();
+          if (app == null) return;
+          await updateEvent(updatedEvent, originEvent);
         },
-        onEventResize: (updatedEvent) => {
-          console.log('onEventResize:', updatedEvent);
+        onEventResize: async (updatedEvent, originEvent) => {
+          const app = getApp();
+          if (app == null) return;
+          await updateEvent(updatedEvent, originEvent);
         },
       }),
+
       createSidebarPlugin({
         createCalendarMode: 'modal',
         initialCollapsed: true,
@@ -23,21 +36,23 @@ function usePlugins() {
         render: (props) => <DiarySidebar {...props} />,
       }),
 
+      // Нежен ли этот плагин вообще??
       createKeyboardShortcutsPlugin({
         callbacks: {
           undo: (app) => {
             console.log('undo:', app);
-            app.undo();
           },
           delete: (app, event) => {
             if (!event) return;
-            app.deleteEvent(event.id);
-            app.selectEvent(null);
+            void app
+              .deleteEvent(event.id)
+              .then(() => app.selectEvent(null))
+              .catch(() => undefined);
           },
         },
       }),
     ],
-    [],
+    [getApp, updateEvent],
   );
 }
 

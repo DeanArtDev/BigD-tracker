@@ -5,7 +5,10 @@ import { shapeTaskDeleteOptions, useExtendApolloErrorResult } from '@/shared/tra
 function useTaskDelete() {
   const [deleteTask, rest] = useMutation(...shapeTaskDeleteOptions());
   const { appErrors } = useExtendApolloErrorResult(rest.error);
-  useExceptionNotificator({ exception: appErrors.at(-1) });
+  useExceptionNotificator({
+    exception: appErrors.at(-1),
+    messageHandlers: { anyException: () => 'Не удалось удалить дело, попробуйте снова' },
+  });
   return { deleteTask, ...rest };
 }
 

@@ -1,8 +1,4 @@
-import {
-  TaskOverrideDomainService,
-  TaskVirtualService,
-  TaskWithRecurrenceService,
-} from '@/modules/tasks/domain/services';
+import { TaskOverrideDomainService, TaskVirtualService } from '@/modules/tasks/domain/services';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { TasksViewMapper, TaskView } from '../../dto';
@@ -19,7 +15,6 @@ import { ReplaceTaskCommand } from './replace-task.command';
 
 @Injectable()
 class ReplaceTaskUseCase {
-  private readonly taskWithRecurrenceService = new TaskWithRecurrenceService();
   private readonly taskOverrideDomainService = new TaskOverrideDomainService();
   private readonly taskVirtualService = new TaskVirtualService();
 

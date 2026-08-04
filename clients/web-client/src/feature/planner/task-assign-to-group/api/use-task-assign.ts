@@ -6,7 +6,10 @@ function useTaskAssign() {
   const [assignTask, rest] = useMutation(...shapeTaskAssignOptions({ awaitRefetchQueries: true }));
 
   const { appErrors } = useExtendApolloErrorResult(rest.error);
-  useExceptionNotificator({ exception: appErrors.at(-1) });
+  useExceptionNotificator({
+    exception: appErrors.at(-1),
+    messageHandlers: { anyException: () => 'Не удалось дело к группе, попробуйте снова.' },
+  });
 
   return { assignTask, ...rest };
 }

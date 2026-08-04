@@ -3,9 +3,14 @@
 import type { GridContextMenuSlotArgs } from '@dayflow/core';
 import { DayFlowCalendar } from '@dayflow/react';
 import { useCallback, useRef } from 'react';
-import { DiaryCalendarProvider, DiaryDialogProvider, useDiaryContext } from './context';
+import { DiaryCalendarProvider, DiaryCutCopyPasteProvider, DiaryDialogProvider, useDiaryContext } from './context';
 import { useGetTaskToDiaryEventsSync, useYearWorkaround } from './model';
-import { useCallbacks } from './model/callbacks';
+import {
+  useCallbacks,
+  useChangeRangeWatch,
+  useEventCreateSubscription,
+  useEventUpdateSubscription,
+} from './model/callbacks';
 import { DiaryEventContextMenu, DiaryGridContextMenu, YearViewModeTabs } from './ui';
 
 import './style.scss';
@@ -18,6 +23,9 @@ function Component() {
 
   useGetTaskToDiaryEventsSync();
   useCallbacks();
+  useChangeRangeWatch();
+  useEventCreateSubscription();
+  useEventUpdateSubscription();
 
   const renderGridContextMenu = useCallback(
     (props: GridContextMenuSlotArgs) => <DiaryGridContextMenu {...props} />,
@@ -40,9 +48,11 @@ function Component() {
 function DiaryCalendar() {
   return (
     <DiaryCalendarProvider>
-      <DiaryDialogProvider>
-        <Component />
-      </DiaryDialogProvider>
+      <DiaryCutCopyPasteProvider>
+        <DiaryDialogProvider>
+          <Component />
+        </DiaryDialogProvider>
+      </DiaryCutCopyPasteProvider>
     </DiaryCalendarProvider>
   );
 }

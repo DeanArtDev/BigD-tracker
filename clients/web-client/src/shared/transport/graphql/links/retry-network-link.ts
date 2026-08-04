@@ -10,7 +10,9 @@ const retryNetworkLink = new RetryLink({
 
   attempts: {
     max: 3,
-    retryIf: (error) => {
+    retryIf: (error, operation) => {
+      if (operation.getContext().retry === false) return false;
+
       if (ServerError.is(error)) {
         return error.statusCode >= 500 || error.statusCode === 429;
       }

@@ -11,8 +11,8 @@ import {
 } from '@/entity/planner/tasks';
 import { Brand, MaybePromise } from '@/shared/lib';
 import { AppDialog, useConfirmDialog, useNotify } from '@/shared/project-ui';
-import { TaskCacheManager } from '@/shared/transport/graphql';
 import { useTaskCreate } from './api/use-task-create';
+import { invalidateTaskCreateCache } from './cache/task-create-cache';
 import { SuccessHandler } from './context/task-create.context';
 
 interface ComponentProps<TGroupId extends Brand<number, string>> {
@@ -90,8 +90,7 @@ function TaskCreateDialog<TGroupId extends Brand<number, string>>(props: TaskCre
 
                 onCompleted: async ({ createTask: ok }) => {
                   if (ok != null) {
-                    TaskCacheManager.refetchAssignableTasks(client);
-                    await TaskCacheManager.refetchGetTasksPerPage(client);
+                    await invalidateTaskCreateCache(client);
                     await onSuccess?.(ok);
                     close();
                   }
