@@ -10,7 +10,7 @@ const emptyGroup: CalendarType = {
   colors: {
     lineColor: 'transparent',
     eventColor: 'color-mix(in oklab, var(--df-color-primary) 20%, transparent)',
-    eventSelectedColor: 'color-mix(in oklab, var(--df-color-primary) 40%, transparent)',
+    eventSelectedColor: 'color-mix(in oklab, var(--df-color-primary) 70%, transparent)',
     textColor: 'var(--foreground)',
   },
 };
@@ -24,15 +24,15 @@ type DiaryViewRange = {
 
 type DiaryViewRangeResolver = (date: TimeAndDateValue) => DiaryViewRange;
 
-const DATE_FORMAT = 'YYYY-MM-DD';
+const DIARY_RANGE_DATE_FORMAT = 'YYYY-MM-DD';
 
 const diaryViewRangeMap = {
   [ViewType.DAY]: (date) => {
     const from = timeAndDate(date).startOf('day');
 
     return {
-      from: from.format(DATE_FORMAT),
-      to: from.add(1, 'day').format(DATE_FORMAT),
+      from: from.format(DIARY_RANGE_DATE_FORMAT),
+      to: from.add(1, 'day').format(DIARY_RANGE_DATE_FORMAT),
     };
   },
   [ViewType.WEEK]: (date) => {
@@ -41,8 +41,8 @@ const diaryViewRangeMap = {
     const from = currentDate.subtract(daysSinceMonday, 'day');
 
     return {
-      from: from.format(DATE_FORMAT),
-      to: from.add(7, 'days').format(DATE_FORMAT),
+      from: from.format(DIARY_RANGE_DATE_FORMAT),
+      to: from.add(7, 'days').format(DIARY_RANGE_DATE_FORMAT),
     };
   },
   [ViewType.MONTH]: (date) => {
@@ -51,27 +51,29 @@ const diaryViewRangeMap = {
     const from = firstDayOfMonth.subtract(daysSinceMonday, 'day');
 
     return {
-      from: from.format(DATE_FORMAT),
-      to: from.add(42, 'days').format(DATE_FORMAT),
+      from: from.format(DIARY_RANGE_DATE_FORMAT),
+      to: from.add(42, 'days').format(DIARY_RANGE_DATE_FORMAT),
     };
   },
   [ViewType.YEAR]: (date) => {
     const from = timeAndDate(date).startOf('year');
 
     return {
-      from: from.format(DATE_FORMAT),
-      to: from.add(1, 'year').format(DATE_FORMAT),
+      from: from.format(DIARY_RANGE_DATE_FORMAT),
+      to: from.add(1, 'year').format(DIARY_RANGE_DATE_FORMAT),
     };
   },
   [ViewType.AGENDA]: (date) => {
     const from = timeAndDate(date).startOf('day');
 
     return {
-      from: from.format(DATE_FORMAT),
-      to: from.add(30, 'days').format(DATE_FORMAT),
+      from: from.format(DIARY_RANGE_DATE_FORMAT),
+      to: from.add(30, 'days').format(DIARY_RANGE_DATE_FORMAT),
     };
   },
-} satisfies Record<DiaryViewType, DiaryViewRangeResolver>;
+
+  format: DIARY_RANGE_DATE_FORMAT,
+} satisfies Record<DiaryViewType, DiaryViewRangeResolver> & { format: typeof DIARY_RANGE_DATE_FORMAT };
 
 export { diaryViewRangeMap, type DiaryViewRange, type DiaryViewType };
 export { EMPTY_GROUP_ID, emptyGroup };

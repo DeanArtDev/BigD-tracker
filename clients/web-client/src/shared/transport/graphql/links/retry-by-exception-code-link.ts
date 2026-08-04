@@ -21,6 +21,7 @@ const retryByExceptionCodeLink = new RetryLink({
 
   attempts(attempt: number, operation: ApolloLink.Operation, error: ErrorLike) {
     if (operation == null) return false;
+    if (operation.getContext().retry === false) return false;
     if (error instanceof ApiError) return retryableErrorCodes.has(error.code) && attempt < 3;
     return false;
   },

@@ -17,13 +17,19 @@ function useTaskDeleteFeature() {
   const deleteTaskHandler = useCallback(
     (
       input: { taskId: TaskId; groupId?: GroupId },
-      params?: { onSuccess?: () => MaybePromise<void>; showToast?: boolean; onCancel?: () => void },
+      params?: {
+        onCancel?: () => void;
+        onError?: (error: unknown) => MaybePromise<void>;
+        onSuccess?: () => MaybePromise<void>;
+        showToast?: boolean;
+        withConfirmation?: boolean;
+      },
     ) => {
       viaConfirmation({
-        isNeedConfirm: () => true,
+        isNeedConfirm: () => params?.withConfirmation ?? true,
         cancel: params?.onCancel,
-        callback: async () => {
-          const { showToast = true, onSuccess } = params ?? {};
+        callback: () => {
+          const { onError, onSuccess, showToast = true } = params ?? {};
 
           const mutation = async () => {
             try {
@@ -34,18 +40,20 @@ function useTaskDeleteFeature() {
                 awaitRefetchQueries: true,
               });
 
-              if (response.data?.deleteTask != null) {
-                const id = response.data?.deleteTask.id;
-                if (id == null) return;
-                PlannerInitCacheManager.refetch(rest.client);
-                if (groupId != null) {
-                  GroupCacheManager.removeTaskFromGroup(rest.client.cache, { taskId, groupId });
-                }
-                TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
-                TaskCacheManager.dropDeletedGetTasksPerPage(rest.client);
-                await onSuccess?.();
-                rest.client.cache.gc();
+              const id = response.data?.deleteTask?.id;
+              if (id == null) throw new Error('Backend did not return the deleted task');
+
+              PlannerInitCacheManager.refetch(rest.client);
+              if (groupId != null) {
+                GroupCacheManager.removeTaskFromGroup(rest.client.cache, { taskId, groupId });
               }
+              TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
+              TaskCacheManager.dropDeletedGetTasksPerPage(rest.client);
+              await onSuccess?.();
+              rest.client.cache.gc();
+            } catch (error) {
+              await onError?.(error);
+              throw error;
             } finally {
               setLoading(false);
             }

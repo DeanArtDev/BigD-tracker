@@ -1,8 +1,9 @@
 import { type ICalendarApp, LocaleProvider, MiniCalendar } from '@dayflow/core';
-import { type CalendarSidebarRenderProps } from '@dayflow/plugin-sidebar';
+import { type CalendarSidebarRenderProps, SidebarService } from '@dayflow/plugin-sidebar';
 import { Eye, EyeOff, PanelLeftClose, PanelLeftOpen, Ungroup } from 'lucide-react';
 import { h, render } from 'preact';
 import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useDiaryContext } from '@/app/(private)/planner/diary/_ui/diary-calendary/context';
 import timeAndDate from '@/shared/lib/time';
 import { AppTooltip } from '@/shared/project-ui';
 import {
@@ -18,6 +19,11 @@ import {
 import { EMPTY_GROUP_ID } from '../model';
 
 const DIARY_SIDEBAR_MINI_WIDTH = '50px';
+
+function useDiarySidebar(): SidebarService | undefined {
+  const { calendar } = useDiaryContext();
+  return calendar.app.getPlugin<SidebarService>('sidebar');
+}
 
 function DiarySidebar(props: CalendarSidebarRenderProps) {
   const { app, calendars, toggleAll, toggleCalendarVisibility, isCollapsed, setCollapsed, showEventDots } = props;
@@ -192,4 +198,4 @@ function DiaryMiniCalendar({ app, showEventDots }: DiaryMiniCalendarProps) {
   return <div ref={containerRef} />;
 }
 
-export { DIARY_SIDEBAR_MINI_WIDTH, DiarySidebar };
+export { DIARY_SIDEBAR_MINI_WIDTH, DiarySidebar, useDiarySidebar };

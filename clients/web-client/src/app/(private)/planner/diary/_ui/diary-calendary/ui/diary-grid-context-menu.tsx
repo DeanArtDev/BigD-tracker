@@ -4,10 +4,11 @@ import type { GridContextMenuSlotArgs } from '@dayflow/core';
 import { CalendarPlus, ClipboardPaste } from 'lucide-react';
 import { PropsWithChildren } from 'react';
 import { Button } from '@/shared/ui-kit';
-import { useDiaryDialogContext } from '../context/diary-dialog.context';
+import { useDiaryCutCopyPasteContext, useDiaryDialogContext } from '../context';
 
 function DiaryGridContextMenu({ date, viewType, onClose }: GridContextMenuSlotArgs) {
-  const { hasEventToPaste, openDiaryDialog, pasteEvent } = useDiaryDialogContext();
+  const { openDiaryDialog } = useDiaryDialogContext();
+  const { hasEventToPaste, pasteEvent } = useDiaryCutCopyPasteContext();
 
   const createEvent = () => {
     openDiaryDialog(undefined, { date, viewType });
@@ -15,7 +16,7 @@ function DiaryGridContextMenu({ date, viewType, onClose }: GridContextMenuSlotAr
   };
 
   const pasteCalendarEvent = () => {
-    pasteEvent(date, viewType);
+    void pasteEvent(date, viewType);
     onClose();
   };
 

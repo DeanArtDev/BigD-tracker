@@ -5,7 +5,12 @@ import { shapeTaskUpdateOptions, useExtendApolloErrorResult } from '@/shared/tra
 function useTaskUpdate() {
   const [updateTask, rest] = useMutation(...shapeTaskUpdateOptions());
   const { appErrors } = useExtendApolloErrorResult(rest.error);
-  useExceptionNotificator({ exception: appErrors.at(-1) });
+  useExceptionNotificator({
+    exception: appErrors.at(-1),
+    messageHandlers: {
+      anyException: () => 'Не удалось обновить дело, попробуйте еще раз',
+    },
+  });
   return { updateTask, ...rest };
 }
 

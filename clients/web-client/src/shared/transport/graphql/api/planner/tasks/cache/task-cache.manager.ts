@@ -5,6 +5,7 @@ import {
   type GetTasksPerPageQueryVariables,
   type Query,
   shapeGetAssignableTasksOptions,
+  shapeGetDiaryTasksOptions,
   shapeGetTasksPerPageOptions,
   TaskStatus,
 } from '@/shared/transport/graphql';
@@ -48,6 +49,20 @@ class TaskCacheManager {
 
     return client.refetchQueries({
       include: [shapeGetTasksPerPageOptions.document],
+      updateCache(cache) {
+        cache.evict({
+          id: 'ROOT_QUERY',
+          fieldName,
+        });
+      },
+    });
+  }
+
+  static refetchGetDiaryTasks(client: ApolloClient) {
+    const fieldName: keyof Query = 'getDiaryTasks';
+
+    return client.refetchQueries({
+      include: [shapeGetDiaryTasksOptions.document],
       updateCache(cache) {
         cache.evict({
           id: 'ROOT_QUERY',

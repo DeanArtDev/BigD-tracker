@@ -1,17 +1,20 @@
 import { UseCalendarAppReturn, ViewType } from '@dayflow/core';
 import { useCalendarApp } from '@dayflow/react';
-import { PropsWithChildren, useMemo, useRef, useState } from 'react';
+import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 import { useDiaryUrl } from '@/app/(private)/planner/diary/_model';
 import timeAndDate from '@/shared/lib/time';
-import { EMPTY_GROUP_ID, emptyGroup, usePlugins } from '../model';
-import { diaryCalendarContext } from './context';
-import { useViews, type YearViewMode } from '../view-model/use-views';
+import { diaryCalendarContext } from './diary-calendar.context';
+import { EMPTY_GROUP_ID, emptyGroup, usePlugins } from '../../model';
+import { useViews, type YearViewMode } from '../../view-model/use-views';
 
 function DiaryCalendarProvider({ children }: PropsWithChildren) {
   const calendarRef = useRef<UseCalendarAppReturn | null>(null);
   const [yearViewMode, setYearViewMode] = useState<YearViewMode>('fixed-week');
-  const plugins = usePlugins();
+
+  const getApp = useCallback(() => calendarRef.current?.app, []);
+  const plugins = usePlugins({ getApp });
   const views = useViews({ yearViewMode });
+
   const [diarySearch] = useDiaryUrl();
 
   const calendar = useCalendarApp({

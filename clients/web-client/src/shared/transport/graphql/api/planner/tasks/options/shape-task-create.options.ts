@@ -9,6 +9,7 @@ function shapeTaskCreateOptions(additionalOptions?: Partial<OptionsResponse[1]>)
     context: {
       ...additionalOptions?.context,
       endpoint: 'private',
+      retry: false,
     },
   };
 

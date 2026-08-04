@@ -5,7 +5,12 @@ import { shapeTaskCreateOptions, useExtendApolloErrorResult } from '@/shared/tra
 function useTaskCreate() {
   const [createTask, rest] = useMutation(...shapeTaskCreateOptions());
   const { appErrors } = useExtendApolloErrorResult(rest.error);
-  useExceptionNotificator({ exception: appErrors.at(-1) });
+  useExceptionNotificator({
+    exception: appErrors.at(-1),
+    messageHandlers: {
+      anyException: () => 'Не удалось создать дело, попробуйте еще раз',
+    },
+  });
   return { createTask, ...rest };
 }
 

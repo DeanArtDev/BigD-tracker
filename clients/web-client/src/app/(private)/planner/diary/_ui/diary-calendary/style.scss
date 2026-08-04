@@ -7,6 +7,10 @@
 .diary-calendar {
   --df-color-primary: var(--primary);
 
+  .df-right-panel-date-heading {
+    display: none;
+  }
+
   .df-agenda-event {
     width: 100%;
     min-width: 0;
