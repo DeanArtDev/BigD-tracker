@@ -51,6 +51,14 @@ const tasks = {
     code: 'GT-A-0007',
     details: Details.Define<{ taskId?: string | number; overrideId?: number }>(),
   },
+  taskSettingsNotFound: {
+    code: 'GT-A-0008',
+    details: Details.Define<{ taskId: string | number }>(),
+  },
+  taskRecurrenceOverrideSettingsNotFound: {
+    code: 'GT-A-0009',
+    details: Details.Define<{ taskId: string }>(),
+  },
 
   // Domain
   taskInvariantFailed: {
@@ -72,6 +80,7 @@ const groups = {
   inboxNotExist: { code: 'GG-A-0002', details: Details.Empty },
   inboxAlreadyExist: { code: 'GG-A-0003', details: Details.Empty },
   groupNotFound: { code: 'GG-A-0004', details: Details.Define<{ groupId?: number }>() },
+  groupSettingsNotFound: { code: 'GG-A-0005', details: Details.Define<{ groupId: number }>() },
 } as const satisfies ExceptionConfig;
 
 // SYSTEM

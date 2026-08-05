@@ -462,6 +462,9 @@ importers:
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
+      dataloader:
+        specifier: 2.2.3
+        version: 2.2.3
       date-fns:
         specifier: 'catalog:'
         version: 4.1.0

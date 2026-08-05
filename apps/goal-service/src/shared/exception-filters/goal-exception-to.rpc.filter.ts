@@ -35,8 +35,11 @@ export class GoalExceptionToRpc implements ExceptionFilter {
           exceptionCode.taskNotFound.code,
           exceptionCode.taskNotExist.code,
           exceptionCode.taskNotInGroup.code,
+          exceptionCode.taskSettingsNotFound.code,
+          exceptionCode.taskRecurrenceOverrideSettingsNotFound.code,
           exceptionCode.groupNotExist.code,
           exceptionCode.groupNotFound.code,
+          exceptionCode.groupSettingsNotFound.code,
           exceptionCode.inboxNotExist.code,
         ].some((code) => code === exception.code)
       ) {
@@ -55,6 +58,10 @@ export class GoalExceptionToRpc implements ExceptionFilter {
         )
       ) {
         return throwError(() => this.#toRpcException(exception, RmqErrorKind.ALREADY_EXISTS, correlationId));
+      }
+
+      if (exception.code === exceptionCode.writeConflict.code) {
+        return throwError(() => this.#toRpcException(exception, RmqErrorKind.CONFLICT, correlationId));
       }
 
       if (

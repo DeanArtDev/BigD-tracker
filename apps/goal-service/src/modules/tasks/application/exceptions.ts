@@ -13,6 +13,12 @@ const ApplicationExceptionStateList = {
     details: exceptionCode.groupNotFound.details,
   }),
 
+  GroupSettingsNotFound: defineExceptionState({
+    key: 'GROUP_SETTINGS_NOT_FOUND',
+    code: exceptionCode.groupSettingsNotFound.code,
+    details: exceptionCode.groupSettingsNotFound.details,
+  }),
+
   InboxNotExist: defineExceptionState({
     key: 'INBOX_NOT_EXIST',
     code: exceptionCode.inboxNotExist.code,
@@ -55,8 +61,26 @@ const ApplicationExceptionStateList = {
     details: exceptionCode.taskCreationFailed.details,
   }),
 
+  TaskSettingsNotFound: defineExceptionState({
+    key: 'TASK_SETTINGS_NOT_FOUND',
+    code: exceptionCode.taskSettingsNotFound.code,
+    details: exceptionCode.taskSettingsNotFound.details,
+  }),
+
+  TaskRecurrenceOverrideSettingsNotFound: defineExceptionState({
+    key: 'TASK_RECURRENCE_OVERRIDE_SETTINGS_NOT_FOUND',
+    code: exceptionCode.taskRecurrenceOverrideSettingsNotFound.code,
+    details: exceptionCode.taskRecurrenceOverrideSettingsNotFound.details,
+  }),
+
   GroupWriteConflict: defineExceptionState({
     key: 'GROUP_WRITE_CONFLICT',
+    code: exceptionCode.writeConflict.code,
+    details: exceptionCode.writeConflict.details,
+  }),
+
+  TaskWriteConflict: defineExceptionState({
+    key: 'TASK_WRITE_CONFLICT',
     code: exceptionCode.writeConflict.code,
     details: exceptionCode.writeConflict.details,
   }),
@@ -82,8 +106,12 @@ const ApplicationExceptionStateList = {
 
 export const {
   ExceptionTaskCreationFailed,
+  ExceptionTaskSettingsNotFound,
+  ExceptionTaskRecurrenceOverrideSettingsNotFound,
+  ExceptionTaskWriteConflict,
   ExceptionGroupWriteConflict,
   ExceptionGroupNotFound,
+  ExceptionGroupSettingsNotFound,
   ExceptionTaskNotFound,
   ExceptionTaskAlreadyInGroup,
   ExceptionTaskNotInGroup,

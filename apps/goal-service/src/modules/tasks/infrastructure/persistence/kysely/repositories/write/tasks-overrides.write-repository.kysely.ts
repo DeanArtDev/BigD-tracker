@@ -1,3 +1,8 @@
+import {
+  TaskRecurrenceOverrideSettingsView,
+  TaskRecurrenceOverrideSettingsViewPatch,
+  TaskSettingsView,
+} from '@/modules/tasks/application/dto';
 import { TaskDatabase, TasksOverridesRepositoryWritePort, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
@@ -11,6 +16,7 @@ import {
   recurrenceStatusByNameQuery,
   statusByNameQuery,
   taskFrequencyByNameQuery,
+  taskRecurrenceOverrideSettingsQuery,
   taskRecurrencesQuery,
 } from '../utils';
 
@@ -21,6 +27,59 @@ export class TasksOverridesWriteRepositoryKysely
 {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: TaskDatabase) {
     super();
+  }
+
+  async getSettings(
+    input: { overrideId: number; userId: number },
+    trx?: TaskTransaction,
+  ): Promise<TaskRecurrenceOverrideSettingsView | null> {
+    return await this.errorCatcher('tasks.get-override-settings', async () => {
+      const settings = await taskRecurrenceOverrideSettingsQuery(this.db, trx)
+        .where('task_recurrence_override_settings.tasks_recurrences_overrides_id', '=', input.overrideId)
+        .where('tasks_recurrences_overrides.user_id', '=', input.userId)
+        .executeTakeFirst();
+
+      return settings == null ? null : TaskRecurrenceOverrideSettingsView.restore(settings);
+    });
+  }
+
+  async getManySettings(
+    input: { readonly overrideIds: number[]; readonly userId: number },
+    trx?: TaskTransaction,
+  ): Promise<TaskRecurrenceOverrideSettingsView[]> {
+    return await this.errorCatcher('tasks.get-many-override-settings', async () => {
+      const { overrideIds, userId } = input;
+      if (overrideIds.length === 0) return [];
+
+      const settings = await taskRecurrenceOverrideSettingsQuery(this.db, trx)
+        .where('tasks_recurrences_overrides.user_id', '=', userId)
+        .where('task_recurrence_override_settings.tasks_recurrences_overrides_id', 'in', overrideIds)
+        .execute();
+
+      return settings.map((setting) => TaskRecurrenceOverrideSettingsView.restore(setting));
+    });
+  }
+
+  async updateSettings(
+    input: { overrideId: number; patch: TaskRecurrenceOverrideSettingsViewPatch },
+    trx?: TaskTransaction,
+  ): Promise<boolean> {
+    return await this.errorCatcher('tasks.update-override-settings', async () => {
+      const { overrideId, patch } = input;
+      if (Object.values(patch).every((value) => value === undefined)) return true;
+
+      const result = await this.db
+        .qb(trx)
+        .updateTable('task_recurrence_override_settings')
+        .set({
+          icon: patch.icon,
+          is_all_day: patch.isAllDay,
+        })
+        .where('tasks_recurrences_overrides_id', '=', overrideId)
+        .executeTakeFirst();
+
+      return result.numUpdatedRows > 0;
+    });
   }
 
   async getManyRecurrences(specifications: TasksSpecification, trx?: TaskTransaction): Promise<TaskRecurrence[]> {
@@ -241,6 +300,39 @@ export class TasksOverridesWriteRepositoryKysely
           'override_type_id',
           'recurrence_start',
         ])
+        .executeTakeFirstOrThrow();
+
+      const rawTaskSettings = await this.db
+        .qb(trx)
+        .selectFrom('tasks_recurrences')
+        .innerJoin('task_settings', 'task_settings.task_id', 'tasks_recurrences.task_id')
+        .where('tasks_recurrences.id', '=', override.recurrenceId)
+        .select([
+          'task_settings.task_id as task_id',
+          'task_settings.icon as icon',
+          'task_settings.is_all_day as is_all_day',
+        ])
+        .executeTakeFirstOrThrow();
+
+      const taskSettings = TaskSettingsView.restore({
+        taskId: rawTaskSettings.task_id,
+        icon: rawTaskSettings.icon,
+        isAllDay: rawTaskSettings.is_all_day,
+      });
+      const overrideSettings = TaskRecurrenceOverrideSettingsView.create({
+        taskRecurrenceOverrideId: rawOverride.id,
+        taskSettings,
+      });
+
+      await this.db
+        .qb(trx)
+        .insertInto('task_recurrence_override_settings')
+        .values({
+          tasks_recurrences_overrides_id: overrideSettings.taskRecurrenceOverrideId,
+          icon: overrideSettings.icon ?? null,
+          is_all_day: overrideSettings.isAllDay,
+        })
+        .onConflict((oc) => oc.column('tasks_recurrences_overrides_id').doNothing())
         .executeTakeFirstOrThrow();
 
       return TasksWriteKyselyMapper.fromRawToOverrideAgr({

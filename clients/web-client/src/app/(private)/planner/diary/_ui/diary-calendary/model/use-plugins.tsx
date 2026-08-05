@@ -2,6 +2,7 @@ import { ICalendarApp } from '@dayflow/core';
 import { createDragPlugin } from '@dayflow/plugin-drag';
 import { createKeyboardShortcutsPlugin } from '@dayflow/plugin-keyboard-shortcuts';
 import { createSidebarPlugin } from '@dayflow/plugin-sidebar';
+import { noop } from 'lodash-es';
 import { useMemo } from 'react';
 import { DIARY_SIDEBAR_MINI_WIDTH, DiarySidebar } from '../ui';
 import { useEventUpdate } from './callbacks/use-event-update';
@@ -36,12 +37,9 @@ function usePlugins({ getApp }: UsePluginsParams) {
         render: (props) => <DiarySidebar {...props} />,
       }),
 
-      // Нежен ли этот плагин вообще??
       createKeyboardShortcutsPlugin({
         callbacks: {
-          undo: (app) => {
-            console.log('undo:', app);
-          },
+          undo: noop,
           delete: (app, event) => {
             if (!event) return;
             void app

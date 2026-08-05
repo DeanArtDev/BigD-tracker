@@ -1,3 +1,4 @@
+import { TaskSettingsView, TaskSettingsViewPatch } from '@/modules/tasks/application/dto';
 import { TaskDatabase, TasksWriteRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { Task } from '@/modules/tasks/domain';
 import { databaseToken } from '@big-d/database';
@@ -63,11 +64,44 @@ export class TasksWriteRepositoryKysely extends BaseTasksRepository implements T
         ])
         .executeTakeFirstOrThrow();
 
+      const settings = TaskSettingsView.create({ taskId: taskResponse.id });
+      await this.db
+        .qb(trx)
+        .insertInto('task_settings')
+        .values({
+          task_id: settings.taskId,
+          icon: settings.icon ?? null,
+          is_all_day: settings.isAllDay,
+        })
+        .executeTakeFirstOrThrow();
+
       if (task.groupId != null) {
         await this.#syncGroupLinks({ groupId: task.groupId, taskId: taskResponse.id }, trx);
       }
 
       return TasksWriteKyselyMapper.fromRawToAgr({ ...taskResponse, status: status_name });
+    });
+  }
+
+  async updateSettings(
+    input: { taskId: number; patch: TaskSettingsViewPatch },
+    trx?: TaskTransaction,
+  ): Promise<boolean> {
+    return await this.errorCatcher('tasks.update-settings', async () => {
+      const { taskId, patch } = input;
+      if (Object.values(patch).every((value) => value === undefined)) return true;
+
+      const result = await this.db
+        .qb(trx)
+        .updateTable('task_settings')
+        .set({
+          icon: patch.icon,
+          is_all_day: patch.isAllDay,
+        })
+        .where('task_id', '=', taskId)
+        .executeTakeFirst();
+
+      return result.numUpdatedRows > 0;
     });
   }
 

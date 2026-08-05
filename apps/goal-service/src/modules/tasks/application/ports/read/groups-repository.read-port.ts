@@ -1,5 +1,5 @@
 import { SortDirection } from '@big-d/api-contracts';
-import { GroupInfoView, GroupView } from '../../dto';
+import { GroupInfoView, GroupSettingsView, GroupView } from '../../dto';
 import { TasksSpecification } from '../../specifications';
 import { TaskTransaction } from '../transaction-manager.port';
 
@@ -11,6 +11,8 @@ interface GroupsReadRepository {
   getOne(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null>;
 
   getGroupInfo(input: { groupId: number; userId: number }, trx?: TaskTransaction): Promise<{ taskCount: number }>;
+
+  getSettings(input: { groupId: number; userId: number }, trx?: TaskTransaction): Promise<GroupSettingsView | null>;
 
   ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },

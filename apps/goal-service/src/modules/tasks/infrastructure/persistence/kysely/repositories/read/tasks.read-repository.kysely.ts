@@ -1,10 +1,11 @@
-import { TaskView } from '@/modules/tasks/application/dto';
+import { TaskSettingsView, TaskView } from '@/modules/tasks/application/dto';
 import {
   TaskDatabase,
   TasksPagination,
   TasksReadRepository,
   TasksSorting,
   TaskTransaction,
+  TaskVirtualSettings,
 } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import {
@@ -20,7 +21,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { toLower } from 'lodash';
 import { TasksReadKyselyMapper } from '../../mappers/tasks.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
-import { leftJoinTaskRecurrences, tasksWithStatusQuery } from '../utils';
+import { leftJoinTaskRecurrences, taskVirtualSettingsQuery, taskSettingsQuery, tasksWithStatusQuery } from '../utils';
 
 @Injectable()
 export class TasksReadRepositoryKysely extends BaseTasksRepository implements TasksReadRepository {
@@ -52,6 +53,59 @@ export class TasksReadRepositoryKysely extends BaseTasksRepository implements Ta
           yearmonths: task.recurrence_yearmonths,
           until_date: task.recurrence_until_date,
         },
+      });
+    });
+  }
+
+  async getSettings(
+    input: { taskId: number; userId: number },
+    trx?: TaskTransaction,
+  ): Promise<TaskSettingsView | null> {
+    return await this.errorCatcher('tasks.get-settings.read', async () => {
+      const settings = await taskSettingsQuery(this.db, trx)
+        .where('task_settings.task_id', '=', input.taskId)
+        .where('tasks.user_id', '=', input.userId)
+        .executeTakeFirst();
+
+      return settings == null ? null : TaskSettingsView.restore(settings);
+    });
+  }
+
+  async getManySettings(
+    input: { readonly userId: number; readonly taskIds: number[] },
+    trx?: TaskTransaction,
+  ): Promise<TaskSettingsView[]> {
+    return await this.errorCatcher('tasks.get-many-settings.read', async () => {
+      const { userId, taskIds } = input;
+      if (taskIds.length === 0) return [];
+
+      const settings = await taskSettingsQuery(this.db, trx)
+        .where('tasks.user_id', '=', userId)
+        .where('task_settings.task_id', 'in', taskIds)
+        .execute();
+
+      return settings.map((setting) => TaskSettingsView.restore(setting));
+    });
+  }
+
+  async getManyVirtualTaskSettings(
+    input: { readonly userId: number; readonly recurrenceIds: number[] },
+    trx?: TaskTransaction,
+  ): Promise<TaskVirtualSettings[]> {
+    return await this.errorCatcher('tasks.get-many-settings-by-recurrence-ids.read', async () => {
+      const { userId, recurrenceIds } = input;
+      if (recurrenceIds.length === 0) return [];
+
+      const result = await taskVirtualSettingsQuery(this.db, trx)
+        .where('tasks.user_id', '=', userId)
+        .where('tasks_recurrences.id', 'in', recurrenceIds)
+        .execute();
+
+      return result.map(({ recurrenceId, ...settings }) => {
+        return {
+          recurrenceId,
+          settings: TaskSettingsView.restore(settings),
+        };
       });
     });
   }

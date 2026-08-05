@@ -11,6 +11,9 @@ import {
 
 const tasksReadRepoMock: Record<keyof TasksReadRepository, jest.Mock> = {
   getById: jest.fn(),
+  getSettings: jest.fn(),
+  getManySettings: jest.fn(),
+  getManyVirtualTaskSettings: jest.fn(),
   isTaskIntoGroup: jest.fn(),
   getByRange: jest.fn(),
   getMany: jest.fn(),
@@ -21,9 +24,12 @@ const tasksWriteRepoMock: Record<keyof TasksWriteRepository, jest.Mock> = {
   createTask: jest.fn(),
   deleteTask: jest.fn(),
   replaceTask: jest.fn(),
+  updateSettings: jest.fn(),
 };
 
 const tasksOverridesWriteRepoMock: Record<keyof TasksOverridesRepositoryWritePort, jest.Mock> = {
+  getSettings: jest.fn(),
+  getManySettings: jest.fn(),
   getManyRecurrences: jest.fn(),
   getManyOverrides: jest.fn(),
   getOneRecurrence: jest.fn(),
@@ -35,6 +41,7 @@ const tasksOverridesWriteRepoMock: Record<keyof TasksOverridesRepositoryWritePor
   deleteManyOverride: jest.fn(),
   updateOverride: jest.fn(),
   updateRecurrence: jest.fn(),
+  updateSettings: jest.fn(),
 };
 
 const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
@@ -42,6 +49,7 @@ const groupWriteRepoMock: Record<keyof GroupsWriteRepository, jest.Mock> = {
   delete: jest.fn(),
   getGroup: jest.fn(),
   updateGroupAndTaskOrder: jest.fn(),
+  updateSettings: jest.fn(),
 };
 
 const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> & { getGroupDetailed: jest.Mock } = {
@@ -50,6 +58,7 @@ const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> & { getGr
   ensureTaskInGroup: jest.fn(),
   getInfoGroups: jest.fn(),
   getGroupInfo: jest.fn(),
+  getSettings: jest.fn(),
   getMany: jest.fn(),
   getOne: jest.fn(),
 };

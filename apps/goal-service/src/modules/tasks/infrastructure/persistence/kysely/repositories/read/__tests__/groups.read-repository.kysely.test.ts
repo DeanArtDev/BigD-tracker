@@ -7,6 +7,7 @@ import {
   groupsCombinators,
 } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
+import { DEFAULT_GROUP_SETTINGS } from '@/modules/tasks/domain/constants';
 import { GroupStatus, TaskStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupsReadRepositoryKysely } from '../groups.read-repository.kysely';
@@ -169,6 +170,45 @@ describe('GroupsReadRepositoryKysely', () => {
             and "task_statuses"."name" not in ($3, $4)
         `,
           parameters: [42, 5, TaskStatus.DELETED, TaskStatus.ARCHIVED],
+        });
+      },
+    );
+  });
+
+  test('getSettings returns settings owned by user', async () => {
+    await withRepository<TasksDB, GroupsReadRepositoryKysely>(
+      (db) => new GroupsReadRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        const settings = { groupId: 42, ...DEFAULT_GROUP_SETTINGS };
+        recorder.enqueueResult({ rows: [settings] });
+
+        const result = await repository.getSettings({ groupId: 42, userId: 5 });
+
+        expect(result).toEqual(settings);
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          select
+            "group_settings"."group_id" as "groupId",
+            "group_settings"."event_color" as "eventColor",
+            "group_settings"."event_selected_color" as "eventSelectedColor",
+            "group_settings"."line_color" as "lineColor",
+            "group_settings"."text_color" as "textColor",
+            "group_settings"."event_color_dark" as "eventColorDark",
+            "group_settings"."event_selected_color_dark" as "eventSelectedColorDark",
+            "group_settings"."line_color_dark" as "lineColorDark",
+            "group_settings"."text_color_dark" as "textColorDark",
+            "group_settings"."is_default" as "isDefault",
+            "group_settings"."is_visible" as "isVisible",
+            "group_settings"."is_readonly" as "isReadonly"
+          from "group_settings"
+          inner join "groups"
+            on "groups"."id" = "group_settings"."group_id"
+          where
+            "group_settings"."group_id" = $1
+            and "groups"."user_id" = $2
+        `,
+          parameters: [42, 5],
         });
       },
     );

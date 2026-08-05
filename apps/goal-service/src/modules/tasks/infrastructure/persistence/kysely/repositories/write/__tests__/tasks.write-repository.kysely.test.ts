@@ -83,10 +83,11 @@ describe('TasksWriteRepositoryKysely', () => {
             },
           ],
         });
+        recorder.enqueueResult({ numAffectedRows: 1n });
 
         await repository.createTask(getTask({ id: 11, userId: 77, status: TaskStatus.NOT_STARTED }));
 
-        expect(recorder.queries).toHaveLength(2);
+        expect(recorder.queries).toHaveLength(3);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
@@ -114,6 +115,40 @@ describe('TasksWriteRepositoryKysely', () => {
             "deadline"
         `,
           parameters: ['Task name', 77, 2, 1],
+        });
+        expectSqlQuery(recorder.queries[2], {
+          sql: `
+          insert into "task_settings" ("task_id", "icon", "is_all_day")
+          values ($1, $2, $3)
+        `,
+          parameters: [11, null, false],
+        });
+      },
+    );
+  });
+
+  test('updateSettings returns expected sql and params', async () => {
+    await withRepository<TasksDB, TasksWriteRepositoryKysely>(
+      (db) => new TasksWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({ numAffectedRows: 1n });
+
+        const result = await repository.updateSettings({
+          taskId: 42,
+          patch: { icon: null, isAllDay: true },
+        });
+
+        expect(result).toBe(true);
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          update "task_settings"
+          set
+            "icon" = $1,
+            "is_all_day" = $2
+          where "task_id" = $3
+        `,
+          parameters: [null, true, 42],
         });
       },
     );
@@ -143,6 +178,7 @@ describe('TasksWriteRepositoryKysely', () => {
             },
           ],
         });
+        recorder.enqueueResult({ numAffectedRows: 1n });
         recorder.enqueueResult({
           rows: [],
         });
@@ -155,7 +191,7 @@ describe('TasksWriteRepositoryKysely', () => {
 
         await repository.createTask(getTask({ id: 11, userId: 77, groupId: 9, status: TaskStatus.NOT_STARTED }));
 
-        expect(recorder.queries).toHaveLength(5);
+        expect(recorder.queries).toHaveLength(6);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
@@ -186,6 +222,13 @@ describe('TasksWriteRepositoryKysely', () => {
         });
         expectSqlQuery(recorder.queries[2], {
           sql: `
+          insert into "task_settings" ("task_id", "icon", "is_all_day")
+          values ($1, $2, $3)
+        `,
+          parameters: [11, null, false],
+        });
+        expectSqlQuery(recorder.queries[3], {
+          sql: `
           select
             "group_id",
             "position"
@@ -194,7 +237,7 @@ describe('TasksWriteRepositoryKysely', () => {
         `,
           parameters: [11],
         });
-        expectSqlQuery(recorder.queries[3], {
+        expectSqlQuery(recorder.queries[4], {
           sql: `
           select count("task_id") as "count"
           from "task_to_group"
@@ -202,7 +245,7 @@ describe('TasksWriteRepositoryKysely', () => {
         `,
           parameters: [9],
         });
-        expectSqlQuery(recorder.queries[4], {
+        expectSqlQuery(recorder.queries[5], {
           sql: `
           insert into "task_to_group" ("group_id", "task_id", "position")
           values ($1, $2, $3)

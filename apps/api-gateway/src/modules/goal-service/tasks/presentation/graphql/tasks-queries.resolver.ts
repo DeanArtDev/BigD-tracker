@@ -1,3 +1,4 @@
+import { AppGraphQLContext } from '@/infrastructure/graphql-client/types';
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
@@ -10,7 +11,8 @@ import {
   GoalGetTasksPerPage,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { getTaskSettingsDataLoader } from './loaders';
 import {
   GetAssignableTasksInput,
   GetDiaryTasksInput,
@@ -18,6 +20,7 @@ import {
   GetTasksCursorInput,
   GetTasksPerPageInput,
   TaskSchema,
+  TaskSettingsSchema,
   TasksConnection,
   TasksPerPageConnection,
 } from './schemas';
@@ -25,6 +28,15 @@ import {
 @Resolver(() => TaskSchema)
 class TasksQueriesResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
+
+  @ResolveField(() => TaskSettingsSchema)
+  settings(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Parent() task: TaskSchema,
+    @Context() context: AppGraphQLContext,
+  ): Promise<TaskSettingsSchema> {
+    return getTaskSettingsDataLoader({ context, goalClient: this.goalClient, userId: uid }).load(task.id);
+  }
 
   @Query(() => [TaskSchema], {
     description: 'Получение списка дел, доступных для назначения в группу',

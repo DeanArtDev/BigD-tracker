@@ -47,6 +47,7 @@
     "class-validator": "catalog:",
     "cookie": "1.1.1",
     "cookie-parser": "^1.4.7",
+    "dataloader": "2.2.3",
     "date-fns": "catalog:",
     "express": "5.0.1",
     "graphql": "16.14.0",

@@ -65,6 +65,35 @@ describe('TasksReadRepositoryKysely', () => {
     );
   });
 
+  test('getSettings returns settings owned by user', async () => {
+    await withRepository<TasksDB, TasksReadRepositoryKysely>(
+      (db) => new TasksReadRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({ rows: [{ taskId: 42, icon: 'folder', isAllDay: true }] });
+
+        const result = await repository.getSettings({ taskId: 42, userId: 5 });
+
+        expect(result).toMatchObject({ taskId: 42, icon: 'folder', isAllDay: true });
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          select
+            "task_settings"."task_id" as "taskId",
+            "task_settings"."icon" as "icon",
+            "task_settings"."is_all_day" as "isAllDay"
+          from "task_settings"
+          inner join "tasks"
+            on "tasks"."id" = "task_settings"."task_id"
+          where
+            "task_settings"."task_id" = $1
+            and "tasks"."user_id" = $2
+        `,
+          parameters: [42, 5],
+        });
+      },
+    );
+  });
+
   test('isTaskIntoGroup returns expected sql and params', async () => {
     await withRepository<TasksDB, TasksReadRepositoryKysely>(
       (db) => new TasksReadRepositoryKysely(db),

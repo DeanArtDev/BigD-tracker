@@ -1,5 +1,11 @@
 import { initTestEnvironment } from '@/../jest.setup';
-import { ExceptionTaskNotFound } from '@/modules/tasks/application/exceptions';
+import {
+  ExceptionGroupSettingsNotFound,
+  ExceptionGroupWriteConflict,
+  ExceptionTaskNotFound,
+  ExceptionTaskRecurrenceOverrideSettingsNotFound,
+  ExceptionTaskSettingsNotFound,
+} from '@/modules/tasks/application/exceptions';
 import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
 import { BaseRpcException, RmqErrorKind } from '@big-d/api-contracts';
 import { RequestContext } from '@big-d/api-utils';
@@ -87,5 +93,118 @@ describe('GoalExceptionToRpc', () => {
       },
     });
     expect(error.details).toHaveProperty('timestamp');
+  });
+
+  test('maps missing group settings to not found', async () => {
+    const filter = new GoalExceptionToRpc();
+
+    const error = await GoalServiceRequestContext.run(
+      new RequestContext({ correlationId: 'cid-settings', source: 'rmq' }),
+      async (): Promise<BaseRpcException> => {
+        try {
+          await firstValueFrom(filter.catch(new ExceptionGroupSettingsNotFound({ groupId: 42 })));
+          throw new Error('Expected filter to throw');
+        } catch (exception) {
+          return exception as BaseRpcException;
+        }
+      },
+    );
+
+    expect(error).toMatchObject({
+      key: 'GROUP_SETTINGS_NOT_FOUND',
+      code: exceptionCode.groupSettingsNotFound.code,
+      kind: RmqErrorKind.NOT_FOUND,
+      details: {
+        correlationId: 'cid-settings',
+        groupId: 42,
+      },
+    });
+  });
+
+  test('maps missing task settings to not found', async () => {
+    const filter = new GoalExceptionToRpc();
+
+    const error = await GoalServiceRequestContext.run(
+      new RequestContext({ correlationId: 'cid-task-settings', source: 'rmq' }),
+      async (): Promise<BaseRpcException> => {
+        try {
+          await firstValueFrom(filter.catch(new ExceptionTaskSettingsNotFound({ taskId: 'o::42' })));
+          throw new Error('Expected filter to throw');
+        } catch (exception) {
+          return exception as BaseRpcException;
+        }
+      },
+    );
+
+    expect(error).toMatchObject({
+      key: 'TASK_SETTINGS_NOT_FOUND',
+      code: exceptionCode.taskSettingsNotFound.code,
+      kind: RmqErrorKind.NOT_FOUND,
+      details: {
+        correlationId: 'cid-task-settings',
+        taskId: 'o::42',
+      },
+    });
+  });
+
+  test('maps missing task recurrence override settings to not found', async () => {
+    const filter = new GoalExceptionToRpc();
+    const taskId = 'ov::7::2026-08-05T10:00:00.000Z::15';
+
+    const error = await GoalServiceRequestContext.run(
+      new RequestContext({ correlationId: 'cid-override-settings', source: 'rmq' }),
+      async (): Promise<BaseRpcException> => {
+        try {
+          await firstValueFrom(filter.catch(new ExceptionTaskRecurrenceOverrideSettingsNotFound({ taskId })));
+          throw new Error('Expected filter to throw');
+        } catch (exception) {
+          return exception as BaseRpcException;
+        }
+      },
+    );
+
+    expect(error).toMatchObject({
+      key: 'TASK_RECURRENCE_OVERRIDE_SETTINGS_NOT_FOUND',
+      code: exceptionCode.taskRecurrenceOverrideSettingsNotFound.code,
+      kind: RmqErrorKind.NOT_FOUND,
+      details: {
+        correlationId: 'cid-override-settings',
+        taskId,
+      },
+    });
+  });
+
+  test('maps group write conflict to conflict', async () => {
+    const filter = new GoalExceptionToRpc();
+
+    const error = await GoalServiceRequestContext.run(
+      new RequestContext({ correlationId: 'cid-write-conflict', source: 'rmq' }),
+      async (): Promise<BaseRpcException> => {
+        try {
+          await firstValueFrom(
+            filter.catch(
+              new ExceptionGroupWriteConflict({
+                subjectId: 42,
+                message: 'Group settings could not be updated',
+              }),
+            ),
+          );
+          throw new Error('Expected filter to throw');
+        } catch (exception) {
+          return exception as BaseRpcException;
+        }
+      },
+    );
+
+    expect(error).toMatchObject({
+      key: 'GROUP_WRITE_CONFLICT',
+      code: exceptionCode.writeConflict.code,
+      kind: RmqErrorKind.CONFLICT,
+      details: {
+        correlationId: 'cid-write-conflict',
+        subjectId: 42,
+        message: 'Group settings could not be updated',
+      },
+    });
   });
 });

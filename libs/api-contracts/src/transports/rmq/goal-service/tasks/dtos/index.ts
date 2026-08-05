@@ -16,6 +16,8 @@ export * from './complete-delete-task.dto';
 export * from './task-recovery.dto';
 export * from './task-recurrency.dto';
 export * from './get-diary-tasks.dto';
+export * from './get-task-settings.dto';
 export * from './get-tasks-by-range.dto';
+export * from './update-task-settings.dto';
 
 export * from './task.dto';

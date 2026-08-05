@@ -6,6 +6,8 @@ export * from './delete-group';
 export * from './get-user-groups';
 export * from './get-group';
 export * from './get-group-info';
+export * from './get-group-settings';
+export * from './update-group-settings';
 export * from './get-assignable-groups';
 
 export * from './types';

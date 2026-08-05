@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-interface AppGraphQLContext<TParentArgs = unknown> {
+interface AppGraphQLContext {
   readonly request: Request;
   readonly response: Response;
-  parentArgs?: TParentArgs;
+  readonly loaders: Map<symbol, unknown>;
 }
 
 export { AppGraphQLContext };

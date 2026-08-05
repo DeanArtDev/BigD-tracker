@@ -5,7 +5,10 @@ import { Transaction } from 'kysely';
 type TasksDB = Pick<
   DB,
   | 'tasks'
+  | 'task_settings'
+  | 'task_recurrence_override_settings'
   | 'groups'
+  | 'group_settings'
   | 'group_statuses'
   | 'task_statuses'
   | 'tag_to_tasks'

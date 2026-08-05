@@ -53,6 +53,22 @@ export interface Groups {
   user_id: number;
 }
 
+export interface GroupSettings {
+  event_color: string;
+  event_color_dark: string;
+  event_selected_color: string;
+  event_selected_color_dark: string;
+  group_id: number;
+  id: Generated<number>;
+  is_default: Generated<boolean>;
+  is_readonly: Generated<boolean>;
+  is_visible: Generated<boolean>;
+  line_color: string;
+  line_color_dark: string;
+  text_color: string;
+  text_color_dark: string;
+}
+
 export interface GroupStatuses {
   id: Generated<number>;
   name: string;
@@ -122,6 +138,20 @@ export interface Tasks {
   user_id: number;
 }
 
+export interface TaskSettings {
+  icon: string | null;
+  id: Generated<number>;
+  is_all_day: Generated<boolean>;
+  task_id: number;
+}
+
+export interface TaskRecurrenceOverrideSettings {
+  icon: string | null;
+  id: Generated<number>;
+  is_all_day: Generated<boolean>;
+  tasks_recurrences_overrides_id: number;
+}
+
 export interface TasksRecurrences {
   created_at: Generated<Timestamp>;
   id: Generated<number>;
@@ -182,6 +212,7 @@ export interface DB {
   goals: Goals;
   goals_to_stages: GoalsToStages;
   group_statuses: GroupStatuses;
+  group_settings: GroupSettings;
   group_to_goals: GroupToGoals;
   groups: Groups;
   recurrence_statuses: RecurrenceStatuses;
@@ -192,6 +223,8 @@ export interface DB {
   tag_to_tasks: TagToTasks;
   tags: Tags;
   task_statuses: TaskStatuses;
+  task_recurrence_override_settings: TaskRecurrenceOverrideSettings;
+  task_settings: TaskSettings;
   task_to_group: TaskToGroup;
   tasks: Tasks;
   tasks_recurrences: TasksRecurrences;
