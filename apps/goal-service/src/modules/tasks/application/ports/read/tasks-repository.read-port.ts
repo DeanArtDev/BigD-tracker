@@ -1,4 +1,4 @@
-import { TaskView } from '@/modules/tasks/application/dto/task.view';
+import { TaskSettingsView, TaskView } from '@/modules/tasks/application/dto';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { SortDirection } from '@big-d/api-contracts';
 import { TaskTransaction } from '../transaction-manager.port';
@@ -21,6 +21,11 @@ type TasksPagination =
       readonly perPage: number;
     };
 
+interface TaskVirtualSettings {
+  readonly recurrenceId: number;
+  readonly settings: TaskSettingsView;
+}
+
 interface TasksReadRepository {
   getMany(
     specifications: TasksSpecification,
@@ -41,7 +46,19 @@ interface TasksReadRepository {
 
   getById(input: { id: number; userId: number }, trx?: TaskTransaction): Promise<TaskView | null>;
 
+  getSettings(input: { taskId: number; userId: number }, trx?: TaskTransaction): Promise<TaskSettingsView | null>;
+
+  getManySettings(
+    input: { readonly userId: number; readonly taskIds: number[] },
+    trx?: TaskTransaction,
+  ): Promise<TaskSettingsView[]>;
+
+  getManyVirtualTaskSettings(
+    input: { readonly userId: number; readonly recurrenceIds: number[] },
+    trx?: TaskTransaction,
+  ): Promise<TaskVirtualSettings[]>;
+
   isTaskIntoGroup(input: { taskId: number; groupId: number }, trx?: TaskTransaction): Promise<boolean>;
 }
 
-export { TasksPagination, TasksReadRepository, TasksSorting };
+export { TaskVirtualSettings, TasksPagination, TasksReadRepository, TasksSorting };

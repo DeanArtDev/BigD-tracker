@@ -21,6 +21,64 @@ import { getTask, getTaskRecurrence } from '@shared/__tests__/entities';
 import { TasksOverridesWriteRepositoryKysely } from '../tasks-overrides.write-repository.kysely';
 
 describe('TasksOverridesWriteRepositoryKysely', () => {
+  test('getSettings returns override settings owned by user', async () => {
+    await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
+      (db) => new TasksOverridesWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({ rows: [{ taskRecurrenceOverrideId: 15, icon: 'folder', isAllDay: true }] });
+
+        const result = await repository.getSettings({ overrideId: 15, userId: 77 });
+
+        expect(result).toMatchObject({ taskRecurrenceOverrideId: 15, icon: 'folder', isAllDay: true });
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          select
+            "task_recurrence_override_settings"."tasks_recurrences_overrides_id"
+              as "taskRecurrenceOverrideId",
+            "task_recurrence_override_settings"."icon" as "icon",
+            "task_recurrence_override_settings"."is_all_day" as "isAllDay"
+          from "task_recurrence_override_settings"
+          inner join "tasks_recurrences_overrides"
+            on "tasks_recurrences_overrides"."id"
+              = "task_recurrence_override_settings"."tasks_recurrences_overrides_id"
+          where
+            "task_recurrence_override_settings"."tasks_recurrences_overrides_id" = $1
+            and "tasks_recurrences_overrides"."user_id" = $2
+        `,
+          parameters: [15, 77],
+        });
+      },
+    );
+  });
+
+  test('updateSettings returns expected sql and params', async () => {
+    await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
+      (db) => new TasksOverridesWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({ numAffectedRows: 1n });
+
+        const result = await repository.updateSettings({
+          overrideId: 15,
+          patch: { icon: null, isAllDay: true },
+        });
+
+        expect(result).toBe(true);
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          update "task_recurrence_override_settings"
+          set
+            "icon" = $1,
+            "is_all_day" = $2
+          where "tasks_recurrences_overrides_id" = $3
+        `,
+          parameters: [null, true, 15],
+        });
+      },
+    );
+  });
+
   test('getManyRecurrences returns expected sql and params', async () => {
     await withRepository<TasksDB, TasksOverridesWriteRepositoryKysely>(
       (db) => new TasksOverridesWriteRepositoryKysely(db),
@@ -340,6 +398,10 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             },
           ],
         });
+        recorder.enqueueResult({
+          rows: [{ task_id: 11, icon: 'folder', is_all_day: true }],
+        });
+        recorder.enqueueResult({ numAffectedRows: 1n });
 
         const override = TaskOverrideFactory.create({
           task: getTask({
@@ -356,7 +418,7 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
 
         await repository.upsertOverride(override);
 
-        expect(recorder.queries).toHaveLength(3);
+        expect(recorder.queries).toHaveLength(5);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
@@ -451,6 +513,28 @@ describe('TasksOverridesWriteRepositoryKysely', () => {
             1,
             '2026-01-10T10:00',
           ],
+        });
+        expectSqlQuery(recorder.queries[3], {
+          sql: `
+          select
+            "task_settings"."task_id" as "task_id",
+            "task_settings"."icon" as "icon",
+            "task_settings"."is_all_day" as "is_all_day"
+          from "tasks_recurrences"
+          inner join "task_settings"
+            on "task_settings"."task_id" = "tasks_recurrences"."task_id"
+          where "tasks_recurrences"."id" = $1
+        `,
+          parameters: [21],
+        });
+        expectSqlQuery(recorder.queries[4], {
+          sql: `
+          insert into "task_recurrence_override_settings"
+            ("tasks_recurrences_overrides_id", "icon", "is_all_day")
+          values ($1, $2, $3)
+          on conflict ("tasks_recurrences_overrides_id") do nothing
+        `,
+          parameters: [15, 'folder', true],
         });
       },
     );

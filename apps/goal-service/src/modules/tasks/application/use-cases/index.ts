@@ -14,3 +14,5 @@ export * from './task-recovery';
 export * from './create-inbox-group';
 export * from './replace-group';
 export * from './create-group';
+export * from './update-group-settings';
+export * from './update-task-settings';

@@ -1,4 +1,4 @@
-import { GroupInboxView } from '@/modules/tasks/application/dto';
+import { GroupInboxView, GroupSettingsView } from '@/modules/tasks/application/dto';
 import { TaskDatabase, GroupInboxWriteRepository, TaskTransaction } from '@/modules/tasks/application/ports';
 import { INBOX_GROUP_NAME } from '@/modules/tasks/domain/constants';
 import { GroupStatus } from '@big-d/api-contracts';
@@ -31,6 +31,27 @@ export class GroupInboxWriteRepositoryKysely extends BaseTasksRepository impleme
           status_id: groupStatus.id,
         })
         .returning(['id', 'name', 'user_id'])
+        .executeTakeFirstOrThrow();
+
+      const settings = GroupSettingsView.create({ groupId: result.id });
+
+      await this.db
+        .qb(trx)
+        .insertInto('group_settings')
+        .values({
+          group_id: settings.groupId,
+          event_color: settings.eventColor,
+          event_selected_color: settings.eventSelectedColor,
+          line_color: settings.lineColor,
+          text_color: settings.textColor,
+          event_color_dark: settings.eventColorDark,
+          event_selected_color_dark: settings.eventSelectedColorDark,
+          line_color_dark: settings.lineColorDark,
+          text_color_dark: settings.textColorDark,
+          is_default: settings.isDefault,
+          is_visible: settings.isVisible,
+          is_readonly: settings.isReadonly,
+        })
         .executeTakeFirstOrThrow();
 
       return GroupReadKyselyMapper.fromRawToInboxView({

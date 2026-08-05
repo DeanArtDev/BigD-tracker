@@ -21,6 +21,10 @@ import {
   GetGroupListQuery,
   GetGroupInfoQuery,
   GetGroupInfoHandler,
+  GetGroupSettingsQuery,
+  GetGroupSettingsHandler,
+  GetTaskSettingsQuery,
+  GetTaskSettingsHandler,
 } from './queries';
 import {
   GroupCheckerService,
@@ -83,6 +87,12 @@ import {
   TaskRecoveryCommand,
   TaskRecoveryHandler,
   TaskRecoveryUseCase,
+  UpdateGroupSettingsCommand,
+  UpdateGroupSettingsHandler,
+  UpdateGroupSettingsUseCase,
+  UpdateTaskSettingsCommand,
+  UpdateTaskSettingsHandler,
+  UpdateTaskSettingsUseCase,
 } from './use-cases';
 
 const queries = [
@@ -96,7 +106,9 @@ const queries = [
   GetTasksQuery,
   GetGroupListQuery,
   GetGroupInfoQuery,
+  GetGroupSettingsQuery,
   GetTasksPerPageQuery,
+  GetTaskSettingsQuery,
 ];
 const commands = [
   CreateTaskCommand,
@@ -114,6 +126,8 @@ const commands = [
   FinishTaskCommand,
   CompleteDeleteTaskCommand,
   TaskRecoveryCommand,
+  UpdateGroupSettingsCommand,
+  UpdateTaskSettingsCommand,
 ];
 const handlers = [
   CreateTaskHandler,
@@ -135,6 +149,8 @@ const handlers = [
   FinishTaskHandler,
   CompleteDeleteTaskHandler,
   TaskRecoveryHandler,
+  UpdateGroupSettingsHandler,
+  UpdateTaskSettingsHandler,
   GetAssignableGroupsHandler,
   GetDiaryTasksHandler,
   GetTaskByIdHandler,
@@ -142,6 +158,8 @@ const handlers = [
   GetTasksPerPageHandler,
   GetGroupListHandler,
   GetGroupInfoHandler,
+  GetGroupSettingsHandler,
+  GetTaskSettingsHandler,
 ];
 const useCases = [
   CreateTaskUseCase,
@@ -159,6 +177,8 @@ const useCases = [
   FinishTaskUseCase,
   CompleteDeleteTaskUseCase,
   TaskRecoveryUseCase,
+  UpdateGroupSettingsUseCase,
+  UpdateTaskSettingsUseCase,
 ];
 
 @Module({

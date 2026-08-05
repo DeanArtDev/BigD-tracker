@@ -4,6 +4,8 @@ import {
   GetDiaryTasksQuery,
   GetTaskByIdHandler,
   GetTaskByIdQuery,
+  GetTaskSettingsHandler,
+  GetTaskSettingsQuery,
   GetTasksByRangeHandler,
   GetTasksByRangeQuery,
   GetTasksHandler,
@@ -22,6 +24,8 @@ import {
   SoftDeleteTaskCommand,
   TaskRecoveryCommand,
   UnassignTaskFromGroupCommand,
+  UpdateTaskSettingsCommand,
+  UpdateTaskSettingsHandler,
 } from '@/modules/tasks/application/use-cases';
 import {
   GoalAssignTaskToGroup,
@@ -33,12 +37,14 @@ import {
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
   GoalGetTaskById,
+  GoalGetTaskSettings,
   GoalGetTasksCursor,
   GoalGetTasksPerPage,
   GoalGetTasksByRange,
   GoalReplaceTask,
   GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
+  GoalUpdateTaskSettings,
 } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
@@ -70,6 +76,36 @@ export class TasksRmqController {
           deadline: payload.deadline,
           recurrence: payload.recurrence,
         }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalUpdateTaskSettings.pattern)
+  async updateTaskSettings(
+    @Payload() { data: payload }: GoalUpdateTaskSettings.Request,
+  ): Promise<GoalUpdateTaskSettings.Response> {
+    const { taskId, userId, ...patch } = payload;
+    const settings = await this.commandBus.execute<
+      UpdateTaskSettingsCommand,
+      ReturnHandlerType<typeof UpdateTaskSettingsHandler>
+    >(new UpdateTaskSettingsCommand({ taskId, userId, ...patch }));
+
+    return {
+      data: {
+        taskId,
+        icon: settings.icon,
+        isAllDay: settings.isAllDay,
+      },
+    };
+  }
+
+  @MessagePattern(GoalGetTaskSettings.pattern)
+  async getTaskSettings(
+    @Payload() { data: payload }: GoalGetTaskSettings.Request,
+  ): Promise<GoalGetTaskSettings.Response> {
+    return {
+      data: await this.queryBus.execute<GetTaskSettingsQuery, ReturnHandlerType<typeof GetTaskSettingsHandler>>(
+        new GetTaskSettingsQuery(payload),
       ),
     };
   }

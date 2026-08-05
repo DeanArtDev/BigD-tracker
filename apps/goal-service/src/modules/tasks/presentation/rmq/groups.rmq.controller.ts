@@ -6,6 +6,8 @@ import {
   GetGroupListHandler,
   GetGroupListQuery,
   GetGroupQuery,
+  GetGroupSettingsHandler,
+  GetGroupSettingsQuery,
 } from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
@@ -13,6 +15,8 @@ import {
   DeleteGroupCommand,
   ReplaceGroupCommand,
   ReplaceGroupHandler,
+  UpdateGroupSettingsCommand,
+  UpdateGroupSettingsHandler,
 } from '@/modules/tasks/application/use-cases';
 import {
   GoalCreateGroup,
@@ -21,7 +25,9 @@ import {
   GoalGetGroup,
   GoalGetGroupInfo,
   GoalGetGroupList,
+  GoalGetGroupSettings,
   GoalReplaceGroup,
+  GoalUpdateGroupSettings,
 } from '@big-d/api-contracts';
 import { ReturnHandlerType } from '@big-d/api-utils';
 import { Controller, UseGuards } from '@nestjs/common';
@@ -72,6 +78,20 @@ export class GroupsRmqController {
     };
   }
 
+  @MessagePattern(GoalUpdateGroupSettings.pattern)
+  async updateGroupSettings(
+    @Payload() { data: payload }: GoalUpdateGroupSettings.Request,
+  ): Promise<GoalUpdateGroupSettings.Response> {
+    const { groupId, userId, ...patch } = payload;
+
+    return {
+      data: await this.commandBus.execute<
+        UpdateGroupSettingsCommand,
+        ReturnHandlerType<typeof UpdateGroupSettingsHandler>
+      >(new UpdateGroupSettingsCommand({ groupId, userId, ...patch })),
+    };
+  }
+
   @MessagePattern(GoalGetGroup.pattern)
   async getGroup(@Payload() { data: payload }: GoalGetGroup.Request): Promise<GoalGetGroup.Response> {
     const group = await this.queryBus.execute<GetGroupQuery, ReturnHandlerType<typeof GetGroupHandler>>(
@@ -91,6 +111,17 @@ export class GroupsRmqController {
     return {
       data: await this.queryBus.execute<GetGroupInfoQuery, ReturnHandlerType<typeof GetGroupInfoHandler>>(
         new GetGroupInfoQuery({ userId: payload.userId, groupId: payload.groupId }),
+      ),
+    };
+  }
+
+  @MessagePattern(GoalGetGroupSettings.pattern)
+  async getGroupSettings(
+    @Payload() { data: payload }: GoalGetGroupSettings.Request,
+  ): Promise<GoalGetGroupSettings.Response> {
+    return {
+      data: await this.queryBus.execute<GetGroupSettingsQuery, ReturnHandlerType<typeof GetGroupSettingsHandler>>(
+        new GetGroupSettingsQuery({ userId: payload.userId, groupId: payload.groupId }),
       ),
     };
   }

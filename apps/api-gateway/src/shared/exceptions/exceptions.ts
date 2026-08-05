@@ -12,7 +12,13 @@ const GateWayExceptionStateList = {
     code: exceptionCode.requestDataValidation.code,
     details: exceptionCode.requestDataValidation.details,
   }),
+
+  TaskSettingsNotFound: defineExceptionState({
+    key: 'TASK_SETTINGS_NOT_FOUND',
+    code: exceptionCode.taskSettingsNotFound.code,
+    details: exceptionCode.taskSettingsNotFound.details,
+  }),
 };
 
-export const { ExceptionWrongRpcResponse, ExceptionRequestDataValidation } =
+export const { ExceptionWrongRpcResponse, ExceptionRequestDataValidation, ExceptionTaskSettingsNotFound } =
   generateExceptionClasses(GateWayExceptionStateList);

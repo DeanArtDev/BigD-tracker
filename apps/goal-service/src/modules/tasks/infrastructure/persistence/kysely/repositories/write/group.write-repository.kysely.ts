@@ -1,3 +1,4 @@
+import { GroupSettingsView, GroupSettingsViewPatch } from '@/modules/tasks/application/dto';
 import { GroupsWriteRepository, TaskDatabase, TaskTransaction } from '@/modules/tasks/application/ports';
 import { TasksSpecification } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec, Task } from '@/modules/tasks/domain';
@@ -52,6 +53,27 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
           status_id: groupStatus.id,
         })
         .returning(['id', 'name', 'user_id', 'progress', 'description'])
+        .executeTakeFirstOrThrow();
+
+      const settings = GroupSettingsView.create({ groupId: result.id });
+
+      await this.db
+        .qb(trx)
+        .insertInto('group_settings')
+        .values({
+          group_id: settings.groupId,
+          event_color: settings.eventColor,
+          event_selected_color: settings.eventSelectedColor,
+          line_color: settings.lineColor,
+          text_color: settings.textColor,
+          event_color_dark: settings.eventColorDark,
+          event_selected_color_dark: settings.eventSelectedColorDark,
+          line_color_dark: settings.lineColorDark,
+          text_color_dark: settings.textColorDark,
+          is_default: settings.isDefault,
+          is_visible: settings.isVisible,
+          is_readonly: settings.isReadonly,
+        })
         .executeTakeFirstOrThrow();
 
       return GroupWriteKyselyMapper.fromRawToAgr({
@@ -120,6 +142,37 @@ export class GroupWriteRepositoryKysely extends BaseTasksRepository implements G
             .execute();
         }
       }
+    });
+  }
+
+  async updateSettings(
+    input: { groupId: number; patch: GroupSettingsViewPatch },
+    trx?: TaskTransaction,
+  ): Promise<boolean> {
+    return await this.errorCatcher('groups.update-settings', async () => {
+      const { groupId, patch } = input;
+      if (Object.values(patch).every((value) => value === undefined)) return true;
+
+      const result = await this.db
+        .qb(trx)
+        .updateTable('group_settings')
+        .set({
+          event_color: patch.eventColor,
+          event_selected_color: patch.eventSelectedColor,
+          line_color: patch.lineColor,
+          text_color: patch.textColor,
+          event_color_dark: patch.eventColorDark,
+          event_selected_color_dark: patch.eventSelectedColorDark,
+          line_color_dark: patch.lineColorDark,
+          text_color_dark: patch.textColorDark,
+          is_default: patch.isDefault,
+          is_visible: patch.isVisible,
+          is_readonly: patch.isReadonly,
+        })
+        .where('group_id', '=', groupId)
+        .executeTakeFirst();
+
+      return result.numUpdatedRows > 0;
     });
   }
 

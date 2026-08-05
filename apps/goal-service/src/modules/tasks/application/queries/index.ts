@@ -7,11 +7,17 @@ export * from './get-group/get-group.handler';
 export * from './get-group-info/get-group-info.query';
 export * from './get-group-info/get-group-info.handler';
 
+export * from './get-group-settings/get-group-settings.query';
+export * from './get-group-settings/get-group-settings.handler';
+
 export * from './get-tasks-by-range/get-tasks-by-range.query';
 export * from './get-tasks-by-range/get-tasks-by-range.handler';
 
 export * from './get-diary-tasks/get-diary-tasks.query';
 export * from './get-diary-tasks/get-diary-tasks.handler';
+
+export * from './get-task-settings/get-task-settings.query';
+export * from './get-task-settings/get-task-settings.handler';
 
 export * from './get-assignable-tasks/get-assignable-tasks.query';
 export * from './get-assignable-tasks/get-assignable-tasks.handler';

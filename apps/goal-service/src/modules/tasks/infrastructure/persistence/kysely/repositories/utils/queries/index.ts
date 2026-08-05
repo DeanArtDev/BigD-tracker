@@ -6,3 +6,6 @@ export * from './task-recurrences.query';
 export * from './task-frequency-by-name.query';
 export * from './recurrence-status-by-name.query';
 export * from './override-common.query';
+export * from './task-settings.query';
+export * from './task-virtual-settings.query';
+export * from './task-recurrence-override-settings.query';

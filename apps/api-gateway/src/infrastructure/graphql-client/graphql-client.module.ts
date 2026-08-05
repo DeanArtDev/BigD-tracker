@@ -31,7 +31,7 @@ const GRAPHQL_PATH = '/graphql';
             if (req == null || res == null) {
               throw new ExceptionInternalGateway({ message: 'GraphQLModule lost res or req' });
             }
-            return { request: req, response: res };
+            return { request: req, response: res, loaders: new Map() };
           },
           formatError: (formatted) => {
             const IS_PROD_STAGE = config.get<boolean>('IS_PROD_STAGE');

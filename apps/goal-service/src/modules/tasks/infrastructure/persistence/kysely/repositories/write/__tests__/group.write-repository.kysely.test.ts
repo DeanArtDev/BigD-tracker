@@ -2,6 +2,7 @@ import { TasksDB } from '@/modules/tasks/application/ports';
 import { GroupById, GroupByUserId, groupsCombinators } from '@/modules/tasks/application/specifications';
 import { groupsQuerySpec } from '@/modules/tasks/domain';
 import { GroupFactory } from '@/modules/tasks/domain/aggregates/group';
+import { DEFAULT_GROUP_SETTINGS } from '@/modules/tasks/domain/constants';
 import { GroupStatus } from '@big-d/api-contracts';
 import { expectSqlQuery, withRepository } from '@shared/__tests__';
 import { GroupWriteKyselyMapper } from '../../../mappers/groups.write-mapper';
@@ -28,10 +29,11 @@ describe('GroupWriteRepositoryKysely', () => {
             },
           ],
         });
+        recorder.enqueueResult({ numAffectedRows: 1n });
 
         await repository.createGroup(group);
 
-        expect(recorder.queries).toHaveLength(2);
+        expect(recorder.queries).toHaveLength(3);
         expectSqlQuery(recorder.queries[0], {
           sql: `
           select
@@ -56,6 +58,41 @@ describe('GroupWriteRepositoryKysely', () => {
             "description"
         `,
           parameters: ['Group Name', 77, 'Desc', 1],
+        });
+        expectSqlQuery(recorder.queries[2], {
+          sql: `
+          insert into "group_settings"
+            (
+              "group_id",
+              "event_color",
+              "event_selected_color",
+              "line_color",
+              "text_color",
+              "event_color_dark",
+              "event_selected_color_dark",
+              "line_color_dark",
+              "text_color_dark",
+              "is_default",
+              "is_visible",
+              "is_readonly"
+            )
+          values
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        `,
+          parameters: [
+            101,
+            DEFAULT_GROUP_SETTINGS.eventColor,
+            DEFAULT_GROUP_SETTINGS.eventSelectedColor,
+            DEFAULT_GROUP_SETTINGS.lineColor,
+            DEFAULT_GROUP_SETTINGS.textColor,
+            DEFAULT_GROUP_SETTINGS.eventColorDark,
+            DEFAULT_GROUP_SETTINGS.eventSelectedColorDark,
+            DEFAULT_GROUP_SETTINGS.lineColorDark,
+            DEFAULT_GROUP_SETTINGS.textColorDark,
+            DEFAULT_GROUP_SETTINGS.isDefault,
+            DEFAULT_GROUP_SETTINGS.isVisible,
+            DEFAULT_GROUP_SETTINGS.isReadonly,
+          ],
         });
       },
     );
@@ -200,6 +237,51 @@ describe('GroupWriteRepositoryKysely', () => {
             )
         `,
           parameters: [77, 901],
+        });
+      },
+    );
+  });
+
+  test('updateSettings returns expected sql and params', async () => {
+    await withRepository<TasksDB, GroupWriteRepositoryKysely>(
+      (db) => new GroupWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        const patch = { eventColor: '#ABCDEF', isVisible: false };
+        recorder.enqueueResult({ numAffectedRows: 1n });
+
+        const result = await repository.updateSettings({ groupId: 42, patch });
+
+        expect(result).toBe(true);
+        expect(recorder.queries).toHaveLength(1);
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          update "group_settings"
+          set
+            "event_color" = $1,
+            "is_visible" = $2
+          where "group_id" = $3
+        `,
+          parameters: [patch.eventColor, patch.isVisible, 42],
+        });
+      },
+    );
+  });
+
+  test('updateSettings keeps null in patch', async () => {
+    await withRepository<TasksDB, GroupWriteRepositoryKysely>(
+      (db) => new GroupWriteRepositoryKysely(db),
+      async ({ repository, recorder }) => {
+        recorder.enqueueResult({ numAffectedRows: 1n });
+
+        await repository.updateSettings({ groupId: 42, patch: { eventColor: null as never } });
+
+        expectSqlQuery(recorder.queries[0], {
+          sql: `
+          update "group_settings"
+          set "event_color" = $1
+          where "group_id" = $2
+        `,
+          parameters: [null, 42],
         });
       },
     );
