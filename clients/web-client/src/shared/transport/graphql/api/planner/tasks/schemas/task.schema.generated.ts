@@ -156,6 +156,7 @@ export type GetDiaryTasksQuery = {
     startDate: string | null;
     endDate: string | null;
     cancelReason: string | null;
+    settings: { isAllDay: boolean; icon: string | null } | null;
   }>;
 };
 
@@ -405,7 +406,20 @@ export const GetDiaryTasksDocument = {
             ],
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
+              selections: [
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'settings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'isAllDay' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'icon' } },
+                    ],
+                  },
+                },
+              ],
             },
           },
         ],

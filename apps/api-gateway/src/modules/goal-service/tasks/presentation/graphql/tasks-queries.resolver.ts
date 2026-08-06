@@ -29,7 +29,7 @@ import {
 class TasksQueriesResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
 
-  @ResolveField(() => TaskSettingsSchema)
+  @ResolveField(() => TaskSettingsSchema, { nullable: true })
   settings(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Parent() task: TaskSchema,

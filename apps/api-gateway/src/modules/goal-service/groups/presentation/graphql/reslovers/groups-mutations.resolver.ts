@@ -1,10 +1,17 @@
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
-import { GoalCreateGroup, GoalDeleteGroup, GoalReplaceGroup } from '@big-d/api-contracts';
+import { GoalCreateGroup, GoalDeleteGroup, GoalReplaceGroup, GoalUpdateGroupSettings } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { GroupCreateInput, GroupDeleteInput, GroupSchema, GroupUpdateInput } from '../schemas';
+import {
+  GroupCreateInput,
+  GroupDeleteInput,
+  GroupSchema,
+  GroupSettingsSchema,
+  GroupSettingsUpdateInput,
+  GroupUpdateInput,
+} from '../schemas';
 
 @Resolver(() => GroupSchema)
 class GroupsMutationsResolver {
@@ -47,6 +54,37 @@ class GroupsMutationsResolver {
           name: input.name,
           description: input.description,
           tasks: input.tasks,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  @Mutation(() => GroupSettingsSchema, {
+    description: 'Редактирование настроек группы',
+  })
+  async updateGroupSettings(
+    @Args('input') input: GroupSettingsUpdateInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<GroupSettingsSchema> {
+    const { data } = await this.goalClient.send<GoalUpdateGroupSettings.Response, GoalUpdateGroupSettings.Request>(
+      GoalUpdateGroupSettings.pattern,
+      {
+        data: {
+          userId: uid,
+          groupId: input.groupId,
+          eventColor: input.eventColor,
+          eventSelectedColor: input.eventSelectedColor,
+          lineColor: input.lineColor,
+          textColor: input.textColor,
+          eventColorDark: input.eventColorDark,
+          eventSelectedColorDark: input.eventSelectedColorDark,
+          lineColorDark: input.lineColorDark,
+          textColorDark: input.textColorDark,
+          isDefault: input.isDefault,
+          isVisible: input.isVisible,
+          isReadonly: input.isReadonly,
         },
       },
     );

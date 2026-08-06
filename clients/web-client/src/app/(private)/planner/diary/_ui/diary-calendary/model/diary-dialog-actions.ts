@@ -97,6 +97,10 @@ class DiaryDialogActions {
       description: event.description,
       status: meta.status,
       priority: meta.priority,
+      settings: {
+        isAllDay: event.allDay ?? false,
+        icon: undefined,
+      },
       groupId: DiaryDialogActions.mapCalendarIdToGroupId(event.calendarId),
       startDate: TaskDomain.dateToTaskStandard(start.toDate()),
       deadline: TaskDomain.dateToTaskStandard(end.toDate()),
@@ -111,7 +115,7 @@ class DiaryDialogActions {
         description: task.description ?? undefined,
         start: timeAndDate(task.startDate).toDate(),
         end: timeAndDate(task.deadline).toDate(),
-        allDay: false,
+        allDay: task?.settings?.isAllDay,
         calendarId: task.groupId?.toString() ?? EMPTY_GROUP_ID,
       }),
       meta: {

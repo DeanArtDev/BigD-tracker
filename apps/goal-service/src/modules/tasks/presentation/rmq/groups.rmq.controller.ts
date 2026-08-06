@@ -8,6 +8,8 @@ import {
   GetGroupQuery,
   GetGroupSettingsHandler,
   GetGroupSettingsQuery,
+  GetManyGroupSettingsHandler,
+  GetManyGroupSettingsQuery,
 } from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
@@ -26,6 +28,7 @@ import {
   GoalGetGroupInfo,
   GoalGetGroupList,
   GoalGetGroupSettings,
+  GoalGetManyGroupSettings,
   GoalReplaceGroup,
   GoalUpdateGroupSettings,
 } from '@big-d/api-contracts';
@@ -123,6 +126,18 @@ export class GroupsRmqController {
       data: await this.queryBus.execute<GetGroupSettingsQuery, ReturnHandlerType<typeof GetGroupSettingsHandler>>(
         new GetGroupSettingsQuery({ userId: payload.userId, groupId: payload.groupId }),
       ),
+    };
+  }
+
+  @MessagePattern(GoalGetManyGroupSettings.pattern)
+  async getManyGroupSettings(
+    @Payload() { data: payload }: GoalGetManyGroupSettings.Request,
+  ): Promise<GoalGetManyGroupSettings.Response> {
+    return {
+      data: await this.queryBus.execute<
+        GetManyGroupSettingsQuery,
+        ReturnHandlerType<typeof GetManyGroupSettingsHandler>
+      >(new GetManyGroupSettingsQuery(payload)),
     };
   }
 

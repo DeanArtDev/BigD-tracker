@@ -23,6 +23,8 @@ import {
   GetGroupInfoHandler,
   GetGroupSettingsQuery,
   GetGroupSettingsHandler,
+  GetManyGroupSettingsQuery,
+  GetManyGroupSettingsHandler,
   GetTaskSettingsQuery,
   GetTaskSettingsHandler,
 } from './queries';
@@ -107,6 +109,7 @@ const queries = [
   GetGroupListQuery,
   GetGroupInfoQuery,
   GetGroupSettingsQuery,
+  GetManyGroupSettingsQuery,
   GetTasksPerPageQuery,
   GetTaskSettingsQuery,
 ];
@@ -159,6 +162,7 @@ const handlers = [
   GetGroupListHandler,
   GetGroupInfoHandler,
   GetGroupSettingsHandler,
+  GetManyGroupSettingsHandler,
   GetTaskSettingsHandler,
 ];
 const useCases = [
