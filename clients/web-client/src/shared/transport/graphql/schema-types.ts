@@ -36,6 +36,7 @@ export type GetGroupInput = {
 
 export type GetGroupListInput = {
   cursor?: InputMaybe<Scalars['String']['input']>;
+  ids?: InputMaybe<Array<Scalars['Int']['input']>>;
   limit: Scalars['Int']['input'];
   search?: InputMaybe<Scalars['String']['input']>;
 };
@@ -123,6 +124,7 @@ export type GroupSchema = {
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   progress: Scalars['Int']['output'];
+  settings?: Maybe<GroupSettingsSchema>;
   status: GroupStatus;
   taskCount?: Maybe<Scalars['Int']['output']>;
   tasks: TasksConnection;
@@ -132,6 +134,37 @@ export type GroupSchema = {
 /** Группа */
 export type GroupSchemaTasksArgs = {
   input?: InputMaybe<GetGroupTasksInput>;
+};
+
+/** Настройки группы */
+export type GroupSettingsSchema = {
+  __typename?: 'GroupSettingsSchema';
+  eventColor: Scalars['String']['output'];
+  eventColorDark: Scalars['String']['output'];
+  eventSelectedColor: Scalars['String']['output'];
+  eventSelectedColorDark: Scalars['String']['output'];
+  isDefault: Scalars['Boolean']['output'];
+  isReadonly: Scalars['Boolean']['output'];
+  isVisible: Scalars['Boolean']['output'];
+  lineColor: Scalars['String']['output'];
+  lineColorDark: Scalars['String']['output'];
+  textColor: Scalars['String']['output'];
+  textColorDark: Scalars['String']['output'];
+};
+
+export type GroupSettingsUpdateInput = {
+  eventColor?: InputMaybe<Scalars['String']['input']>;
+  eventColorDark?: InputMaybe<Scalars['String']['input']>;
+  eventSelectedColor?: InputMaybe<Scalars['String']['input']>;
+  eventSelectedColorDark?: InputMaybe<Scalars['String']['input']>;
+  groupId: Scalars['Int']['input'];
+  isDefault?: InputMaybe<Scalars['Boolean']['input']>;
+  isReadonly?: InputMaybe<Scalars['Boolean']['input']>;
+  isVisible?: InputMaybe<Scalars['Boolean']['input']>;
+  lineColor?: InputMaybe<Scalars['String']['input']>;
+  lineColorDark?: InputMaybe<Scalars['String']['input']>;
+  textColor?: InputMaybe<Scalars['String']['input']>;
+  textColorDark?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Статусы группы */
@@ -202,8 +235,12 @@ export type Mutation = {
   unassignTaskToGroup: TaskSchema;
   /** Редактирование группы */
   updateGroup: GroupSchema;
+  /** Редактирование настроек группы */
+  updateGroupSettings: GroupSettingsSchema;
   /** Редактирование дела */
   updateTask: TaskSchema;
+  /** Редактирование настроек дела */
+  updateTaskSettings: TaskSettingsSchema;
   /** Логин по email/паролю. Выставляет httpOnly cookies access/refresh. */
   userLogin: Scalars['Boolean']['output'];
   /** Выход пользователя из системы на одном устройстве */
@@ -254,8 +291,16 @@ export type MutationUpdateGroupArgs = {
   input: GroupUpdateInput;
 };
 
+export type MutationUpdateGroupSettingsArgs = {
+  input: GroupSettingsUpdateInput;
+};
+
 export type MutationUpdateTaskArgs = {
   input: TaskUpdateInput;
+};
+
+export type MutationUpdateTaskSettingsArgs = {
+  input: TaskSettingsUpdateInput;
 };
 
 export type MutationUserLoginArgs = {
@@ -267,6 +312,8 @@ export type Query = {
   getAssignableGroups: Array<GroupInfoSchema>;
   /** Получение списка дел, доступных для назначения в группу */
   getAssignableTasks: Array<TaskSchema>;
+  /** Получение списка групп для ежедневника */
+  getDiaryGroupList: Array<GroupSchema>;
   /** Получение дел для ежедневника */
   getDiaryTasks: Array<TaskSchema>;
   /** Получение группы */
@@ -424,6 +471,12 @@ export type TaskSettingsSchema = {
   __typename?: 'TaskSettingsSchema';
   icon?: Maybe<Scalars['String']['output']>;
   isAllDay: Scalars['Boolean']['output'];
+};
+
+export type TaskSettingsUpdateInput = {
+  icon?: InputMaybe<Scalars['String']['input']>;
+  isAllDay?: InputMaybe<Scalars['Boolean']['input']>;
+  taskId: Scalars['ID']['input'];
 };
 
 /** Статусы дела */

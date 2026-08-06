@@ -7,7 +7,7 @@ import timeAndDate from '@/shared/lib/time';
 import { useNotify } from '@/shared/project-ui';
 import { diaryDialogContext, type DiaryDialogContext } from './diary-dialog.context';
 import { EMPTY_GROUP_ID } from '../../model';
-import { DiaryDialogActions } from '../../model/diary-dialog-actions';
+import { DiaryEventDomain } from '../../model/diary-event-domain';
 import { DiaryEvent, EventTask } from '../../model/types';
 import { DiaryEventDialog } from '../../ui/diary-event-dialog';
 import { useDiaryContext } from '../diary-calendar';
@@ -33,21 +33,21 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
 
       if (isCreate) {
         const requestedCalendarId = params?.calendarId;
-        const createdEvent = DiaryDialogActions.create({
+        const createdEvent = DiaryEventDomain.create({
           allDay: params?.allDay,
           calendarId: requestedCalendarId ?? EMPTY_GROUP_ID,
           date: params?.date ?? app.getCurrentDate(),
           viewType: params?.viewType,
         });
 
-        const task = DiaryDialogActions.mapEventToTask(createdEvent);
+        const task = DiaryEventDomain.mapEventToTask(createdEvent);
 
         setDialogState({ event: createdEvent, mode: 'create', task });
       }
 
       if (isUpdate) {
-        const e = DiaryDialogActions.withTaskMeta(event);
-        const task = DiaryDialogActions.mapEventToTask(e);
+        const e = DiaryEventDomain.withTaskMeta(event);
+        const task = DiaryEventDomain.mapEventToTask(e);
         setDialogState({ event: e, mode: 'update', task });
       }
 
@@ -114,7 +114,7 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
             }
 
             if (dialogState.mode === 'create') {
-              const eventToCreateDraft = DiaryDialogActions.create({
+              const eventToCreateDraft = DiaryEventDomain.create({
                 allDay: false,
                 date: timeAndDate(task.startDate).toDate(),
                 defaultValues: {
@@ -137,7 +137,7 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
 
             if (dialogState.mode === 'update') {
               if (dialogState.event.meta.id != null && taskToChange?.task?.settings != null) {
-                const eventToUpdate = DiaryDialogActions.update({
+                const eventToUpdate = DiaryEventDomain.update({
                   ...task,
                   startDate,
                   deadline,

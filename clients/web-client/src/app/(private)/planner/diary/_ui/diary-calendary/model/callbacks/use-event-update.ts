@@ -1,7 +1,8 @@
 import { Event, ICalendarApp } from '@dayflow/core';
 import { useCallback } from 'react';
+import { useTaskSettingsUpdate } from '@/feature/planner/task-settings-update';
 import { useTaskUpdate } from '@/feature/planner/task-update';
-import { DiaryDialogActions } from '../diary-dialog-actions';
+import { DiaryEventDomain } from '../diary-event-domain';
 
 interface UseUpdateEventParams {
   readonly getApp: () => ICalendarApp | undefined;
@@ -9,14 +10,15 @@ interface UseUpdateEventParams {
 
 function useEventUpdate({ getApp }: UseUpdateEventParams) {
   const { updateTask } = useTaskUpdate();
+  const { updateTaskSettings } = useTaskSettingsUpdate();
 
   return useCallback(
     async (updatedEvent: Event, originEvent: Event) => {
       const app = getApp();
       if (app == null) return;
 
-      const diaryEvent = DiaryDialogActions.withTaskMeta(updatedEvent);
-      const task = DiaryDialogActions.mapEventToTask(diaryEvent);
+      const diaryEvent = DiaryEventDomain.withTaskMeta(updatedEvent);
+      const task = DiaryEventDomain.mapEventToTask(diaryEvent);
 
       if (task.id == null) return;
 
@@ -33,6 +35,12 @@ function useEventUpdate({ getApp }: UseUpdateEventParams) {
             },
           },
         });
+
+        if (originEvent.allDay !== updatedEvent.allDay) {
+          await updateTaskSettings({
+            variables: { input: { isAllDay: updatedEvent.allDay, taskId: task.id } },
+          });
+        }
       } catch {
         app.applyEventsChanges(
           {
@@ -43,7 +51,7 @@ function useEventUpdate({ getApp }: UseUpdateEventParams) {
         );
       }
     },
-    [getApp, updateTask],
+    [getApp, updateTask, updateTaskSettings],
   );
 }
 

@@ -10,6 +10,8 @@ import {
   GetGroupSettingsQuery,
   GetManyGroupSettingsHandler,
   GetManyGroupSettingsQuery,
+  GetDiaryGroupListHandler,
+  GetDiaryGroupListQuery,
 } from '@/modules/tasks/application/queries';
 import {
   CreateGroupCommand,
@@ -29,6 +31,7 @@ import {
   GoalGetGroupList,
   GoalGetGroupSettings,
   GoalGetManyGroupSettings,
+  GoalGetDiaryGroupList,
   GoalReplaceGroup,
   GoalUpdateGroupSettings,
 } from '@big-d/api-contracts';
@@ -156,19 +159,19 @@ export class GroupsRmqController {
 
   @MessagePattern(GoalGetGroupList.pattern)
   async getGroupList(@Payload() { data: payload }: GoalGetGroupList.Request): Promise<GoalGetGroupList.Response> {
-    const { userId, limit, cursor, search } = payload;
+    const { userId, ids, limit, cursor, search } = payload;
     const requestCursorPayload = this.cursorPaginationService.decodeCursorString(cursor);
 
     const lid = requestCursorPayload?.lastId?.toString() ?? '';
     const positiveNumberString = isFloat(lid, { gt: 0 });
 
     const groups = await this.queryBus.execute<GetGroupListQuery, ReturnHandlerType<typeof GetGroupListHandler>>(
-      new GetGroupListQuery({ userId, limit, search, lastId: positiveNumberString ? Number(lid) : undefined }),
+      new GetGroupListQuery({ userId, ids, limit, search, lastId: positiveNumberString ? Number(lid) : undefined }),
     );
 
     const { nextCursor, hasNext } = this.cursorPaginationService.getNextCursor({
       search,
-      filter: { search },
+      filter: { ids, search },
       limit,
       lastId: groups.at(-1)?.id,
       currentPartLength: groups.length,
@@ -179,6 +182,17 @@ export class GroupsRmqController {
         items: groups,
         meta: { endCursor: nextCursor, hasNextPage: hasNext },
       },
+    };
+  }
+
+  @MessagePattern(GoalGetDiaryGroupList.pattern)
+  async getDiaryGroupList(
+    @Payload() { data: payload }: GoalGetDiaryGroupList.Request,
+  ): Promise<GoalGetDiaryGroupList.Response> {
+    return {
+      data: await this.queryBus.execute<GetDiaryGroupListQuery, ReturnHandlerType<typeof GetDiaryGroupListHandler>>(
+        new GetDiaryGroupListQuery(payload),
+      ),
     };
   }
 

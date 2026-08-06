@@ -7,6 +7,7 @@ import {
   AvailableToViewTasksStatuses,
   GoalGetAssignableGroups,
   GoalGetGroup,
+  GoalGetDiaryGroupList,
   GoalGetGroupInfo,
   GoalGetGroupList,
   GoalGetTasksCursor,
@@ -54,11 +55,28 @@ export class GroupsQueriesResolver {
     @TokenPayload() { uid }: AccessTokenPayload,
     @Args('input') input: GetGroupListInput,
   ): Promise<GroupsConnection> {
+    return this.getGroups(uid, input);
+  }
+
+  @Query(() => [GroupSchema], {
+    description: 'Получение списка групп для ежедневника',
+  })
+  async getDiaryGroupList(@TokenPayload() { uid }: AccessTokenPayload): Promise<GroupSchema[]> {
+    const { data } = await this.goalClient.send<GoalGetDiaryGroupList.Response, GoalGetDiaryGroupList.Request>(
+      GoalGetDiaryGroupList.pattern,
+      { data: { userId: uid } },
+    );
+
+    return data;
+  }
+
+  private async getGroups(userId: number, input: GetGroupListInput): Promise<GroupsConnection> {
     const { data } = await this.goalClient.send<GoalGetGroupList.Response, GoalGetGroupList.Request>(
       GoalGetGroupList.pattern,
       {
         data: {
-          userId: uid,
+          userId,
+          ids: input.ids,
           limit: input.limit,
           cursor: input.cursor,
           search: input.search,

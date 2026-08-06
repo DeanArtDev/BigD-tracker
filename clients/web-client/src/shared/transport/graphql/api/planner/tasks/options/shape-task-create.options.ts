@@ -1,10 +1,21 @@
+import { Brand, Override } from '@/shared/lib';
 import { AppMutationOptionsResponse } from '../../../types';
 import { CreateTaskDocument, CreateTaskMutationVariables, CreateTaskMutation } from '../schemas';
 
-type OptionsResponse = AppMutationOptionsResponse<CreateTaskMutation, CreateTaskMutationVariables>;
+type BrandedCreateTaskMutation<BrandTask extends Brand<string, string>> = Override<
+  CreateTaskMutation,
+  { createTask: Override<CreateTaskMutation['createTask'], { id: BrandTask }> }
+>;
 
-function shapeTaskCreateOptions(additionalOptions?: Partial<OptionsResponse[1]>): OptionsResponse {
-  const options: OptionsResponse[1] = {
+type OptionsResponse<BrandTask extends Brand<string, string>> = AppMutationOptionsResponse<
+  BrandedCreateTaskMutation<BrandTask>,
+  CreateTaskMutationVariables
+>;
+
+function shapeTaskCreateOptions<BrandTask extends Brand<string, string>>(
+  additionalOptions?: Partial<OptionsResponse<BrandTask>[1]>,
+): OptionsResponse<BrandTask> {
+  const options: OptionsResponse<BrandTask>[1] = {
     ...additionalOptions,
     context: {
       ...additionalOptions?.context,

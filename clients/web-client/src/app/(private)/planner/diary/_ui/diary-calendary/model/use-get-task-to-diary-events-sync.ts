@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { useDiaryUrl } from '@/app/(private)/planner/diary/_model';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
-import { DiaryTask, GetDiaryTasksQueryVariables, useGetDiaryTasks } from '@/shared/transport/graphql';
+import { DiaryTask } from '@/shared/transport/graphql';
+import { useGetDiaryTasksByUrl } from './use-get-diary-tasks-by-url';
 import { useDiaryContext } from '../context';
-import { DiaryDialogActions } from './diary-dialog-actions';
+import { DiaryEventDomain } from './diary-event-domain';
 
 type DiaryTaskWithDates = DiaryTask<GroupId, TaskId> & {
   readonly deadline: string;
@@ -18,17 +18,13 @@ function hasDates(task: DiaryTask<GroupId, TaskId>): task is DiaryTaskWithDates 
 function useGetTaskToDiaryEventsSync() {
   const { calendar } = useDiaryContext();
   const app = calendar.app;
-  const [diarySearch] = useDiaryUrl();
 
-  const input: GetDiaryTasksQueryVariables['input'] | undefined =
-    diarySearch != null ? { from: diarySearch.from, to: diarySearch.to } : undefined;
-
-  const { tasks } = useGetDiaryTasks<TaskId, GroupId>(input);
+  const { tasks } = useGetDiaryTasksByUrl();
 
   useEffect(() => {
     app.applyEventsChanges(
       {
-        add: tasks.filter(hasDates).map(DiaryDialogActions.mapTaskToEvent) ?? [],
+        add: tasks.filter(hasDates).map(DiaryEventDomain.mapTaskToEvent) ?? [],
       },
       false,
       'remote',

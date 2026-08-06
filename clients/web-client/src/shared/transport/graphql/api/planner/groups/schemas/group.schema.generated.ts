@@ -11,6 +11,7 @@ export type GetGroupInput = {
 
 export type GetGroupListInput = {
   cursor?: string | null | undefined;
+  ids?: Array<number> | null | undefined;
   limit: number;
   search?: string | null | undefined;
 };
@@ -26,6 +27,21 @@ export type GroupCreateInput = {
 
 export type GroupDeleteInput = {
   groupId: number;
+};
+
+export type GroupSettingsUpdateInput = {
+  eventColor?: string | null | undefined;
+  eventColorDark?: string | null | undefined;
+  eventSelectedColor?: string | null | undefined;
+  eventSelectedColorDark?: string | null | undefined;
+  groupId: number;
+  isDefault?: boolean | null | undefined;
+  isReadonly?: boolean | null | undefined;
+  isVisible?: boolean | null | undefined;
+  lineColor?: string | null | undefined;
+  lineColorDark?: string | null | undefined;
+  textColor?: string | null | undefined;
+  textColorDark?: string | null | undefined;
 };
 
 /** Статусы группы */
@@ -88,6 +104,26 @@ export type UpdateGroupMutation = {
   updateGroup: { id: number; name: string; description: string | null; progress: number; status: Types.GroupStatus };
 };
 
+export type UpdateGroupSettingsMutationVariables = Exact<{
+  input: Types.GroupSettingsUpdateInput;
+}>;
+
+export type UpdateGroupSettingsMutation = {
+  updateGroupSettings: {
+    eventColor: string;
+    eventSelectedColor: string;
+    lineColor: string;
+    textColor: string;
+    eventColorDark: string;
+    eventSelectedColorDark: string;
+    lineColorDark: string;
+    textColorDark: string;
+    isDefault: boolean;
+    isVisible: boolean;
+    isReadonly: boolean;
+  };
+};
+
 export type DeleteGroupMutationVariables = Exact<{
   input: Types.GroupDeleteInput;
 }>;
@@ -130,6 +166,28 @@ export type GetGroupListQuery = {
     items: Array<{ id: number; name: string; status: Types.GroupStatus; description: string | null }>;
     meta: { endCursor: string | null; hasNextPage: boolean };
   };
+};
+
+export type GetDiaryGroupListQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetDiaryGroupListQuery = {
+  getDiaryGroupList: Array<{
+    id: number;
+    name: string;
+    settings: {
+      eventColor: string;
+      eventSelectedColor: string;
+      lineColor: string;
+      textColor: string;
+      eventColorDark: string;
+      eventSelectedColorDark: string;
+      lineColorDark: string;
+      textColorDark: string;
+      isDefault: boolean;
+      isVisible: boolean;
+      isReadonly: boolean;
+    } | null;
+  }>;
 };
 
 export const GetDetailedGroupByIdDocument = {
@@ -267,6 +325,58 @@ export const UpdateGroupDocument = {
     },
   ],
 } as unknown as DocumentNode<UpdateGroupMutation, UpdateGroupMutationVariables>;
+export const UpdateGroupSettingsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateGroupSettings' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'GroupSettingsUpdateInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateGroupSettings' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'eventColor' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'eventSelectedColor' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lineColor' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'textColor' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'eventColorDark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'eventSelectedColorDark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'lineColorDark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'textColorDark' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isDefault' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isVisible' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isReadonly' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateGroupSettingsMutation, UpdateGroupSettingsMutationVariables>;
 export const DeleteGroupDocument = {
   kind: 'Document',
   definitions: [
@@ -478,3 +588,49 @@ export const GetGroupListDocument = {
     },
   ],
 } as unknown as DocumentNode<GetGroupListQuery, GetGroupListQueryVariables>;
+export const GetDiaryGroupListDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetDiaryGroupList' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getDiaryGroupList' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'settings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'eventColor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'eventSelectedColor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lineColor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'textColor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'eventColorDark' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'eventSelectedColorDark' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'lineColorDark' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'textColorDark' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isDefault' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isVisible' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isReadonly' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetDiaryGroupListQuery, GetDiaryGroupListQueryVariables>;

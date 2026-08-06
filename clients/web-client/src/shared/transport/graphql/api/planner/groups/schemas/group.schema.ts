@@ -29,6 +29,24 @@ const GROUP_UPDATE_MUTATION = gql`
   }
 `;
 
+const GROUP_SETTINGS_UPDATE_MUTATION = gql`
+  mutation UpdateGroupSettings($input: GroupSettingsUpdateInput!) {
+    updateGroupSettings(input: $input) {
+      eventColor
+      eventSelectedColor
+      lineColor
+      textColor
+      eventColorDark
+      eventSelectedColorDark
+      lineColorDark
+      textColorDark
+      isDefault
+      isVisible
+      isReadonly
+    }
+  }
+`;
+
 const GROUP_DELETE_MUTATION = gql`
   mutation DeleteGroup($input: GroupDeleteInput!) {
     groupDelete(input: $input)
@@ -87,7 +105,32 @@ const GET_GROUP_LIST_QUERY = gql`
   }
 `;
 
+const GET_DIARY_GROUP_LIST_QUERY = gql`
+  query GetDiaryGroupList {
+    getDiaryGroupList {
+      id
+      name
+      settings {
+        eventColor
+        eventSelectedColor
+        lineColor
+        textColor
+
+        eventColorDark
+        eventSelectedColorDark
+        lineColorDark
+        textColorDark
+
+        isDefault
+        isVisible
+        isReadonly
+      }
+    }
+  }
+`;
+
 export {
+  GROUP_SETTINGS_UPDATE_MUTATION,
   GROUP_UPDATE_MUTATION,
   GROUP_DELETE_MUTATION,
   GET_ASSIGNABLE_GROUPS_QUERY,
@@ -95,4 +138,5 @@ export {
   GROUP_CREATE_MUTATION,
   GET_GROUP_BY_ID_QUERY,
   GET_DETAILED_GROUP_QUERY,
+  GET_DIARY_GROUP_LIST_QUERY,
 };

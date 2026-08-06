@@ -39,3 +39,6 @@ export * from './get-tasks-per-page/get-tasks-per-page.handler';
 
 export * from './get-group-list/get-group-list.query';
 export * from './get-group-list/get-group-list.handler';
+
+export * from './get-diary-group-list/get-diary-group-list.query';
+export * from './get-diary-group-list/get-diary-group-list.handler';

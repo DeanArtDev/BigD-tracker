@@ -6,6 +6,8 @@ import { TaskTransaction } from '../transaction-manager.port';
 interface GroupsReadRepository {
   getByName(input: { name: string; userId: number }, trx?: TaskTransaction): Promise<GroupView | null>;
 
+  getDiaryGroups(input: { readonly userId: number }, trx?: TaskTransaction): Promise<GroupView[]>;
+
   getInfoGroups(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupInfoView[]>;
 
   getOne(specifications: TasksSpecification, trx?: TaskTransaction): Promise<GroupView | null>;

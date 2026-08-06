@@ -20,6 +20,13 @@ const GroupById = (groupId: number) =>
     toExpr: (eb) => eb('groups.id', '=', groupId),
   });
 
+const GroupByIds = (groupIds: number[]) =>
+  leaf({
+    key: 'groups.byIds',
+    purpose: 'filter',
+    toExpr: (eb) => eb('groups.id', 'in', groupIds),
+  });
+
 const GroupInbox = () =>
   leaf({
     key: 'groups.inbox',
@@ -62,4 +69,13 @@ const GroupByNameSearch = (search: string) =>
       }),
   });
 
-export { GroupById, GroupInbox, GroupByUserId, GroupByNameSearch, GroupAfterId, GroupBeforeId, GroupByStatus };
+export {
+  GroupById,
+  GroupByIds,
+  GroupInbox,
+  GroupByUserId,
+  GroupByNameSearch,
+  GroupAfterId,
+  GroupBeforeId,
+  GroupByStatus,
+};

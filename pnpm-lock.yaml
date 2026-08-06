@@ -1488,20 +1488,20 @@ importers:
         specifier: workspace:*
         version: link:../../libs/exceptions
       '@dayflow/core':
-        specifier: 3.6.6
-        version: 3.6.6
+        specifier: ^3.6.7
+        version: 3.6.7
       '@dayflow/plugin-drag':
-        specifier: 1.5.6
-        version: 1.5.6(@dayflow/core@3.6.6)
+        specifier: ^1.5.7
+        version: 1.5.7(@dayflow/core@3.6.7)
       '@dayflow/plugin-keyboard-shortcuts':
-        specifier: 1.5.6
-        version: 1.5.6(@dayflow/core@3.6.6)
+        specifier: ^1.5.7
+        version: 1.5.7(@dayflow/core@3.6.7)
       '@dayflow/plugin-sidebar':
-        specifier: 1.5.6
-        version: 1.5.6(@dayflow/core@3.6.6)
+        specifier: ^1.5.7
+        version: 1.5.7(@dayflow/core@3.6.7)
       '@dayflow/react':
-        specifier: 3.6.6
-        version: 3.6.6(@dayflow/core@3.6.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^3.6.7
+        version: 3.6.7(@dayflow/core@3.6.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2923,38 +2923,38 @@ packages:
   '@dayflow/blossom-color-picker@2.2.1':
     resolution: {integrity: sha512-V3CdtY3qLMVDxhtbtAEIyN4wWQEN+vIj6gVkBZY1O2HX4hq+6mwLRZ/A13jEG2PN8WBQmfRw1cgzGx+Pjvd/PQ==}
 
-  '@dayflow/core@3.6.6':
-    resolution: {integrity: sha512-1w6uqyHBbcJKsL5TBBDXSVZdFYk7W2jWdvJ9ZcO5f1wAk+3/AyYSgkhz8gExxrv+E3z4AqOfqsdO0Ok93my7fQ==}
+  '@dayflow/core@3.6.7':
+    resolution: {integrity: sha512-Ivfuoo4jksFuLiTSCD76W5BXJZ5cO1tvnj2do5+NFVPooTHGOJBVJUDwECS4pbaek6XUt96P3wAkE0W+l3AxBw==}
 
-  '@dayflow/plugin-drag@1.5.6':
-    resolution: {integrity: sha512-dGu283TMQtbbBiFJnwEHu+8nhaRz2xBEPZQkhqqY8iGO2MsO9SYNBKlzSpDORjq0IakGJNlB+JKM6VxIUIi/WA==}
+  '@dayflow/plugin-drag@1.5.7':
+    resolution: {integrity: sha512-lNG5UeAwNzT3ZeTO3M/vk5mlzyUHMz1rRWWeeWtCoFRVCQ+SZ90ptoQ4luA5DZaySFXQfDoW1CJq9kiiOguVaw==}
     peerDependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
 
-  '@dayflow/plugin-keyboard-shortcuts@1.5.6':
-    resolution: {integrity: sha512-4lTAYjJAYAMTERuXo6Htlt8A0icX58mQKf9vqqvxu2CXPeX84LH1y5RDTWwv0xqzcp/JygeadQUw1U6io/Kyow==}
+  '@dayflow/plugin-keyboard-shortcuts@1.5.7':
+    resolution: {integrity: sha512-La2bzpApbmFrcP71MXjUINNglVwOXBSPQKVvbG2hT6zvl6qfMpBT7bPUCyy6rBQpyOgrN7PFnH2dKzdbnlZ6tw==}
     peerDependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
 
-  '@dayflow/plugin-sidebar@1.5.6':
-    resolution: {integrity: sha512-cUmIEMYhDSpBivuYKd02N/usugDcZpdF30ho1GO2uLr6F5TBkCg3Lt4lLpT3hABosXYUBJxtQ21WKtyjEBgUwg==}
+  '@dayflow/plugin-sidebar@1.5.7':
+    resolution: {integrity: sha512-FF+D2yCzDPXibpp27xKabSGaduj4TiTyCDjfVIrIBJ+6M2wrLr4w28uqlt3X7Hq1DHmMEf607NiKXOn/m9QCBw==}
     peerDependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
 
-  '@dayflow/react@3.6.6':
-    resolution: {integrity: sha512-yolUrpsKyoZccx47jB3yfIVfikS0wyXusiV6oEHir/bRikba5nHr1JSNmow9GdB6dN8hJ92r5zAAQvUWG3/yuA==}
+  '@dayflow/react@3.6.7':
+    resolution: {integrity: sha512-IVAmrFaGi9g0iuw0ddNYKMfzXFb9JaLrZ9jNi7TFccy7dmMMQZ5snL+aLbwY+nO6zR9pPhQSQ8zW9GRbU6NF+g==}
     peerDependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@dayflow/ui-context-menu@1.1.6':
-    resolution: {integrity: sha512-NhX5la1cBYECUL1PvZrv3IN4sket4JcxHsAUpFnqL3JTj51mdIRZw90xPOy/rHoj05OOmorYPDy2wEab0IZAAg==}
+  '@dayflow/ui-context-menu@1.1.7':
+    resolution: {integrity: sha512-JJCjHCoK0xNzRtGKw6GnZpigJ0xrPXM2ard+sr9Fl9AEIOLfxy8AwaPAsRhW1n5Egc8ghvSkxhnmyQRLqHu6Ew==}
     peerDependencies:
       preact: '>=10'
 
-  '@dayflow/ui-range-picker@1.1.6':
-    resolution: {integrity: sha512-/bXUsznNzljCFdm5cHIHNJPznfQAmrBauizf7rdjcuw1sRQcL+FpNUC8NuZ6xPgk7fRUxY7CA/ImJYeqAzErDA==}
+  '@dayflow/ui-range-picker@1.1.7':
+    resolution: {integrity: sha512-Q1zzH9Qp8seHRHATvS7fyPI97+k0Omdpw/Gq2hJhRUiBy5vNOrb0WTl4ozZNGC7huCg9MQVTDu2MydcYLY3cPw==}
     peerDependencies:
       preact: '>=10'
       temporal-polyfill: '>=0.2'
@@ -13880,40 +13880,40 @@ snapshots:
 
   '@dayflow/blossom-color-picker@2.2.1': {}
 
-  '@dayflow/core@3.6.6':
+  '@dayflow/core@3.6.7':
     dependencies:
       '@dayflow/blossom-color-picker': 2.2.1
-      '@dayflow/ui-context-menu': 1.1.6(preact@10.29.7)
-      '@dayflow/ui-range-picker': 1.1.6(preact@10.29.7)(temporal-polyfill@0.3.2)
+      '@dayflow/ui-context-menu': 1.1.7(preact@10.29.7)
+      '@dayflow/ui-range-picker': 1.1.7(preact@10.29.7)(temporal-polyfill@0.3.2)
       preact: 10.29.7
       temporal-polyfill: 0.3.2
       tslib: 2.8.1
     transitivePeerDependencies:
       - preact-render-to-string
 
-  '@dayflow/plugin-drag@1.5.6(@dayflow/core@3.6.6)':
+  '@dayflow/plugin-drag@1.5.7(@dayflow/core@3.6.7)':
     dependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
 
-  '@dayflow/plugin-keyboard-shortcuts@1.5.6(@dayflow/core@3.6.6)':
+  '@dayflow/plugin-keyboard-shortcuts@1.5.7(@dayflow/core@3.6.7)':
     dependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
 
-  '@dayflow/plugin-sidebar@1.5.6(@dayflow/core@3.6.6)':
+  '@dayflow/plugin-sidebar@1.5.7(@dayflow/core@3.6.7)':
     dependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
 
-  '@dayflow/react@3.6.6(@dayflow/core@3.6.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@dayflow/react@3.6.7(@dayflow/core@3.6.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@dayflow/core': 3.6.6
+      '@dayflow/core': 3.6.7
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@dayflow/ui-context-menu@1.1.6(preact@10.29.7)':
+  '@dayflow/ui-context-menu@1.1.7(preact@10.29.7)':
     dependencies:
       preact: 10.29.7
 
-  '@dayflow/ui-range-picker@1.1.6(preact@10.29.7)(temporal-polyfill@0.3.2)':
+  '@dayflow/ui-range-picker@1.1.7(preact@10.29.7)(temporal-polyfill@0.3.2)':
     dependencies:
       preact: 10.29.7
       temporal-polyfill: 0.3.2
@@ -19860,7 +19860,7 @@ snapshots:
       '@next/eslint-plugin-next': 16.2.6
       eslint: 9.39.4(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.7.0))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.7.0))
@@ -19898,7 +19898,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.7.0)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.3(supports-color@10.2.2)
@@ -19928,14 +19928,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0)):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3)
       eslint: 9.39.4(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.7.0))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -19961,7 +19961,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.4(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.10
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.7.0))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-node@0.3.10)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.26.0(jiti@2.7.0))(typescript@5.8.3))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
       hasown: 2.0.3
       is-core-module: 2.16.2
       is-glob: 4.0.3

@@ -10,5 +10,6 @@ export * from './shape-task-create.options';
 export * from './shape-task-delete.options';
 export * from './shape-task-finish.options';
 export * from './shape-task-recovery.options';
+export * from './shape-task-settings-update.options';
 export * from './shape-task-unassign.options';
 export * from './shape-task-update.options';

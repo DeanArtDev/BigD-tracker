@@ -1,8 +1,8 @@
 import { type Event as DayflowEvent, ViewType } from '@dayflow/core';
 import { GroupId } from '@/entity/planner/groups';
-import { Task } from '@/entity/planner/tasks';
+import { Task, TaskId } from '@/entity/planner/tasks';
 import { Override } from '@/shared/lib';
-import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
+import { DiaryTask, TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 
 interface DiaryDialogDefaultValues {
   readonly deadline?: Date;
@@ -40,6 +40,11 @@ type DiaryEvent = Override<DayflowEvent, { meta: DiaryEventMeta }>;
 
 type EventTask = Override<Task<GroupId>, { id?: Task<GroupId>['id'] }>;
 
+type DiaryTaskWithDates = DiaryTask<GroupId, TaskId> & {
+  readonly deadline: string;
+  readonly startDate: string;
+};
+
 export type {
   EventTask,
   DiaryEventMeta,
@@ -49,4 +54,5 @@ export type {
   DiaryDialogPasteParams,
   DiaryDialogCreateParams,
   DiaryDialogDefaultValues,
+  DiaryTaskWithDates,
 };

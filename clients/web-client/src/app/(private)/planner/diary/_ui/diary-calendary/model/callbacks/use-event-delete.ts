@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useTaskDeleteFeature } from '@/feature/planner/task-delete';
 import { useDiaryContext } from '../../context';
-import { DiaryDialogActions } from '../diary-dialog-actions';
+import { DiaryEventDomain } from '../diary-event-domain';
 
 function useEventDelete() {
   const {
@@ -14,7 +14,7 @@ function useEventDelete() {
       const event = app.getAllEvents().find(({ id }) => id === eventId);
       if (event == null) return Promise.reject(new Error(`Event with id ${eventId} not found`));
 
-      const task = DiaryDialogActions.mapEventToTask(DiaryDialogActions.withTaskMeta(event));
+      const task = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
       const taskId = task.id;
       if (taskId == null) return Promise.resolve();
 

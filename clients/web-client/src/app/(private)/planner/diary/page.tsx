@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import { withValidatedUrlData } from '@/shared/lib/url';
 import { diaryUrlSchema } from './_model';
+import { DiaryGroupsPrefetch } from './_prefetches/diary-groups.prefetch';
 import { DiaryTasksPrefetch } from './_prefetches/diary-tasks.prefetch';
 import { DiaryPageContent } from './_ui/diary-page-content';
 
@@ -12,9 +13,11 @@ function Component({ searchParams }: { searchParams?: z.infer<typeof diaryUrlSch
       : undefined;
 
   return (
-    <DiaryTasksPrefetch view={searchParams?.view} input={input}>
-      <DiaryPageContent />
-    </DiaryTasksPrefetch>
+    <DiaryGroupsPrefetch>
+      <DiaryTasksPrefetch view={searchParams?.view} input={input}>
+        <DiaryPageContent />
+      </DiaryTasksPrefetch>
+    </DiaryGroupsPrefetch>
   );
 }
 

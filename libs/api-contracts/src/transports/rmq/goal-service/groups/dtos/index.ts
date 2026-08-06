@@ -6,6 +6,7 @@ export * from './create-group.dto';
 export * from './replace-group.dto';
 export * from './delete-group.dto';
 export * from './get-group-list.dto';
+export * from './get-diary-group-list.dto';
 export * from './get-group.dto';
 export * from './get-group-info.dto';
 export * from './get-group-settings.dto';
