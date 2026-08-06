@@ -5,7 +5,7 @@ import { GetDiaryTasksQueryVariables, shapeGetDiaryTasksOptions } from '@/shared
 import { PreloadQuery } from '@/shared/transport/graphql/server';
 import { DataLoader } from '@/shared/ui-kit';
 import { UseDiaryUrl } from '../_model';
-import { diaryViewRangeMap } from '../_ui/diary-calendary/model/seriver';
+import { diaryViewRangeMap } from '../_ui/diary-calendary/model/server';
 
 function DiaryTasksPrefetch({
   input,

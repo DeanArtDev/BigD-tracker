@@ -7,7 +7,7 @@
 .diary-calendar {
   --df-color-primary: var(--primary);
 
-  .df-right-panel-date-heading {
+  .df-right-panel-date-heading, #dayflow-add-event-btn {
     display: none;
   }
 

@@ -5,7 +5,7 @@ import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { useNotify } from '@/shared/project-ui';
 import { diaryCutCopyPasteContext, type DiaryCutCopyPasteContext } from './diary-cut-copy-paste.context';
 import { EMPTY_GROUP_ID } from '../../model/constants';
-import { DiaryDialogActions } from '../../model/diary-dialog-actions';
+import { DiaryEventDomain } from '../../model/diary-event-domain';
 import { useDiaryContext } from '../diary-calendar';
 
 type ClipboardAction = 'copy' | 'cut';
@@ -48,7 +48,7 @@ function DiaryCutCopyPasteProvider({ children }: PropsWithChildren) {
       const copiedEvent = clipboardEvent;
       if (copiedEvent == null || clipboardAction == null) return;
 
-      const pastedEvent = DiaryDialogActions.paste(copiedEvent, {
+      const pastedEvent = DiaryEventDomain.paste(copiedEvent, {
         calendarId: copiedEvent.calendarId ?? EMPTY_GROUP_ID,
         date,
         timeZone: app.timeZone,
@@ -61,7 +61,7 @@ function DiaryCutCopyPasteProvider({ children }: PropsWithChildren) {
         const movedEvent: Event = {
           ...pastedEvent,
           id: copiedEvent.id,
-          meta: DiaryDialogActions.withTaskMeta(copiedEvent).meta,
+          meta: DiaryEventDomain.withTaskMeta(copiedEvent).meta,
         };
         app.applyEventsChanges({ add: [copiedEvent] }, false, 'remote');
         await app.updateEvent(copiedEvent.id, movedEvent, false, 'local');

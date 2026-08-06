@@ -9,13 +9,15 @@ const GROUPS_EMPTY: never[] = [];
 function useGetGroupList<BrandGroup extends Brand<number, string>>({
   limit,
   cursor,
+  ids,
   search,
 }: {
   limit: number;
   cursor?: string;
+  ids?: BrandGroup[];
   search?: string;
 }) {
-  const result = useQuery(...shapeGetGroupListOptions<BrandGroup>({ limit, cursor, search }).query());
+  const result = useQuery(...shapeGetGroupListOptions<BrandGroup>({ limit, cursor, ids, search }).query());
 
   const initialLoading = result.networkStatus === 1 && result.data == null;
 

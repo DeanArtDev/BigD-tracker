@@ -4,7 +4,7 @@ import type { ICalendarApp } from '@dayflow/core';
 import type { KeyboardShortcutsService } from '@dayflow/plugin-keyboard-shortcuts';
 import { type ReactNode, useEffect } from 'react';
 import { DefaultValues } from 'react-hook-form';
-import { GroupId } from '@/entity/planner/groups';
+import { GroupId, GroupLabelBadge } from '@/entity/planner/groups';
 import {
   Task,
   TaskForm,
@@ -35,6 +35,7 @@ function DiaryEventDialogContent({
 }: DiaryEventDialogContentProps) {
   const { viaConfirmation } = useConfirmDialog();
   const {
+    getValues,
     formState: { isDirty },
   } = useTaskFromContext();
 
@@ -49,7 +50,13 @@ function DiaryEventDialogContent({
           }
         },
       }}
-      content={<TaskForm<GroupId> className="p-3" onSubmit={onSubmit} />}
+      content={
+        <TaskForm<GroupId>
+          className="p-3"
+          groupSlot={<GroupLabelBadge groupId={getValues('groupId') as GroupId} />}
+          onSubmit={onSubmit}
+        />
+      }
       footer={<TaskFormFooter />}
       onOpenChange={(nextOpen) => {
         if (!nextOpen && isDirty) {

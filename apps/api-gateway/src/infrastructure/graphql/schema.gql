@@ -30,6 +30,7 @@ input GetGroupInput {
 
 input GetGroupListInput {
   cursor: String
+  ids: [Int!]
   limit: Int!
   search: String
 }
@@ -109,10 +110,41 @@ type GroupSchema {
   id: Int!
   name: String!
   progress: Int!
+  settings: GroupSettingsSchema
   status: GroupStatus!
   taskCount: Int
   tasks(input: GetGroupTasksInput): TasksConnection!
   userId: Int!
+}
+
+"""Настройки группы"""
+type GroupSettingsSchema {
+  eventColor: String!
+  eventColorDark: String!
+  eventSelectedColor: String!
+  eventSelectedColorDark: String!
+  isDefault: Boolean!
+  isReadonly: Boolean!
+  isVisible: Boolean!
+  lineColor: String!
+  lineColorDark: String!
+  textColor: String!
+  textColorDark: String!
+}
+
+input GroupSettingsUpdateInput {
+  eventColor: String
+  eventColorDark: String
+  eventSelectedColor: String
+  eventSelectedColorDark: String
+  groupId: Int!
+  isDefault: Boolean
+  isReadonly: Boolean
+  isVisible: Boolean
+  lineColor: String
+  lineColorDark: String
+  textColor: String
+  textColorDark: String
 }
 
 """Статусы группы"""
@@ -194,8 +226,14 @@ type Mutation {
   """Редактирование группы"""
   updateGroup(input: GroupUpdateInput!): GroupSchema!
 
+  """Редактирование настроек группы"""
+  updateGroupSettings(input: GroupSettingsUpdateInput!): GroupSettingsSchema!
+
   """Редактирование дела"""
   updateTask(input: TaskUpdateInput!): TaskSchema!
+
+  """Редактирование настроек дела"""
+  updateTaskSettings(input: TaskSettingsUpdateInput!): TaskSettingsSchema!
 
   """Логин по email/паролю. Выставляет httpOnly cookies access/refresh."""
   userLogin(input: LoginUserInput!): Boolean!
@@ -209,6 +247,9 @@ type Query {
 
   """Получение списка дел, доступных для назначения в группу"""
   getAssignableTasks(input: GetAssignableTasksInput!): [TaskSchema!]!
+
+  """Получение списка групп для ежедневника"""
+  getDiaryGroupList: [GroupSchema!]!
 
   """Получение дел для ежедневника"""
   getDiaryTasks(input: GetDiaryTasksInput!): [TaskSchema!]!
@@ -342,6 +383,12 @@ type TaskSchema {
 type TaskSettingsSchema {
   icon: String
   isAllDay: Boolean!
+}
+
+input TaskSettingsUpdateInput {
+  icon: String
+  isAllDay: Boolean
+  taskId: ID!
 }
 
 """Статусы дела"""

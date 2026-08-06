@@ -6,7 +6,14 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { compact } from 'lodash';
 import { GroupView } from '../../dto';
 import { GroupsReadRepository, TaskDatabase } from '../../ports';
-import { GroupBeforeId, GroupByNameSearch, GroupByUserId, GroupInbox, groupsCombinators } from '../../specifications';
+import {
+  GroupBeforeId,
+  GroupByIds,
+  GroupByNameSearch,
+  GroupByUserId,
+  GroupInbox,
+  groupsCombinators,
+} from '../../specifications';
 import { GetGroupListQuery } from './get-group-list.query';
 
 const { and, not } = groupsCombinators;
@@ -20,12 +27,13 @@ export class GetGroupListHandler implements IQueryHandler<GetGroupListQuery> {
 
   async execute({ input }: GetGroupListQuery): Promise<GroupView[]> {
     return this.db.runTransaction(async (trx) => {
-      const { userId, search, lastId, limit } = input;
+      const { userId, ids = [], search, lastId, limit } = input;
 
       return await this.groupsReadRepo.getMany(
         and(
           ...compact([
             GroupByUserId(userId),
+            ids.length > 0 && GroupByIds(ids),
             search != null && search.trim() !== '' && GroupByNameSearch(search),
             lastId != null && Number.isFinite(lastId) && GroupBeforeId(lastId),
             not(GroupInbox()),

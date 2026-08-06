@@ -4,7 +4,7 @@ import type { GridContextMenuSlotArgs } from '@dayflow/core';
 import { DayFlowCalendar } from '@dayflow/react';
 import { useCallback, useRef } from 'react';
 import { DiaryCalendarProvider, DiaryCutCopyPasteProvider, DiaryDialogProvider, useDiaryContext } from './context';
-import { useGetTaskToDiaryEventsSync, useYearWorkaround } from './model';
+import { useGetGroupsToDiaryCalendarsSync, useGetTaskToDiaryEventsSync, useYearWorkaround } from './model';
 import {
   useCallbacks,
   useChangeRangeWatch,
@@ -22,6 +22,7 @@ function Component() {
   useYearWorkaround({ calendar, containerRef: calendarContainerRef });
 
   useGetTaskToDiaryEventsSync();
+  useGetGroupsToDiaryCalendarsSync();
   useCallbacks();
   useChangeRangeWatch();
   useEventCreateSubscription();

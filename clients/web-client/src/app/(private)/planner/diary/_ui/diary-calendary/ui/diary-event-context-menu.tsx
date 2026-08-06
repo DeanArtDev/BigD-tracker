@@ -17,14 +17,14 @@ import {
   ContextMenuTrigger,
 } from '@/shared/ui-kit';
 import { useDiaryContext, useDiaryCutCopyPasteContext } from '../context';
-import { DiaryDialogActions, EMPTY_GROUP_ID } from '../model';
+import { DiaryEventDomain, EMPTY_GROUP_ID } from '../model';
 
 interface DiaryEventContextMenuProps {
   readonly containerRef: RefObject<HTMLElement | null>;
 }
 
 function isDeleteAllowed(event: Event) {
-  const task = DiaryDialogActions.mapEventToTask(DiaryDialogActions.withTaskMeta(event));
+  const task = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
   if (task.id == null) return false;
 
   return TaskDomain.isAllowTaskAction(TaskActionType.Delete, task.status, TaskDomain.parseId(task.id).type);
@@ -81,7 +81,7 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
   const moveEventToGroup = async (calendarId: string) => {
     if (!event || event.calendarId === calendarId) return;
 
-    const task = DiaryDialogActions.mapEventToTask(DiaryDialogActions.withTaskMeta(event));
+    const task = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
     const groupId = Number(calendarId);
     if (task.id == null || !Number.isFinite(groupId)) return;
 

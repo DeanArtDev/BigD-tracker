@@ -26,19 +26,8 @@ function DiaryCalendarProvider({ children }: PropsWithChildren) {
     eventDetailTrigger: 'dbClick',
     useEventDetailDialog: false,
     useEventDetailPanel: false,
-    calendars: [
-      emptyGroup,
-      {
-        id: '333',
-        name: 'New',
-        colors: {
-          lineColor: 'red',
-          eventColor: 'red',
-          eventSelectedColor: 'color-mix(in oklab, red 40%, transparent)',
-          textColor: 'var(--foreground)',
-        },
-      },
-    ],
+    calendars: [emptyGroup],
+    timeFormat: '24h',
     initialDate: timeAndDate(diarySearch?.from).toDate(),
   });
   calendarRef.current = calendar;

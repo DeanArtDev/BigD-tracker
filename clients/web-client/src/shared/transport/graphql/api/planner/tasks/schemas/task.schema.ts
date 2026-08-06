@@ -76,6 +76,15 @@ const TASK_UPDATE_MUTATION = gql`
   }
 `;
 
+const TASK_SETTINGS_UPDATE_MUTATION = gql`
+  mutation UpdateTaskSettings($input: TaskSettingsUpdateInput!) {
+    updateTaskSettings(input: $input) {
+      isAllDay
+      icon
+    }
+  }
+`;
+
 const TASK_DELETE_MUTATION = gql`
   mutation DeleteTask($input: TaskDeleteInput!) {
     deleteTask(input: $input) {
@@ -144,6 +153,7 @@ export {
   TASK_BY_ID_QUERY,
   TASK_FINISH_MUTATION,
   TASK_RECOVERY_MUTATION,
+  TASK_SETTINGS_UPDATE_MUTATION,
   TASK_UPDATE_MUTATION,
   GET_ASSIGNABLE_TASKS_QUERY,
   GET_DIARY_TASKS_QUERY,

@@ -10,7 +10,7 @@ import {
 import { GroupId } from '@/entity/planner/groups';
 import { TaskDomain, TaskId } from '@/entity/planner/tasks';
 import timeAndDate from '@/shared/lib/time';
-import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
+import { DiaryTask, TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from './constants';
 import {
   DiaryDialogCreateParams,
@@ -21,7 +21,7 @@ import {
   TaskUpdateData,
 } from './types';
 
-class DiaryDialogActions {
+class DiaryEventDomain {
   static create({ allDay, calendarId, date, defaultValues, viewType }: DiaryDialogCreateParams): DiaryEvent {
     const start = timeAndDate(defaultValues?.startDate ?? date);
     const isAllDay = allDay ?? (viewType === ViewType.MONTH || viewType === ViewType.YEAR);
@@ -51,7 +51,7 @@ class DiaryDialogActions {
   }
 
   static update(task: TaskUpdateData): DiaryEvent {
-    return DiaryDialogActions.mapTaskToEvent(task);
+    return DiaryEventDomain.mapTaskToEvent(task);
   }
 
   static paste(event: DayflowEvent, { calendarId, date, timeZone, viewType }: DiaryDialogPasteParams): DiaryEvent {
@@ -79,7 +79,7 @@ class DiaryDialogActions {
       start: event.allDay ? dateToPlainDate(start.toDate()) : dateToZonedDateTime(start.toDate(), timeZone),
       end: event.allDay ? dateToPlainDate(end.toDate()) : dateToZonedDateTime(end.toDate(), timeZone),
       calendarId,
-      meta: DiaryDialogActions.getTaskMeta(event),
+      meta: DiaryEventDomain.getTaskMeta(event),
     };
   }
 
@@ -89,7 +89,7 @@ class DiaryDialogActions {
 
     if (event.allDay && end.valueOf() <= start.valueOf()) end = start.endOf('day');
 
-    const meta = DiaryDialogActions.getTaskMeta(event);
+    const meta = DiaryEventDomain.getTaskMeta(event);
 
     return {
       id: meta.id,
@@ -101,16 +101,16 @@ class DiaryDialogActions {
         isAllDay: event.allDay ?? false,
         icon: undefined,
       },
-      groupId: DiaryDialogActions.mapCalendarIdToGroupId(event.calendarId),
+      groupId: DiaryEventDomain.mapCalendarIdToGroupId(event.calendarId),
       startDate: TaskDomain.dateToTaskStandard(start.toDate()),
       deadline: TaskDomain.dateToTaskStandard(end.toDate()),
     };
   }
 
-  static mapTaskToEvent(task: TaskUpdateData): DiaryEvent {
+  static mapTaskToEvent = (task: TaskUpdateData): DiaryEvent => {
     return {
       ...createEvent({
-        id: encodeURIComponent(task.id),
+        id: this.createEventId(task.id),
         title: task.name,
         description: task.description ?? undefined,
         start: timeAndDate(task.startDate).toDate(),
@@ -124,10 +124,10 @@ class DiaryDialogActions {
         status: task.status,
       },
     };
-  }
+  };
 
   static withTaskMeta(event: DayflowEvent): DiaryEvent {
-    return { ...event, meta: DiaryDialogActions.getTaskMeta(event) };
+    return { ...event, meta: DiaryEventDomain.getTaskMeta(event) };
   }
 
   private static getTaskMeta(event: DayflowEvent): DiaryEventMeta {
@@ -147,6 +147,10 @@ class DiaryDialogActions {
     };
   }
 
+  static createEventId = (taskId: DiaryTask<GroupId, TaskId>['id']): string => {
+    return encodeURIComponent(taskId);
+  };
+
   private static mapCalendarIdToGroupId(calendarId?: string): GroupId | undefined {
     if (calendarId == null || calendarId === EMPTY_GROUP_ID) return undefined;
 
@@ -155,4 +159,4 @@ class DiaryDialogActions {
   }
 }
 
-export { DiaryDialogActions };
+export { DiaryEventDomain };

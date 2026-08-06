@@ -32,6 +32,39 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
     });
   }
 
+  async getDiaryGroups(input: { readonly userId: number }, trx?: TaskTransaction): Promise<GroupView[]> {
+    return await this.errorCatcher('groups.get-diary-groups.read', async () => {
+      const groups = await groupWithStatusQuery(this.db, trx)
+        .where('groups.user_id', '=', input.userId)
+        .where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom('tasks')
+              .select('tasks.id')
+              .whereRef('tasks.group_id', '=', 'groups.id')
+              .where('tasks.user_id', '=', input.userId)
+              .where((taskEb) =>
+                taskEb.or([taskEb('tasks.start_date', 'is not', null), taskEb('tasks.deadline', 'is not', null)]),
+              ),
+          ),
+        )
+        .orderBy((eb) => eb.case().when('groups.name', '=', groupsQuerySpec.inboxName).then(0).else(1).end())
+        .orderBy('groups.id', 'desc')
+        .execute();
+
+      return groups.map((group) =>
+        GroupReadKyselyMapper.fromRawToView({
+          id: group.id,
+          name: group.name,
+          description: group.description,
+          user_id: group.user_id,
+          progress: group.progress,
+          status: group.status,
+        }),
+      );
+    });
+  }
+
   async getByName(input: { name: string; userId: number }, trx?: TaskTransaction): Promise<GroupView | null> {
     return await this.errorCatcher('groups.get-by-name', async () => {
       const result = await getAvailableGroupQuery(this.db, trx)

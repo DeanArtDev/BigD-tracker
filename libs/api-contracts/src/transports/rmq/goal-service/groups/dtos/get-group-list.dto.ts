@@ -8,6 +8,12 @@ class GetGroupListReqData extends CursorPaginationDto {
   userId: number;
 
   @IsOptional()
+  @Type(() => Number)
+  @IsArray()
+  @IsInt({ each: true })
+  ids?: number[];
+
+  @IsOptional()
   @IsString()
   search?: string;
 }

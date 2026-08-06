@@ -1,60 +1,69 @@
 import { Event } from '@dayflow/core';
 import { useEffect } from 'react';
-import { TaskId } from '@/entity/planner/tasks';
 import { invalidateTaskCreateCache, useTaskCreate } from '@/feature/planner/task-create';
+import { useTaskSettingsUpdate } from '@/feature/planner/task-settings-update';
 import { useDiaryContext } from '../../context';
-import { DiaryDialogActions } from '../diary-dialog-actions';
+import { DiaryEventDomain } from '../diary-event-domain';
 
 function useEventCreateSubscription() {
   const { calendar } = useDiaryContext();
   const { client, createTask } = useTaskCreate();
+  const { updateTaskSettings } = useTaskSettingsUpdate();
 
   const app = calendar.app;
 
   useEffect(() => {
-    const createEvent = (event: Event) => {
-      const diaryEvent = DiaryDialogActions.withTaskMeta(event);
-      const task = DiaryDialogActions.mapEventToTask(diaryEvent);
+    const createEvent = async (event: Event) => {
+      const diaryEvent = DiaryEventDomain.withTaskMeta(event);
+      const task = DiaryEventDomain.mapEventToTask(diaryEvent);
 
-      createTask({
-        variables: {
-          input: {
-            name: task.name,
-            description: task.description,
-            deadline: task.deadline,
-            startDate: task.startDate,
-            priority: task.priority,
-            groupId: task.groupId,
+      try {
+        const createdTaskData = await createTask({
+          variables: {
+            input: {
+              name: task.name,
+              description: task.description,
+              deadline: task.deadline,
+              startDate: task.startDate,
+              priority: task.priority,
+              groupId: task.groupId,
+            },
           },
-        },
-      })
-        .then(async ({ data }) => {
-          const createdTask = data?.createTask;
-          if (createdTask != null) {
-            app.applyEventsChanges(
-              {
-                update: [
-                  {
-                    id: event.id,
-                    updates: {
-                      ...event,
-                      meta: {
-                        ...diaryEvent.meta,
-                        id: createdTask.id as TaskId,
-                      },
+        });
+
+        const createdTask = createdTaskData?.data?.createTask;
+        if (createdTask != null) {
+          app.applyEventsChanges(
+            {
+              update: [
+                {
+                  id: event.id,
+                  updates: {
+                    ...event,
+                    id: DiaryEventDomain.createEventId(createdTask.id),
+                    meta: {
+                      ...diaryEvent.meta,
+                      id: createdTask.id,
                     },
                   },
-                ],
-              },
-              false,
-              'remote',
-            );
-            await invalidateTaskCreateCache(client);
+                },
+              ],
+            },
+            false,
+            'remote',
+          );
+
+          await invalidateTaskCreateCache(client);
+
+          if (task.settings?.isAllDay) {
+            await updateTaskSettings({
+              variables: { input: { isAllDay: task.settings?.isAllDay, taskId: createdTask.id } },
+            });
           }
-        })
-        .catch(() => {
-          app.applyEventsChanges({ delete: [event.id] }, false, 'remote');
-        });
+        }
+      } catch {
+        app.applyEventsChanges({ delete: [event.id] }, false, 'remote');
+      }
     };
 
     return app.subscribeEventChanges((changes) => {

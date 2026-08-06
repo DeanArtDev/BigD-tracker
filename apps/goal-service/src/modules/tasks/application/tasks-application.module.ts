@@ -27,6 +27,8 @@ import {
   GetManyGroupSettingsHandler,
   GetTaskSettingsQuery,
   GetTaskSettingsHandler,
+  GetDiaryGroupListQuery,
+  GetDiaryGroupListHandler,
 } from './queries';
 import {
   GroupCheckerService,
@@ -112,6 +114,7 @@ const queries = [
   GetManyGroupSettingsQuery,
   GetTasksPerPageQuery,
   GetTaskSettingsQuery,
+  GetDiaryGroupListQuery,
 ];
 const commands = [
   CreateTaskCommand,
@@ -164,6 +167,7 @@ const handlers = [
   GetGroupSettingsHandler,
   GetManyGroupSettingsHandler,
   GetTaskSettingsHandler,
+  GetDiaryGroupListHandler,
 ];
 const useCases = [
   CreateTaskUseCase,

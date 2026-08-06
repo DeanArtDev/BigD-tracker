@@ -114,6 +114,12 @@ export type TaskRecurrencyInput = {
   yearmonths?: Array<number> | null | undefined;
 };
 
+export type TaskSettingsUpdateInput = {
+  icon?: string | null | undefined;
+  isAllDay?: boolean | null | undefined;
+  taskId: string | number;
+};
+
 /** Статусы дела */
 type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
 
@@ -260,6 +266,12 @@ export type UpdateTaskMutation = {
     cancelReason: string | null;
   };
 };
+
+export type UpdateTaskSettingsMutationVariables = Exact<{
+  input: Types.TaskSettingsUpdateInput;
+}>;
+
+export type UpdateTaskSettingsMutation = { updateTaskSettings: { isAllDay: boolean; icon: string | null } };
 
 export type DeleteTaskMutationVariables = Exact<{
   input: Types.TaskDeleteInput;
@@ -775,6 +787,49 @@ export const UpdateTaskDocument = {
     },
   ],
 } as unknown as DocumentNode<UpdateTaskMutation, UpdateTaskMutationVariables>;
+export const UpdateTaskSettingsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateTaskSettings' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSettingsUpdateInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateTaskSettings' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'isAllDay' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'icon' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateTaskSettingsMutation, UpdateTaskSettingsMutationVariables>;
 export const DeleteTaskDocument = {
   kind: 'Document',
   definitions: [
