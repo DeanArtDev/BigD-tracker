@@ -332,7 +332,7 @@ type TaskSchema {
   id: ID!
   name: String!
   priority: TaskPriority!
-  settings: TaskSettingsSchema!
+  settings: TaskSettingsSchema
   startDate: String
   status: TaskStatus!
   userId: Int!

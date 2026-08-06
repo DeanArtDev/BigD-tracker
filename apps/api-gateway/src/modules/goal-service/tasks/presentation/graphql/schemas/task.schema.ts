@@ -82,7 +82,7 @@ class TaskSchema {
   @IsString()
   cancelReason?: string;
 
-  @Field(() => TaskSettingsSchema)
+  @Field(() => TaskSettingsSchema, { nullable: true })
   settings?: TaskSettingsSchema;
 }
 

@@ -14,6 +14,11 @@ interface GroupsReadRepository {
 
   getSettings(input: { groupId: number; userId: number }, trx?: TaskTransaction): Promise<GroupSettingsView | null>;
 
+  getManySettings(
+    input: { readonly groupIds: number[]; readonly userId: number },
+    trx?: TaskTransaction,
+  ): Promise<GroupSettingsView[]>;
+
   ensureTaskInGroup(
     input: { userId: number; taskId: number; groupId: number },
     trx?: TaskTransaction,

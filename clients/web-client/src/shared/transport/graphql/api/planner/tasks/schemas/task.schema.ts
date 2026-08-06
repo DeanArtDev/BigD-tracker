@@ -15,6 +15,10 @@ const GET_DIARY_TASKS_QUERY = gql`
   query GetDiaryTasks($input: GetDiaryTasksInput!) {
     getDiaryTasks(input: $input) {
       ...TaskFragment
+      settings {
+        isAllDay
+        icon
+      }
     }
   }
 `;

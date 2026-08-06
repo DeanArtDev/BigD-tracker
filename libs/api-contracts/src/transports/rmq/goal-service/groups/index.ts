@@ -7,6 +7,7 @@ export * from './get-user-groups';
 export * from './get-group';
 export * from './get-group-info';
 export * from './get-group-settings';
+export * from './get-many-group-settings';
 export * from './update-group-settings';
 export * from './get-assignable-groups';
 

@@ -1,3 +1,4 @@
+import { AppGraphQLContext } from '@/infrastructure/graphql-client/types';
 import { AppRmqClient, GOAL_RMQ_SERVICE } from '@/infrastructure/rmq-clients';
 import { TokenPayload } from '@/modules/auth/decorators';
 import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
@@ -11,11 +12,13 @@ import {
   GoalGetTasksCursor,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
-import { Args, Int, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { getGroupSettingsDataLoader } from '../loaders';
 import {
   GetGroupInput,
   GetGroupListInput,
   GroupSchema,
+  GroupSettingsSchema,
   GroupInfoSchema,
   GetGroupTasksInput,
   GroupsConnection,
@@ -24,6 +27,15 @@ import {
 @Resolver(() => GroupSchema)
 export class GroupsQueriesResolver {
   constructor(@Inject(GOAL_RMQ_SERVICE) private readonly goalClient: AppRmqClient) {}
+
+  @ResolveField(() => GroupSettingsSchema, { nullable: true })
+  settings(
+    @TokenPayload() { uid }: AccessTokenPayload,
+    @Parent() group: GroupSchema,
+    @Context() context: AppGraphQLContext,
+  ): Promise<GroupSettingsSchema> {
+    return getGroupSettingsDataLoader({ context, goalClient: this.goalClient, userId: uid }).load(group.id);
+  }
 
   @Query(() => [GroupInfoSchema])
   async getAssignableGroups(@TokenPayload() { uid }: AccessTokenPayload): Promise<GroupInfoSchema[]> {
@@ -81,6 +93,11 @@ export class GroupsQueriesResolver {
     };
   }
 
+  /*TODO:
+   *
+   * [] N+1 для bulk запроса, если нужно будет просить для списка групп переделать через loader
+   *
+   * */
   @ResolveField(() => Int, { nullable: true })
   async taskCount(@TokenPayload() { uid }: AccessTokenPayload, @Parent() group: GroupSchema): Promise<number> {
     const { data } = await this.goalClient.send<GoalGetGroupInfo.Response, GoalGetGroupInfo.Request>(

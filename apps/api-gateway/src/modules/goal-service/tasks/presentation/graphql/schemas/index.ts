@@ -12,6 +12,7 @@ export * from './get-tasks-cursor.schema';
 export * from './get-tasks-per-page.schema';
 export * from './task-recurrency.schema';
 export * from './task-recovery.schema';
+export * from './task-settings-update.schema';
 export * from './task-update.schema';
 export * from './task-assign.schema';
 export * from './task-unassign.schema';

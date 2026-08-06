@@ -10,6 +10,9 @@ export * from './get-group-info/get-group-info.handler';
 export * from './get-group-settings/get-group-settings.query';
 export * from './get-group-settings/get-group-settings.handler';
 
+export * from './get-many-group-settings/get-many-group-settings.query';
+export * from './get-many-group-settings/get-many-group-settings.handler';
+
 export * from './get-tasks-by-range/get-tasks-by-range.query';
 export * from './get-tasks-by-range/get-tasks-by-range.handler';
 

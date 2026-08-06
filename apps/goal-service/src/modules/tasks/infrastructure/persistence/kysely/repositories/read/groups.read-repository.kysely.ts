@@ -8,7 +8,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GroupReadKyselyMapper } from '../../mappers/groups.read-mapper';
 import { BaseTasksRepository } from '../base-tasks.repository';
 import { getAvailableGroupQuery } from '../helpers';
-import { groupWithStatusQuery } from '../utils';
+import { groupSettingsQuery, groupWithStatusQuery } from '../utils';
 
 @Injectable()
 export class GroupsReadRepositoryKysely extends BaseTasksRepository implements GroupsReadRepository {
@@ -93,29 +93,29 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
     trx?: TaskTransaction,
   ): Promise<GroupSettingsView | null> {
     return await this.errorCatcher('groups.get-settings.read', async () => {
-      const settings = await this.db
-        .qb(trx)
-        .selectFrom('group_settings')
-        .innerJoin('groups', 'groups.id', 'group_settings.group_id')
-        .select([
-          'group_settings.group_id as groupId',
-          'group_settings.event_color as eventColor',
-          'group_settings.event_selected_color as eventSelectedColor',
-          'group_settings.line_color as lineColor',
-          'group_settings.text_color as textColor',
-          'group_settings.event_color_dark as eventColorDark',
-          'group_settings.event_selected_color_dark as eventSelectedColorDark',
-          'group_settings.line_color_dark as lineColorDark',
-          'group_settings.text_color_dark as textColorDark',
-          'group_settings.is_default as isDefault',
-          'group_settings.is_visible as isVisible',
-          'group_settings.is_readonly as isReadonly',
-        ])
+      const settings = await groupSettingsQuery(this.db, trx)
         .where('group_settings.group_id', '=', input.groupId)
         .where('groups.user_id', '=', input.userId)
         .executeTakeFirst();
 
       return settings == null ? null : GroupSettingsView.restore(settings);
+    });
+  }
+
+  async getManySettings(
+    input: { readonly groupIds: number[]; readonly userId: number },
+    trx?: TaskTransaction,
+  ): Promise<GroupSettingsView[]> {
+    return await this.errorCatcher('groups.get-many-settings.read', async () => {
+      const { groupIds, userId } = input;
+      if (groupIds.length === 0) return [];
+
+      const settings = await groupSettingsQuery(this.db, trx)
+        .where('group_settings.group_id', 'in', groupIds)
+        .where('groups.user_id', '=', userId)
+        .execute();
+
+      return settings.map((setting) => GroupSettingsView.restore(setting));
     });
   }
 

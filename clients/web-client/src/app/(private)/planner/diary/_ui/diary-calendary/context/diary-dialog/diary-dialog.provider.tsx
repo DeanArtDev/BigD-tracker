@@ -135,16 +135,19 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
               app.addEvent(eventToCreate);
             }
 
-            if (dialogState.mode === 'update' && dialogState.event.meta.id != null) {
-              const eventToUpdate = DiaryDialogActions.update({
-                ...task,
-                startDate,
-                deadline,
-                id: dialogState.event.meta.id,
-                status: dialogState.task.status,
-              });
+            if (dialogState.mode === 'update') {
+              if (dialogState.event.meta.id != null && taskToChange?.task?.settings != null) {
+                const eventToUpdate = DiaryDialogActions.update({
+                  ...task,
+                  startDate,
+                  deadline,
+                  settings: taskToChange?.task?.settings,
+                  id: dialogState.event.meta.id,
+                  status: dialogState.task.status,
+                });
 
-              await app.updateEvent(dialogState.event.id, eventToUpdate);
+                await app.updateEvent(dialogState.event.id, eventToUpdate);
+              }
             }
 
             setOpen(false);

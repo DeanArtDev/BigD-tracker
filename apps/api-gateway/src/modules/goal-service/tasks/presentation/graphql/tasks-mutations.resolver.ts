@@ -12,6 +12,7 @@ import {
   GoalReplaceTask,
   GoalTaskRecovery,
   GoalUnassignTaskFromGroup,
+  GoalUpdateTaskSettings,
 } from '@big-d/api-contracts';
 import { Inject } from '@nestjs/common';
 import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
@@ -24,6 +25,8 @@ import {
   TaskDeleteInput,
   TaskFinishInput,
   TaskRecoveryInput,
+  TaskSettingsSchema,
+  TaskSettingsUpdateInput,
   TaskUnassignInput,
   TaskUpdateInput,
 } from './schemas';
@@ -81,6 +84,28 @@ class TasksMutationsResolver {
     );
 
     return TaskMapper.fromServerTaskDtoToClientDto(data);
+  }
+
+  @Mutation(() => TaskSettingsSchema, {
+    description: 'Редактирование настроек дела',
+  })
+  async updateTaskSettings(
+    @Args('input') input: TaskSettingsUpdateInput,
+    @TokenPayload() { uid }: AccessTokenPayload,
+  ): Promise<TaskSettingsSchema> {
+    const { data } = await this.goalClient.send<GoalUpdateTaskSettings.Response, GoalUpdateTaskSettings.Request>(
+      GoalUpdateTaskSettings.pattern,
+      {
+        data: {
+          userId: uid,
+          taskId: input.taskId,
+          icon: input.icon,
+          isAllDay: input.isAllDay,
+        },
+      },
+    );
+
+    return data;
   }
 
   @Mutation(() => TaskSchema, {

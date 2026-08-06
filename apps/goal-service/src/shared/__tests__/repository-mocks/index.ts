@@ -59,6 +59,7 @@ const groupReadRepoMock: Record<keyof GroupsReadRepository, jest.Mock> & { getGr
   getInfoGroups: jest.fn(),
   getGroupInfo: jest.fn(),
   getSettings: jest.fn(),
+  getManySettings: jest.fn(),
   getMany: jest.fn(),
   getOne: jest.fn(),
 };

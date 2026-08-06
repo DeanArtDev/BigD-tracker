@@ -413,9 +413,17 @@ export type TaskSchema = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   priority: TaskPriority;
+  settings?: Maybe<TaskSettingsSchema>;
   startDate?: Maybe<Scalars['String']['output']>;
   status: TaskStatus;
   userId: Scalars['Int']['output'];
+};
+
+/** Настройки дела */
+export type TaskSettingsSchema = {
+  __typename?: 'TaskSettingsSchema';
+  icon?: Maybe<Scalars['String']['output']>;
+  isAllDay: Scalars['Boolean']['output'];
 };
 
 /** Статусы дела */
