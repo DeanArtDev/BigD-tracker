@@ -77,7 +77,7 @@ function AppDialog(props: AppDialogProps) {
         {verticalScroll ? (
           <ScrollAreaNativeVertical className="h-fit max-h-[65vh]">{content}</ScrollAreaNativeVertical>
         ) : (
-          content
+          <div className="h-fit max-h-[65vh] overflow-hidden">{content}</div>
         )}
 
         {footer && <DialogFooter className="m-0 mt-auto">{footer}</DialogFooter>}

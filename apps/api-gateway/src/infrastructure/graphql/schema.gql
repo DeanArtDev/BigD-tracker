@@ -309,6 +309,7 @@ input TaskCreateInput {
   groupId: Int
   name: String!
   priority: TaskPriority!
+  recurrence: TaskRecurrencyInput
   startDate: String
 }
 
@@ -363,6 +364,17 @@ input TaskRecurrencyInput {
   yearmonths: [Int!]
 }
 
+"""Паттерн повторения дела"""
+type TaskRecurrencySchema {
+  frequency: RecurrenceFrequency!
+  interval: Int
+  monthdays: [Int!]
+  startDate: String!
+  untilDate: String
+  weekdays: [TaskRecurrenceWeekday!]
+  yearmonths: [Int!]
+}
+
 """Дело"""
 type TaskSchema {
   cancelReason: String
@@ -373,6 +385,7 @@ type TaskSchema {
   id: ID!
   name: String!
   priority: TaskPriority!
+  recurrence: TaskRecurrencySchema
   settings: TaskSettingsSchema
   startDate: String
   status: TaskStatus!

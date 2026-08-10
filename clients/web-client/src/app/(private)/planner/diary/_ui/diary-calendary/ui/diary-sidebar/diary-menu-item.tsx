@@ -32,7 +32,7 @@ function DiaryMenuItem({
       className={cn(isCollapsed && 'flex justify-center')}
       key={groupId}
     >
-      <AppTooltip skip={!isCollapsed} side="right" content={groupName} delayDuration={4000}>
+      <AppTooltip skip={!isCollapsed} side="right" content={groupName} delayDuration={2000}>
         <Button
           aria-checked={isVisible}
           aria-label={`${isVisible ? 'Скрыть' : 'Показать'} группы ${groupName}`}

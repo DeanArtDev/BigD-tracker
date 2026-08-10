@@ -2,6 +2,7 @@
 
 import { GroupId } from '@/entity/planner/groups';
 import {
+  getRecurrenceFromTaskFormData,
   TaskForm,
   TaskFormFieldProvider,
   TaskFormFooter,
@@ -37,6 +38,7 @@ function Component<TGroupId extends Brand<number, string>>({ open, onOpenChange,
     <AppDialog
       open={open}
       title="Создание дела"
+      verticalScroll={false}
       content={
         <TaskForm<TGroupId> className="px-4 py-2" onSubmit={(taskFormData) => void onSubmit(taskFormData, close)} />
       }
@@ -86,7 +88,17 @@ function TaskCreateDialog<TGroupId extends Brand<number, string>>(props: TaskCre
 
             promise(async () =>
               createTask({
-                variables: { input: { name, description, deadline, startDate, priority, groupId } },
+                variables: {
+                  input: {
+                    name,
+                    description,
+                    deadline,
+                    startDate,
+                    priority,
+                    groupId,
+                    recurrence: getRecurrenceFromTaskFormData(taskFormData),
+                  },
+                },
 
                 onCompleted: async ({ createTask: ok }) => {
                   if (ok != null) {

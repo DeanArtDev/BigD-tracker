@@ -3,6 +3,7 @@ import { AccessTokenPayload } from '@/modules/auth/dto/access-token.dto';
 import {
   GoalGetAssignableTasks,
   GoalGetDiaryTasks,
+  GoalGetTaskById,
   GoalGetTasksCursor,
   TaskPriority,
   TaskStatus,
@@ -93,6 +94,7 @@ describe('TasksQueriesResolver', () => {
             recurrence: {
               frequency: 'DAILY',
               interval: 1,
+              startDate: '2026-08-01T09:00',
             },
           },
         ],
@@ -123,8 +125,49 @@ describe('TasksQueriesResolver', () => {
         name: 'Diary task',
         priority: TaskPriority.Do,
         status: TaskStatus.NOT_STARTED,
+        recurrence: {
+          frequency: 'DAILY',
+          interval: 1,
+          startDate: '2026-08-01T09:00',
+        },
       },
     ]);
-    expect(result[0]).not.toHaveProperty('recurrence');
+  });
+
+  test('gets task by id with recurrence and maps it to the GraphQL schema', async () => {
+    const recurrence = {
+      frequency: 'WEEKLY',
+      weekdays: ['MO', 'FR'],
+      startDate: '2026-08-03T09:00',
+      untilDate: '2026-09-01T09:00',
+    };
+    const send = jest.fn().mockResolvedValue({
+      data: {
+        id: 'o::3',
+        userId: 42,
+        name: 'Recurring task',
+        priority: 3,
+        status: TaskStatus.IN_PROGRESS,
+        recurrence,
+      },
+    });
+    const resolver = new TasksQueriesResolver({ send } as unknown as AppRmqClient);
+
+    const result = await resolver.getTaskById({ uid: 42 } as AccessTokenPayload, { id: 'o::3' });
+
+    expect(send).toHaveBeenCalledWith(GoalGetTaskById.pattern, {
+      data: {
+        userId: 42,
+        taskId: 'o::3',
+      },
+    });
+    expect(result).toEqual({
+      id: 'o::3',
+      userId: 42,
+      name: 'Recurring task',
+      priority: TaskPriority.Delegate,
+      status: TaskStatus.IN_PROGRESS,
+      recurrence,
+    });
   });
 });

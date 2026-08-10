@@ -2,6 +2,7 @@
 
 import { GroupId, GroupLabelBadge } from '@/entity/planner/groups';
 import {
+  getRecurrenceFromTaskFormData,
   Task,
   TaskForm,
   TaskFormFieldProvider,
@@ -12,6 +13,7 @@ import {
 } from '@/entity/planner/tasks';
 import { Brand, MaybePromise } from '@/shared/lib';
 import { AppDialog, useConfirmDialog, useNotify } from '@/shared/project-ui';
+import { TaskCacheManager } from '@/shared/transport/graphql';
 import { useTaskUpdate } from './api/use-task-update';
 
 interface ComponentProps<TGroupId extends Brand<number, string>> {
@@ -75,7 +77,7 @@ interface TaskUpdateDialogProps<TGroupId extends Brand<number, string>> {
 function TaskUpdateDialog(props: TaskUpdateDialogProps<GroupId>) {
   const { task, open, onOpenChange, onSuccess } = props;
 
-  const { loading, updateTask } = useTaskUpdate();
+  const { loading, client, updateTask } = useTaskUpdate();
 
   const { promise } = useNotify();
 
@@ -91,11 +93,22 @@ function TaskUpdateDialog(props: TaskUpdateDialogProps<GroupId>) {
 
             promise(async () => {
               const response = await updateTask({
-                variables: { input: { id: task.id, name, description, deadline, startDate, priority } },
+                variables: {
+                  input: {
+                    id: task.id,
+                    name,
+                    description,
+                    deadline,
+                    startDate,
+                    priority,
+                    recurrence: getRecurrenceFromTaskFormData(taskFormData),
+                  },
+                },
               });
 
               if (response.data?.updateTask != null) {
                 close();
+                TaskCacheManager.refetchGetDiaryTasks(client);
                 await onSuccess?.();
               }
             });

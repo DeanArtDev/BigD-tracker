@@ -41,5 +41,6 @@ export * from './ui/breadcrumb';
 export * from './ui/resizable';
 export * from './ui/virtualized-list-layout';
 export * from './ui/reset-button';
+export * from './ui/switch';
 
 export * from './lib/utils';

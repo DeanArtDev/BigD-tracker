@@ -134,6 +134,11 @@ class TaskService {
       if (replaceData.shouldDeleteRecurrence) {
         await this.taskRecurrenceService.deleteRecurrence({ id: replaceData.recurrence.id }, trx);
       }
+
+      return {
+        task: savedTask,
+        recurrence: undefined,
+      };
     }
 
     if (replaceData.isRecurrenceCreate) {

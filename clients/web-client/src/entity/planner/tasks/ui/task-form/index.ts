@@ -14,3 +14,4 @@ export {
   type TaskFormFieldProviderProps,
 } from './context/task-form-field-provider';
 export { TaskFormFooter } from './components/task-form-footer';
+export { getRecurrenceFromTaskFormData, getTaskFormValues } from './helpers';
