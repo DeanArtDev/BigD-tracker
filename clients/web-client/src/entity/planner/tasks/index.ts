@@ -2,8 +2,6 @@ export {
   TaskDomain,
   TaskActionType,
   TaskType,
-  TaskRecurrenceWeekday,
-  TaskRecurrenceFrequency,
   type BrandTask,
   type TaskId,
   type Task,

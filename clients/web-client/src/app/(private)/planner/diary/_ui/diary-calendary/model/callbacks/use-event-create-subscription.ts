@@ -73,7 +73,7 @@ function useEventCreateSubscription() {
         }
       });
     });
-  }, [app, client, createTask]);
+  }, [app, client, createTask, updateTaskSettings]);
 }
 
 export { useEventCreateSubscription };

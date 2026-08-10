@@ -28,11 +28,10 @@ function TaskForm<TGroupId extends GroupBrand>({ className, groupSlot, onSubmit 
       <form
         id={formId}
         noValidate
-        className={cn('flex grow flex-col gap-2 min-w-0', className)}
+        className={cn('grid grid-rows-[min-content_min-content_1fr] flex-col gap-2 min-w-0', className)}
         onSubmit={(evt) => {
           evt.preventDefault();
           evt.stopPropagation();
-
           handleSubmit(async (formData) => {
             const description = wysiwygController.current?.getStateAsString?.();
             await onSubmit({ ...formData, description });
@@ -55,7 +54,7 @@ function TaskForm<TGroupId extends GroupBrand>({ className, groupSlot, onSubmit 
           <WysiwygForm
             name="description"
             disabled={description.disabled}
-            classNames={{ wrapper: 'border rounded-xl h-120' }}
+            classNames={{ wrapper: 'border rounded-xl min-h-110 max-h-120' }}
             placeholder="Добавь детали, контекст и ожидаемый результат."
             wysiwygController={wysiwygController}
             onDirtyChange={(isDirty) => {

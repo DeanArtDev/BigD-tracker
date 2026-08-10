@@ -38,6 +38,7 @@ class TaskMapper {
       deadline: task.deadline,
       endDate: task.endDate,
       priority: TaskMapper.fromServerPriorityToClient(task.priority),
+      recurrence: task.recurrence,
     };
   };
 }

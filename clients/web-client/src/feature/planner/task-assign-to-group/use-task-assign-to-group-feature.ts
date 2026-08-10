@@ -48,6 +48,7 @@ function useTaskAssignToGroupFeature() {
           GroupCacheManager.refetchGroupTasks(client, { groupId: task?.groupId });
 
           TaskCacheManager.refetchAssignableTasks(client);
+          TaskCacheManager.refetchGetDiaryTasks(client);
           TaskCacheManager.dropCurrentGetTasksPerPage(client);
           await onSuccess?.({ groupId, task });
           client.cache.gc();

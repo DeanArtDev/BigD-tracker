@@ -157,7 +157,7 @@ class TasksQueriesResolver {
   async getTaskById(
     @TokenPayload() { uid }: AccessTokenPayload,
     @Args('input') input: GetTaskByIdInput,
-  ): Promise<GoalGetTaskById.Response['data']> {
+  ): Promise<TaskSchema> {
     const { data } = await this.goalClient.send<GoalGetTaskById.Response, GoalGetTaskById.Request>(
       GoalGetTaskById.pattern,
       {
@@ -168,7 +168,7 @@ class TasksQueriesResolver {
       },
     );
 
-    return data;
+    return TaskMapper.fromServerTaskDtoToClientDto(data);
   }
 }
 

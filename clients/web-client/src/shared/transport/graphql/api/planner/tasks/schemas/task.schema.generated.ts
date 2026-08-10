@@ -77,6 +77,7 @@ export type TaskCreateInput = {
   groupId?: number | null | undefined;
   name: string;
   priority: TaskPriority;
+  recurrence?: TaskRecurrencyInput | null | undefined;
   startDate?: string | null | undefined;
 };
 
@@ -163,6 +164,13 @@ export type GetDiaryTasksQuery = {
     endDate: string | null;
     cancelReason: string | null;
     settings: { isAllDay: boolean; icon: string | null } | null;
+    recurrence: {
+      frequency: Types.RecurrenceFrequency;
+      weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+      monthdays: Array<number> | null;
+      untilDate: string | null;
+      startDate: string;
+    } | null;
   }>;
 };
 
@@ -183,6 +191,13 @@ export type GetTasksCursorQuery = {
       startDate: string | null;
       endDate: string | null;
       cancelReason: string | null;
+      recurrence: {
+        frequency: Types.RecurrenceFrequency;
+        weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+        monthdays: Array<number> | null;
+        untilDate: string | null;
+        startDate: string;
+      } | null;
     }>;
     meta: { endCursor: string | null; hasNextPage: boolean };
   };
@@ -205,6 +220,13 @@ export type GetTasksPerPageQuery = {
       startDate: string | null;
       endDate: string | null;
       cancelReason: string | null;
+      recurrence: {
+        frequency: Types.RecurrenceFrequency;
+        weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+        monthdays: Array<number> | null;
+        untilDate: string | null;
+        startDate: string;
+      } | null;
     }>;
     meta: { nextPage: boolean };
   };
@@ -226,6 +248,13 @@ export type CreateTaskMutation = {
     startDate: string | null;
     endDate: string | null;
     cancelReason: string | null;
+    recurrence: {
+      frequency: Types.RecurrenceFrequency;
+      weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+      monthdays: Array<number> | null;
+      untilDate: string | null;
+      startDate: string;
+    } | null;
   };
 };
 
@@ -245,6 +274,13 @@ export type CloneTaskMutation = {
     startDate: string | null;
     endDate: string | null;
     cancelReason: string | null;
+    recurrence: {
+      frequency: Types.RecurrenceFrequency;
+      weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+      monthdays: Array<number> | null;
+      untilDate: string | null;
+      startDate: string;
+    } | null;
   };
 };
 
@@ -264,6 +300,13 @@ export type UpdateTaskMutation = {
     startDate: string | null;
     endDate: string | null;
     cancelReason: string | null;
+    recurrence: {
+      frequency: Types.RecurrenceFrequency;
+      weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+      monthdays: Array<number> | null;
+      untilDate: string | null;
+      startDate: string;
+    } | null;
   };
 };
 
@@ -319,6 +362,13 @@ export type TaskRecoveryMutation = {
     startDate: string | null;
     endDate: string | null;
     cancelReason: string | null;
+    recurrence: {
+      frequency: Types.RecurrenceFrequency;
+      weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+      monthdays: Array<number> | null;
+      untilDate: string | null;
+      startDate: string;
+    } | null;
   };
 };
 
@@ -338,6 +388,13 @@ export type TaskByIdQuery = {
     startDate: string | null;
     endDate: string | null;
     cancelReason: string | null;
+    recurrence: {
+      frequency: Types.RecurrenceFrequency;
+      weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+      monthdays: Array<number> | null;
+      untilDate: string | null;
+      startDate: string;
+    } | null;
   };
 };
 
@@ -454,6 +511,20 @@ export const GetDiaryTasksDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -534,6 +605,20 @@ export const GetTasksCursorDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -611,6 +696,20 @@ export const GetTasksPerPageDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -668,6 +767,20 @@ export const CreateTaskDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -725,6 +838,20 @@ export const CloneTaskDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -782,6 +909,20 @@ export const UpdateTaskDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -1082,6 +1223,20 @@ export const TaskRecoveryDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -1139,6 +1294,20 @@ export const TaskByIdDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },

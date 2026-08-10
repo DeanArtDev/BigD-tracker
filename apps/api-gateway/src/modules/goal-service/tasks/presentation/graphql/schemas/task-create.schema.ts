@@ -1,9 +1,11 @@
 import { TaskPriority } from '@big-d/api-contracts';
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { buildTaskDateTimeApiProperty } from '@shared/dto/task-date-time';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
-import { IsEnum, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { TaskRecurrencyInput } from './task-recurrency.schema';
 
 @InputType()
 class TaskCreateInput {
@@ -44,6 +46,16 @@ class TaskCreateInput {
   @IsOptional()
   @IsString()
   deadline?: string;
+
+  @ApiPropertyOptional({
+    description: 'Паттерн повторения дела',
+    type: TaskRecurrencyInput,
+  })
+  @Field(() => TaskRecurrencyInput, { nullable: true })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TaskRecurrencyInput)
+  recurrence?: TaskRecurrencyInput;
 }
 
 export { TaskCreateInput };

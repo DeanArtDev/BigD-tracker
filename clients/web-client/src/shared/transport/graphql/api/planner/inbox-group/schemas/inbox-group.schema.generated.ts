@@ -13,8 +13,14 @@ export type GetInboxTasksInput = {
   status?: Array<TaskStatus> | null | undefined;
 };
 
+/** Частота повторения дела */
+export type RecurrenceFrequency = 'DAILY' | 'HOURLY' | 'MINUTELY' | 'MONTHLY' | 'SECONDLY' | 'WEEKLY' | 'YEARLY';
+
 /** Приоритеты дела */
 type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
+
+/** День недели повторения дела */
+export type TaskRecurrenceWeekday = 'FR' | 'MO' | 'SA' | 'SU' | 'TH' | 'TU' | 'WE';
 
 /** Статусы дела */
 type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
@@ -32,12 +38,21 @@ export type GetInboxQuery = {
       items: Array<{
         id: string;
         name: string;
-        deadline: string | null;
         description: string | null;
-        groupId: number | null;
         priority: Types.TaskPriority;
-        startDate: string | null;
         status: Types.TaskStatus;
+        groupId: number | null;
+        deadline: string | null;
+        startDate: string | null;
+        endDate: string | null;
+        cancelReason: string | null;
+        recurrence: {
+          frequency: Types.RecurrenceFrequency;
+          weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+          monthdays: Array<number> | null;
+          untilDate: string | null;
+          startDate: string;
+        } | null;
       }>;
     };
   };
@@ -97,21 +112,46 @@ export const GetInboxDocument = {
                         name: { kind: 'Name', value: 'items' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                          ],
+                          selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'TaskFragment' } }],
                         },
                       },
                     ],
                   },
                 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TaskFragment' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TaskSchema' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'priority' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'deadline' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
               ],
             },
           },

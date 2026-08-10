@@ -15,6 +15,14 @@ const TASK_FRAGMENT = gql`
     endDate
 
     cancelReason
+
+    recurrence {
+      frequency
+      weekdays
+      monthdays
+      untilDate
+      startDate
+    }
   }
 `;
 

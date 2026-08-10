@@ -5,6 +5,7 @@ import { ReactNode, useState } from 'react';
 import { Button, cn, Collapsible, CollapsibleContent, CollapsibleTrigger, Typography } from '@/shared/ui-kit';
 import { DateAndTimePicker } from './date-and-time-picker';
 import { Priority } from './priority';
+import { TaskFromRecurrence } from './task-from-recurrence';
 import { TaskStatusIndication } from '../../task-status-indication';
 import { useTaskFormFieldContext } from '../context/task-form-field-provider';
 import { useTaskFromContext } from '../context/task-form-provider';
@@ -61,6 +62,8 @@ function TaskFormParamsSettings({ groupSlot }: { groupSlot?: ReactNode }) {
             )}
           </div>
         )}
+
+        <TaskFromRecurrence />
       </CollapsibleContent>
     </Collapsible>
   );

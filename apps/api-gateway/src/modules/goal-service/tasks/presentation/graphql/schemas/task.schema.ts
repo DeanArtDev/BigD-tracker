@@ -2,6 +2,7 @@ import { TaskPriority, TaskStatus } from '@big-d/api-contracts';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
+import { TaskRecurrencySchema } from './task-recurrency.schema';
 
 registerEnumType(TaskStatus, {
   name: 'TaskStatus',
@@ -76,6 +77,10 @@ class TaskSchema {
   @Field(() => TaskStatus)
   @IsEnum(TaskStatus)
   status: TaskStatus;
+
+  @Field(() => TaskRecurrencySchema, { nullable: true })
+  @IsOptional()
+  recurrence?: TaskRecurrencySchema;
 
   @Field({ nullable: true })
   @IsOptional()

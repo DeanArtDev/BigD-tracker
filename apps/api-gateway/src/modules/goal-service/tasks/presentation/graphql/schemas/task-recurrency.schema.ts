@@ -1,5 +1,5 @@
 import { RecurrenceFrequency, TaskRecurrenceWeekday } from '@big-d/api-contracts';
-import { Field, InputType, Int, registerEnumType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { buildTaskDateTimeApiProperty } from '@shared/dto/task-date-time';
 import { IsAbsoluteDateTimeWithoutTimezone } from '@shared/validation';
@@ -81,4 +81,28 @@ class TaskRecurrencyInput {
   interval?: number;
 }
 
-export { TaskRecurrencyInput };
+@ObjectType({ description: 'Паттерн повторения дела' })
+class TaskRecurrencySchema {
+  @Field(() => RecurrenceFrequency)
+  frequency: RecurrenceFrequency;
+
+  @Field(() => [TaskRecurrenceWeekday], { nullable: true })
+  weekdays?: TaskRecurrenceWeekday[];
+
+  @Field(() => Int, { nullable: true })
+  interval?: number;
+
+  @Field(() => String)
+  startDate: string;
+
+  @Field(() => String, { nullable: true })
+  untilDate?: string;
+
+  @Field(() => [Int], { nullable: true })
+  monthdays?: number[];
+
+  @Field(() => [Int], { nullable: true })
+  yearmonths?: number[];
+}
+
+export { TaskRecurrencyInput, TaskRecurrencySchema };

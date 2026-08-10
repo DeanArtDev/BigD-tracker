@@ -61,8 +61,14 @@ export type GroupUpdateTaskInput = {
   id: string;
 };
 
+/** Частота повторения дела */
+export type RecurrenceFrequency = 'DAILY' | 'HOURLY' | 'MINUTELY' | 'MONTHLY' | 'SECONDLY' | 'WEEKLY' | 'YEARLY';
+
 /** Приоритеты дела */
 type TaskPriority = 'Delegate' | 'Delete' | 'Do' | 'Plan';
+
+/** День недели повторения дела */
+export type TaskRecurrenceWeekday = 'FR' | 'MO' | 'SA' | 'SU' | 'TH' | 'TU' | 'WE';
 
 /** Статусы дела */
 type TaskStatus = 'ARCHIVED' | 'CANCELED' | 'COMPLETED' | 'DELETED' | 'IN_PROGRESS' | 'NOT_STARTED' | 'OVERDUE';
@@ -91,6 +97,13 @@ export type GetDetailedGroupByIdQuery = {
         startDate: string | null;
         endDate: string | null;
         cancelReason: string | null;
+        recurrence: {
+          frequency: Types.RecurrenceFrequency;
+          weekdays: Array<Types.TaskRecurrenceWeekday> | null;
+          monthdays: Array<number> | null;
+          untilDate: string | null;
+          startDate: string;
+        } | null;
       }>;
     };
   };
@@ -277,6 +290,20 @@ export const GetDetailedGroupByIdDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurrence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'weekdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'monthdays' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'untilDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+              ],
+            },
+          },
         ],
       },
     },

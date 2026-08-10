@@ -39,6 +39,7 @@ class GetTaskSettingsHandler implements IQueryHandler<GetTaskSettingsQuery> {
         { userId: input.userId, recurrenceIds: [...recurrenceIds] },
         trx,
       );
+
       const overrideSettings = await this.tasksOverridesRepository.getManySettings(
         { userId: input.userId, overrideIds: [...overrideIds] },
         trx,
@@ -70,13 +71,13 @@ class GetTaskSettingsHandler implements IQueryHandler<GetTaskSettingsQuery> {
         }
 
         if (type.isVirtual) {
-          const s = taskSettingsByTaskId.get(type.data.recurrenceId);
+          const s = taskSettingsByRecurrenceId.get(type.data.recurrenceId);
           if (s != null) buffer.push(new TaskSettingsDto(taskId, s.isAllDay, s.icon));
           continue;
         }
 
         if (type.isOverride) {
-          const s = taskSettingsByTaskId.get(type.data.overrideId);
+          const s = overrideSettingsById.get(type.data.overrideId);
           if (s != null) buffer.push(new TaskSettingsDto(taskId, s.isAllDay, s.icon));
         }
       }

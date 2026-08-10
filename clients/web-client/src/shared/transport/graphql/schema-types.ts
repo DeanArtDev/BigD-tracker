@@ -395,6 +395,7 @@ export type TaskCreateInput = {
   groupId?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
   priority: TaskPriority;
+  recurrence?: InputMaybe<TaskRecurrencyInput>;
   startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -449,6 +450,18 @@ export type TaskRecurrencyInput = {
   yearmonths?: InputMaybe<Array<Scalars['Int']['input']>>;
 };
 
+/** Паттерн повторения дела */
+export type TaskRecurrencySchema = {
+  __typename?: 'TaskRecurrencySchema';
+  frequency: RecurrenceFrequency;
+  interval?: Maybe<Scalars['Int']['output']>;
+  monthdays?: Maybe<Array<Scalars['Int']['output']>>;
+  startDate: Scalars['String']['output'];
+  untilDate?: Maybe<Scalars['String']['output']>;
+  weekdays?: Maybe<Array<TaskRecurrenceWeekday>>;
+  yearmonths?: Maybe<Array<Scalars['Int']['output']>>;
+};
+
 /** Дело */
 export type TaskSchema = {
   __typename?: 'TaskSchema';
@@ -460,6 +473,7 @@ export type TaskSchema = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   priority: TaskPriority;
+  recurrence?: Maybe<TaskRecurrencySchema>;
   settings?: Maybe<TaskSettingsSchema>;
   startDate?: Maybe<Scalars['String']['output']>;
   status: TaskStatus;

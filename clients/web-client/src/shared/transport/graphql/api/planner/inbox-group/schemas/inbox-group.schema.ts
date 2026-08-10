@@ -11,14 +11,7 @@ const GET_INBOX_QUERY = gql`
           hasNextPage
         }
         items {
-          id
-          name
-          deadline
-          description
-          groupId
-          priority
-          startDate
-          status
+          ...TaskFragment
         }
       }
     }

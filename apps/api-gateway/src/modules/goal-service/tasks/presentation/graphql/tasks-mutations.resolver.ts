@@ -53,6 +53,7 @@ class TasksMutationsResolver {
           name: input.name,
           startDate: input.startDate,
           deadline: input.deadline,
+          recurrence: input.recurrence,
         },
       },
     );

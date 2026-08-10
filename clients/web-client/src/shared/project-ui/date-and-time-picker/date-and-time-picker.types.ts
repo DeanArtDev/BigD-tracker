@@ -10,6 +10,7 @@ interface DateAndTimePickerProps {
     readonly minute: number;
   };
   readonly disabled?: boolean;
+  readonly hideTimeSelector?: boolean;
   readonly invalid?: boolean;
   readonly label?: string;
   readonly locale?: Partial<Locale>;

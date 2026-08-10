@@ -14,6 +14,7 @@ function DateAndTimePicker({
   clearable = false,
   defaultTime,
   disabled = false,
+  hideTimeSelector = false,
   label,
   locale = ru,
   max,
@@ -24,17 +25,21 @@ function DateAndTimePicker({
   popoverProps,
   value,
 }: DateAndTimePickerProps) {
-  const [draft, setDraft] = useState(() => getDefaultValue(value, defaultTime));
+  const getDraftValue = () => {
+    const nextValue = getDefaultValue(value, defaultTime);
+
+    return hideTimeSelector ? timeAndDate(nextValue).startOf('day').toDate() : nextValue;
+  };
+
+  const [draft, setDraft] = useState(getDraftValue);
   const [open, setOpen] = useState(false);
-  const [visibleMonth, setVisibleMonth] = useState(() =>
-    timeAndDate(getDefaultValue(value, defaultTime)).startOf('month').toDate(),
-  );
+  const [visibleMonth, setVisibleMonth] = useState(() => timeAndDate(getDraftValue()).startOf('month').toDate());
   const normalizedMinuteStep = Math.max(1, Math.min(60, Math.trunc(minuteStep)));
 
   const openPicker = () => {
     if (disabled) return;
 
-    const nextValue = getDefaultValue(value, defaultTime);
+    const nextValue = getDraftValue();
     setDraft(nextValue);
     setVisibleMonth(timeAndDate(nextValue).startOf('month').toDate());
     setOpen(true);
@@ -42,7 +47,7 @@ function DateAndTimePicker({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      setDraft(getDefaultValue(value, defaultTime));
+      setDraft(getDraftValue());
     }
     setOpen(nextOpen);
   };
@@ -53,12 +58,12 @@ function DateAndTimePicker({
   };
 
   const selectDate = (date: Date) => {
-    const nextDate = replaceDate(draft, date);
+    const nextDate = hideTimeSelector ? timeAndDate(date).startOf('day').toDate() : replaceDate(draft, date);
     setDraft(nextDate);
   };
 
   const commit = () => {
-    onChange(draft);
+    onChange(hideTimeSelector ? timeAndDate(draft).startOf('day').toDate() : draft);
     setOpen(false);
   };
 
@@ -91,9 +96,11 @@ function DateAndTimePicker({
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
+                    ...(!hideTimeSelector && {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    }),
                   }).format(value)}
             </span>
           </Button>
@@ -127,13 +134,15 @@ function DateAndTimePicker({
             onDayClick={selectDate}
           />
 
-          <TimeSelector
-            disabled={disabled}
-            minuteStep={normalizedMinuteStep}
-            value={draft}
-            onHourChange={(hour) => selectTime('hour', hour)}
-            onMinuteChange={(minute) => selectTime('minute', minute)}
-          />
+          {!hideTimeSelector && (
+            <TimeSelector
+              disabled={disabled}
+              minuteStep={normalizedMinuteStep}
+              value={draft}
+              onHourChange={(hour) => selectTime('hour', hour)}
+              onMinuteChange={(minute) => selectTime('minute', minute)}
+            />
+          )}
         </div>
 
         <div className={cn('flex border-t p-2', clearable ? 'justify-between' : 'justify-end')}>

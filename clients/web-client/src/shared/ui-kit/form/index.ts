@@ -7,3 +7,4 @@ export * from './toggle-group-form';
 export * from './toggle-group-multi-form';
 export * from './date-picker-form';
 export * from './time-picker-form';
+export * from './switch-form';

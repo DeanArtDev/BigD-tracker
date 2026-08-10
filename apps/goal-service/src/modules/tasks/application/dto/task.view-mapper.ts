@@ -43,6 +43,7 @@ class TasksViewMapper {
             yearmonths: recurrence.yearmonths,
             weekstart: recurrence.weekstart,
             weekdays: recurrence.weekdays,
+            status: recurrence.status,
           }
         : undefined,
     });
