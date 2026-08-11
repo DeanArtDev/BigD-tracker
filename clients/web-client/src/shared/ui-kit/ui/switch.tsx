@@ -3,7 +3,7 @@
 import { Switch as SwitchPrimitive } from 'radix-ui';
 import type { ComponentProps } from 'react';
 
-import { cn } from '@/shared/ui-kit/lib/utils';
+import { cn } from '../lib/utils';
 
 type SwitchProps = ComponentProps<typeof SwitchPrimitive.Root> & {
   readonly size?: 'sm' | 'default';

@@ -1,21 +1,26 @@
 'use client';
 
+import { useApolloClient } from '@apollo/client/react';
+import { ICalendarApp } from '@dayflow/core';
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskSubmitFormData } from '@/entity/planner/tasks';
+import { getRecurrenceFromTaskFormData, TaskSubmitFormData } from '@/entity/planner/tasks';
+import { MaybePromise } from '@/shared/lib';
 import timeAndDate from '@/shared/lib/time';
 import { useNotify } from '@/shared/project-ui';
-import { diaryDialogContext, type DiaryDialogContext } from './diary-dialog.context';
+import { TaskCacheManager } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from '../../model';
+import { useEventUpdate } from '../../model/callbacks';
 import { DiaryEventDomain } from '../../model/diary-event-domain';
 import { DiaryEvent, EventTask } from '../../model/types';
 import { DiaryEventDialog } from '../../ui/diary-event-dialog';
 import { useDiaryContext } from '../diary-calendar';
+import { diaryDialogContext, type DiaryDialogContext } from './diary-dialog.context';
 
 interface DiaryDialogState {
-  readonly event: DiaryEvent;
+  readonly originEvent: DiaryEvent;
   readonly mode: 'create' | 'update';
-  readonly task: EventTask;
+  readonly originTask: EventTask;
 }
 
 function DiaryDialogProvider({ children }: PropsWithChildren) {
@@ -25,6 +30,10 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
   const [dialogState, setDialogState] = useState<DiaryDialogState>();
   const [open, setOpen] = useState(false);
   const { error, warning } = useNotify();
+
+  const client = useApolloClient();
+  const getApp = useCallback(() => app, [app]);
+  const { persistEventUpdate, loading: isTaskUpdateLoading } = useEventUpdate({ getApp });
 
   const openDiaryDialog = useCallback<DiaryDialogContext['openDiaryDialog']>(
     (event, params) => {
@@ -42,13 +51,13 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
 
         const task = DiaryEventDomain.mapEventToTask(createdEvent);
 
-        setDialogState({ event: createdEvent, mode: 'create', task });
+        setDialogState({ originEvent: createdEvent, mode: 'create', originTask: task });
       }
 
       if (isUpdate) {
         const e = DiaryEventDomain.withTaskMeta(event);
         const task = DiaryEventDomain.mapEventToTask(e);
-        setDialogState({ event: e, mode: 'update', task });
+        setDialogState({ originEvent: e, mode: 'update', originTask: task });
       }
 
       setOpen(true);
@@ -70,21 +79,20 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
 
   const taskToChange = useMemo(() => {
     if (dialogState?.mode === 'create') {
-      const { task } = dialogState;
+      const { originTask } = dialogState;
       return {
         task: undefined,
         defaultValues: {
-          name: task.name ?? undefined,
-          startDate: task.startDate != null ? timeAndDate(task.startDate).toDate() : undefined,
-          deadline: task.deadline != null ? timeAndDate(task.deadline).toDate() : undefined,
+          name: originTask.name ?? undefined,
+          startDate: originTask.startDate != null ? timeAndDate(originTask.startDate).toDate() : undefined,
+          deadline: originTask.deadline != null ? timeAndDate(originTask.deadline).toDate() : undefined,
         },
       };
     }
-    if (dialogState?.mode === 'update' && dialogState.event.meta.id != null) {
-      return { task: { ...dialogState.task, id: dialogState.event.meta.id }, defaultValues: undefined };
+    if (dialogState?.mode === 'update' && dialogState.originEvent.meta.id != null) {
+      return { task: { ...dialogState.originTask, id: dialogState.originEvent.meta.id }, defaultValues: undefined };
     }
-
-    if (dialogState != null && dialogState?.event.meta.id == null) {
+    if (dialogState != null && dialogState?.originEvent.meta.id == null) {
       warning({ message: 'Дело не может быть создано или обновлено, не хватает данных' });
     }
 
@@ -97,17 +105,18 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
 
       {dialogState && (
         <DiaryEventDialog
-          key={dialogState.event.id}
+          key={dialogState.originEvent.id}
           app={app}
           open={open}
+          loading={isTaskUpdateLoading}
           defaultValues={taskToChange?.defaultValues}
           task={taskToChange?.task}
           title={dialogState.mode === 'create' ? 'Создание дела' : 'Редактирование дела'}
           onAnimationEnd={completeClosing}
           onOpenChange={setOpen}
-          onSubmit={async (task: TaskSubmitFormData<GroupId>) => {
+          onSubmit={async (formDate: TaskSubmitFormData<GroupId>) => {
             if (!dialogState) return;
-            const { startDate, deadline } = task;
+            const { startDate, deadline } = formDate;
             if (startDate == null || deadline == null) {
               error({ message: 'Дело должно иметь дату начала и окончания' });
               return;
@@ -116,37 +125,42 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
             if (dialogState.mode === 'create') {
               const eventToCreateDraft = DiaryEventDomain.create({
                 allDay: false,
-                date: timeAndDate(task.startDate).toDate(),
+                date: timeAndDate(formDate.startDate).toDate(),
                 defaultValues: {
-                  status: task.status,
-                  priority: task.priority,
-                  startDate: timeAndDate(task.startDate).toDate(),
-                  deadline: timeAndDate(task.deadline).toDate(),
+                  status: formDate.status,
+                  priority: formDate.priority,
+                  startDate: timeAndDate(formDate.startDate).toDate(),
+                  deadline: timeAndDate(formDate.deadline).toDate(),
                 },
-                calendarId: (task?.groupId as unknown as string) ?? EMPTY_GROUP_ID,
+                calendarId: formDate?.groupId?.toString() ?? EMPTY_GROUP_ID,
               });
 
               const eventToCreate: DiaryEvent = {
                 ...eventToCreateDraft,
-                title: task.name,
-                description: task.description,
+                title: formDate.name,
+                description: formDate.description,
               };
 
               app.addEvent(eventToCreate);
             }
 
             if (dialogState.mode === 'update') {
-              if (dialogState.event.meta.id != null && taskToChange?.task?.settings != null) {
-                const eventToUpdate = DiaryEventDomain.update({
-                  ...task,
-                  startDate,
-                  deadline,
-                  settings: taskToChange?.task?.settings,
-                  id: dialogState.event.meta.id,
-                  status: dialogState.task.status,
+              if (dialogState.originEvent.meta.id != null && taskToChange?.task?.settings != null) {
+                const path = DiaryEventDomain.mapTaskToEvent({
+                  ...taskToChange.task,
+                  ...formDate,
+                  recurrence: getRecurrenceFromTaskFormData(formDate),
                 });
-
-                await app.updateEvent(dialogState.event.id, eventToUpdate);
+                Reflect.deleteProperty(path, 'id');
+                const eventToUpdate = DiaryEventDomain.update(dialogState.originEvent, path);
+                const isUpdated = await persistEventUpdate(eventToUpdate, dialogState.originEvent);
+                if (isUpdated) {
+                  await updateDiaryCalendar(dialogState.originEvent, eventToUpdate, app, {
+                    onBecameRecurrent: () => TaskCacheManager.refetchGetDiaryTasks(client),
+                  });
+                }
+              } else {
+                warning({ message: 'meta.id or settings are not provided.' });
               }
             }
 
@@ -156,6 +170,22 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
       )}
     </diaryDialogContext.Provider>
   );
+}
+
+async function updateDiaryCalendar(
+  origin: DiaryEvent,
+  updated: DiaryEvent,
+  app: ICalendarApp,
+  { onBecameRecurrent }: { onBecameRecurrent: () => MaybePromise<unknown> },
+) {
+  const isBecameRecurrent = origin.meta.recurrence == null && updated.meta.recurrence != null;
+  if (isBecameRecurrent) {
+    await onBecameRecurrent();
+    app.applyEventsChanges({ delete: [origin.id] }, false, 'remote');
+    return;
+  }
+
+  await app.updateEvent(origin.id, updated, false, 'remote');
 }
 
 export { DiaryDialogProvider };

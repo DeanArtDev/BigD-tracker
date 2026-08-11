@@ -3,7 +3,6 @@
 import type { Event } from '@dayflow/core';
 import { Check, Copy, Folder, Scissors, Trash2 } from 'lucide-react';
 import { type RefObject, useEffect, useRef, useState } from 'react';
-import { GroupId } from '@/entity/planner/groups';
 import { TaskActionType, TaskDomain } from '@/entity/planner/tasks';
 import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
 import {
@@ -52,6 +51,12 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
 
       const calendarEvent = app.getEvents().find(({ id }) => id === eventElement.dataset.eventId);
       if (!calendarEvent || !app.canMutateFromUI(calendarEvent.id)) return;
+      if (calendarEvent.meta?.loading === true) {
+        contextMenuEvent.preventDefault();
+        contextMenuEvent.stopPropagation();
+        contextMenuEvent.stopImmediatePropagation();
+        return;
+      }
 
       contextMenuEvent.preventDefault();
       contextMenuEvent.stopPropagation();
@@ -82,8 +87,8 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
     if (!event || event.calendarId === calendarId) return;
 
     const task = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
-    const groupId = Number(calendarId);
-    if (task.id == null || !Number.isFinite(groupId)) return;
+    const groupId = DiaryEventDomain.mapCalendarIdToGroupId(calendarId);
+    if (task.id == null || groupId == null) return;
 
     const previousCalendarId = event.calendarId;
     await app.updateEvent(event.id, { calendarId }, false, 'remote');
@@ -91,7 +96,7 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
     try {
       await assignToGroup(
         {
-          groupId: groupId as GroupId,
+          groupId,
           task: {
             id: task.id,
             groupId: task.groupId,

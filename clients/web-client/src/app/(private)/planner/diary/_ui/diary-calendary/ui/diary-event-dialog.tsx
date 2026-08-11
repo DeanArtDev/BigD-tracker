@@ -7,6 +7,7 @@ import { DefaultValues } from 'react-hook-form';
 import { GroupId, GroupLabelBadge } from '@/entity/planner/groups';
 import {
   Task,
+  TaskDomain,
   TaskForm,
   TaskFormData,
   TaskFormFieldProvider,
@@ -77,6 +78,7 @@ function DiaryEventDialogContent({
 interface DiaryEventDialogProps {
   readonly app?: ICalendarApp;
   readonly open: boolean;
+  readonly loading?: boolean;
   readonly task?: Task<GroupId>;
   readonly title: ReactNode;
   readonly defaultValues?: DefaultValues<TaskFormData<GroupId>>;
@@ -90,6 +92,7 @@ function DiaryEventDialog({
   open,
   task,
   title,
+  loading,
   defaultValues,
   onAnimationEnd,
   onOpenChange,
@@ -107,10 +110,14 @@ function DiaryEventDialog({
   }, [app]);
 
   return (
-    <TaskFormProvider<GroupId> task={task} defaultValues={defaultValues}>
+    <TaskFormProvider<GroupId> loading={loading} task={task} defaultValues={defaultValues}>
       <TaskFormFieldProvider
         taskStatus={task?.status}
-        defaultFieldsState={{ startDate: { clearable: false }, deadline: { clearable: false } }}
+        taskType={task != null ? TaskDomain.parseId(task?.id).type : undefined}
+        defaultFieldsState={{
+          startDate: { clearable: false },
+          deadline: { clearable: false },
+        }}
         blockState={{ params: { collapsed: false } }}
       >
         <DiaryEventDialogContent

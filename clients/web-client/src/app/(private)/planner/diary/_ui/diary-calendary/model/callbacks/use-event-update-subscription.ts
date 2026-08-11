@@ -9,10 +9,10 @@ function useEventUpdateSubscription() {
   const { calendar } = useDiaryContext();
   const app = calendar.app;
   const getApp = useCallback(() => app, [app]);
-  const updateEvent = useEventUpdate({ getApp });
+  const { persistEventUpdate } = useEventUpdate({ getApp });
 
   useEffect(() => {
-    const debouncedUpdateEvent = debounce(updateEvent, UPDATE_DEBOUNCE_MS);
+    const debouncedUpdateEvent = debounce(persistEventUpdate, UPDATE_DEBOUNCE_MS);
 
     const unsubscribe = app.subscribeEventChanges((changes) => {
       changes.forEach((change) => {
@@ -37,7 +37,7 @@ function useEventUpdateSubscription() {
       unsubscribe();
       debouncedUpdateEvent.cancel();
     };
-  }, [app, updateEvent]);
+  }, [app, persistEventUpdate]);
 }
 
 export { useEventUpdateSubscription };

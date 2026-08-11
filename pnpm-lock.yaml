@@ -1488,20 +1488,20 @@ importers:
         specifier: workspace:*
         version: link:../../libs/exceptions
       '@dayflow/core':
-        specifier: ^3.6.7
-        version: 3.6.7
+        specifier: ^3.6.8
+        version: 3.6.8
       '@dayflow/plugin-drag':
-        specifier: ^1.5.7
-        version: 1.5.7(@dayflow/core@3.6.7)
+        specifier: ^1.5.8
+        version: 1.5.8(@dayflow/core@3.6.8)
       '@dayflow/plugin-keyboard-shortcuts':
-        specifier: ^1.5.7
-        version: 1.5.7(@dayflow/core@3.6.7)
+        specifier: ^1.5.8
+        version: 1.5.8(@dayflow/core@3.6.8)
       '@dayflow/plugin-sidebar':
-        specifier: ^1.5.7
-        version: 1.5.7(@dayflow/core@3.6.7)
+        specifier: ^1.5.8
+        version: 1.5.8(@dayflow/core@3.6.8)
       '@dayflow/react':
-        specifier: ^3.6.7
-        version: 3.6.7(@dayflow/core@3.6.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^3.6.8
+        version: 3.6.8(@dayflow/core@3.6.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1698,6 +1698,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.7.0
         version: 4.7.0(vite@7.3.1(@types/node@20.19.40)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.102.0)(terser@5.47.1)(yaml@2.8.4))
+      dotenv:
+        specifier: 'catalog:'
+        version: 16.6.1
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -2923,38 +2926,38 @@ packages:
   '@dayflow/blossom-color-picker@2.2.1':
     resolution: {integrity: sha512-V3CdtY3qLMVDxhtbtAEIyN4wWQEN+vIj6gVkBZY1O2HX4hq+6mwLRZ/A13jEG2PN8WBQmfRw1cgzGx+Pjvd/PQ==}
 
-  '@dayflow/core@3.6.7':
-    resolution: {integrity: sha512-Ivfuoo4jksFuLiTSCD76W5BXJZ5cO1tvnj2do5+NFVPooTHGOJBVJUDwECS4pbaek6XUt96P3wAkE0W+l3AxBw==}
+  '@dayflow/core@3.6.8':
+    resolution: {integrity: sha512-mxr84VRJdjacGMx4QP404PCatnGGLSAUxDYl1xZNO4pk9YNcg+jtJERckld0wJKLuh3mdFvyfVZOBdnPBcVH6Q==}
 
-  '@dayflow/plugin-drag@1.5.7':
-    resolution: {integrity: sha512-lNG5UeAwNzT3ZeTO3M/vk5mlzyUHMz1rRWWeeWtCoFRVCQ+SZ90ptoQ4luA5DZaySFXQfDoW1CJq9kiiOguVaw==}
+  '@dayflow/plugin-drag@1.5.8':
+    resolution: {integrity: sha512-dRv5S9CQit0wt87zEV2eOPP05VQ4dM9kBOcp/nxgxuAvTv6XHcNHcRrN5SM3pWo3HaAU8epWukVD8BV89BUPqw==}
     peerDependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
 
-  '@dayflow/plugin-keyboard-shortcuts@1.5.7':
-    resolution: {integrity: sha512-La2bzpApbmFrcP71MXjUINNglVwOXBSPQKVvbG2hT6zvl6qfMpBT7bPUCyy6rBQpyOgrN7PFnH2dKzdbnlZ6tw==}
+  '@dayflow/plugin-keyboard-shortcuts@1.5.8':
+    resolution: {integrity: sha512-gzGPrYUHyWdcLPcpxzK6kWfw0DpGgCA0n2fl6kT5Yb7NopaO/z5iLPF8gYvG4pv6bRZ1NjAi7V06px5McVpH+w==}
     peerDependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
 
-  '@dayflow/plugin-sidebar@1.5.7':
-    resolution: {integrity: sha512-FF+D2yCzDPXibpp27xKabSGaduj4TiTyCDjfVIrIBJ+6M2wrLr4w28uqlt3X7Hq1DHmMEf607NiKXOn/m9QCBw==}
+  '@dayflow/plugin-sidebar@1.5.8':
+    resolution: {integrity: sha512-CDAZai/wUYlpJ3f4GJ9d+W13ka4tGjFxtXmGWPpQHCGLEwAZ65wCI72I+UsRuZxQJvEqNX5BXsZiroVQZ5bSiw==}
     peerDependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
 
-  '@dayflow/react@3.6.7':
-    resolution: {integrity: sha512-IVAmrFaGi9g0iuw0ddNYKMfzXFb9JaLrZ9jNi7TFccy7dmMMQZ5snL+aLbwY+nO6zR9pPhQSQ8zW9GRbU6NF+g==}
+  '@dayflow/react@3.6.8':
+    resolution: {integrity: sha512-T/64DElbRUUr1Y5uCUeVLDlN885aPj+7ZTMkz5FlRY5qFzYLn3uEagiCQBiBVCP1ya4LwKhsRwa1kQnIRq/Nyg==}
     peerDependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@dayflow/ui-context-menu@1.1.7':
-    resolution: {integrity: sha512-JJCjHCoK0xNzRtGKw6GnZpigJ0xrPXM2ard+sr9Fl9AEIOLfxy8AwaPAsRhW1n5Egc8ghvSkxhnmyQRLqHu6Ew==}
+  '@dayflow/ui-context-menu@1.1.8':
+    resolution: {integrity: sha512-riHpXPezUUOVI4c4rIuxr6ky08IBxqRK8Is2fgvZmQwNS+xBe+HYvH3nd3mMThHcKMM8KyNkYip6WzKiNIw7iQ==}
     peerDependencies:
       preact: '>=10'
 
-  '@dayflow/ui-range-picker@1.1.7':
-    resolution: {integrity: sha512-Q1zzH9Qp8seHRHATvS7fyPI97+k0Omdpw/Gq2hJhRUiBy5vNOrb0WTl4ozZNGC7huCg9MQVTDu2MydcYLY3cPw==}
+  '@dayflow/ui-range-picker@1.1.8':
+    resolution: {integrity: sha512-VnqNX/jSbJqH2FQt7rKbStCC94oxlTKCVKbephohWkpaoUfakq3pPPOf0zyDWr+j7jZz0E9jYTx0BcYrQ/Pa3Q==}
     peerDependencies:
       preact: '>=10'
       temporal-polyfill: '>=0.2'
@@ -13880,40 +13883,40 @@ snapshots:
 
   '@dayflow/blossom-color-picker@2.2.1': {}
 
-  '@dayflow/core@3.6.7':
+  '@dayflow/core@3.6.8':
     dependencies:
       '@dayflow/blossom-color-picker': 2.2.1
-      '@dayflow/ui-context-menu': 1.1.7(preact@10.29.7)
-      '@dayflow/ui-range-picker': 1.1.7(preact@10.29.7)(temporal-polyfill@0.3.2)
+      '@dayflow/ui-context-menu': 1.1.8(preact@10.29.7)
+      '@dayflow/ui-range-picker': 1.1.8(preact@10.29.7)(temporal-polyfill@0.3.2)
       preact: 10.29.7
       temporal-polyfill: 0.3.2
       tslib: 2.8.1
     transitivePeerDependencies:
       - preact-render-to-string
 
-  '@dayflow/plugin-drag@1.5.7(@dayflow/core@3.6.7)':
+  '@dayflow/plugin-drag@1.5.8(@dayflow/core@3.6.8)':
     dependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
 
-  '@dayflow/plugin-keyboard-shortcuts@1.5.7(@dayflow/core@3.6.7)':
+  '@dayflow/plugin-keyboard-shortcuts@1.5.8(@dayflow/core@3.6.8)':
     dependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
 
-  '@dayflow/plugin-sidebar@1.5.7(@dayflow/core@3.6.7)':
+  '@dayflow/plugin-sidebar@1.5.8(@dayflow/core@3.6.8)':
     dependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
 
-  '@dayflow/react@3.6.7(@dayflow/core@3.6.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@dayflow/react@3.6.8(@dayflow/core@3.6.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@dayflow/core': 3.6.7
+      '@dayflow/core': 3.6.8
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@dayflow/ui-context-menu@1.1.7(preact@10.29.7)':
+  '@dayflow/ui-context-menu@1.1.8(preact@10.29.7)':
     dependencies:
       preact: 10.29.7
 
-  '@dayflow/ui-range-picker@1.1.7(preact@10.29.7)(temporal-polyfill@0.3.2)':
+  '@dayflow/ui-range-picker@1.1.8(preact@10.29.7)(temporal-polyfill@0.3.2)':
     dependencies:
       preact: 10.29.7
       temporal-polyfill: 0.3.2

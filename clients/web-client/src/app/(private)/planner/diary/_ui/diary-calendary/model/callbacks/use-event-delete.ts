@@ -15,6 +15,7 @@ function useEventDelete() {
       if (event == null) return Promise.reject(new Error(`Event with id ${eventId} not found`));
 
       const task = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
+      if (event.meta?.loading === true) return Promise.reject(new Error('Event is loading'));
       const taskId = task.id;
       if (taskId == null) return Promise.resolve();
 

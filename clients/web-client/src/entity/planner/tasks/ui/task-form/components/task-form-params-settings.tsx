@@ -17,7 +17,7 @@ function TaskFormParamsSettings({ groupSlot }: { groupSlot?: ReactNode }) {
   } = blockState;
   const [isOpen, setIsOpen] = useState(!collapsed);
   const { formState, getValues } = useTaskFromContext();
-  const { startDate, deadline } = fieldsState;
+  const { startDate, deadline, recurrence } = fieldsState;
 
   const taskStatus = getValues('status');
 
@@ -63,7 +63,7 @@ function TaskFormParamsSettings({ groupSlot }: { groupSlot?: ReactNode }) {
           </div>
         )}
 
-        <TaskFromRecurrence />
+        {!recurrence.hidden && <TaskFromRecurrence />}
       </CollapsibleContent>
     </Collapsible>
   );

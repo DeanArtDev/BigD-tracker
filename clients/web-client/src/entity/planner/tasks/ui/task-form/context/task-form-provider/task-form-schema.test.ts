@@ -1,9 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
-
-vi.hoisted(() => {
-  process.env.NEXT_PUBLIC_HTTP_API_URL = 'http://localhost:3000';
-  process.env.NEXT_PUBLIC_WS_API_URL = 'ws://localhost:3000';
-});
+import { describe, expect, it } from 'vitest';
 
 import { RecurrenceFrequency, TaskPriority, TaskRecurrenceWeekday } from '@/shared/transport/graphql/schema-types';
 import { taskFormSchema, type GroupBrand } from './task-form-schema';
