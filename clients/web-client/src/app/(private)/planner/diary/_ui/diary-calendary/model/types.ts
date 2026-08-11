@@ -1,8 +1,8 @@
 import { type Event as DayflowEvent, ViewType } from '@dayflow/core';
 import { GroupId } from '@/entity/planner/groups';
-import { Task, TaskId } from '@/entity/planner/tasks';
+import { Task, TaskType } from '@/entity/planner/tasks';
 import { Override } from '@/shared/lib';
-import { DiaryTask, TaskPriority, TaskStatus } from '@/shared/transport/graphql';
+import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 
 interface DiaryDialogDefaultValues {
   readonly deadline?: Date;
@@ -31,19 +31,22 @@ interface DiaryDialogPasteParams {
 
 type TaskUpdateData = Override<Task<GroupId>, { startDate: string; deadline: string }>;
 
-type DiaryEventMeta = Pick<Task<GroupId>, 'priority' | 'status'> & { id?: Task<GroupId>['id'] } & Record<
-    string,
-    unknown
-  >;
+type DiaryEventMeta = Pick<Task<GroupId>, 'priority' | 'status' | 'recurrence'> & {
+  readonly id?: Task<GroupId>['id'];
+  readonly loading?: boolean;
+  readonly taskType: TaskType;
+};
 
 type DiaryEvent = Override<DayflowEvent, { meta: DiaryEventMeta }>;
 
-type EventTask = Override<Task<GroupId>, { id?: Task<GroupId>['id'] }>;
-
-type DiaryTaskWithDates = DiaryTask<GroupId, TaskId> & {
-  readonly deadline: string;
-  readonly startDate: string;
-};
+type EventTask = Override<
+  Task<GroupId>,
+  {
+    id?: Task<GroupId>['id'];
+    startDate: string;
+    deadline: string;
+  }
+>;
 
 export type {
   EventTask,
@@ -54,5 +57,4 @@ export type {
   DiaryDialogPasteParams,
   DiaryDialogCreateParams,
   DiaryDialogDefaultValues,
-  DiaryTaskWithDates,
 };

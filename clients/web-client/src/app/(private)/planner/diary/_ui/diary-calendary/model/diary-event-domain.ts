@@ -7,8 +7,9 @@ import {
   temporalToDate,
   ViewType,
 } from '@dayflow/core';
+import { merge } from 'lodash-es';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskDomain, TaskId } from '@/entity/planner/tasks';
+import { TaskDomain, TaskId, TaskType, TaskUtils } from '@/entity/planner/tasks';
 import timeAndDate from '@/shared/lib/time';
 import { DiaryTask, TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from './constants';
@@ -44,14 +45,16 @@ class DiaryEventDomain {
       }),
       meta: {
         id: undefined,
+        loading: false,
         priority: defaultValues?.priority ?? TaskDomain.defaultFields.priority,
         status: defaultValues?.status ?? TaskDomain.defaultFields.status,
+        taskType: TaskType.Unknown,
       },
     };
   }
 
-  static update(task: TaskUpdateData): DiaryEvent {
-    return DiaryEventDomain.mapTaskToEvent(task);
+  static update(origin: DiaryEvent, patch: Partial<DiaryEvent>): DiaryEvent {
+    return merge({}, origin, patch);
   }
 
   static paste(event: DayflowEvent, { calendarId, date, timeZone, viewType }: DiaryDialogPasteParams): DiaryEvent {
@@ -97,6 +100,7 @@ class DiaryEventDomain {
       description: event.description,
       status: meta.status,
       priority: meta.priority,
+      recurrence: meta.recurrence,
       settings: {
         isAllDay: event.allDay ?? false,
         icon: undefined,
@@ -120,8 +124,11 @@ class DiaryEventDomain {
       }),
       meta: {
         id: task.id,
+        loading: false,
         priority: task.priority,
         status: task.status,
+        recurrence: task.recurrence,
+        taskType: TaskDomain.parseId(task.id).type,
       },
     };
   };
@@ -130,13 +137,17 @@ class DiaryEventDomain {
     return { ...event, meta: DiaryEventDomain.getTaskMeta(event) };
   }
 
-  private static getTaskMeta(event: DayflowEvent): DiaryEventMeta {
+  static getTaskMeta = (event: DayflowEvent): DiaryEventMeta => {
     const id = event.meta?.id;
     const status = event.meta?.status;
     const priority = event.meta?.priority;
+    const recurrence = TaskUtils.getSafetyRecurrence(event.meta?.recurrence);
 
     return {
       ...event.meta,
+      loading: event.meta?.loading === true,
+      recurrence,
+      taskType: event.meta?.taskType as TaskType,
       id: id != null && typeof id === 'string' ? (id as TaskId) : undefined,
       status: Object.values(TaskStatus).includes(status as TaskStatus)
         ? (status as TaskStatus)
@@ -145,13 +156,13 @@ class DiaryEventDomain {
         ? (priority as TaskPriority)
         : TaskDomain.defaultFields.priority,
     };
-  }
+  };
 
   static createEventId = (taskId: DiaryTask<GroupId, TaskId>['id']): string => {
     return encodeURIComponent(taskId);
   };
 
-  private static mapCalendarIdToGroupId(calendarId?: string): GroupId | undefined {
+  static mapCalendarIdToGroupId(calendarId?: string): GroupId | undefined {
     if (calendarId == null || calendarId === EMPTY_GROUP_ID) return undefined;
 
     const groupId = Number(calendarId);

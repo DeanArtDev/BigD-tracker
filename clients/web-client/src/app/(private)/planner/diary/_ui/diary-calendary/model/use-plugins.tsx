@@ -12,7 +12,7 @@ interface UsePluginsParams {
 }
 
 function usePlugins({ getApp }: UsePluginsParams) {
-  const updateEvent = useEventUpdate({ getApp });
+  const { persistEventUpdate } = useEventUpdate({ getApp });
 
   return useMemo(
     () => [
@@ -20,12 +20,12 @@ function usePlugins({ getApp }: UsePluginsParams) {
         onEventDrop: async (updatedEvent, originEvent) => {
           const app = getApp();
           if (app == null) return;
-          await updateEvent(updatedEvent, originEvent);
+          await persistEventUpdate(updatedEvent, originEvent);
         },
         onEventResize: async (updatedEvent, originEvent) => {
           const app = getApp();
           if (app == null) return;
-          await updateEvent(updatedEvent, originEvent);
+          await persistEventUpdate(updatedEvent, originEvent);
         },
       }),
 
@@ -50,7 +50,7 @@ function usePlugins({ getApp }: UsePluginsParams) {
         },
       }),
     ],
-    [getApp, updateEvent],
+    [getApp, persistEventUpdate],
   );
 }
 

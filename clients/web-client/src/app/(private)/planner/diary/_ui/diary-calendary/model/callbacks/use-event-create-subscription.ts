@@ -14,10 +14,15 @@ function useEventCreateSubscription() {
 
   useEffect(() => {
     const createEvent = async (event: Event) => {
-      const diaryEvent = DiaryEventDomain.withTaskMeta(event);
-      const task = DiaryEventDomain.mapEventToTask(diaryEvent);
+      const diaryEvent = DiaryEventDomain.withTaskMeta({
+        ...event,
+        meta: { ...event.meta, id: undefined, loading: true },
+      });
+
+      app.applyEventsChanges({ update: [{ id: event.id, updates: { meta: diaryEvent.meta } }] }, false, 'remote');
 
       try {
+        const task = DiaryEventDomain.mapEventToTask(diaryEvent);
         const createdTaskData = await createTask({
           variables: {
             input: {
@@ -35,16 +40,15 @@ function useEventCreateSubscription() {
         if (createdTask != null) {
           app.applyEventsChanges(
             {
-              update: [
+              delete: [event.id],
+              add: [
                 {
-                  id: event.id,
-                  updates: {
-                    ...event,
-                    id: DiaryEventDomain.createEventId(createdTask.id),
-                    meta: {
-                      ...diaryEvent.meta,
-                      id: createdTask.id,
-                    },
+                  ...event,
+                  id: DiaryEventDomain.createEventId(createdTask.id),
+                  meta: {
+                    ...diaryEvent.meta,
+                    id: createdTask.id,
+                    loading: false,
                   },
                 },
               ],

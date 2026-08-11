@@ -23,6 +23,7 @@ function useCallbacks() {
   const callbacks = useMemo<CalendarCallbacks>(
     () => ({
       onEventDoubleClick: withDiaryEvent((event) => {
+        if (event.meta.loading) return false;
         openDiaryDialog(event);
         return false;
       }),

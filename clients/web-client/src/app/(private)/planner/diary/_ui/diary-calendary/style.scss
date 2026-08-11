@@ -6,8 +6,10 @@
 
 .diary-calendar {
   --df-color-primary: var(--primary);
+  --df-color-primary-foreground: var(--primary-foreground);
 
-  .df-right-panel-date-heading, #dayflow-add-event-btn {
+  .df-right-panel-date-heading,
+  #dayflow-add-event-btn {
     display: none;
   }
 
@@ -65,6 +67,56 @@
     left: 50%;
     z-index: 40;
     transform: translateX(-50%);
+  }
+
+  .df-event:has(.diary-event-card-loading-overlay),
+  .df-month-segment-event:has(.diary-event-card-loading-overlay),
+  .df-year-fixed-event-hitbox:has(.diary-event-card-loading-overlay),
+  .df-year-row-event-hitbox:has(.diary-event-card-loading-overlay) {
+    cursor: wait !important;
+
+    .df-event-resize-handle,
+    .df-event-touch-resize-indicator {
+      pointer-events: none;
+    }
+  }
+
+  .diary-event-card-loading-overlay {
+    position: absolute;
+    z-index: 100;
+    inset: 0;
+    display: flex;
+    cursor: wait;
+    touch-action: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    background: color-mix(in srgb, currentColor 8%, transparent);
+    backdrop-filter: blur(0.5px);
+  }
+
+  .diary-event-card-with-recurrence {
+    position: relative;
+    padding-right: 1.25rem;
+  }
+
+  .diary-event-card-recurrence-icon {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    pointer-events: none;
+  }
+
+  .df-month-segment-event[data-diary-calendar-color='true'] {
+    background: var(--diary-event-background) !important;
+    color: var(--diary-event-color) !important;
+  }
+
+  .df-month-segment-event[data-diary-calendar-color='true'][data-selected='true'] {
+    background: var(--diary-event-selected-background) !important;
+    color: var(--diary-event-selected-color) !important;
   }
 }
 
