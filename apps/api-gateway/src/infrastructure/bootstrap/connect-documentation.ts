@@ -21,8 +21,8 @@ const connectDocumentation = (app: INestApplication) => {
     app.use(passport.initialize());
     app.use([`/${DOCUMENTATION_URL}`, `/${SWAGGER_URL}`], passport.authenticate('swagger', { session: false }));
 
-    const authenticate = passport.authenticate('swagger', { session: true });
-    app.use(`/${GRAPHQL_PATH}`, (request: Request, response: Response, next: NextFunction) => {
+    const authenticate = passport.authenticate('swagger', { session: false });
+    app.use(GRAPHQL_PATH, (request: Request, response: Response, next: NextFunction) => {
       if (!isGraphqlDocumentationRequest(request)) return next();
       return authenticate(request, response, next);
     });
