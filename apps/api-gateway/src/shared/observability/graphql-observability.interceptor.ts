@@ -5,11 +5,8 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { ExceptionObservabilityContextNotInitialized } from '@shared/exceptions';
 import { ApiGatewayRequestContext } from '@shared/request-context';
-import { GraphQLResolveInfo } from 'graphql';
-import type { Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { getObservabilityActor } from './helpers';
-
-const ROOT_GRAPHQL_TYPES = new Set(['Query', 'Mutation']);
 
 @Injectable()
 class GraphqlObservabilityInterceptor implements NestInterceptor {
@@ -19,9 +16,6 @@ class GraphqlObservabilityInterceptor implements NestInterceptor {
     if (executionContext.getType<GqlContextType>() !== 'graphql') return next.handle();
 
     const graphqlContext = GqlExecutionContext.create(executionContext);
-    const info = graphqlContext.getInfo<GraphQLResolveInfo>();
-    if (!ROOT_GRAPHQL_TYPES.has(info.parentType.name)) return next.handle();
-
     const context = graphqlContext.getContext<AppGraphQLContext>();
     const requestContext = ApiGatewayRequestContext.getStore();
     if (requestContext == null) {
@@ -30,14 +24,14 @@ class GraphqlObservabilityInterceptor implements NestInterceptor {
       });
     }
 
-    // Shape context for RMQ messaging
-    return this.contextStorage.run(
-      {
-        trace: { correlationId: requestContext.correlationId },
-        actor: getObservabilityActor(context.request[ACCESS_TOKEN_KEY]),
-        propagation: { userTimezone: requestContext.state.userTimezone },
-      },
-      () => next.handle(),
+    const observabilityContext = {
+      trace: { correlationId: requestContext.correlationId },
+      actor: getObservabilityActor(context.request[ACCESS_TOKEN_KEY]),
+      propagation: { userTimezone: requestContext.state.userTimezone },
+    };
+
+    return new Observable((subscriber) =>
+      this.contextStorage.run(observabilityContext, () => next.handle().subscribe(subscriber)),
     );
   }
 }
