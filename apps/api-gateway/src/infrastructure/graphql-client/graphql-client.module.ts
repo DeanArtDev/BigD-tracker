@@ -10,6 +10,7 @@ import { AppGraphQLContext } from './types';
 import { formatGraphqlError } from './format-graphql-error';
 
 const GRAPHQL_PATH = '/graphql';
+const GRAPHQL_FIELD_RESOLVER_ENHANCERS: ApolloDriverConfig['fieldResolverEnhancers'] = ['filters', 'interceptors'];
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ const GRAPHQL_PATH = '/graphql';
         const appEnvironment = config.getOrThrow<APP_ENV['APP_ENV']>('APP_ENV');
 
         return {
-          fieldResolverEnhancers: ['filters'],
+          fieldResolverEnhancers: GRAPHQL_FIELD_RESOLVER_ENHANCERS,
           autoSchemaFile: join(process.cwd(), './src/infrastructure/graphql-client/schema.gql'),
           sortSchema: true,
           playground: false,
@@ -45,4 +46,4 @@ const GRAPHQL_PATH = '/graphql';
 })
 export class GraphQLClientModule {}
 
-export { GRAPHQL_PATH };
+export { GRAPHQL_FIELD_RESOLVER_ENHANCERS, GRAPHQL_PATH };
