@@ -85,7 +85,7 @@ export class GoalExceptionToRpc implements ExceptionFilter {
 
   #toPublicInfrastructureDetails(exception: InstanceType<typeof ExceptionAuthInfrastructure>): Record<string, unknown> {
     const details: Record<string, unknown> = {
-      message: 'Task infrastructure error',
+      message: 'Auth infrastructure error',
     };
 
     if (typeof exception.details?.operation === 'string') {

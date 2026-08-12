@@ -8,6 +8,8 @@ services:
       - .env:/usr/src/app/apps/goal-service/.env
     env_file:
       - .env
+    environment:
+      APP_VERSION: sha-${CI_COMMIT_SHORT_SHA}
     networks:
       - tracker_net
 

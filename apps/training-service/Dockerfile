@@ -68,6 +68,10 @@ COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/dist ./l
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/package.json ./libs/api-utils/package.json
 COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/api-utils/node_modules ./libs/api-utils/node_modules
 
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/observability/dist ./libs/observability/dist
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/observability/package.json ./libs/observability/package.json
+COPY --from=installer --chown=nodejs:nodejs /usr/src/app/libs/observability/node_modules ./libs/observability/node_modules
+
 ARG API_PORT=4044
 ENV API_PORT=${API_PORT}
 EXPOSE ${API_PORT}

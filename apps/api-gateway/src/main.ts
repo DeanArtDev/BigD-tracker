@@ -1,27 +1,27 @@
-import { connectSwagger, DOCUMENTATION_URL, initApp, SWAGGER_URL } from '@/infrastructure/bootstrap';
+import { connectDocumentation, DOCUMENTATION_URL, initApp, SWAGGER_URL } from '@/infrastructure/bootstrap';
 import { APP_ENV } from '@/infrastructure/configs';
+import { ServiceLifecycleLogger } from '@big-d/observability/nest';
 import { ConfigService } from '@nestjs/config';
-import * as passport from 'passport';
+import { performance } from 'node:perf_hooks';
 
 const GRAPHQL_URL = 'graphql';
 
 async function bootstrap() {
+  const startedAt = performance.now();
   const app = await initApp();
+  app.enableShutdownHooks();
 
-  connectSwagger(app);
+  connectDocumentation(app);
 
   const configService = app.get<ConfigService<APP_ENV, true>>(ConfigService);
   const port = configService.getOrThrow<number>('API_PORT');
   const isProdStage = configService.getOrThrow<boolean>('IS_PROD_STAGE');
 
-  if (isProdStage) {
-    app.use(passport.initialize());
-    app.use([`/${GRAPHQL_URL}`], passport.authenticate('swagger', { session: false }));
-  }
+  await app.listen(port, '0.0.0.0');
+  app.get(ServiceLifecycleLogger).started(performance.now() - startedAt);
 
-  await app.listen(port, '0.0.0.0', () => {
-    if (!isProdStage) {
-      console.log(`
+  if (!isProdStage) {
+    console.log(`
     🚀 Application is running at port http://localhost:${port}
     ----------------------------------------------------------------
     📄 Documentation is running at http://localhost:${port}/${DOCUMENTATION_URL}
@@ -30,7 +30,6 @@ async function bootstrap() {
     
     📜 To get open graphql playground at http://localhost:${port}/${GRAPHQL_URL}
     `);
-    }
-  });
+  }
 }
 bootstrap().catch(console.error);

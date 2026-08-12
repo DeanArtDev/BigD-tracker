@@ -1,0 +1,13 @@
+{
+  "extends": "@big-d/tsconfig/api-lib-bundler.json",
+  "compilerOptions": {
+    "incremental": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noEmit": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src/**/*.ts"]
+}

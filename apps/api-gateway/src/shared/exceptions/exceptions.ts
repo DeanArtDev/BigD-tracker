@@ -24,6 +24,12 @@ const GateWayExceptionStateList = {
     code: exceptionCode.groupSettingsNotFound.code,
     details: exceptionCode.groupSettingsNotFound.details,
   }),
+
+  ObservabilityContextNotInitialized: defineExceptionState({
+    key: 'OBSERVABILITY_CONTEXT_NOT_INITIALIZED',
+    code: exceptionCode.observabilityContextNotInitialized.code,
+    details: exceptionCode.observabilityContextNotInitialized.details,
+  }),
 };
 
 export const {
@@ -31,4 +37,5 @@ export const {
   ExceptionRequestDataValidation,
   ExceptionTaskSettingsNotFound,
   ExceptionGroupSettingsNotFound,
+  ExceptionObservabilityContextNotInitialized,
 } = generateExceptionClasses(GateWayExceptionStateList);

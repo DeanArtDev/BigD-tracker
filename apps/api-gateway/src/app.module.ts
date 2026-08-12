@@ -1,4 +1,4 @@
-import { APP_ENV, appConfigFactory, envSchema } from '@/infrastructure/configs';
+import { appConfigFactory, envSchema } from '@/infrastructure/configs';
 import { GraphQLClientModule } from '@/infrastructure/graphql-client';
 import { SwaggerAuthModule } from '@/infrastructure/swagger-auth/swagger-auth.module';
 import { AuthModule } from '@/modules/auth/auth.module';
@@ -8,11 +8,10 @@ import { PlannerModule } from '@/modules/planner/planner.module';
 import { TrainingTemplatesModule } from '@/modules/traning-templates';
 import { TrainingsModule } from '@/modules/tranings';
 import { UsersModule } from '@/modules/users/users.module';
-import { LoggerModuleOptions, ObservabilityModule } from '@big-d/api-utils';
 import { HttpStatus, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { BaseHttpException, ExceptionWrongRpcResponse } from '@shared/exceptions';
-import { ApiGatewayRequestContext } from '@shared/request-context';
+import { GatewayObservabilityModule } from '@shared/observability';
 import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
 
 @Module({
@@ -38,19 +37,7 @@ import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
     }),
 
     GraphQLClientModule,
-
-    ObservabilityModule.forRootAsync({
-      global: true,
-      requestContext: ApiGatewayRequestContext,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<APP_ENV>): LoggerModuleOptions => {
-        return {
-          env: configService.get('NODE_ENV', 'production'),
-          level: configService.get('LOG_PRETTY'),
-        };
-      },
-    }),
+    GatewayObservabilityModule,
   ],
 })
 export class AppModule {}

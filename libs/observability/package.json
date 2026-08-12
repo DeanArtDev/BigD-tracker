@@ -1,0 +1,83 @@
+{
+  "name": "@big-d/observability",
+  "version": "0.0.1",
+  "description": "Shared observability primitives for Big D services",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "pino": [
+        "dist/pino/index.d.ts"
+      ],
+      "nest": [
+        "dist/nest/index.d.ts"
+      ],
+      "*": [
+        "dist/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./pino": {
+      "types": "./dist/pino/index.d.ts",
+      "import": "./dist/pino/index.js",
+      "require": "./dist/pino/index.cjs"
+    },
+    "./nest": {
+      "types": "./dist/nest/index.d.ts",
+      "import": "./dist/nest/index.js",
+      "require": "./dist/nest/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "pino": "catalog:",
+    "pino-pretty": "catalog:"
+  },
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup && pnpm build:types",
+    "build:types": "tsc -p tsconfig.build.json",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "type:check": "tsc --noEmit",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
+    "lint": "pnpm format && eslint \"./src/**/*.ts\"",
+    "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
+  },
+  "devDependencies": {
+    "@big-d/linter": "workspace:*",
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "@nestjs/common": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "tsup": "^8.5.1",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "^4.1.10"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "catalog:"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": "^24.13",
+    "pnpm": "10.10.0"
+  }
+}

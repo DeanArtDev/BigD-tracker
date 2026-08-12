@@ -1,9 +1,10 @@
 import { APP_ENV } from '@/infrastructure/configs';
-import { RmqLogger } from '@big-d/api-utils';
 import { GOAL_SERVICE_RMQ_KEY, goalServiceRmqConfig } from '@big-d/api-contracts';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientProxy, ClientsModule } from '@nestjs/microservices';
+import { type ObservabilityLogger } from '@big-d/observability';
+import { OBSERVABILITY_LOGGER, ObservabilityContextStorage } from '@big-d/observability/nest';
 import { AppRmqClient } from '../app-client-proxy.service';
 
 const TIMEOUT_MS = 5000;
@@ -34,10 +35,10 @@ const GOAL_RMQ_SERVICE = Symbol.for('GOAL_RMQ_SERVICE');
   providers: [
     {
       provide: GOAL_RMQ_SERVICE,
-      useFactory: (client: ClientProxy, logger: RmqLogger) => {
-        return new AppRmqClient(client, logger, { timeout: TIMEOUT_MS });
+      useFactory: (client: ClientProxy, logger: ObservabilityLogger, contextStorage: ObservabilityContextStorage) => {
+        return new AppRmqClient(client, logger, contextStorage, { timeout: TIMEOUT_MS });
       },
-      inject: [GOAL_SERVICE_RMQ_KEY, RmqLogger],
+      inject: [GOAL_SERVICE_RMQ_KEY, OBSERVABILITY_LOGGER, ObservabilityContextStorage],
     },
   ],
 

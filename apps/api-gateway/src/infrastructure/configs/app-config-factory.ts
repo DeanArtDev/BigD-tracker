@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as process from 'node:process';
 import z from 'zod';
+import type { Environment } from '@big-d/observability';
 
 interface APP_ENV {
   readonly API_PORT: number;
@@ -19,10 +20,12 @@ interface APP_ENV {
   readonly LOG_PRETTY?: string;
   readonly NODE_ENV?: string;
 
-  readonly APP_ENV?: string;
   readonly IS_PROD_STAGE: boolean;
   readonly IS_DEV_STAGE: boolean;
   readonly IS_LOCAL_STAGE: boolean;
+  readonly APP_VERSION: string;
+  readonly INSTANCE_ID?: string;
+  readonly APP_ENV: Environment;
 }
 
 const authSchema = z.object({ AUTH_PUBLIC_KEY: z.string() });
@@ -39,7 +42,8 @@ const envSchema = z.object({
   API_PORT: z.coerce.number(),
   TZ: z.string(),
   NODE_ENV: z.union([z.literal('production'), z.literal('development'), z.literal('test')]),
-  APP_ENV: z.enum(['local', 'staging', 'production']),
+  APP_ENV: z.enum(['local', 'test', 'dev-stage', 'production']),
+  APP_VERSION: z.string().min(1),
 
   RMQ_USER: z.string(),
   RMQ_PASSWORD: z.string(),
@@ -48,10 +52,10 @@ const envSchema = z.object({
 
   ORIGIN: z.string(),
 
-  LOG_PRETTY: z.string(),
+  LOG_PRETTY: z.literal('1').optional(),
 
-  SWAGGER_USER: z.string(),
-  SWAGGER_PASSWORD: z.string(),
+  SWAGGER_USER: z.string().min(3),
+  SWAGGER_PASSWORD: z.string().min(8),
 });
 
 const appConfigFactory = (): APP_ENV => {
@@ -60,9 +64,11 @@ const appConfigFactory = (): APP_ENV => {
     IS_DEV: process.env.NODE_ENV === 'development',
     IS_PROD: process.env.NODE_ENV === 'production',
 
-    APP_ENV: process.env.APP_ENV,
+    APP_ENV: process.env.APP_ENV as Environment,
+    APP_VERSION: process.env.APP_VERSION ?? '',
+    INSTANCE_ID: process.env.HOSTNAME,
     IS_PROD_STAGE: process.env.APP_ENV === 'production',
-    IS_DEV_STAGE: process.env.APP_ENV === 'staging',
+    IS_DEV_STAGE: process.env.APP_ENV === 'dev-stage',
     IS_LOCAL_STAGE: process.env.APP_ENV === 'local',
 
     ORIGIN: process.env.ORIGIN ?? '',

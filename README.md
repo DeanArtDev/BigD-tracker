@@ -7,7 +7,7 @@
 
 ## Что в проекте
 
-- `apps/account-service` - сервис авторизации и сессий
+- `apps/auth-service` - сервис авторизации и сессий
 - `apps/api-gateway` - единая HTTP-точка входа (gateway)
 - `apps/goal-service` - домен целей, задач и inbox
 - `apps/training-service` - домен тренировок, упражнений и повторений
@@ -47,7 +47,7 @@ pnpm install
 
 - заполните корневые файлы `.env` и `.env.development`
 - создайте и заполните `.env` в приложениях на основе:
-  - `apps/account-service/.env.example`
+  - `apps/auth-service/.env.example`
   - `apps/api-gateway/.env.example`
   - `apps/goal-service/.env.example`
   - `apps/training-service/.env.example`
@@ -69,7 +69,7 @@ pnpm seed:all
 5. Запустите сервисы и клиент (обычно в отдельных терминалах):
 
 ```bash
-pnpm account-service:dev
+pnpm auth-service:dev
 pnpm training-service:dev
 pnpm goal-service:dev
 pnpm api-gateway:dev

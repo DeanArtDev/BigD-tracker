@@ -4,10 +4,10 @@ import { Session } from '@/modules/auth/domain/aggreates';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { SessionWriteKyselyMapper } from '../../mappers';
-import { BaseTasksRepository } from '../base-tasks.repository';
+import { BaseAuthRepository } from '../base-auth.repository';
 
 @Injectable()
-export class SessionWriteRepositoryKysely extends BaseTasksRepository implements SessionWriteRepository {
+export class SessionWriteRepositoryKysely extends BaseAuthRepository implements SessionWriteRepository {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase) {
     super();
   }

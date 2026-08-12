@@ -167,13 +167,6 @@ api-gateway:build:
   variables:
     APP_NAME: 'api-gateway'
 
-account-service:build:
-  stage: docker-build
-  when: manual
-  extends: .app-build-template
-  variables:
-    APP_NAME: 'account-service'
-
 auth-service:build:
   stage: docker-build
   when: manual
@@ -234,24 +227,6 @@ api-gateway:deploy:dev:
     DEPLOY_HOST: '$DEV_STAGE_HOST'
     DEPLOY_USER: '$DEV_STAGE_DEPLOY_USER'
     REMOTE_DIR: '$DEV_STAGE_REMOTE_APP_DIR/api-gateway'
-
-account-service:deploy:dev:
-  stage: deploy-dev-stage
-  when: manual
-  extends: .app-deploy-template
-  needs:
-    - job: account-service:build
-      optional: false
-
-  before_script:
-    - !reference [.app-deploy-template, before_script]
-    - envsubst '${CI_REGISTRY_IMAGE} ${CI_COMMIT_SHORT_SHA}' < sources/docker-compose.account-service.yml > docker-compose.yml
-
-  variables:
-    ENV: '$ACCOUNT_SERVICE_ENV'
-    DEPLOY_HOST: '$DEV_STAGE_HOST'
-    DEPLOY_USER: '$DEV_STAGE_DEPLOY_USER'
-    REMOTE_DIR: '$DEV_STAGE_REMOTE_APP_DIR/account-service'
 
 auth-service:deploy:dev:
   stage: deploy-dev-stage
@@ -345,24 +320,6 @@ api-gateway:deploy:prod:
     DEPLOY_HOST: '$PRODUCTION_HOST'
     DEPLOY_USER: '$PROD_DEPLOY_USER'
     REMOTE_DIR: '$PROD_REMOTE_APP_DIR/api-gateway'
-
-account-service:deploy:prod:
-  stage: deploy-production
-  when: manual
-  extends: .app-deploy-template
-  needs:
-    - job: account-service:build
-      optional: false
-
-  before_script:
-    - !reference [.app-deploy-template, before_script]
-    - envsubst '${CI_REGISTRY_IMAGE} ${CI_COMMIT_SHORT_SHA}' < sources/docker-compose.account-service.yml > docker-compose.yml
-
-  variables:
-    ENV: '$ACCOUNT_SERVICE_PROD_ENV'
-    DEPLOY_HOST: '$PRODUCTION_HOST'
-    DEPLOY_USER: '$PROD_DEPLOY_USER'
-    REMOTE_DIR: '$PROD_REMOTE_APP_DIR/account-service'
 
 goal-service:deploy:prod:
   stage: deploy-production

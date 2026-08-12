@@ -1,4 +1,4 @@
-import { CORRELATION_HEADER_KEY } from '@big-d/api-utils';
+import { CORRELATION_HEADER_KEY } from '@big-d/observability';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
 import { isEmpty } from 'lodash';

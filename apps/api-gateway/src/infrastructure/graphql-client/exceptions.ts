@@ -7,8 +7,10 @@ class AppGraphQLError extends GraphQLError {
     message: string;
     correlationId: string;
     details: { [key: string]: unknown };
+    originalError?: Error;
   }) {
     super(opts.message ?? opts.details.message, {
+      originalError: opts.originalError,
       extensions: {
         key: opts.key,
         code: opts.code,

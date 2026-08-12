@@ -1,12 +1,17 @@
 import { appConfigFactory } from '@/infrastructure/configs';
 import { trainingServiceRmqConfig } from '@big-d/api-contracts';
-import { ErrorsToRpcExceptionInterceptor, RmqInboundLoggingInterceptor } from '@big-d/api-utils';
+import { ErrorsToRpcExceptionInterceptor } from '@big-d/api-utils';
+import { ServiceLifecycleLogger } from '@big-d/observability/nest';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
+import { RmqObservabilityInterceptor } from '@shared/observability';
+import { RequestContextInterceptor } from '@shared/request-context';
+import { performance } from 'node:perf_hooks';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const startedAt = performance.now();
   const config = await appConfigFactory();
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -28,10 +33,15 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new ErrorsToRpcExceptionInterceptor());
-  app.useGlobalInterceptors(app.get(RmqInboundLoggingInterceptor));
+  app.useGlobalInterceptors(
+    new ErrorsToRpcExceptionInterceptor(),
+    app.get(RequestContextInterceptor),
+    app.get(RmqObservabilityInterceptor),
+  );
 
+  app.enableShutdownHooks();
   await app.listen();
+  app.get(ServiceLifecycleLogger).started(performance.now() - startedAt);
   console.log(`🚀 Training service is running, port: ${config.API_PORT}`);
 }
 

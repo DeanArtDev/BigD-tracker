@@ -1,11 +1,14 @@
 import { addApplicationUses } from '@/infrastructure/bootstrap';
 import { appConfigFactory } from '@/infrastructure/configs';
 import { authServiceRmqConfig } from '@big-d/api-contracts';
+import { ServiceLifecycleLogger } from '@big-d/observability/nest';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
+import { performance } from 'node:perf_hooks';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const startedAt = performance.now();
   const config = appConfigFactory();
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -21,8 +24,9 @@ async function bootstrap() {
 
   addApplicationUses(app);
 
-  await app.listen();
   app.enableShutdownHooks();
+  await app.listen();
+  app.get(ServiceLifecycleLogger).started(performance.now() - startedAt);
 
   console.log(`🚀 Auth service is running, port: ${config.API_PORT}`);
 }

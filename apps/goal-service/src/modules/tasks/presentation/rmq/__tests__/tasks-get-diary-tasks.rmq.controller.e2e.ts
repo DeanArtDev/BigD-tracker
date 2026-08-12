@@ -8,8 +8,8 @@ import {
   TaskRecurrenceWeekday,
   TaskStatus,
 } from '@big-d/api-contracts';
-import { CORRELATION_HEADER_KEY, specToDebugString, USER_TIME_ZONE_HEADER_KEY } from '@big-d/api-utils';
-import { DateVo } from '@big-d/api-utils';
+import { DateVo, specToDebugString } from '@big-d/api-utils';
+import { CORRELATION_HEADER_KEY, USER_TIME_ZONE_HEADER_KEY } from '@big-d/observability';
 import { INestMicroservice } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import {

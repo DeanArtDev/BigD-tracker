@@ -30,7 +30,7 @@ docs/architecture/
 - `tracker-client` как SPA на `React + Vite`
 - `api-gateway` как `BFF`
 - backend-сервисы, которые реально вызываются из BFF:
-  - `account-service`
+  - `auth-service`
   - `goal-service`
   - `training-service`
 - `RabbitMQ` как транспорт RPC-вызовов
@@ -78,7 +78,7 @@ Backend-сервисы:
 
 - недоступность `api-gateway` полностью блокирует frontend-интеграцию
 - недоступность `RabbitMQ` блокирует BFF-вызовы к микросервисам
-- недоступность `account-service` ломает login, refresh, logout, `me`
+- недоступность `auth-service` ломает login, refresh, logout, `me`
 - недоступность `goal-service` ломает planner-сценарии и часть onboarding
 - недоступность `training-service` ломает gym-сценарии
 

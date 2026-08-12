@@ -1,49 +1,50 @@
 import { ExceptionRpcRequestTimeout } from '@/infrastructure/rmq-clients/exceptions';
-import { isBaseRpcException, unwrapDefaultRpcException } from '@big-d/api-contracts';
-import { CORRELATION_HEADER_KEY, RequestContext, RmqLogger, USER_TIME_ZONE_HEADER_KEY } from '@big-d/api-utils';
-import { isBaseException } from '@big-d/exceptions';
+import {
+  CORRELATION_HEADER_KEY,
+  USER_TIME_ZONE_HEADER_KEY,
+  encodeActorHeaders,
+  type ObservabilityLogger,
+} from '@big-d/observability';
+import { ObservabilityContextStorage } from '@big-d/observability/nest';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
-import { ApiGatewayRequestContext } from '@shared/request-context';
 import { catchError, firstValueFrom, throwError, timeout, TimeoutError } from 'rxjs';
 
 class AppRmqClient {
   constructor(
     private readonly client: ClientProxy,
-    private readonly logger: RmqLogger,
+    private readonly logger: ObservabilityLogger,
+    private readonly contextStorage: ObservabilityContextStorage,
     private readonly options: {
       timeout: number;
     },
   ) {}
 
   public async send<TRes, TReq>(pattern: `${string}.${string}.${string}`, payload: TReq): Promise<TRes> {
-    const started = Date.now();
-    const cid = ApiGatewayRequestContext.getStore()?.correlationId ?? 'There is no correlation id!';
-    const utz = ApiGatewayRequestContext.getStore()?.state?.userTimezone ?? 'UTC';
-
-    const requestContext = new RequestContext({
-      correlationId: cid,
-      initiator: 'user',
-      source: 'rmq',
-    });
+    const observabilityContext = this.contextStorage.require();
+    const cid = observabilityContext.trace.correlationId;
+    const utz = observabilityContext.propagation.userTimezone;
 
     const builtPayload = new RmqRecordBuilder<TReq>(payload)
       .setOptions({
         headers: {
           [CORRELATION_HEADER_KEY]: cid,
           [USER_TIME_ZONE_HEADER_KEY]: utz,
+          ...encodeActorHeaders(observabilityContext.actor),
         },
       })
       .build();
 
-    this.logger.log(
-      {
-        pattern,
-        direction: 'out',
-        durationMs: Date.now() - started,
-        ...requestContext.state,
+    const contextualLogger = this.logger.withContext(observabilityContext);
+    const operation = contextualLogger.startOperation({
+      name: pattern,
+      transport: {
+        type: 'rmq',
+        direction: 'outbound',
+        operation: pattern,
+        routingKey: pattern,
       },
-      'rmq.request',
-    );
+      request: { payload },
+    });
 
     try {
       const response = await firstValueFrom(
@@ -52,7 +53,7 @@ class AppRmqClient {
           catchError((err) =>
             throwError(() => {
               if (err instanceof TimeoutError) {
-                throw new ExceptionRpcRequestTimeout({
+                return new ExceptionRpcRequestTimeout({
                   message: `RPC timeout (${this.options.timeout}ms)`,
                 });
               }
@@ -62,64 +63,10 @@ class AppRmqClient {
         ),
       );
 
-      this.logger.log(
-        {
-          pattern,
-          direction: 'out',
-          durationMs: Date.now() - started,
-          ...requestContext.state,
-        },
-        'rmq.reply',
-      );
-
+      operation.success();
       return response;
-    } catch (error: unknown) {
-      const err = unwrapDefaultRpcException(error) ?? error;
-
-      if (isBaseRpcException(err)) {
-        this.logger.error(
-          {
-            pattern,
-            direction: 'out',
-            durationMs: Date.now() - started,
-            ...requestContext.state,
-            err: {
-              key: err.key,
-              code: err.code,
-              kind: err.kind,
-              details: err.details,
-            },
-          },
-          'rmq.error',
-        );
-        throw error;
-      }
-
-      if (isBaseException(err)) {
-        this.logger.error(
-          {
-            pattern,
-            direction: 'out',
-            durationMs: Date.now() - started,
-            ...requestContext.state,
-            err: {
-              key: err.key,
-              code: err.code,
-              details: err.details,
-            },
-          },
-          'rmq.error',
-        );
-        throw error;
-      }
-
-      this.logger.error({
-        pattern,
-        direction: 'out',
-        durationMs: Date.now() - started,
-        ...requestContext.state,
-        message: 'Unknown error!!',
-      });
+    } catch (error) {
+      operation.failure(error);
       throw error;
     }
   }

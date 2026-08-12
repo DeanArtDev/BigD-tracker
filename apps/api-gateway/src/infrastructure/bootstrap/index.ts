@@ -1,2 +1,2 @@
-export * from './connect-swagger';
+export * from './connect-documentation';
 export * from './init-app';
