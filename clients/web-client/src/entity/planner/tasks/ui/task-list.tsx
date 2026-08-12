@@ -65,10 +65,13 @@ function TaskList<BrandGroup extends Brand<number, string>>({
           const task = tasks[virtualItem.index];
           if (task == null) return null;
 
+          const repeatable = task?.recurrence != null;
+
           return (
             <TaskCard
               id={task.id}
               name={task.name}
+              repeatable={repeatable}
               priority={task.priority}
               status={task.status}
               deadline={task.deadline ?? undefined}
@@ -81,7 +84,7 @@ function TaskList<BrandGroup extends Brand<number, string>>({
                     taskStatus={task.status}
                     hasGroup={task.groupId != null}
                     loading={menuProps?.loading ?? false}
-                    taskType={TaskDomain.parseId(task.id).type}
+                    taskType={TaskDomain.parseId(task.id, repeatable).type}
                     onDelete={handlerOrEmpty(task, menuProps?.onDelete)}
                     onDeleteComplete={handlerOrEmpty(task, menuProps?.onDeleteComplete)}
                     onFinish={handlerOrEmpty(task, menuProps?.onFinish)}

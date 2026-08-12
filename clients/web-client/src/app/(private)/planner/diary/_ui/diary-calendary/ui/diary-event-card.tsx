@@ -166,30 +166,6 @@ function DiaryEventCardContent({ app, event, isAllDay, viewType }: DiaryEventCar
     );
   }
 
-  if (viewType === ViewType.YEAR) {
-    if (isAllDay) {
-      return (
-        <div className={cn('df-event-year-content')}>
-          <div className={cn('df-event-icon-slot')}>
-            <CalendarIcon className={cn('df-event-icon-svg')} />
-          </div>
-          <div className={cn('df-event-year-main')}>
-            <div className={cn('df-event-year-title', 'df-event-year-title-fade')}>{event.title}</div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className={cn('df-event-year-content', 'df-event-year-content-timed')}>
-        <span className={cn('df-event-year-indicator')} style={{ backgroundColor: lineColor }} />
-        <span className={cn('df-event-year-title', 'df-event-year-title-strong', 'df-event-year-title-fade')}>
-          {event.title}
-        </span>
-      </div>
-    );
-  }
-
   if (isAllDay) {
     return (
       <div className={cn('df-event-content-row', isRecurring && 'diary-event-card-with-recurrence')}>

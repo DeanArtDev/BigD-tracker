@@ -3,7 +3,8 @@
 import type { Event } from '@dayflow/core';
 import { Check, Copy, Folder, Scissors, Trash2 } from 'lucide-react';
 import { type RefObject, useEffect, useRef, useState } from 'react';
-import { TaskActionType, TaskDomain } from '@/entity/planner/tasks';
+import { GroupId } from '@/entity/planner/groups';
+import { TaskActionType, TaskDomain, TaskType } from '@/entity/planner/tasks';
 import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
 import {
   ContextMenu,
@@ -83,15 +84,35 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
     return () => container.removeEventListener('contextmenu', handleContextMenu, true);
   }, [app, containerRef]);
 
-  const moveEventToGroup = async (calendarId: string) => {
-    if (!event || event.calendarId === calendarId) return;
+  const moveEventToGroup = async (newCalendarId: string) => {
+    if (!event || event.calendarId === newCalendarId) return;
 
     const task = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
-    const groupId = DiaryEventDomain.mapCalendarIdToGroupId(calendarId);
+    const groupId = DiaryEventDomain.mapCalendarIdToGroupId(newCalendarId);
     if (task.id == null || groupId == null) return;
 
-    const previousCalendarId = event.calendarId;
-    await app.updateEvent(event.id, { calendarId }, false, 'remote');
+    const idToUpdateSet = new Set([event.id]);
+
+    const idData = TaskDomain.parseId(task.id);
+    if (idData.type === TaskType.Virtual || idData.type === TaskType.Override) {
+      const recurrenceId = idData.data.recurrenceId;
+      app.getAllEvents().forEach((event) => {
+        const t = DiaryEventDomain.mapEventToTask(DiaryEventDomain.withTaskMeta(event));
+        if (t.id == null) return;
+        const parsedId = TaskDomain.parseId(t.id);
+        if (parsedId.type === TaskType.Virtual || parsedId.type === TaskType.Override) {
+          if (parsedId.data.recurrenceId === recurrenceId) idToUpdateSet.add(event.id);
+        }
+      });
+    }
+
+    app.applyEventsChanges(
+      {
+        update: Array.from(idToUpdateSet).map((id) => ({ id: id, updates: { calendarId: newCalendarId } })),
+      },
+      false,
+      'remote',
+    );
 
     try {
       await assignToGroup(
@@ -105,7 +126,14 @@ function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
         { showToast: false },
       );
     } catch {
-      await app.updateEvent(event.id, { calendarId: previousCalendarId }, false, 'remote');
+      const previousCalendarId = event.calendarId;
+      app.applyEventsChanges(
+        {
+          update: Array.from(idToUpdateSet).map((id) => ({ id: id, updates: { calendarId: previousCalendarId } })),
+        },
+        false,
+        'remote',
+      );
     }
   };
 

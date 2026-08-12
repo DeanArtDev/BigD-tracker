@@ -39,6 +39,10 @@ function TaskActionsDropdown({
   onUnassign,
   onDeleteComplete,
 }: TaskActionsDropdownProps) {
+  const showDelete = onDelete != null && TaskDomain.isAllowTaskAction(TaskActionType.Delete, taskStatus, taskType);
+  const showDeleteComplete =
+    onDeleteComplete != null && TaskDomain.isAllowTaskAction(TaskActionType.DeleteComplete, taskStatus, taskType);
+
   const actions = [
     {
       element: (
@@ -86,7 +90,7 @@ function TaskActionsDropdown({
       allow: onAssign != null && TaskDomain.isAllowTaskAction(TaskActionType.Assign, taskStatus, taskType),
     },
 
-    { element: <DropdownMenuSeparator key="separator-1" />, allow: onDelete != null || onDeleteComplete != null },
+    { element: <DropdownMenuSeparator key="separator-1" />, allow: showDeleteComplete || showDelete },
 
     {
       element: (
@@ -99,8 +103,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.DeleteComplete])}
         </TaskAction>
       ),
-      allow:
-        onDeleteComplete != null && TaskDomain.isAllowTaskAction(TaskActionType.DeleteComplete, taskStatus, taskType),
+      allow: showDeleteComplete,
     },
 
     {
@@ -109,7 +112,7 @@ function TaskActionsDropdown({
           {capitalize(taskActionToHumanize[TaskActionType.Delete])}
         </TaskAction>
       ),
-      allow: onDelete != null && TaskDomain.isAllowTaskAction(TaskActionType.Delete, taskStatus, taskType),
+      allow: showDelete,
     },
   ];
 

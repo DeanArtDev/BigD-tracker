@@ -1,3 +1,4 @@
+import { Brand } from '@/shared/lib';
 import timeAndDate from '@/shared/lib/time';
 import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { getTasksStatusCount } from './helpers/get-tasks-status-count';
@@ -6,7 +7,25 @@ import { getTaskFieldsToChangeByStatus } from './helpers/task-fields-to-change-b
 import { taskActionByStatusesAvailability } from './maps/task-action-to-status-availability';
 import { taskIndicationByStatus, taskIndicationByType } from './maps/task-indication-availability';
 import { taskTypeToActionAvailability } from './maps/task-type-to-action-availability';
-import { TaskActionType, TaskId, TaskType } from './task';
+import { Task, TaskActionType, TaskId, TaskType } from './task';
+
+type ParsedTaskId =
+  | {
+      readonly type: TaskType.Original | TaskType.OriginalRecurrence;
+      readonly data: { id: number };
+    }
+  | {
+      readonly type: TaskType.Virtual;
+      readonly data: { recurrenceId: number; date: string };
+    }
+  | {
+      readonly type: TaskType.Override;
+      readonly data: { recurrenceId: number; overrideId: number; date: string };
+    }
+  | {
+      readonly type: TaskType.Unknown;
+      readonly data: null;
+    };
 
 class TaskDomain {
   static tasksCountByStatus(tasks: { status: TaskStatus }[]) {
@@ -21,15 +40,15 @@ class TaskDomain {
     return timeAndDate(date).format('YYYY-MM-DDTHH:mm');
   };
 
-  static parseId = (id: TaskId, recurrence?: boolean): { type: TaskType } => {
+  static parseId = (id: TaskId, recurrence = false): ParsedTaskId => {
     const { virtual, origin, override } = TaskIdParser.unwrapId(id) ?? {};
     if (origin != null) {
-      if (recurrence != null) return { type: TaskType.OriginalRecurrence };
-      return { type: TaskType.Original };
+      if (recurrence) return { type: TaskType.OriginalRecurrence, data: origin };
+      return { type: TaskType.Original, data: origin };
     }
-    if (virtual != null) return { type: TaskType.Virtual };
-    if (override != null) return { type: TaskType.Override };
-    return { type: TaskType.Unknown };
+    if (virtual != null) return { type: TaskType.Virtual, data: virtual };
+    if (override != null) return { type: TaskType.Override, data: override };
+    return { type: TaskType.Unknown, data: null };
   };
 
   static isAllowTaskAction(action: TaskActionType, status: TaskStatus, type: TaskType): boolean {
@@ -42,10 +61,16 @@ class TaskDomain {
     return taskIndicationByStatus[status] && taskIndicationByType[type];
   }
 
+  static isRecurrent = <BrandGroup extends Brand<number, string>>(
+    task: Pick<Task<BrandGroup>, 'id' | 'recurrence'>,
+  ) => {
+    return this.parseId(task.id, task.recurrence != null).type === TaskType.OriginalRecurrence;
+  };
+
   static defaultFields = {
     status: TaskStatus.NotStarted,
     priority: TaskPriority.Delete,
   } as const;
 }
 
-export { TaskDomain };
+export { TaskDomain, type ParsedTaskId };

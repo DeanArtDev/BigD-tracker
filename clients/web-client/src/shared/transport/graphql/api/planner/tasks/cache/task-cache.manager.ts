@@ -1,5 +1,4 @@
 import { ApolloCache, ApolloClient } from '@apollo/client';
-import { currentTasksStatuses } from '@/entity/planner/tasks/model';
 import { Override } from '@/shared/lib';
 import {
   type GetTasksPerPageQueryVariables,
@@ -14,7 +13,7 @@ import { WithReferenceList } from '../../../types';
 
 type TasksPerPageCache = WithReferenceList<TasksPerPageConnection, 'items'>;
 type RootQueryCache = Override<Query, { getTasksPerPage: TasksPerPageCache }>;
-type TasksPerPageCacheStorage = Pick<GetTasksPerPageQueryVariables['input'], 'status'>;
+type TasksPerPageCacheStorage = Pick<GetTasksPerPageQueryVariables['input'], 'status' | 'recurring'>;
 
 class TaskCacheManager {
   static readonly taskTypename: TaskSchema['__typename'] = 'TaskSchema';
@@ -72,25 +71,25 @@ class TaskCacheManager {
     });
   }
 
-  static dropDeletedGetTasksPerPage(client: ApolloClient) {
-    client.cache.modify<RootQueryCache>({
+  static dropGetTasksPerPageByStatuses(client: ApolloClient, statuses: TaskStatus[]) {
+    return client.cache.modify<RootQueryCache>({
       id: 'ROOT_QUERY',
       fields: {
         getTasksPerPage(existing, { DELETE, storage }) {
           const { status } = storage as TasksPerPageCacheStorage;
-          return status?.includes(TaskStatus.Deleted) ? DELETE : existing;
+          return status?.every((s) => statuses.includes(s)) ? DELETE : existing;
         },
       },
     });
   }
 
-  static dropCurrentGetTasksPerPage(client: ApolloClient) {
-    client.cache.modify<RootQueryCache>({
+  static dropGetTasksPerPageByRecurring(client: ApolloClient) {
+    return client.cache.modify<RootQueryCache>({
       id: 'ROOT_QUERY',
       fields: {
         getTasksPerPage(existing, { DELETE, storage }) {
-          const { status } = storage as TasksPerPageCacheStorage;
-          return status?.every((status) => currentTasksStatuses.includes(status)) ? DELETE : existing;
+          const { recurring } = storage as TasksPerPageCacheStorage;
+          return recurring != null ? DELETE : existing;
         },
       },
     });

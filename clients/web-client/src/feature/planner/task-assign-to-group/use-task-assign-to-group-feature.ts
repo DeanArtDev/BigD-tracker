@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskId } from '@/entity/planner/tasks';
+import { currentTasksStatuses, TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import { useNotify } from '@/shared/project-ui';
 import {
@@ -49,7 +49,7 @@ function useTaskAssignToGroupFeature() {
 
           TaskCacheManager.refetchAssignableTasks(client);
           TaskCacheManager.refetchGetDiaryTasks(client);
-          TaskCacheManager.dropCurrentGetTasksPerPage(client);
+          TaskCacheManager.dropGetTasksPerPageByStatuses(client, currentTasksStatuses);
           await onSuccess?.({ groupId, task });
           client.cache.gc();
         }

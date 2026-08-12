@@ -33,9 +33,9 @@ function TaskRecoveryDialogContent({ loading, onCancel, onRecover }: TaskRecover
   );
 
   return (
-    <div className="flex flex-col grow gap-3 pb-4">
+    <div className="flex flex-col grow gap-2 pb-4">
       <AppSearchInput
-        className="mx-4 w-auto"
+        className="mx-4 w-auto mt-1"
         placeholder="Поиск группы…"
         onSearch={(value) => {
           setSearch(value);

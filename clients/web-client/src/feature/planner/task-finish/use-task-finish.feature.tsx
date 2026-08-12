@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
-import { TaskId } from '@/entity/planner/tasks';
-import { TaskFinishDialog } from '@/feature/planner/task-finish/task-finish-dialog';
+import { currentTasksStatuses, TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import { useNotify } from '@/shared/project-ui';
 import { InboxGroupCacheManager, TaskCacheManager, TaskFinishStatus } from '@/shared/transport/graphql';
 import { useTaskFinish } from './api/use-task-finish';
+import { TaskFinishDialog } from './task-finish-dialog';
 
 function useTaskFinishFeature() {
   const { finishTask, client, ...rest } = useTaskFinish();
@@ -26,7 +26,7 @@ function useTaskFinishFeature() {
 
         if (response.data !== null) {
           setTaskFinishData(undefined);
-          TaskCacheManager.dropCurrentGetTasksPerPage(client);
+          TaskCacheManager.dropGetTasksPerPageByStatuses(client, currentTasksStatuses);
           InboxGroupCacheManager.refetch(client);
           await options?.onSuccess?.();
           client.cache.gc();
