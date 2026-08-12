@@ -8,14 +8,14 @@ workspace "BigD Tracker - Frontend/BFF Context" "Standalone System Context view 
         }
 
         rabbitmq = softwareSystem "RabbitMQ" "Брокер сообщений для RPC между BFF и backend-сервисами."
-        account_service = softwareSystem "account-service" "Сервис аккаунтов и сессий."
+        auth_service = softwareSystem "auth-service" "Сервис аккаунтов и сессий."
         goal_service = softwareSystem "goal-service" "Planner-домен."
         training_service = softwareSystem "training-service" "Gym-домен."
 
         user -> tracker_client "Использует интерфейс" "HTTPS"
         tracker_client -> api_gateway "Вызывает BFF" "HTTP/JSON"
         api_gateway -> rabbitmq "Отправляет RPC-запросы" "AMQP"
-        api_gateway -> account_service "Auth и профиль" "RPC over RabbitMQ"
+        api_gateway -> auth_service "Auth и профиль" "RPC over RabbitMQ"
         api_gateway -> goal_service "Planner use cases" "RPC over RabbitMQ"
         api_gateway -> training_service "Gym use cases" "RPC over RabbitMQ"
     }
@@ -25,7 +25,7 @@ workspace "BigD Tracker - Frontend/BFF Context" "Standalone System Context view 
             include user
             include bigd
             include rabbitmq
-            include account_service
+            include auth_service
             include goal_service
             include training_service
 

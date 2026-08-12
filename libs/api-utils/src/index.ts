@@ -6,6 +6,6 @@ export * from './interceptors';
 export * from './uow';
 export * from './repository';
 export * from './specification';
-export * from './observability';
+export * from './request-context';
 export * from './time-and-date';
 export * from './validation';

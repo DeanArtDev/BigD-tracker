@@ -1,4 +1,5 @@
 import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exceptions';
+import { projectPostgresqlError } from '@big-d/observability';
 
 class BaseTasksRepository {
   constructor() {}
@@ -8,7 +9,7 @@ class BaseTasksRepository {
       return await callback();
     } catch (error: unknown) {
       throw new ExceptionTaskInfrastructure({
-        error,
+        error: projectPostgresqlError(error),
         operation,
       });
     }

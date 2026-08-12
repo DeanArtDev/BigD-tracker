@@ -4,11 +4,11 @@ import { User } from '@/modules/auth/domain/aggreates';
 import { databaseToken } from '@big-d/database';
 import { Inject, Injectable } from '@nestjs/common';
 import { UserWriteKyselyMapper } from '../../mappers';
-import { BaseTasksRepository } from '../base-tasks.repository';
+import { BaseAuthRepository } from '../base-auth.repository';
 import { taskRecurrencesQuery, userTypeByNameQuery } from '../utils/queries';
 
 @Injectable()
-export class UsersWriteRepositoryKysely extends BaseTasksRepository implements UserWriteRepository {
+export class UsersWriteRepositoryKysely extends BaseAuthRepository implements UserWriteRepository {
   constructor(@Inject(databaseToken.CONNECTION) private readonly db: AuthDatabase) {
     super();
   }

@@ -125,6 +125,11 @@ const system = {
     details: Details.Define<{ message: string; field: string; subjectId?: number | string }>(),
   },
 
+  observabilityContextNotInitialized: {
+    code: 'S-GW-0007',
+    details: Details.Define<{ message: string }>(),
+  },
+
   internalGateway: {
     code: 'S-AG-0001',
     details: Details.Define<{ message: string; subjectId?: number | string }>(),

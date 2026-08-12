@@ -138,9 +138,9 @@
       "description" : "Сервис аккаунтов, сессий, refresh token и профиля пользователя.",
       "documentation" : { },
       "id" : "6",
-      "name" : "account-service",
+      "name" : "auth-service",
       "properties" : {
-        "structurizr.dsl.identifier" : "account_service"
+        "structurizr.dsl.identifier" : "auth_service"
       },
       "tags" : "Element,Software System"
     }, {

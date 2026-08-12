@@ -22,6 +22,7 @@ export class GraphQLExceptionFilter implements GqlExceptionFilter {
         code: exception.code,
         correlationId: this.#getCorrelationId(),
         details: { ...(exception.details ?? {}), timestamp: exception.timestamp },
+        originalError: exception,
       });
     }
 
@@ -34,6 +35,7 @@ export class GraphQLExceptionFilter implements GqlExceptionFilter {
         code: rpcExcState.code,
         correlationId: this.#getCorrelationId(),
         details: rpcExcState.details ?? {},
+        originalError: exception,
       });
     }
 
@@ -47,6 +49,7 @@ export class GraphQLExceptionFilter implements GqlExceptionFilter {
           status: exception.getStatus(),
           httpResponse: exception.getResponse(),
         },
+        originalError: exception,
       });
     }
 
@@ -56,6 +59,7 @@ export class GraphQLExceptionFilter implements GqlExceptionFilter {
       message: 'Internal server error',
       correlationId: this.#getCorrelationId(),
       details: {},
+      originalError: exception instanceof Error ? exception : undefined,
     });
   }
 

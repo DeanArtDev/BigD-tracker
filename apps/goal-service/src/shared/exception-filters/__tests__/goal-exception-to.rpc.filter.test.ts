@@ -10,6 +10,7 @@ import { ExceptionTaskInfrastructure } from '@/modules/tasks/infrastructure/exce
 import { BaseRpcException, RmqErrorKind } from '@big-d/api-contracts';
 import { RequestContext } from '@big-d/api-utils';
 import { exceptionCode } from '@big-d/exceptions';
+import { projectPostgresqlError } from '@big-d/observability';
 import { GoalServiceRequestContext } from '@shared/request-context';
 import { firstValueFrom } from 'rxjs';
 import { GoalExceptionToRpc } from '../goal-exception-to.rpc.filter';
@@ -19,7 +20,11 @@ initTestEnvironment();
 describe('GoalExceptionToRpc', () => {
   test('sanitizes infrastructure errors before returning them to the client', async () => {
     const filter = new GoalExceptionToRpc();
-    const sourceError = new Error('duplicate key value violates unique constraint');
+    const sourceError = Object.assign(new Error('duplicate key value violates unique constraint'), {
+      code: '23505',
+      constraint: 'tasks_unique',
+      detail: 'Key (id)=(42) already exists',
+    });
     sourceError.stack = 'Error: duplicate key value violates unique constraint\n    at repo.ts:10:5';
 
     const error = await GoalServiceRequestContext.run(
@@ -33,7 +38,7 @@ describe('GoalExceptionToRpc', () => {
             filter.catch(
               new ExceptionTaskInfrastructure({
                 operation: 'createTask',
-                error: sourceError,
+                error: projectPostgresqlError(sourceError),
               }),
             ),
           );
@@ -58,6 +63,7 @@ describe('GoalExceptionToRpc', () => {
     expect(error.details).not.toHaveProperty('error');
     expect(error.details).not.toHaveProperty('stack');
     expect(JSON.stringify(error.details)).not.toContain('duplicate key value violates unique constraint');
+    expect(JSON.stringify(error.details)).not.toContain('tasks_unique');
   });
 
   test('adds correlationId to regular rpc errors too', async () => {

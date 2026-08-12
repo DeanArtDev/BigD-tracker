@@ -1,9 +1,5 @@
-import {
-  CORRELATION_HEADER_KEY,
-  RequestContext,
-  resolveSafeTimezone,
-  USER_TIME_ZONE_HEADER_KEY,
-} from '@big-d/api-utils';
+import { RequestContext, resolveSafeTimezone } from '@big-d/api-utils';
+import { CORRELATION_HEADER_KEY, USER_TIME_ZONE_HEADER_KEY } from '@big-d/observability';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
 import { AuthServiceRequestContext } from './app-request-context';

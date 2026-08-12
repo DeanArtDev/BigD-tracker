@@ -1,11 +1,16 @@
 import { registerAs } from '@nestjs/config';
 import * as process from 'node:process';
 import { z } from 'zod';
+import type { Environment } from '@big-d/observability';
 
 interface GOAL_APP_ENV {
   readonly API_PORT: number;
   readonly IS_DEV: boolean;
   readonly IS_PROD: boolean;
+  readonly APP_ENV: Environment;
+  readonly APP_VERSION: string;
+  readonly INSTANCE_ID?: string;
+  readonly LOG_PRETTY?: string;
 
   readonly RMQ_USER: string;
   readonly RMQ_PASSWORD: string;
@@ -23,6 +28,9 @@ const envSchema = z.object({
   API_PORT: z.coerce.number(),
   TZ: z.string(),
   NODE_ENV: z.union([z.literal('production'), z.literal('development'), z.literal('test')]),
+  APP_ENV: z.enum(['local', 'test', 'dev-stage', 'production']),
+  APP_VERSION: z.string().min(1),
+  LOG_PRETTY: z.literal('1').optional(),
 
   RMQ_USER: z.string(),
   RMQ_PASSWORD: z.string(),
@@ -59,6 +67,10 @@ const appConfigFactory = (): GOAL_APP_ENV => {
     API_PORT: parseInt(process.env.API_PORT ?? '', 10),
     IS_DEV: process.env.NODE_ENV === 'development',
     IS_PROD: process.env.NODE_ENV === 'production',
+    APP_ENV: process.env.APP_ENV as Environment,
+    APP_VERSION: process.env.APP_VERSION ?? '',
+    INSTANCE_ID: process.env.HOSTNAME,
+    LOG_PRETTY: process.env.LOG_PRETTY,
 
     RMQ_USER: rmq.USER,
     RMQ_PASSWORD: rmq.PASSWORD,
@@ -73,4 +85,4 @@ const appConfigFactory = (): GOAL_APP_ENV => {
   };
 };
 
-export { appConfigFactory, rmqConfig, dbConfig, envSchema };
+export { appConfigFactory, rmqConfig, dbConfig, envSchema, type GOAL_APP_ENV };

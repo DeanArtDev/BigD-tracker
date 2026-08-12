@@ -8,7 +8,7 @@ workspace "BigD Tracker - Frontend and BFF" "C4 model for tracker-client and api
         }
 
         rabbitmq = softwareSystem "RabbitMQ" "Брокер сообщений для RPC между BFF и backend-сервисами."
-        account_service = softwareSystem "account-service" "Сервис аккаунтов, сессий, refresh token и профиля пользователя."
+        auth_service = softwareSystem "auth-service" "Сервис аккаунтов, сессий, refresh token и профиля пользователя."
         goal_service = softwareSystem "goal-service" "Planner-домен: inbox, groups, tasks, diary."
         training_service = softwareSystem "training-service" "Gym-домен: trainings, templates, exercises, repetitions."
 
@@ -16,7 +16,7 @@ workspace "BigD Tracker - Frontend and BFF" "C4 model for tracker-client and api
         tracker_client -> api_gateway "Вызывает frontend-oriented API" "HTTP/JSON"
 
         api_gateway -> rabbitmq "Отправляет RPC-запросы" "AMQP"
-        api_gateway -> account_service "Auth, sessions, me, referral token" "RPC over RabbitMQ"
+        api_gateway -> auth_service "Auth, sessions, me, referral token" "RPC over RabbitMQ"
         api_gateway -> goal_service "Planner use cases" "RPC over RabbitMQ"
         api_gateway -> training_service "Gym use cases" "RPC over RabbitMQ"
     }
@@ -26,7 +26,7 @@ workspace "BigD Tracker - Frontend and BFF" "C4 model for tracker-client and api
             include user
             include bigd
             include rabbitmq
-            include account_service
+            include auth_service
             include goal_service
             include training_service
 
@@ -40,7 +40,7 @@ workspace "BigD Tracker - Frontend and BFF" "C4 model for tracker-client and api
             include tracker_client
             include api_gateway
             include rabbitmq
-            include account_service
+            include auth_service
             include goal_service
             include training_service
 
@@ -55,8 +55,8 @@ workspace "BigD Tracker - Frontend and BFF" "C4 model for tracker-client and api
 
             user -> tracker_client "1. Открывает регистрацию и отправляет login/password"
             tracker_client -> api_gateway "2. POST /api/auth/register"
-            api_gateway -> account_service "3. AccountRegister: создать пользователя, access token и refresh token"
-            account_service -> api_gateway "4. Возвращает access token, refresh token и maxAge"
+            api_gateway -> auth_service "3. AccountRegister: создать пользователя, access token и refresh token"
+            auth_service -> api_gateway "4. Возвращает access token, refresh token и maxAge"
             api_gateway -> goal_service "5. GoalCreateInboxGroup: создать inbox для нового пользователя"
             goal_service -> api_gateway "6. Подтверждает создание inbox"
             api_gateway -> tracker_client "7. Возвращает access token и устанавливает refresh token cookie"

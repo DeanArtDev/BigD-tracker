@@ -1,4 +1,4 @@
-import { TRAINING_APP_ENV } from '@/infrastructure/configs';
+import type { TRAINING_APP_ENV } from '@/infrastructure/configs';
 import { TRAINING_SERVICE_RMQ_KEY, trainingServiceRmqConfig } from '@big-d/api-contracts';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';

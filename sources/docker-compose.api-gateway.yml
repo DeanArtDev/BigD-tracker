@@ -9,6 +9,8 @@ services:
       - ./public.pem:/usr/src/app/apps/api-gateway/keys/public.pem:ro
     env_file:
       - .env
+    environment:
+      APP_VERSION: sha-${CI_COMMIT_SHORT_SHA}
     ports:
       - '8080:8080'
     networks:
