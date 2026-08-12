@@ -1,6 +1,6 @@
 'use client';
 
-import { Flag, Repeat2, Timer } from 'lucide-react';
+import { Flag, Repeat, Timer } from 'lucide-react';
 import { CSSProperties, ReactNode, Ref } from 'react';
 import { TimeHelper } from '@/shared/lib/time';
 import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
@@ -119,8 +119,8 @@ function TaskCard(props: TaskCardProps) {
         )}
 
         {repeatable && (
-          <Badge variant="secondary" className="p-1">
-            <Repeat2 className="size-4" />
+          <Badge variant="outline" className="p-1">
+            <Repeat />
           </Badge>
         )}
 

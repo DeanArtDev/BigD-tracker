@@ -28,7 +28,7 @@ function TaskForm<TGroupId extends GroupBrand>({ className, groupSlot, onSubmit 
       <form
         id={formId}
         noValidate
-        className={cn('grid grid-rows-[min-content_min-content_1fr] flex-col gap-2 min-w-0', className)}
+        className={cn('grid grow grid-rows-[min-content_min-content_1fr] flex-col gap-2 min-w-0', className)}
         onSubmit={(evt) => {
           evt.preventDefault();
           evt.stopPropagation();

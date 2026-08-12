@@ -127,6 +127,7 @@ const getTasksPerPagePolicy: FieldPolicy<
     const input = (args as GetTasksPerPageQueryVariables | null)?.input;
     const cacheStorage = storage as TasksPerPageCacheStorage;
     cacheStorage.status = input?.status;
+    cacheStorage.recurring = input?.recurring;
 
     const isInitialRequest = input?.page === 1;
     const existingItems = isInitialRequest ? [] : (existing?.items ?? []);

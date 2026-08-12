@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { TaskId } from '@/entity/planner/tasks';
+import { currentTasksStatuses, TaskId } from '@/entity/planner/tasks';
 import { useNotify } from '@/shared/project-ui';
 import {
   GroupCacheManager,
@@ -33,7 +33,7 @@ function useTaskCloneFeature() {
             clonedTaskId: taskData.id,
           });
           TaskCacheManager.refetchAssignableTasks(rest.client);
-          TaskCacheManager.dropCurrentGetTasksPerPage(rest.client);
+          TaskCacheManager.dropGetTasksPerPageByStatuses(rest.client, currentTasksStatuses);
 
           if (taskData.groupId != null) {
             PlannerInitCacheManager.refetch(rest.client);

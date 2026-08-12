@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskId } from '@/entity/planner/tasks';
+import { currentTasksStatuses, TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import { useNotify } from '@/shared/project-ui';
 import {
@@ -36,7 +36,7 @@ function useTaskUnassignFromGroup() {
           if (result?.data != null) {
             GroupCacheManager.removeTaskFromGroup(client.cache, { groupId, taskId });
             TaskCacheManager.refetchAssignableTasks(client);
-            TaskCacheManager.dropCurrentGetTasksPerPage(client);
+            TaskCacheManager.dropGetTasksPerPageByStatuses(client, currentTasksStatuses);
 
             PlannerInitCacheManager.refetch(client);
             InboxGroupCacheManager.removeTask(client.cache, { inboxId: groupId, taskId });

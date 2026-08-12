@@ -78,22 +78,6 @@ describe('DiaryEventCard', () => {
     expect(screen.getByLabelText('Повторяющееся дело')).toBeInTheDocument();
   });
 
-  it('does not render the recurrence icon in the year view', () => {
-    render(
-      <DiaryEventCard
-        app={app}
-        event={getEvent(false, true)}
-        isAllDay
-        isDragging={false}
-        isMobile={false}
-        isSelected={false}
-        viewType={ViewType.YEAR}
-      />,
-    );
-
-    expect(screen.queryByLabelText('Повторяющееся дело')).not.toBeInTheDocument();
-  });
-
   it('renders the calendar icon only for all-day events', () => {
     const { container, rerender } = render(
       <DiaryEventCard

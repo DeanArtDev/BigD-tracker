@@ -47,11 +47,9 @@ function Component() {
         eventContentAllDayDay={renderEventContent}
         eventContentAllDayMonth={renderEventContent}
         eventContentAllDayWeek={renderEventContent}
-        eventContentAllDayYear={renderEventContent}
         eventContentDay={renderEventContent}
         eventContentMonth={renderEventContent}
         eventContentWeek={renderEventContent}
-        eventContentYear={renderEventContent}
         gridContextMenu={renderGridContextMenu}
         yearViewModeTabs={renderYearViewModeTabs}
         search={calendarSearch}

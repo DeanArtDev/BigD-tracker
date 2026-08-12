@@ -13,7 +13,7 @@ import {
 } from '@/entity/planner/tasks';
 import { Brand, MaybePromise } from '@/shared/lib';
 import { AppDialog, useConfirmDialog, useNotify } from '@/shared/project-ui';
-import { TaskCacheManager } from '@/shared/transport/graphql';
+import { TaskCacheManager, TaskStatus } from '@/shared/transport/graphql';
 import { useTaskUpdate } from './api/use-task-update';
 
 interface ComponentProps<TGroupId extends Brand<number, string>> {
@@ -109,6 +109,8 @@ function TaskUpdateDialog(props: TaskUpdateDialogProps<GroupId>) {
               if (response.data?.updateTask != null) {
                 close();
                 TaskCacheManager.refetchGetDiaryTasks(client);
+                TaskCacheManager.dropGetTasksPerPageByRecurring(client);
+                TaskCacheManager.dropGetTasksPerPageByStatuses(client, [TaskStatus.NotStarted, TaskStatus.InProgress]);
                 await onSuccess?.();
               }
             });

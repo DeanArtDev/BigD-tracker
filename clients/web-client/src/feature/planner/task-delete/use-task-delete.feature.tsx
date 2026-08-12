@@ -3,7 +3,7 @@ import { GroupId } from '@/entity/planner/groups';
 import { TaskId } from '@/entity/planner/tasks';
 import { MaybePromise } from '@/shared/lib';
 import { useConfirmDialog, useNotify } from '@/shared/project-ui';
-import { GroupCacheManager, PlannerInitCacheManager, TaskCacheManager } from '@/shared/transport/graphql';
+import { GroupCacheManager, PlannerInitCacheManager, TaskCacheManager, TaskStatus } from '@/shared/transport/graphql';
 import { Typography } from '@/shared/ui-kit';
 import { useTaskDelete } from './api/use-task-delete';
 
@@ -48,7 +48,7 @@ function useTaskDeleteFeature() {
                 GroupCacheManager.removeTaskFromGroup(rest.client.cache, { taskId, groupId });
               }
               TaskCacheManager.removeTask(rest.client.cache, { taskId: id });
-              TaskCacheManager.dropDeletedGetTasksPerPage(rest.client);
+              TaskCacheManager.dropGetTasksPerPageByStatuses(rest.client, [TaskStatus.Deleted]);
               await onSuccess?.();
               rest.client.cache.gc();
             } catch (error) {

@@ -9,7 +9,7 @@ type ResetButtonProps = ComponentProps<typeof Button> & {
   readonly onReset: () => void;
 };
 
-function ResetButton({ show, className, onReset }: ResetButtonProps) {
+function ResetButton({ show = true, className, onReset }: ResetButtonProps) {
   if (!show) return null;
   return (
     <Button
