@@ -18,17 +18,15 @@
     "api-gateway:dev": "turbo watch dev -F=@big-d/api-gateway...",
     "auth-service:dev": "turbo watch dev -F=@big-d/auth-service...",
     "training-service:dev": "turbo watch dev -F=@big-d/training-service...",
-    "goal-service:dev": "turbo dev -F=@big-d/goal-service...",
-    "goal-service:dev:watch": "turbo watch dev -F=@big-d/goal-service...",
+    "goal-service:dev": "turbo watch dev -F=@big-d/goal-service...",
     "tracker-client:dev": "turbo watch dev -F=@big-d/tracker-client...",
     "service-infrastructure:dev:up": "pnpm compose:dev up -d",
     "service-infrastructure:dev:down": "pnpm compose:dev down",
     "===============================  BUILD  ==========================": "",
     "docker:build:test:up": "pnpm compose:test up -d",
     "docker:build:test:down": "pnpm compose:test down",
-    "build:api-gateway": "turbo build -F=@big-d/api-gateway",
     "build:services:all": "turbo build -F=@big-d/*-service",
-    "build:clientes:all": "turbo build -F=@big-d/*-client",
+    "build:clientes:all": "turbo build -F=@big-d/web-client",
     "===============================  TOOLS  ==========================": "",
     "architecture:visualize": "sh ./tools/architecture/visualize.sh",
     "architecture:visualize:stop": "sh ./tools/architecture/visualize-stop.sh",
@@ -49,7 +47,6 @@
     "cross-env": "^7.0.3",
     "dotenv": "catalog:",
     "dotenv-cli": "^8.0.0",
-    "dotenv-expand": "^12.0.2",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",
@@ -59,13 +56,13 @@
     "prettier": "catalog:",
     "ts-loader": "catalog:",
     "ts-node": "catalog:",
-    "turbo": "^2.7.4",
+    "turbo": "2.10.9",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
   },
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "^24.13",
-    "pnpm": "10.10.0"
+    "node": "24.18.1",
+    "pnpm": "11.21.0"
   }
 }

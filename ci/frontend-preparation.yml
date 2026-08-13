@@ -2,9 +2,9 @@
   install_frontend_dependencies:
     - npm install --global corepack@latest
     - corepack enable
-    - corepack prepare pnpm@10.10.0 --activate
+    - corepack prepare pnpm@11.21.0 --activate
     - export PNPM_HOME="/pnpm"
-    - export PATH="$PNPM_HOME:$PATH"
-    - pnpm install turbo --global
+    - export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
+    - pnpm install turbo@2.10.9 --global
     - pnpm config set store-dir .pnpm-store
     - pnpm install

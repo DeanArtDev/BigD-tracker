@@ -3,7 +3,6 @@
 import type { Event } from '@dayflow/core';
 import { Check, Copy, Folder, Scissors, Trash2 } from 'lucide-react';
 import { type RefObject, useEffect, useRef, useState } from 'react';
-import { GroupId } from '@/entity/planner/groups';
 import { TaskActionType, TaskDomain, TaskType } from '@/entity/planner/tasks';
 import { useTaskAssignToGroupFeature } from '@/feature/planner/task-assign-to-group';
 import {

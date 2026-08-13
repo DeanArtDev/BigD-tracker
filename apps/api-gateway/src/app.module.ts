@@ -19,7 +19,7 @@ import { RpcResponseValidationModule } from '@shared/rpc-response-validation';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfigFactory],
-      envFilePath: ['.env.production', '.env.development'],
+      envFilePath: ['.env.production', '.env.development', '.env.test'],
       validate: (config) => envSchema.parse(config),
     }),
     SwaggerAuthModule,

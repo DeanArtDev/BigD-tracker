@@ -1,11 +1,11 @@
-FROM node:24.13-slim AS base
+FROM node:24.18.1-slim AS base
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
 RUN apt-get update && \
     corepack enable && \
-    corepack prepare pnpm@10.10.0 --activate && \
-    pnpm install turbo --global && \
+    corepack prepare pnpm@11.21.0 --activate && \
+    pnpm install turbo@2.10.9 --global && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@big-d/training-service
 
 
-FROM node:24.13-slim AS runner
+FROM node:24.18.1-slim AS runner
 WORKDIR /usr/src/app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

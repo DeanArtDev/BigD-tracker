@@ -8,11 +8,12 @@
 
   before_script:
     - corepack enable
-    - corepack prepare pnpm@10.10.0 --activate
+    - corepack prepare pnpm@11.21.0 --activate
     - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
     - pnpm install --frozen-lockfile
 
     - cat "$CLIENT_TESTING_ENV" > clients/tracker-client/.env.test
+    - cat "$API_GATEWAY_TEST_ENV" > apps/api-gateway/.env.test
     - cat "$GOAL_SERVICE_TEST_ENV" > apps/goal-service/.env.test
     - cat "$AUTH_SERVICE_TEST_ENV" > apps/auth-service/.env.test
     - cat "$TRAINING_SERVICE_TEST_ENV" > apps/training-service/.env.test
