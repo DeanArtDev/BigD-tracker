@@ -116,7 +116,7 @@
   "sideEffects": false,
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "^24.13",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

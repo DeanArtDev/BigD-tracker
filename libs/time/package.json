@@ -1,0 +1,49 @@
+{
+  "name": "@big-d/time",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "=== DEV ===": "",
+    "dev": "tsup",
+    "=== BUILD ===": "",
+    "build": "tsup && tsc -p tsconfig.build.json",
+    "=== TEST ===": "",
+    "test": "vitest run --passWithNoTests",
+    "=== QUALITY ===": "",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
+    "lint": "pnpm format && eslint \"./src/**/*.ts\"",
+    "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix",
+    "type:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dayjs": "catalog:"
+  },
+  "devDependencies": {
+    "@big-d/configs-linter": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "prettier": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:"
+  },
+  "sideEffects": [
+    "./src/plugins.ts",
+    "./dist/index.js",
+    "./dist/index.cjs"
+  ]
+}

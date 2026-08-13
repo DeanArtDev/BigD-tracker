@@ -5,6 +5,7 @@ node_modules
 .DS_Store
 .gitattributes
 .gitignore
+.pnpm-store
 docker-compose.yml
 *.md
 dist

@@ -1,6 +1,6 @@
+import { timeAndDate, type TimeAndDateValue } from '@big-d/time';
 import { CalendarType } from '@dayflow/core';
 import { ViewType } from '@dayflow/core';
-import timeAndDate, { TimeAndDateValue } from '@/shared/lib/time';
 
 const EMPTY_GROUP_ID = 'EMPTY_GROUP_ID';
 

@@ -1,20 +1,3 @@
-import globals from 'globals';
-import { getServiceApiEslintConfig } from '@big-d/linter';
+import { createApiServiceEslintConfig } from '@big-d/configs-linter';
 
-export default getServiceApiEslintConfig(
-  {
-    ignores: ['dist/**'],
-  },
-  {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-      sourceType: 'module',
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-);
+export default createApiServiceEslintConfig({ tsconfigRootDir: import.meta.dirname });

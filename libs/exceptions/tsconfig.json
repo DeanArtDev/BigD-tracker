@@ -7,7 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
     "baseUrl": "./",
-    "incremental": true,
+    "incremental": false,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",

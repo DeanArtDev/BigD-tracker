@@ -1,5 +1,5 @@
 import { isString } from 'lodash';
-import { TimeAndDate, timeAndDate } from '../time-and-date';
+import { timeAndDate, type TimeAndDate } from '@big-d/time';
 import { isValidAbsoluteDateTimeWithoutTimezone } from '../validation';
 import { BaseValueObject } from './base-value-object';
 import { ExceptionInvalidInvariant } from './exceptions';

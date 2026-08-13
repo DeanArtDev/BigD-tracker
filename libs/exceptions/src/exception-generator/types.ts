@@ -1,4 +1,4 @@
-import { BaseException, BaseExceptionState } from '../exceptions';
+import type { BaseException, BaseExceptionState } from '../exceptions';
 
 type ExceptionClasses<TDefinitionMap extends Record<string, BaseExceptionState<string, string>>> = {
   [TKey in keyof TDefinitionMap as `Exception${TKey & string}`]: new (

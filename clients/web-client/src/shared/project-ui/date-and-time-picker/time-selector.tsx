@@ -1,7 +1,7 @@
 'use client';
 
+import { timeAndDate } from '@big-d/time';
 import { useEffect, useRef } from 'react';
-import timeAndDate from '@/shared/lib/time';
 import { getMinutes } from './date-and-time-picker.lib';
 
 const HOURS = Array.from({ length: 24 }, (_, hour) => hour);

@@ -32,8 +32,8 @@ function VerticalDndItem<T extends HasId>(props: {
       };
 
   const handleProps: HandleProps = {
-    'ref': setActivatorNodeRef as (node: HTMLElement | null) => void,
-    'className': 'cursor-grab active:cursor-grabbing select-none touch-none',
+    ref: setActivatorNodeRef as (node: HTMLElement | null) => void,
+    className: 'cursor-grab active:cursor-grabbing select-none touch-none',
     'aria-label': 'Перетащить',
     ...attributes,
     ...mergedListeners,

@@ -1,4 +1,4 @@
-import { Kysely } from 'kysely';
+import type { Kysely } from 'kysely';
 import { getDb } from './get-db';
 
 async function runSeeds<DB>(

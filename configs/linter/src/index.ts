@@ -1,2 +1,2 @@
-export { getServiceApiEslintConfig } from './eslint/api-service';
-export { getClientEslintConfig } from './eslint/client';
+export { createApiServiceEslintConfig, type ApiServiceEslintConfigOptions } from './eslint/api-service';
+export { createEslintExtension, type EslintExtension, type EslintExtensionOptions } from './eslint/extension';

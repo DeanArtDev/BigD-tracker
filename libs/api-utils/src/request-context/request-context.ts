@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 
 interface RequestContextInputState {
   correlationId?: string;

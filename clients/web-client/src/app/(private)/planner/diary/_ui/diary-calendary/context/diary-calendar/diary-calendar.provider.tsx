@@ -1,8 +1,8 @@
+import { timeAndDate } from '@big-d/time';
 import { UseCalendarAppReturn, ViewType } from '@dayflow/core';
 import { useCalendarApp } from '@dayflow/react';
 import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 import { useDiaryUrl } from '@/app/(private)/planner/diary/_model';
-import timeAndDate from '@/shared/lib/time';
 import { diaryCalendarContext } from './diary-calendar.context';
 import { EMPTY_GROUP_ID, emptyGroup, usePlugins } from '../../model';
 import { useViews, type YearViewMode } from '../../view-model/use-views';

@@ -1,4 +1,4 @@
-import timeAndDate from '@/shared/lib/time';
+import { timeAndDate } from '@big-d/time';
 import type { DateAndTimePickerProps } from './date-and-time-picker.types';
 
 function getMinutes(step: number, currentMinute: number) {

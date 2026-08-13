@@ -2,18 +2,20 @@
   "name": "@big-d/api-utils",
   "version": "0.0.1",
   "private": true,
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "type": "commonjs",
+  "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs"
+    }
   },
   "scripts": {
     "=== DEV ===": "",
-    "dev": "pnpm build --watch",
+    "dev": "tsup",
     "=== BUILD ===": "",
-    "build": "tsc --build",
+    "build": "tsup",
     "=== LINK ===": "",
     "test": "vitest run --passWithNoTests",
     "format": "npx prettier . --check",
@@ -22,6 +24,7 @@
     "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
   },
   "dependencies": {
+    "@big-d/time": "workspace:*",
     "@big-d/api-contracts": "workspace:*",
     "@big-d/exceptions": "workspace:*",
     "@big-d/database": "workspace:*",
@@ -35,7 +38,7 @@
     "validator": "catalog:"
   },
   "devDependencies": {
-    "@big-d/linter": "workspace:*",
+    "@big-d/configs-linter": "workspace:*",
     "@eslint/js": "catalog:",
     "@types/lodash": "catalog:",
     "@types/node": "catalog:",
@@ -45,17 +48,17 @@
     "eslint-plugin-prettier": "catalog:",
     "globals": "catalog:",
     "prettier": "catalog:",
+    "tsup": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
   },
-  "files": [
-    "dist"
+  "sideEffects": [
+    "src/time-and-date/plugins.ts"
   ],
-  "sideEffects": false,
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

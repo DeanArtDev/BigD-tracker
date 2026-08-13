@@ -1,5 +1,6 @@
 import { TaskFinishStatus, TaskRecurrenceStatus, TaskStatus } from '@big-d/api-contracts';
-import { DateVo, MonthdaysVo, Name, timeAndDate, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
+import { DateVo, MonthdaysVo, Name, TimezoneVo, YearmonthsVo } from '@big-d/api-utils';
+import { timeAndDate } from '@big-d/time';
 import { maxBy } from 'lodash';
 import { Task, TaskFactory, TaskFactoryReplaceInput, TaskOverride, TaskRecurrence } from '../aggregates/task';
 import { Priority } from '../aggregates/task/value-objects';

@@ -1,5 +1,6 @@
 import { Session, SessionFactory } from '@/modules/auth/domain/aggreates';
-import { DateVo, timeAndDate } from '@big-d/api-utils';
+import { DateVo } from '@big-d/api-utils';
+import { timeAndDate } from '@big-d/time';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';

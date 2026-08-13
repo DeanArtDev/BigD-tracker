@@ -1,7 +1,8 @@
 import { PostgresDialect } from 'kysely';
-import { KyselyConfig } from 'kysely';
+import type { KyselyConfig } from 'kysely';
 import { Database } from './database.interface';
-import { Pool, PoolConfig } from 'pg';
+import { Pool } from 'pg';
+import type { PoolConfig } from 'pg';
 
 type PostgresDatabaseOptions = PoolConfig & {
   logging?: KyselyConfig['log'];
@@ -30,4 +31,5 @@ class PostgresDatabase<DB> extends Database<DB> {
   }
 }
 
-export { PostgresDatabaseOptions, PostgresDatabase };
+export { PostgresDatabase };
+export type { PostgresDatabaseOptions };

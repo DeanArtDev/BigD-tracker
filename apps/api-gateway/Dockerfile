@@ -1,4 +1,4 @@
-FROM node:24.18.1-slim AS base
+FROM node:24.19.0-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@big-d/api-gateway
 
 
-FROM node:24.18.1-slim AS runner
+FROM node:24.19.0-slim AS runner
 WORKDIR /usr/src/app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

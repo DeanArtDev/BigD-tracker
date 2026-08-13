@@ -1,9 +1,9 @@
 'use client';
 
-import { ru } from 'date-fns/locale';
+import { timeAndDate } from '@big-d/time';
 import { CalendarDays } from 'lucide-react';
 import { useState } from 'react';
-import timeAndDate from '@/shared/lib/time';
+import { ru } from 'react-day-picker/locale';
 import { Button, Calendar, cn, Popover, PopoverAnchor, PopoverContent, ResetButton, Typography } from '@/shared/ui-kit';
 import { getDefaultValue, replaceDate } from './date-and-time-picker.lib';
 import type { DateAndTimePickerProps } from './date-and-time-picker.types';

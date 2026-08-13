@@ -7,7 +7,7 @@ import {
   TaskStatus,
 } from '@big-d/api-contracts';
 import { DateVo, Name, TimezoneVo } from '@big-d/api-utils';
-import { timeAndDate } from '@big-d/api-utils';
+import { timeAndDate } from '@big-d/time';
 import { Task, TaskIdBuilder, TaskRecurrence } from '../../aggregates/task';
 import { Priority } from '../../aggregates/task/value-objects';
 import { TaskVirtualService } from '../task-virtual.service';

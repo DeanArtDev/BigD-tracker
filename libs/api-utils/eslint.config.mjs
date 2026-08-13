@@ -1,24 +1,7 @@
-import globals from 'globals';
-import { getServiceApiEslintConfig } from '@big-d/linter';
+import { createApiServiceEslintConfig } from '@big-d/configs-linter';
 
-export default getServiceApiEslintConfig(
-  {
-    ignores: ['eslint.config.mjs', './src/types.d.ts'],
-  },
-
-  {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      sourceType: 'module',
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-
-  { rules: { '@typescript-eslint/no-redundant-type-constituents': 'off' } },
-);
+export default createApiServiceEslintConfig({
+  tsconfigRootDir: import.meta.dirname,
+  ignores: ['src/types.d.ts'],
+  rules: { '@typescript-eslint/no-redundant-type-constituents': 'off' },
+});

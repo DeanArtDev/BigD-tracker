@@ -2,8 +2,8 @@ import type { CSSProperties, ReactNode, Ref } from 'react';
 import type { HasId } from '@/shared/lib/type-helpers';
 
 interface HandleProps {
-  'ref': (node: HTMLElement | null) => void;
-  'className'?: string;
+  ref: (node: HTMLElement | null) => void;
+  className?: string;
   'aria-label'?: string;
   [key: string]: unknown;
 }

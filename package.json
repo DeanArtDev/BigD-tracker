@@ -40,7 +40,7 @@
   "license": "ISC",
   "devDependencies": {
     "@big-d/database": "workspace:*",
-    "@big-d/linter": "workspace:*",
+    "@big-d/configs-linter": "workspace:*",
     "@big-d/tsconfig": "workspace:*",
     "@eslint/js": "catalog:",
     "@types/node": "catalog:",
@@ -62,7 +62,7 @@
   },
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

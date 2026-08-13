@@ -1,4 +1,4 @@
-import timeAndDate from '@/shared/lib/time';
+import { timeAndDate } from '@big-d/time';
 import { RecurrenceFrequency, type TaskCreateInput } from '@/shared/transport/graphql/schema-types';
 import type { Task } from '../../model';
 import type { GroupBrand, TaskFormData, TaskSubmitFormData } from './context/task-form-provider/task-form-schema';

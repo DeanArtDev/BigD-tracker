@@ -1,4 +1,4 @@
-import timeAndDate from '@/shared/lib/time';
+import { timeAndDate } from '@big-d/time';
 
 const schemaPlaceholderValues = {
   number: NaN,

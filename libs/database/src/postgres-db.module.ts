@@ -1,15 +1,16 @@
 import {
-  DynamicModule,
   Global,
-  InjectionToken,
   Module,
-  ModuleMetadata,
-  OptionalFactoryDependency,
-  Provider,
+  type DynamicModule,
+  type InjectionToken,
+  type ModuleMetadata,
+  type OptionalFactoryDependency,
+  type Provider,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import type { ConfigService } from '@nestjs/config';
 import { databaseToken } from './database.tokens';
-import { KyselyPostgresDB, KyselyPostgresDBOptions } from './postgres';
+import { KyselyPostgresDB } from './postgres';
+import type { KyselyPostgresDBOptions } from './postgres';
 
 @Global()
 @Module({})

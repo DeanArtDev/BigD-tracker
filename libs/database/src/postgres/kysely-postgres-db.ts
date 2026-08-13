@@ -1,7 +1,9 @@
-import { OnApplicationShutdown } from '@nestjs/common';
-import { Kysely, KyselyConfig, PostgresDialect, Transaction } from 'kysely';
-import { Pool, PoolConfig } from 'pg';
-import { IKyselyPostgresDB } from './kysely-postgres-db.interface';
+import type { OnApplicationShutdown } from '@nestjs/common';
+import { Kysely, PostgresDialect } from 'kysely';
+import type { KyselyConfig, Transaction } from 'kysely';
+import { Pool } from 'pg';
+import type { PoolConfig } from 'pg';
+import type { IKyselyPostgresDB } from './kysely-postgres-db.interface';
 
 type KyselyPostgresDBOptions = PoolConfig & {
   logging?: KyselyConfig['log'];
@@ -39,4 +41,5 @@ class KyselyPostgresDB<DB> implements OnApplicationShutdown, IKyselyPostgresDB<D
   }
 }
 
-export { KyselyPostgresDBOptions, KyselyPostgresDB };
+export { KyselyPostgresDB };
+export type { KyselyPostgresDBOptions };

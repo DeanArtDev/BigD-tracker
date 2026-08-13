@@ -2,18 +2,22 @@
   "name": "@big-d/database",
   "version": "0.0.1",
   "private": true,
-  "main": "dist/index.js",
+  "type": "module",
+  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
   "scripts": {
     "=== DEV ===": "",
-    "dev": "pnpm build --watch",
+    "dev": "tsup",
     "=== BUILD ===": "",
-    "build": "tsc --build",
+    "build": "tsup",
     "=== LINK ===": "",
     "test": "echo \"Error: no test specified , just skip\" && exit 0",
     "format": "npx prettier . --check",
@@ -28,7 +32,7 @@
     "pg": "catalog:"
   },
   "devDependencies": {
-    "@big-d/linter": "workspace:*",
+    "@big-d/configs-linter": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "eslint": "catalog:",
@@ -36,6 +40,7 @@
     "eslint-plugin-prettier": "catalog:",
     "globals": "catalog:",
     "prettier": "catalog:",
+    "tsup": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "utility-types": "^3.11.0"
@@ -43,7 +48,7 @@
   "sideEffects": false,
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

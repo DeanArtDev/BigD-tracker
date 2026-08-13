@@ -1,4 +1,4 @@
-import { ExceptionCodes } from '../exception-codes';
+import type { ExceptionCodes } from '../exception-codes';
 
 interface BaseExceptionState<
   TKey extends string,

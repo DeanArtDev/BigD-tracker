@@ -3,9 +3,8 @@
   "version": "0.0.1",
   "description": "Shared observability primitives for Big D services",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
@@ -23,30 +22,24 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./pino": {
       "types": "./dist/pino/index.d.ts",
-      "import": "./dist/pino/index.js",
       "require": "./dist/pino/index.cjs"
     },
     "./nest": {
       "types": "./dist/nest/index.d.ts",
-      "import": "./dist/nest/index.js",
       "require": "./dist/nest/index.cjs"
     }
   },
-  "files": [
-    "dist"
-  ],
   "sideEffects": false,
   "dependencies": {
     "pino": "catalog:",
     "pino-pretty": "catalog:"
   },
   "scripts": {
-    "dev": "tsup --watch",
+    "dev": "tsup",
     "build": "tsup && pnpm build:types",
     "build:types": "tsc -p tsconfig.build.json",
     "test": "vitest run --passWithNoTests",
@@ -58,7 +51,7 @@
     "lint:fix": "pnpm format:fix && eslint \"./src/**/*.ts\" --fix"
   },
   "devDependencies": {
-    "@big-d/linter": "workspace:*",
+    "@big-d/configs-linter": "workspace:*",
     "@eslint/js": "catalog:",
     "@types/node": "catalog:",
     "@nestjs/common": "catalog:",
@@ -67,7 +60,7 @@
     "eslint-plugin-prettier": "catalog:",
     "globals": "catalog:",
     "prettier": "catalog:",
-    "tsup": "^8.5.1",
+    "tsup": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
@@ -77,7 +70,7 @@
   },
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }
