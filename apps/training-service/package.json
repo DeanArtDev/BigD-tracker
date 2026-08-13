@@ -49,8 +49,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "catalog:",
     "@faker-js/faker": "^9.8.0",
+    "@big-d/configs-linter": "workspace:*",
     "@nestjs/cli": "catalog:",
     "@nestjs/schematics": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -60,9 +60,6 @@
     "@types/supertest": "^6.0.2",
     "dotenv": "catalog:",
     "eslint": "catalog:",
-    "eslint-config-prettier": "catalog:",
-    "eslint-plugin-prettier": "catalog:",
-    "globals": "catalog:",
     "jest": "^29.7.0",
     "kysely-codegen": "catalog:",
     "prettier": "catalog:",
@@ -72,8 +69,7 @@
     "ts-loader": "catalog:",
     "ts-node": "catalog:",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "catalog:",
-    "typescript-eslint": "catalog:"
+    "typescript": "catalog:"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -101,7 +97,7 @@
   },
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

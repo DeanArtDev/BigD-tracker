@@ -1,4 +1,4 @@
-import { ConfigFactory } from '@nestjs/config';
+import type { ConfigFactory } from '@nestjs/config';
 import * as process from 'node:process';
 
 interface DB_ENV {

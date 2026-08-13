@@ -1,13 +1,14 @@
 import {
-  DynamicModule,
   Global,
   Module,
-  Provider,
-  OptionalFactoryDependency,
-  InjectionToken,
-  ModuleMetadata,
+  type DynamicModule,
+  type Provider,
+  type OptionalFactoryDependency,
+  type InjectionToken,
+  type ModuleMetadata,
 } from '@nestjs/common';
-import { PostgresDatabaseOptions, PostgresDatabase } from './database';
+import { PostgresDatabase } from './database';
+import type { PostgresDatabaseOptions } from './database';
 
 /**
  * @deprecated используй KyselyPostgresDB, databaseToken, PostgresDbModule

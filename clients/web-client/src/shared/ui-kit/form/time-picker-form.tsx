@@ -1,10 +1,10 @@
 'use client';
 
+import { timeAndDate } from '@big-d/time';
 import { isDate } from 'lodash-es';
 import { Clock2Icon } from 'lucide-react';
 import { type ComponentProps } from 'react';
 import { Controller, type FieldValues, type Path } from 'react-hook-form';
-import timeAndDate from '@/shared/lib/time';
 import { cn } from '../lib/utils';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group';

@@ -1,7 +1,7 @@
+import { timeAndDate } from '@big-d/time';
 import { ICalendarApp, LocaleProvider, MiniCalendar } from '@dayflow/core';
 import { h, render } from 'preact';
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import timeAndDate from '@/shared/lib/time';
 
 interface DiaryMiniCalendarProps {
   readonly app: ICalendarApp;

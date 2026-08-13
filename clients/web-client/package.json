@@ -25,6 +25,7 @@
     "@apollo/client-integration-nextjs": "0.14.5",
     "@base-ui/react": "^1.4.1",
     "@big-d/exceptions": "workspace:*",
+    "@big-d/time": "workspace:*",
     "@dayflow/core": "^3.6.8",
     "@dayflow/plugin-drag": "^1.5.8",
     "@dayflow/plugin-keyboard-shortcuts": "^1.5.8",
@@ -47,8 +48,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "date-fns": "catalog:",
-    "dayjs": "catalog:",
     "graphql": "16.14.0",
     "graphql-ws": "6.0.8",
     "jwt-decode": "^4.0.0",
@@ -79,7 +78,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "catalog:",
+    "@eslint/compat": "2.1.0",
     "@graphql-codegen/cli": "^7.1.0",
     "@graphql-codegen/near-operation-file-preset": "^5.2.1",
     "@graphql-codegen/typed-document-node": "^7.0.2",
@@ -96,12 +95,14 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-v8": "catalog:",
     "dotenv": "catalog:",
     "dotenv-cli": "^8.0.0",
     "eslint": "catalog:",
     "eslint-config-next": "16.2.11",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unused-imports": "4.4.1",
     "jsdom": "^28.1.0",
     "prettier": "catalog:",
     "sass": "^1.102.0",
@@ -113,7 +114,7 @@
   },
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

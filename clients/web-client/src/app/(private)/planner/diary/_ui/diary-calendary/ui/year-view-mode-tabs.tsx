@@ -7,7 +7,7 @@ import { type YearViewMode, YEAR_VIEW_MODES } from '../view-model/use-views';
 const YEAR_VIEW_MODE_LABELS: Record<YearViewMode, string> = {
   'year-canvas': 'Лента',
   'fixed-week': 'Недели',
-  'grid': 'Сетка',
+  grid: 'Сетка',
 };
 
 function isYearViewMode(value: string): value is YearViewMode {

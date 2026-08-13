@@ -1,8 +1,8 @@
 'use client';
 
+import { timeAndDate } from '@big-d/time';
 import type { FieldValues, Path } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import timeAndDate from '@/shared/lib/time';
 import { DateAndTimePicker, type DateAndTimePickerProps } from '@/shared/project-ui';
 import { formElementsValues } from '@/shared/ui-kit/form/form-schema-utils';
 import { Field, FieldError, FieldLabel } from '../ui/field';

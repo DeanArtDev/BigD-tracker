@@ -1,3 +1,4 @@
+import { timeAndDate } from '@big-d/time';
 import {
   createEvent,
   dateToPlainDate,
@@ -10,7 +11,6 @@ import {
 import { merge } from 'lodash-es';
 import { GroupId } from '@/entity/planner/groups';
 import { TaskDomain, TaskId, TaskType, TaskUtils } from '@/entity/planner/tasks';
-import timeAndDate from '@/shared/lib/time';
 import { DiaryTask, TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from './constants';
 import {

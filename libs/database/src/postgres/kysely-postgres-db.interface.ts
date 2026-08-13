@@ -1,4 +1,4 @@
-import { Kysely, Transaction } from 'kysely';
+import type { Kysely, Transaction } from 'kysely';
 
 interface IKyselyPostgresDB<DB> {
   readonly qb: (trx?: Transaction<DB>) => Kysely<DB>;

@@ -1,6 +1,6 @@
 import { Details } from '../helpers';
 import { authService } from './auth-service';
-import { ExceptionConfig, ExtractCodes, ValidationIssue } from './types';
+import type { ExceptionConfig, ExtractCodes, ValidationIssue } from './types';
 
 const account = {
   // Application

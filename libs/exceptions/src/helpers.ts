@@ -1,4 +1,4 @@
-import { BaseExceptionState } from './exceptions';
+import type { BaseExceptionState } from './exceptions';
 
 const Details = {
   Empty: {} as Record<string, never>,

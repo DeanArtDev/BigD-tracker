@@ -1,5 +1,5 @@
+import { timeAndDate, type TimeAndDateValue } from '@big-d/time';
 import { taskRecurrenceSchema } from '@/entity/planner/tasks';
-import timeAndDate, { TimeAndDateValue } from '@/shared/lib/time';
 import type { TaskUpdateInput } from '@/shared/transport/graphql';
 
 class TaskUtils {

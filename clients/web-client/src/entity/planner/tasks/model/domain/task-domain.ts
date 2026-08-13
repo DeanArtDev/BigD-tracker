@@ -1,5 +1,5 @@
+import { timeAndDate } from '@big-d/time';
 import { Brand } from '@/shared/lib';
-import timeAndDate from '@/shared/lib/time';
 import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { getTasksStatusCount } from './helpers/get-tasks-status-count';
 import { TaskIdParser } from './helpers/taks-id-parser';

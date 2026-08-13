@@ -1,8 +1,8 @@
+import { timeAndDate } from '@big-d/time';
 import { ViewType } from '@dayflow/core';
 import { useEffect, useEffectEvent } from 'react';
 import { useDiaryUrl } from '@/app/(private)/planner/diary/_model';
 import { useIsMounted } from '@/shared/lib/application-status';
-import timeAndDate from '@/shared/lib/time';
 import { useDiaryContext } from '../../context';
 import { diaryViewRangeMap } from '../constants';
 

@@ -1,8 +1,8 @@
 'use client';
 
+import { timeAndDate } from '@big-d/time';
 import { Flag, Repeat, Timer } from 'lucide-react';
 import { CSSProperties, ReactNode, Ref } from 'react';
-import { TimeHelper } from '@/shared/lib/time';
 import { TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { Badge, Card, CardContent, CardTitle, cn, Typography } from '@/shared/ui-kit';
 import { TaskUtils } from '../../lib/utils';
@@ -53,7 +53,7 @@ function TaskCard(props: TaskCardProps) {
     onContentClick,
   } = props;
 
-  const isDeadlineSoon = TimeHelper.isLessThan24HoursLeft(deadline);
+  const isDeadlineSoon = timeAndDate(deadline).isLessThan24HoursLeft();
   const showIndications =
     status == null ? false : TaskDomain.isAllowAccentIndicationTask(status, TaskDomain.parseId(id, false).type);
 

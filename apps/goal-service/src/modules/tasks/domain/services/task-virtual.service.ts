@@ -1,6 +1,7 @@
 import { ExceptionTaskDomainInvalidInvariant } from '@/modules/tasks/domain/exceptions';
 import { TaskFinishStatus, taskStatusToOverrideTypeMap } from '@big-d/api-contracts';
-import { DateVo, timeAndDate } from '@big-d/api-utils';
+import { DateVo } from '@big-d/api-utils';
+import { timeAndDate } from '@big-d/time';
 import { Task, TaskFactory, TaskIdBuilder, TaskOverrideFactory, TaskRecurrence } from '../aggregates/task';
 import { taskServiceAsserts } from './task-service-asserts';
 

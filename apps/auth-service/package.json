@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@big-d/api-contracts": "workspace:*",
+    "@big-d/time": "workspace:*",
     "@big-d/api-utils": "workspace:*",
     "@big-d/database": "workspace:*",
     "@big-d/exceptions": "workspace:*",
@@ -57,8 +58,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "catalog:",
     "@faker-js/faker": "^9.8.0",
+    "@big-d/configs-linter": "workspace:*",
     "@nestjs/cli": "catalog:",
     "@nestjs/schematics": "catalog:",
     "@nestjs/testing": "catalog:",
@@ -74,9 +75,6 @@
     "@types/validator": "catalog:",
     "dotenv": "catalog:",
     "eslint": "catalog:",
-    "eslint-config-prettier": "catalog:",
-    "eslint-plugin-prettier": "catalog:",
-    "globals": "catalog:",
     "jest": "^29.7.0",
     "kysely-codegen": "catalog:",
     "prettier": "catalog:",
@@ -87,12 +85,11 @@
     "ts-node": "catalog:",
     "tsconfig-paths": "^4.2.0",
     "typescript": "catalog:",
-    "typescript-eslint": "catalog:",
     "utility-types": "^3.11.0"
   },
   "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "pnpm": "11.21.0"
   }
 }

@@ -1,8 +1,10 @@
 /**
+ * Shared formatting rules for every package in the monorepo.
+ *
  * @see https://prettier.io/docs/en/configuration.html
- * @type {import("prettier").Config}
+ * @type {import('prettier').Config}
  */
-const baseConfig = {
+const config = {
   singleQuote: true,
   arrowParens: 'always',
   useTabs: false,
@@ -14,4 +16,4 @@ const baseConfig = {
   endOfLine: 'lf',
 };
 
-export default baseConfig;
+export default config;

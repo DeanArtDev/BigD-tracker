@@ -1,6 +1,6 @@
+import { timeAndDate } from '@big-d/time';
 import { z } from 'zod';
 import { Brand } from '@/shared/lib';
-import timeAndDate from '@/shared/lib/time';
 import { RecurrenceFrequency, TaskPriority, TaskRecurrenceWeekday, TaskStatus } from '@/shared/transport/graphql';
 import { transformToPlaceholder, transformDate, schemaPlaceholderValues } from '@/shared/ui-kit/form';
 import { TaskDomain } from '../../../../model';

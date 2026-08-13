@@ -1,1 +1,2 @@
-export { generateRpcExceptionsGuards, RpcExceptionGuardsInput } from './guard-generator';
+export { generateRpcExceptionsGuards } from './guard-generator';
+export type { RpcExceptionGuardsInput } from './guard-generator';

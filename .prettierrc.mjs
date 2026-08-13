@@ -1,3 +1,3 @@
-import config from '@big-d/linter/prettier/base.mjs';
+import config from '@big-d/configs-linter/prettier';
 
 export default config;

@@ -1,6 +1,6 @@
+import { timeAndDate } from '@big-d/time';
 import { ViewType } from '@dayflow/core';
 import { type ReactNode, Suspense } from 'react';
-import timeAndDate from '@/shared/lib/time';
 import { GetDiaryTasksQueryVariables, shapeGetDiaryTasksOptions } from '@/shared/transport/graphql';
 import { PreloadQuery } from '@/shared/transport/graphql/server';
 import { DataLoader } from '@/shared/ui-kit';

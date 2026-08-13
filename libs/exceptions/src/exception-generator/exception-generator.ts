@@ -1,5 +1,6 @@
-import { BaseException, BaseExceptionState } from '../exceptions';
-import { ExceptionClasses } from './types';
+import { BaseException } from '../exceptions';
+import type { BaseExceptionState } from '../exceptions';
+import type { ExceptionClasses } from './types';
 
 function createException<TDefinition extends BaseExceptionState<string, string>>(
   name: string,

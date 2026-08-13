@@ -31,4 +31,5 @@ function generateRpcExceptionsGuards<TInput extends RpcExceptionGuardsInput[] = 
   return buffer;
 }
 
-export { generateRpcExceptionsGuards, RpcExceptionGuardsInput };
+export { generateRpcExceptionsGuards };
+export type { RpcExceptionGuardsInput };

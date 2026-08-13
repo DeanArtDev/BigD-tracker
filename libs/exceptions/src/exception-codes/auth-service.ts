@@ -1,5 +1,5 @@
 import { Details } from '../helpers';
-import { ExceptionConfig } from './types';
+import type { ExceptionConfig } from './types';
 
 const system = {
   // Domain
