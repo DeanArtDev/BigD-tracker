@@ -1,7 +1,7 @@
 include:
   - local: ci/install-environment.yml
 
-image: node:24.13
+image: node:24.18.1
 stages:
   - monorepo
   - docker-build

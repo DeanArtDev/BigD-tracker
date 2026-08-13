@@ -8,4 +8,4 @@ export async function runSeeds() {
   await baseRunSeeds<DB>(seeds, scriptKey);
 }
 
-runSeeds();
+runSeeds().catch(console.error);

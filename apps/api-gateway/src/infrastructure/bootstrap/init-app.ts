@@ -9,15 +9,31 @@ import { GateWayExceptionFilter } from '@shared/filters';
 import { DomainErrorFilter } from '@shared/filters/domain-error.filter';
 import { RequestContextMiddleware } from '@shared/request-context';
 import * as cookieParser from 'cookie-parser';
-import { json, urlencoded } from 'express';
+import { json, urlencoded, type RequestHandler } from 'express';
+import { parse as parseQueryString, type ParsedQs } from 'qs';
+
+const QUERY_PARSER_OPTIONS = {
+  allowPrototypes: false,
+  arrayLimit: 100,
+  depth: 10,
+  parameterLimit: 1_000,
+} as const;
+
+const parseRequestQuery = (value: string): ParsedQs => parseQueryString(value, QUERY_PARSER_OPTIONS);
+const createRequestUrlencodedParser = (): RequestHandler =>
+  urlencoded({
+    extended: true,
+    limit: '10mb',
+    parameterLimit: QUERY_PARSER_OPTIONS.parameterLimit,
+  });
 
 const initApp = async (): Promise<INestApplication> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api');
 
-  app.set('query parser', 'extended');
+  app.set('query parser', parseRequestQuery);
   app.use(json({ limit: '10mb' }));
-  app.use(urlencoded({ extended: true, limit: '10mb' }));
+  app.use(createRequestUrlencodedParser());
 
   app.use(RequestContextMiddleware);
 
@@ -56,4 +72,4 @@ const initApp = async (): Promise<INestApplication> => {
   return app;
 };
 
-export { initApp };
+export { createRequestUrlencodedParser, initApp, parseRequestQuery, QUERY_PARSER_OPTIONS };

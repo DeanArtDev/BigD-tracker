@@ -2,7 +2,7 @@ import { TaskRecurrenceValues } from '@/modules/tasks/application/types';
 import { TaskIdBuilder, TaskOverride, TaskRecurrence } from '@/modules/tasks/domain';
 import { TasksOverridesToken } from '@/modules/tasks/tokens';
 import { numberToWeekdayMap, TaskStatus } from '@big-d/api-contracts';
-import { DateVo, timeAndDate } from '@big-d/api-utils';
+import { DateVo, TimeAndDate, timeAndDate } from '@big-d/api-utils';
 import { Inject, Injectable } from '@nestjs/common';
 import { RRule } from 'rrule';
 import { TasksViewMapper, TaskView } from '../dto';
@@ -173,7 +173,7 @@ class TaskRecurrenceQueryService {
     return { virtualViews, recurrences };
   }
 
-  public createTimePoint(occurrence: string | Date, date?: string) {
+  public createTimePoint(occurrence: string | Date, date?: string): TimeAndDate {
     const sourceStartDate = timeAndDate(date);
 
     return timeAndDate(occurrence)

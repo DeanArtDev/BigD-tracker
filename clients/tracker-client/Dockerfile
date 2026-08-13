@@ -1,14 +1,14 @@
 FROM node:22.15.0-alpine AS base
 ENV NODE_ENV="production"
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
 ARG VITE_API_BASE_URL="/api"
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 RUN corepack enable && \
-    corepack prepare pnpm@10.10.0 --activate && \
-    pnpm install turbo --global
+    corepack prepare pnpm@11.21.0 --activate && \
+    pnpm install turbo@2.10.9 --global
 
 
 FROM base AS builder
