@@ -26,14 +26,18 @@ function FormErrorReactor() {
               duration: 10000,
               position: 'top-center',
               onAutoClose: () => {
-                const exist = toastIds.get(error.message ?? '');
-                dismiss(exist);
+                if (toastIds.has(error.message ?? '')) {
+                  dismiss(currentId);
+                }
                 toastIds.delete(error.message ?? '');
               },
+              closeButton: true,
 
               onDismiss: () => {
-                const exist = toastIds.get(error.message ?? '');
-                dismiss(exist);
+                if (toastIds.has(error.message ?? '')) {
+                  dismiss(currentId);
+                }
+
                 toastIds.delete(error.message ?? '');
               },
             });

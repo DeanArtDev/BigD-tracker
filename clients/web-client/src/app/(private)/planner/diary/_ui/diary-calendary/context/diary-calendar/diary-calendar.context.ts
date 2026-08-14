@@ -1,11 +1,11 @@
 'use client';
 
-import type { UseCalendarAppReturn } from '@dayflow/core';
+import { ICalendarApp } from '@dayflow/core';
 import { createStrictContext, useStrictContext } from '@/shared/lib';
 import type { YearViewMode } from '../../view-model/use-views';
 
 interface DiaryCalendarContext {
-  readonly calendar: UseCalendarAppReturn;
+  readonly app: ICalendarApp;
   readonly setYearViewMode: (mode: YearViewMode) => void;
   readonly yearViewMode: YearViewMode;
 }

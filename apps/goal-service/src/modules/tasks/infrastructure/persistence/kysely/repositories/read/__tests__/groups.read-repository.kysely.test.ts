@@ -56,7 +56,7 @@ describe('GroupsReadRepositoryKysely', () => {
     );
   });
 
-  test('getDiaryGroups returns groups having at least one task with dates and puts inbox first', async () => {
+  test('getDiaryGroups always returns inbox and groups having at least one task with dates', async () => {
     await withRepository<TasksDB, GroupsReadRepositoryKysely>(
       (db) => new GroupsReadRepositoryKysely(db),
       async ({ repository, recorder }) => {
@@ -77,25 +77,28 @@ describe('GroupsReadRepositoryKysely', () => {
             on "groups"."status_id" = "group_statuses"."id"
           where
             "groups"."user_id" = $1
-            and exists (
-              select "tasks"."id"
-              from "tasks"
-              where
-                "tasks"."group_id" = "groups"."id"
-                and "tasks"."user_id" = $2
-                and (
-                  "tasks"."start_date" is not null
-                  or "tasks"."deadline" is not null
-                )
+            and (
+              "groups"."name" = $2
+              or exists (
+                select "tasks"."id"
+                from "tasks"
+                where
+                  "tasks"."group_id" = "groups"."id"
+                  and "tasks"."user_id" = $3
+                  and (
+                    "tasks"."start_date" is not null
+                    or "tasks"."deadline" is not null
+                  )
+              )
             )
           order by
             case
-              when "groups"."name" = $3 then 0
+              when "groups"."name" = $4 then 0
               else 1
             end,
             "groups"."id" desc
         `,
-          parameters: [7, 7, groupsQuerySpec.inboxName],
+          parameters: [7, groupsQuerySpec.inboxName, 7, groupsQuerySpec.inboxName],
         });
       },
     );

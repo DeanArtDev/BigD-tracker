@@ -17,11 +17,6 @@ function usePlugins({ getApp }: UsePluginsParams) {
   return useMemo(
     () => [
       createDragPlugin({
-        onEventDrop: async (updatedEvent, originEvent) => {
-          const app = getApp();
-          if (app == null) return;
-          await persistEventUpdate(updatedEvent, originEvent);
-        },
         onEventResize: async (updatedEvent, originEvent) => {
           const app = getApp();
           if (app == null) return;

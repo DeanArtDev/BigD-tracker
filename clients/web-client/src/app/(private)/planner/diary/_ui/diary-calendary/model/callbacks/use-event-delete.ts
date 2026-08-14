@@ -4,9 +4,7 @@ import { useDiaryContext } from '../../context';
 import { DiaryEventDomain } from '../diary-event-domain';
 
 function useEventDelete() {
-  const {
-    calendar: { app },
-  } = useDiaryContext();
+  const { app } = useDiaryContext();
   const { deleteTask } = useTaskDeleteFeature();
 
   return useCallback(

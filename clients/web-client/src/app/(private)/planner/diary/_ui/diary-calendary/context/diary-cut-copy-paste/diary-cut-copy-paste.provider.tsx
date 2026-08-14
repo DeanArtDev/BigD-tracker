@@ -11,9 +11,7 @@ import { useDiaryContext } from '../diary-calendar';
 type ClipboardAction = 'copy' | 'cut';
 
 function DiaryCutCopyPasteProvider({ children }: PropsWithChildren) {
-  const {
-    calendar: { app },
-  } = useDiaryContext();
+  const { app } = useDiaryContext();
   const { error } = useNotify();
   const [clipboardAction, setClipboardAction] = useState<ClipboardAction>();
   const [clipboardEvent, setClipboardEvent] = useState<Event | null>(null);

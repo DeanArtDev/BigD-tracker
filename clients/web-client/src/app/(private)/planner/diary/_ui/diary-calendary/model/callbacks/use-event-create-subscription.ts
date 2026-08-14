@@ -1,16 +1,16 @@
 import { Event } from '@dayflow/core';
 import { useEffect } from 'react';
+import { TaskUtils } from '@/entity/planner/tasks';
 import { invalidateTaskCreateCache, useTaskCreate } from '@/feature/planner/task-create';
 import { useTaskSettingsUpdate } from '@/feature/planner/task-settings-update';
+import { TaskCacheManager } from '@/shared/transport/graphql';
 import { useDiaryContext } from '../../context';
 import { DiaryEventDomain } from '../diary-event-domain';
 
 function useEventCreateSubscription() {
-  const { calendar } = useDiaryContext();
+  const { app } = useDiaryContext();
   const { client, createTask } = useTaskCreate();
   const { updateTaskSettings } = useTaskSettingsUpdate();
-
-  const app = calendar.app;
 
   useEffect(() => {
     const createEvent = async (event: Event) => {
@@ -32,30 +32,36 @@ function useEventCreateSubscription() {
               startDate: task.startDate,
               priority: task.priority,
               groupId: task.groupId,
+              recurrence: TaskUtils.getSafetyRecurrenceInput(task.recurrence),
             },
           },
         });
 
         const createdTask = createdTaskData?.data?.createTask;
         if (createdTask != null) {
-          app.applyEventsChanges(
-            {
-              delete: [event.id],
-              add: [
-                {
-                  ...event,
-                  id: DiaryEventDomain.createEventId(createdTask.id),
-                  meta: {
-                    ...diaryEvent.meta,
-                    id: createdTask.id,
-                    loading: false,
+          if (task.recurrence != null) {
+            await TaskCacheManager.refetchGetDiaryTasks(client);
+            app.applyEventsChanges({ delete: [event.id] }, false, 'remote');
+          } else {
+            app.applyEventsChanges(
+              {
+                delete: [event.id],
+                add: [
+                  {
+                    ...event,
+                    id: DiaryEventDomain.createEventId(createdTask.id),
+                    meta: {
+                      ...diaryEvent.meta,
+                      id: createdTask.id,
+                      loading: false,
+                    },
                   },
-                },
-              ],
-            },
-            false,
-            'remote',
-          );
+                ],
+              },
+              false,
+              'remote',
+            );
+          }
 
           await invalidateTaskCreateCache(client);
 

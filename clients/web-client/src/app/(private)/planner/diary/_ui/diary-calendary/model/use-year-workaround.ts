@@ -1,14 +1,13 @@
-import type { Event, UseCalendarAppReturn } from '@dayflow/core';
+import type { Event, ICalendarApp } from '@dayflow/core';
 import { type RefObject, useEffect, useRef } from 'react';
 
 interface UseYearWorkaroundParams {
-  readonly calendar: UseCalendarAppReturn;
+  readonly app: ICalendarApp;
   readonly containerRef: RefObject<HTMLElement | null>;
 }
 
-function useYearWorkaround({ calendar, containerRef }: UseYearWorkaroundParams) {
+function useYearWorkaround({ app, containerRef }: UseYearWorkaroundParams) {
   const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const app = calendar.app;
 
   useEffect(() => {
     const container = containerRef.current;

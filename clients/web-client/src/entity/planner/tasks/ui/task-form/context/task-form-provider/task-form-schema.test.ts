@@ -12,7 +12,7 @@ const baseFormData = {
 };
 
 describe('taskFormSchema', () => {
-  it('does not transform stale recurrence fields when recurrence is disabled', () => {
+  it('does not validate or transform recurrence fields when recurrence is disabled', () => {
     const untilDate = new Date(2026, 9, 19, 23, 59);
 
     const result = taskFormSchema<GroupBrand>().parse({
@@ -21,7 +21,7 @@ describe('taskFormSchema', () => {
       isEndless: false,
       untilDate,
       frequency: RecurrenceFrequency.Weekly,
-      weekdays: [TaskRecurrenceWeekday.Mo],
+      weekdays: [],
       monthdays: null,
     });
 
@@ -30,7 +30,71 @@ describe('taskFormSchema', () => {
       isEndless: false,
       untilDate,
       frequency: RecurrenceFrequency.Weekly,
+      weekdays: [],
     });
+  });
+
+  it.each([false, true])('always validates base fields when isRecurrence is %s', (isRecurrence) => {
+    const recurrenceValues = isRecurrence
+      ? {
+          isRecurrence: true,
+          isEndless: true,
+          untilDate: null,
+          frequency: RecurrenceFrequency.Daily,
+          weekdays: null,
+          monthdays: null,
+        }
+      : {
+          isRecurrence: false,
+          isEndless: true,
+          untilDate: null,
+          frequency: null,
+          weekdays: null,
+          monthdays: null,
+        };
+
+    const result = taskFormSchema<GroupBrand>().safeParse({ ...baseFormData, ...recurrenceValues, name: 'a' });
+
+    expect(result.success).toBe(false);
+  });
+
+  it.each([false, true])('always validates base date order when isRecurrence is %s', (isRecurrence) => {
+    const recurrenceValues = isRecurrence
+      ? {
+          isRecurrence: true,
+          isEndless: true,
+          untilDate: null,
+          frequency: RecurrenceFrequency.Daily,
+          weekdays: null,
+          monthdays: null,
+        }
+      : {
+          isRecurrence: false,
+          isEndless: true,
+          untilDate: null,
+          frequency: null,
+          weekdays: null,
+          monthdays: null,
+        };
+
+    const result = taskFormSchema<GroupBrand>().safeParse({
+      ...baseFormData,
+      ...recurrenceValues,
+      startDate: new Date(2026, 7, 10, 12, 0),
+      deadline: new Date(2026, 7, 10, 7, 30),
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(
+        expect.objectContaining({
+          path: ['deadline'],
+          code: 'custom',
+          message: 'Дедлайн не может быть позже или равен началу',
+        }),
+      );
+    }
   });
 
   it('transforms untilDate to the end of day for a finite recurrence', () => {
@@ -75,5 +139,47 @@ describe('taskFormSchema', () => {
         }),
       );
     }
+  });
+
+  it('requires weekdays for a weekly recurrence', () => {
+    const result = taskFormSchema<GroupBrand>().safeParse({
+      ...baseFormData,
+      isRecurrence: true,
+      isEndless: true,
+      untilDate: null,
+      frequency: RecurrenceFrequency.Weekly,
+      weekdays: [],
+      monthdays: null,
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('does not require untilDate for an endless recurrence', () => {
+    const result = taskFormSchema<GroupBrand>().safeParse({
+      ...baseFormData,
+      isRecurrence: true,
+      isEndless: true,
+      untilDate: null,
+      frequency: RecurrenceFrequency.Daily,
+      weekdays: null,
+      monthdays: null,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('requires untilDate for a finite recurrence', () => {
+    const result = taskFormSchema<GroupBrand>().safeParse({
+      ...baseFormData,
+      isRecurrence: true,
+      isEndless: false,
+      untilDate: null,
+      frequency: RecurrenceFrequency.Daily,
+      weekdays: null,
+      monthdays: null,
+    });
+
+    expect(result.success).toBe(false);
   });
 });

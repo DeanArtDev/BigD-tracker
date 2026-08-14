@@ -37,16 +37,19 @@ export class GroupsReadRepositoryKysely extends BaseTasksRepository implements G
       const groups = await groupWithStatusQuery(this.db, trx)
         .where('groups.user_id', '=', input.userId)
         .where((eb) =>
-          eb.exists(
-            eb
-              .selectFrom('tasks')
-              .select('tasks.id')
-              .whereRef('tasks.group_id', '=', 'groups.id')
-              .where('tasks.user_id', '=', input.userId)
-              .where((taskEb) =>
-                taskEb.or([taskEb('tasks.start_date', 'is not', null), taskEb('tasks.deadline', 'is not', null)]),
-              ),
-          ),
+          eb.or([
+            eb('groups.name', '=', groupsQuerySpec.inboxName),
+            eb.exists(
+              eb
+                .selectFrom('tasks')
+                .select('tasks.id')
+                .whereRef('tasks.group_id', '=', 'groups.id')
+                .where('tasks.user_id', '=', input.userId)
+                .where((taskEb) =>
+                  taskEb.or([taskEb('tasks.start_date', 'is not', null), taskEb('tasks.deadline', 'is not', null)]),
+                ),
+            ),
+          ]),
         )
         .orderBy((eb) => eb.case().when('groups.name', '=', groupsQuerySpec.inboxName).then(0).else(1).end())
         .orderBy('groups.id', 'desc')

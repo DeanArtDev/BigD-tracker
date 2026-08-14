@@ -30,10 +30,9 @@ function isDeleteAllowed(event: Event) {
 }
 
 function DiaryEventContextMenu({ containerRef }: DiaryEventContextMenuProps) {
-  const { calendar } = useDiaryContext();
+  const { app } = useDiaryContext();
   const { assignToGroup } = useTaskAssignToGroupFeature();
   const { copyEvent, cutEvent } = useDiaryCutCopyPasteContext();
-  const app = calendar.app;
 
   const triggerRef = useRef<HTMLSpanElement>(null);
   const [event, setEvent] = useState<Event | null>(null);

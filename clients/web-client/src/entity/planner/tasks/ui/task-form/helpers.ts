@@ -87,15 +87,7 @@ function getRecurrenceFromTaskFormData<TGroupId extends GroupBrand>(
 ): TaskCreateInput['recurrence'] | null {
   if (!formData.isRecurrence) return null;
 
-  if (typeof formData.startDate !== 'string' || typeof formData.deadline !== 'string') {
-    throw new Error('Recurring task must have startDate and deadline');
-  }
-
   const untilDate = formData.isEndless ? undefined : formData.untilDate;
-
-  if (!formData.isEndless && untilDate == null) {
-    throw new Error('Finite recurrence must have untilDate');
-  }
 
   const recurrenceBase: Pick<NonNullable<TaskCreateInput['recurrence']>, 'startDate' | 'untilDate'> = {
     startDate: formData.startDate,

@@ -7,9 +7,7 @@ import { useDiaryContext } from '../../context';
 import { DiaryCalendarDomain } from '../diary-calendar-domain';
 
 function useCalendarUpdate(): CalendarCallbacks['onCalendarUpdate'] {
-  const {
-    calendar: { app },
-  } = useDiaryContext();
+  const { app } = useDiaryContext();
   const { updateGroupSettings } = useGroupSettingsUpdate();
   const { groups } = useGetDiaryGroupList<GroupId>();
 

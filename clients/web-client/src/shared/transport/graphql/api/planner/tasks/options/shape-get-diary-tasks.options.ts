@@ -10,6 +10,8 @@ type DiaryTask<BrandGroup extends Brand<number, string>, BrandTask extends Brand
   DeepReadonly<DiaryTaskDto>,
   {
     readonly id: BrandTask;
+    readonly startDate: string;
+    readonly deadline: string;
     readonly groupId?: BrandGroup;
   }
 >;
