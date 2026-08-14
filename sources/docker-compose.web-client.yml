@@ -1,0 +1,17 @@
+services:
+  web-client:
+    image: ${CI_REGISTRY_IMAGE}:web-client-sha-${CI_COMMIT_SHORT_SHA}
+    env_file:
+      - .env
+    environment:
+      APP_VERSION: sha-${CI_COMMIT_SHORT_SHA}
+    networks:
+      - tracker_net
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+
+networks:
+  tracker_net:
+    external: true
+    name: tracker_net

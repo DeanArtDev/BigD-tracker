@@ -14,7 +14,9 @@ services:
     ports:
       - '8080:8080'
     networks:
-      - tracker_net
+      tracker_net:
+        aliases:
+          - api_gateway
 
 networks:
   tracker_net:

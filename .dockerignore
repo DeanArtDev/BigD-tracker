@@ -2,6 +2,11 @@
 .idea
 .turbo
 node_modules
+**/node_modules
+**/.next
+**/.turbo
+**/coverage
+**/.env*
 .DS_Store
 .gitattributes
 .gitignore
@@ -9,3 +14,4 @@ node_modules
 docker-compose.yml
 *.md
 dist
+**/dist

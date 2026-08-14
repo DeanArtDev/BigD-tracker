@@ -26,11 +26,14 @@ stages:
   tags: [registry, dind]
   before_script:
     - *ssh-prepare
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p ${REMOTE_DIR}"
 
   script:
-    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/docker-compose.yml"
-    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "touch ${REMOTE_DIR}/docker-compose.yml"
-    - scp docker-compose.yml "${DEPLOY_USER}@${DEPLOY_HOST}:${REMOTE_DIR}/docker-compose.yml"
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/${CLIENT_NAME}/docker-compose.yml"
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "rm -f ${REMOTE_DIR}/${CLIENT_NAME}/.env"
+    - ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "touch ${REMOTE_DIR}/${CLIENT_NAME}/docker-compose.yml"
+    - scp docker-compose.yml "${DEPLOY_USER}@${DEPLOY_HOST}:${REMOTE_DIR}/${CLIENT_NAME}/docker-compose.yml"
+    - scp "$ENV" "${DEPLOY_USER}@${DEPLOY_HOST}:${REMOTE_DIR}/${CLIENT_NAME}/.env"
     - |
       ssh "${DEPLOY_USER}@${DEPLOY_HOST}" "
         set -euo pipefail
@@ -41,7 +44,7 @@ stages:
         docker system prune -a -f
       "
 
-.client-build-template:
+.web-client-build-template:
   image: docker:27.4.1-cli
   needs:
     - job: lint
@@ -66,16 +69,31 @@ stages:
 
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-    - IMAGE_REF="${CI_REGISTRY_IMAGE}:${CLIENT_NAME}-sha-${CI_COMMIT_SHORT_SHA}"
+
     - |
+      set -a
+      . "$ENV"
+      set +a
+
+      : "${PORT:?PORT is required}"
+      : "${NEXT_PUBLIC_HTTP_API_URL:?NEXT_PUBLIC_HTTP_API_URL is required}"
+      : "${NEXT_PUBLIC_WS_API_URL:?NEXT_PUBLIC_WS_API_URL is required}"
+      : "${BACK_TO_BACK_URL:?BACK_TO_BACK_URL is required}"
+
+      CLIENT_NAME="web-client"
+      IMAGE_REF="${CI_REGISTRY_IMAGE}:${CLIENT_NAME}-sha-${CI_COMMIT_SHORT_SHA}"
+
       docker build \
-        -f ./clients/tracker-client/Dockerfile \
-        --build-arg VITE_API_BASE_URL="$BASE_URL" \
+        -f "./clients/${CLIENT_NAME}/Dockerfile" \
+        --build-arg PORT="$PORT" \
+        --build-arg NEXT_PUBLIC_HTTP_API_URL="$NEXT_PUBLIC_HTTP_API_URL" \
+        --build-arg NEXT_PUBLIC_WS_API_URL="$NEXT_PUBLIC_WS_API_URL" \
+        --build-arg BACK_TO_BACK_URL="$BACK_TO_BACK_URL" \
         --build-arg HUSKY="0" \
         -t "$IMAGE_REF" \
         .
 
-    - docker push "$IMAGE_REF"
+      docker push "$IMAGE_REF"
 
 .app-build-template:
   image: docker:27.4.1-cli
@@ -101,6 +119,7 @@ stages:
     - |
       docker build \
         -f ./apps/${APP_NAME}/Dockerfile \
+        --build-arg HUSKY="0" \
         -t "$IMAGE_REF" \
         .
 
@@ -152,13 +171,12 @@ test:
 
 # ======================== BUILD ===============================
 
-#tracker-client:build:
-#  stage: docker-build
-#  when: manual
-#  extends: .client-build-template
-#  variables:
-#    BASE_URL: '$TRACKER_CLIENT_API_URL'
-#    CLIENT_NAME: 'tracker-client'
+web-client:build:dev:
+  stage: docker-build
+  when: manual
+  extends: .web-client-build-template
+  variables:
+    ENV: '$WEB_CLIENT_DEV_ENV'
 
 api-gateway:build:
   stage: docker-build
@@ -190,23 +208,21 @@ training-service:build:
 
 # ======================== DEPLOY DEV ===============================
 
-#tracker-client:deploy:dev:
-#  stage: deploy-dev-stage
-#  when: manual
-#  dependencies:
-#    - tracker-client:build
-#  needs:
-#    - job: tracker-client:build
-#      optional: false
-#  extends: .client-deploy-template
-#  before_script:
-#    - !reference [.client-deploy-template, before_script]
-#    - envsubst < sources/docker-compose.clients-temp.yml > docker-compose.yml
-#
-#  variables:
-#    DEPLOY_HOST: '$DEV_STAGE_HOST'
-#    DEPLOY_USER: '$DEV_STAGE_DEPLOY_USER'
-#    REMOTE_DIR: '$DEV_STAGE_REMOTE_CLIENT_DIR'
+web-client:deploy:dev:
+  stage: deploy-dev-stage
+  when: manual
+  needs:
+    - job: web-client:build:dev
+      optional: false
+  extends: .client-deploy-template
+  before_script:
+    - !reference [.client-deploy-template, before_script]
+    - envsubst '${CI_REGISTRY_IMAGE} ${CI_COMMIT_SHORT_SHA}' < sources/docker-compose.web-client.yml > docker-compose.yml
+  variables:
+    ENV: '$WEB_CLIENT_DEV_ENV'
+    DEPLOY_HOST: '$DEV_STAGE_HOST'
+    DEPLOY_USER: '$DEV_STAGE_DEPLOY_USER'
+    REMOTE_DIR: '$DEV_STAGE_REMOTE_CLIENT_DIR/web-client'
 
 api-gateway:deploy:dev:
   stage: deploy-dev-stage
@@ -285,20 +301,18 @@ training-service:deploy:dev:
     REMOTE_DIR: '$DEV_STAGE_REMOTE_APP_DIR/training-service'
 
 # ======================== DEPLOY PROD ===============================
-#tracker-client:deploy:prod:
+#web-client:deploy:prod:
 #  stage: deploy-production
 #  when: manual
-#  dependencies:
-#    - tracker-client:build
 #  needs:
-#    - job: tracker-client:build
+#    - job: web-client:build:prod
 #      optional: false
 #  extends: .client-deploy-template
 #  before_script:
 #    - !reference [.client-deploy-template, before_script]
-#    - envsubst < sources/docker-compose.clients-temp.yml > docker-compose.yml
-#
+#    - envsubst '${CI_REGISTRY_IMAGE} ${CI_COMMIT_SHORT_SHA} ${WEB_CLIENT_IMAGE_TAG}' < sources/docker-compose.web-client.yml > docker-compose.yml
 #  variables:
+#    WEB_CLIENT_IMAGE_TAG: 'web-client-production'
 #    DEPLOY_HOST: '$PRODUCTION_HOST'
 #    DEPLOY_USER: '$PROD_DEPLOY_USER'
 #    REMOTE_DIR: '$PROD_REMOTE_CLIENT_DIR'

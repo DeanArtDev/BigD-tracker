@@ -1,19 +1,35 @@
 import path from 'node:path';
 import type { NextConfig } from 'next';
-import { getEnvConfigClient } from './src/shared/lib/env-config.client';
+import { getEnvConfigServer } from '@/shared/lib/env-config.server';
 
-const clientConfig = getEnvConfigClient();
+const serverConfig = getEnvConfigServer();
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  outputFileTracingRoot: path.join(__dirname, '../..'),
+
   turbopack: {
     root: path.join(__dirname, '../..'),
+  },
+
+  headers: async () => {
+    return [
+      {
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self'" },
+        ],
+      },
+    ];
   },
 
   rewrites: async () => {
     return [
       {
         source: '/api/graphql',
-        destination: `${clientConfig.NEXT_PUBLIC_HTTP_API_URL}`,
+        destination: `${serverConfig.BACK_TO_BACK_URL}`,
       },
     ];
   },

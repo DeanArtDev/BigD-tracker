@@ -15,7 +15,8 @@
 
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": ["BACK_TO_BACK_URL", "PORT", "NEXT_PUBLIC_HTTP_API_URL", "NEXT_PUBLIC_WS_API_URL"]
     },
 
     "prod": {
