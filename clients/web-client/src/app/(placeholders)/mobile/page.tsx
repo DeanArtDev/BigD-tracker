@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { BigDLogo } from '@/shared/project-ui';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/shared/ui-kit';
 
 export default function MobilePlaceholderPage() {
@@ -6,7 +6,7 @@ export default function MobilePlaceholderPage() {
     <div className="flex items-center justify-center min-h-screen">
       <Card className="grow max-w-[326px]">
         <CardHeader className="flex flex-col items-center">
-          <Image src="/big-d-logo.png" width={60} height={28} alt="Logo" loading="eager" />
+          <BigDLogo aria-label="Logo" className="h-7 w-auto text-black" role="img" />
 
           <CardTitle>Мобильная версия в разработке</CardTitle>
 

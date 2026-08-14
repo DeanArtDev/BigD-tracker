@@ -1,6 +1,5 @@
-import Image from 'next/image';
 import { PropsWithChildren, ReactNode } from 'react';
-import { AppLink } from '@/shared/project-ui';
+import { AppLink, BigDLogo } from '@/shared/project-ui';
 import { routes } from '@/shared/routes';
 import { cn } from '@/shared/ui-kit/lib/utils';
 
@@ -18,7 +17,7 @@ function Header({ className, content }: PropsWithChildren<HeaderProps>) {
       )}
     >
       <AppLink href={routes.home.path}>
-        <Image src="/big-d-logo.png" width={60} height={28} alt="Logo" loading="eager" />
+        <BigDLogo aria-label="Logo" className="h-7 w-auto text-black" role="img" />
       </AppLink>
 
       {content}

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import { AppLink } from '@/shared/project-ui';
+import { AppLink, BigDLogo } from '@/shared/project-ui';
 import { Button, cn, Typography } from '@/shared/ui-kit';
 
 export const metadata: Metadata = {
@@ -13,7 +12,7 @@ export default function NotFound() {
     <main className={cn('grid min-h-dvh place-items-center px-6 py-12')}>
       <section className="flex w-full max-w-[560px] flex-col items-center gap-6 text-center">
         <AppLink href="/" aria-label="На главную">
-          <Image className="rounded-lg" src="/big-d-logo.png" width={60} height={28} alt="" loading="eager" priority />
+          <BigDLogo aria-hidden className="h-7 w-auto text-black" />
         </AppLink>
 
         <p

@@ -1,12 +1,12 @@
 import { jwtDecode } from 'jwt-decode';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseSetCookie } from 'set-cookie-parser';
-import { getEnvConfigClient } from '@/shared/lib';
+import { getEnvConfigServer } from '@/shared/lib/env-config.server';
 import { apiRoutes, routes } from '@/shared/routes';
 import { fetchRefreshToken } from '@/shared/transport/graphql';
 import { ProxyFactory } from './helpers';
 
-const clientConfig = getEnvConfigClient();
+const serverConfig = getEnvConfigServer();
 
 function fetchRefresh({
   req,
@@ -23,7 +23,7 @@ function fetchRefresh({
   if (userAgent != null && userAgent.length > 0) {
     headers['user-agent'] = userAgent;
   }
-  return fetchRefreshToken({ uri: clientConfig.NEXT_PUBLIC_HTTP_API_URL, headers });
+  return fetchRefreshToken({ uri: serverConfig.BACK_TO_BACK_URL, headers });
 }
 
 const refreshTokenProxy: ProxyFactory = (next) => async (req, event, res) => {
