@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client/react';
+import { useMemo } from 'react';
 import { Brand } from '@/shared/lib';
 import { useExceptionNotificator } from '@/shared/lib/exception-notificator';
 import { useExtendApolloErrorResult } from '../../../../utils';
@@ -17,7 +18,11 @@ function useGetDiaryTasks<BrandTask extends Brand<string, string>, BrandGroup ex
 
   return {
     ...result,
-    tasks: result?.data?.getDiaryTasks ?? EMPTY,
+    tasks: useMemo(() => {
+      return (result?.data?.getDiaryTasks ?? EMPTY).filter((task) => {
+        return task.startDate != null && task.deadline != null;
+      });
+    }, [result?.data?.getDiaryTasks]),
     isError,
   };
 }

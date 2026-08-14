@@ -9,7 +9,7 @@ import { UntilBlock } from './until-block';
 import { GroupBrand } from '../context/task-form-provider';
 
 function TaskFromRecurrence<TGroupId extends GroupBrand>() {
-  const { control, resetField, setValue } = useFormContext<TaskFormData<TGroupId>>();
+  const { control, resetField, clearErrors, setValue } = useFormContext<TaskFormData<TGroupId>>();
   const [isRecurrence, frequency] = useWatch({ control, name: ['isRecurrence', 'frequency'] });
   const isWeekly = frequency === RecurrenceFrequency.Weekly;
 
@@ -20,6 +20,7 @@ function TaskFromRecurrence<TGroupId extends GroupBrand>() {
         <SwitchForm
           name="isRecurrence"
           onCheckedChange={() => {
+            clearErrors(['untilDate', 'weekdays']);
             setValue('frequency', RecurrenceFrequency.Daily, { shouldDirty: false, shouldValidate: false });
             resetField('frequency', { defaultValue: RecurrenceFrequency.Daily });
           }}

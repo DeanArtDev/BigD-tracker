@@ -15,8 +15,7 @@ interface ColorPickerState {
 }
 
 function DiarySidebarContextMenu({ children }: PropsWithChildren) {
-  const { calendar } = useDiaryContext();
-  const app = calendar.app;
+  const { app } = useDiaryContext();
 
   const [contextMenuGroupId, setContextMenuGroupId] = useState<string | null>(null);
   const [contextMenuItemRect, setContextMenuItemRect] = useState<DOMRect | null>(null);

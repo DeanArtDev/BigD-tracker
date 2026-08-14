@@ -13,12 +13,10 @@ function withDiaryEvent<TArgs extends unknown[], TResult>(
 }
 
 function useCallbacks() {
-  const { calendar } = useDiaryContext();
+  const { app } = useDiaryContext();
   const { openDiaryDialog } = useDiaryDialogContext();
   const updateCalendar = useCalendarUpdate();
   const deleteEvent = useEventDelete();
-
-  const app = calendar?.app;
 
   const callbacks = useMemo<CalendarCallbacks>(
     () => ({

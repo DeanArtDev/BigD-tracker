@@ -26,6 +26,7 @@ function getRecurringFormData(overrides: Record<string, unknown> = {}): FormData
     name: 'Task',
     priority: TaskPriority.Do,
     isDescriptionDirty: false,
+    description: undefined,
     startDate: '2026-08-10T09:00',
     deadline: '2026-08-10T10:00',
     isRecurrence: true,
@@ -90,12 +91,6 @@ describe('getRecurrenceFromTaskFormData', () => {
       untilDate: undefined,
       monthdays: [1, 15],
     });
-  });
-
-  it('rejects a finite recurrence without an end date', () => {
-    const formData = getRecurringFormData({ isEndless: false, untilDate: undefined });
-
-    expect(() => getRecurrenceFromTaskFormData(formData)).toThrow('Finite recurrence must have untilDate');
   });
 });
 

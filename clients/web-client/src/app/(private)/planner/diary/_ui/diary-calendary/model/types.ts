@@ -10,6 +10,7 @@ interface DiaryDialogDefaultValues {
   readonly groupId?: GroupId;
   readonly name?: string;
   readonly priority?: TaskPriority;
+  readonly recurrence?: Task<GroupId>['recurrence'];
   readonly startDate?: Date;
   readonly status?: TaskStatus;
 }

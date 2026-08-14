@@ -1,5 +1,5 @@
 import { timeAndDate } from '@big-d/time';
-import { UseCalendarAppReturn, ViewType } from '@dayflow/core';
+import { ICalendarApp, ViewType } from '@dayflow/core';
 import { useCalendarApp } from '@dayflow/react';
 import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 import { useDiaryUrl } from '@/app/(private)/planner/diary/_model';
@@ -8,10 +8,10 @@ import { EMPTY_GROUP_ID, emptyGroup, usePlugins } from '../../model';
 import { useViews, type YearViewMode } from '../../view-model/use-views';
 
 function DiaryCalendarProvider({ children }: PropsWithChildren) {
-  const calendarRef = useRef<UseCalendarAppReturn | null>(null);
+  const appRef = useRef<ICalendarApp>(undefined);
   const [yearViewMode, setYearViewMode] = useState<YearViewMode>('fixed-week');
 
-  const getApp = useCallback(() => calendarRef.current?.app, []);
+  const getApp = useCallback(() => appRef.current, []);
   const plugins = usePlugins({ getApp });
   const views = useViews({ yearViewMode });
 
@@ -30,11 +30,11 @@ function DiaryCalendarProvider({ children }: PropsWithChildren) {
     timeFormat: '24h',
     initialDate: timeAndDate(diarySearch?.from).toDate(),
   });
-  calendarRef.current = calendar;
+  appRef.current = calendar.app;
 
   return (
     <diaryCalendarContext.Provider
-      value={useMemo(() => ({ calendar, setYearViewMode, yearViewMode }), [calendar, yearViewMode])}
+      value={useMemo(() => ({ app: calendar.app, setYearViewMode, yearViewMode }), [calendar.app, yearViewMode])}
     >
       {children}
     </diaryCalendarContext.Provider>

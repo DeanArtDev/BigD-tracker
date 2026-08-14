@@ -16,15 +16,14 @@ function hasDates(task: DiaryTask<GroupId, TaskId>): task is DiaryTaskWithDates 
 }
 
 function useGetTaskToDiaryEventsSync() {
-  const { calendar } = useDiaryContext();
-  const app = calendar.app;
+  const { app } = useDiaryContext();
 
   const { tasks } = useGetDiaryTasksByUrl();
 
   useEffect(() => {
     app.applyEventsChanges(
       {
-        add: tasks.filter(hasDates).map(DiaryEventDomain.mapTaskToEvent) ?? [],
+        add: tasks.filter(hasDates).map((t) => DiaryEventDomain.mapTaskToEvent(t)) ?? [],
       },
       false,
       'remote',

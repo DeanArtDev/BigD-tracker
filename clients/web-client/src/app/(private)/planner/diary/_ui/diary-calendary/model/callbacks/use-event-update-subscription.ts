@@ -6,8 +6,7 @@ import { useDiaryContext } from '../../context';
 const UPDATE_DEBOUNCE_MS = 500;
 
 function useEventUpdateSubscription() {
-  const { calendar } = useDiaryContext();
-  const app = calendar.app;
+  const { app } = useDiaryContext();
   const getApp = useCallback(() => app, [app]);
   const { persistEventUpdate } = useEventUpdate({ getApp });
 
@@ -19,17 +18,15 @@ function useEventUpdateSubscription() {
         if (change.type !== 'update' || change.source === 'remote') return;
 
         /*TODO:
-         *
-         * - drag вызывается в плагине
-         * - resize вызывается в плагине
-         *
+         * - resize сохраняется в плагине, так как событие type === resize
+         *   даты эветнов приходят одинаковые как в after так и в before
          * */
-        if (change.source === 'resize' || change.source === 'drag') {
+        if (change.source === 'resize') {
           debouncedUpdateEvent.cancel();
           return;
         }
 
-        debouncedUpdateEvent(change.after, change.before);
+        debouncedUpdateEvent(change.after, change.before, { loading: change.source !== 'drag' });
       });
     });
 

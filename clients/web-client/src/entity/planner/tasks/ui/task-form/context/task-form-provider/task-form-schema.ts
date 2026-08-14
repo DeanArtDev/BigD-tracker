@@ -50,50 +50,68 @@ const taskFormSchema = <TGroupId extends Brand<number, string>>() => {
       }
     });
 
-  const recurrenceBaseSchema = z.object({
+  const recurrenceBaseSchema = baseSchema.safeExtend({
     isRecurrence: z.literal(true),
     startDate: z.date({ error: 'Дата начала обязательное поле' }).transform(TaskDomain.dateToTaskStandard),
     deadline: z.date({ error: 'Дедлайн обязательное поле' }).transform(TaskDomain.dateToTaskStandard),
   });
 
-  const recurrenceFrequencySchema = z.discriminatedUnion('frequency', [
-    recurrenceBaseSchema.extend({
-      frequency: z.literal(RecurrenceFrequency.Weekly),
-      weekdays: z.array(z.enum(TaskRecurrenceWeekday)).min(1, { error: 'Минимум один день недели' }).max(7),
-      monthdays: z.unknown(),
-    }),
+  const weeklyRecurrenceSchema = recurrenceBaseSchema.safeExtend({
+    frequency: z.literal(RecurrenceFrequency.Weekly),
+    weekdays: z
+      .array(z.enum(TaskRecurrenceWeekday), { error: 'Минимум один день недели' })
+      .min(1, { error: 'Минимум один день недели' })
+      .max(7),
+    monthdays: z.unknown(),
+  });
 
-    recurrenceBaseSchema.extend({
-      frequency: z.literal(RecurrenceFrequency.Monthly),
-      monthdays: z.array(z.number().int().min(1).max(31)).min(1),
-      weekdays: z.unknown(),
-    }),
+  const monthlyRecurrenceSchema = recurrenceBaseSchema.safeExtend({
+    frequency: z.literal(RecurrenceFrequency.Monthly),
+    monthdays: z.array(z.number().int().min(1).max(31)).min(1),
+    weekdays: z.unknown(),
+  });
 
-    recurrenceBaseSchema.extend({
-      frequency: z.literal(RecurrenceFrequency.Daily),
-      weekdays: z.unknown(),
-      monthdays: z.unknown(),
-    }),
+  const dailyRecurrenceSchema = recurrenceBaseSchema.safeExtend({
+    frequency: z.literal(RecurrenceFrequency.Daily),
+    weekdays: z.unknown(),
+    monthdays: z.unknown(),
+  });
+
+  const finiteRecurrenceShape = {
+    isEndless: z.literal(false),
+    untilDate: z
+      .date({ error: 'Дата окончания повторения обязательное поле' })
+      .transform((date) => timeAndDate(date).endOf('day').toDate())
+      .transform(TaskDomain.dateToTaskStandard),
+  };
+
+  const endlessRecurrenceShape = {
+    isEndless: z.literal(true),
+    untilDate: z.unknown(),
+  };
+
+  const weeklyRecurrenceByEndSchema = z.discriminatedUnion('isEndless', [
+    weeklyRecurrenceSchema.safeExtend(finiteRecurrenceShape),
+    weeklyRecurrenceSchema.safeExtend(endlessRecurrenceShape),
   ]);
 
-  const endlessBaseSchema = z.discriminatedUnion('isEndless', [
-    z.object({
-      isEndless: z.literal(false),
-      untilDate: z
-        .date({ error: 'Дата окончания повторения обязательное поле' })
-        .transform((date) => timeAndDate(date).endOf('day').toDate())
-        .transform(TaskDomain.dateToTaskStandard),
-    }),
-
-    z.object({
-      isEndless: z.literal(true),
-      untilDate: z.unknown(),
-    }),
+  const monthlyRecurrenceByEndSchema = z.discriminatedUnion('isEndless', [
+    monthlyRecurrenceSchema.safeExtend(finiteRecurrenceShape),
+    monthlyRecurrenceSchema.safeExtend(endlessRecurrenceShape),
   ]);
 
-  const recurrenceEnabledSchema = recurrenceFrequencySchema.and(endlessBaseSchema);
+  const dailyRecurrenceByEndSchema = z.discriminatedUnion('isEndless', [
+    dailyRecurrenceSchema.safeExtend(finiteRecurrenceShape),
+    dailyRecurrenceSchema.safeExtend(endlessRecurrenceShape),
+  ]);
 
-  const recurrenceDisabledSchema = z.object({
+  const recurrenceEnabledSchema = z.discriminatedUnion('frequency', [
+    weeklyRecurrenceByEndSchema,
+    monthlyRecurrenceByEndSchema,
+    dailyRecurrenceByEndSchema,
+  ]);
+
+  const recurrenceDisabledSchema = baseSchema.safeExtend({
     isRecurrence: z.literal(false),
     isEndless: z.boolean().optional(),
     untilDate: z.unknown(),
@@ -102,9 +120,9 @@ const taskFormSchema = <TGroupId extends Brand<number, string>>() => {
     monthdays: z.unknown(),
   });
 
-  const recurrenceSchema = z.union([recurrenceEnabledSchema, recurrenceDisabledSchema]);
+  const recurrenceSchema = z.discriminatedUnion('isRecurrence', [recurrenceEnabledSchema, recurrenceDisabledSchema]);
 
-  return baseSchema.and(recurrenceSchema).check((ctx) => {
+  return recurrenceSchema.check((ctx) => {
     if (!ctx.value.isRecurrence || ctx.value.isEndless) return;
 
     const { startDate, untilDate } = ctx.value;

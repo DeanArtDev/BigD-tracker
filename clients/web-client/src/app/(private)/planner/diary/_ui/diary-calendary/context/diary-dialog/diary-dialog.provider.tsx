@@ -1,16 +1,11 @@
 'use client';
 
-import { useApolloClient } from '@apollo/client/react';
 import { timeAndDate } from '@big-d/time';
-import { ICalendarApp } from '@dayflow/core';
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { GroupId } from '@/entity/planner/groups';
-import { getRecurrenceFromTaskFormData, TaskSubmitFormData } from '@/entity/planner/tasks';
-import { MaybePromise } from '@/shared/lib';
+import { getRecurrenceFromTaskFormData, TaskSubmitFormData, TaskUtils } from '@/entity/planner/tasks';
 import { useNotify } from '@/shared/project-ui';
-import { TaskCacheManager } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from '../../model';
-import { useEventUpdate } from '../../model/callbacks';
 import { DiaryEventDomain } from '../../model/diary-event-domain';
 import { DiaryEvent, EventTask } from '../../model/types';
 import { DiaryEventDialog } from '../../ui/diary-event-dialog';
@@ -24,16 +19,10 @@ interface DiaryDialogState {
 }
 
 function DiaryDialogProvider({ children }: PropsWithChildren) {
-  const {
-    calendar: { app },
-  } = useDiaryContext();
+  const { app } = useDiaryContext();
   const [dialogState, setDialogState] = useState<DiaryDialogState>();
   const [open, setOpen] = useState(false);
   const { error, warning } = useNotify();
-
-  const client = useApolloClient();
-  const getApp = useCallback(() => app, [app]);
-  const { persistEventUpdate, loading: isTaskUpdateLoading } = useEventUpdate({ getApp });
 
   const openDiaryDialog = useCallback<DiaryDialogContext['openDiaryDialog']>(
     (event, params) => {
@@ -108,7 +97,6 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
           key={dialogState.originEvent.id}
           app={app}
           open={open}
-          loading={isTaskUpdateLoading}
           defaultValues={taskToChange?.defaultValues}
           task={taskToChange?.task}
           title={dialogState.mode === 'create' ? 'Создание дела' : 'Редактирование дела'}
@@ -129,6 +117,7 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
                 defaultValues: {
                   status: formDate.status,
                   priority: formDate.priority,
+                  recurrence: TaskUtils.getSafetyRecurrence(getRecurrenceFromTaskFormData(formDate)),
                   startDate: timeAndDate(formDate.startDate).toDate(),
                   deadline: timeAndDate(formDate.deadline).toDate(),
                 },
@@ -151,13 +140,10 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
                   ...formDate,
                   recurrence: getRecurrenceFromTaskFormData(formDate),
                 });
-                Reflect.deleteProperty(path, 'id');
-                const eventToUpdate = DiaryEventDomain.update(dialogState.originEvent, path);
-                const isUpdated = await persistEventUpdate(eventToUpdate, dialogState.originEvent);
-                if (isUpdated) {
-                  await updateDiaryCalendar(dialogState.originEvent, eventToUpdate, app, {
-                    onBecameRecurrent: () => TaskCacheManager.refetchGetDiaryTasks(client),
-                  });
+
+                if (Reflect.deleteProperty(path, 'id')) {
+                  const eventToUpdate = DiaryEventDomain.update(dialogState.originEvent, path);
+                  await app.updateEvent(dialogState.originEvent.id, eventToUpdate);
                 }
               } else {
                 warning({ message: 'meta.id or settings are not provided.' });
@@ -170,22 +156,6 @@ function DiaryDialogProvider({ children }: PropsWithChildren) {
       )}
     </diaryDialogContext.Provider>
   );
-}
-
-async function updateDiaryCalendar(
-  origin: DiaryEvent,
-  updated: DiaryEvent,
-  app: ICalendarApp,
-  { onBecameRecurrent }: { onBecameRecurrent: () => MaybePromise<unknown> },
-) {
-  const isBecameRecurrent = origin.meta.recurrence == null && updated.meta.recurrence != null;
-  if (isBecameRecurrent) {
-    await onBecameRecurrent();
-    app.applyEventsChanges({ delete: [origin.id] }, false, 'remote');
-    return;
-  }
-
-  await app.updateEvent(origin.id, updated, false, 'remote');
 }
 
 export { DiaryDialogProvider };

@@ -10,7 +10,7 @@ import {
 } from '@dayflow/core';
 import { merge } from 'lodash-es';
 import { GroupId } from '@/entity/planner/groups';
-import { TaskDomain, TaskId, TaskType, TaskUtils } from '@/entity/planner/tasks';
+import { Task, TaskDomain, TaskId, TaskType, TaskUtils } from '@/entity/planner/tasks';
 import { DiaryTask, TaskPriority, TaskStatus } from '@/shared/transport/graphql';
 import { EMPTY_GROUP_ID } from './constants';
 import {
@@ -47,13 +47,14 @@ class DiaryEventDomain {
         id: undefined,
         loading: false,
         priority: defaultValues?.priority ?? TaskDomain.defaultFields.priority,
+        recurrence: defaultValues?.recurrence,
         status: defaultValues?.status ?? TaskDomain.defaultFields.status,
         taskType: TaskType.Unknown,
       },
     };
   }
 
-  static update(origin: DiaryEvent, patch: Partial<DiaryEvent>): DiaryEvent {
+  static update(origin: DiaryEvent, patch: Partial<Omit<DiaryEvent, 'id'>>): DiaryEvent {
     return merge({}, origin, patch);
   }
 
@@ -111,7 +112,7 @@ class DiaryEventDomain {
     };
   }
 
-  static mapTaskToEvent = (task: TaskUpdateData): DiaryEvent => {
+  static mapTaskToEvent = (task: TaskUpdateData, meta?: Partial<DiaryEventMeta>): DiaryEvent => {
     return {
       ...createEvent({
         id: this.createEventId(task.id),
@@ -129,12 +130,13 @@ class DiaryEventDomain {
         status: task.status,
         recurrence: task.recurrence,
         taskType: TaskDomain.parseId(task.id).type,
+        ...meta,
       },
     };
   };
 
-  static withTaskMeta(event: DayflowEvent): DiaryEvent {
-    return { ...event, meta: DiaryEventDomain.getTaskMeta(event) };
+  static withTaskMeta(event: DayflowEvent, meta?: Partial<DiaryEventMeta>): DiaryEvent {
+    return { ...event, meta: { ...DiaryEventDomain.getTaskMeta(event), ...meta } };
   }
 
   static getTaskMeta = (event: DayflowEvent): DiaryEventMeta => {
@@ -168,6 +170,11 @@ class DiaryEventDomain {
     const groupId = Number(calendarId);
     return Number.isFinite(groupId) ? (groupId as GroupId) : undefined;
   }
+
+  static isDiaryTask = (task?: Task<GroupId>): task is DiaryTask<GroupId, TaskId> => {
+    if (task == null) return false;
+    return task.startDate != null && task.deadline != null;
+  };
 }
 
 export { DiaryEventDomain };

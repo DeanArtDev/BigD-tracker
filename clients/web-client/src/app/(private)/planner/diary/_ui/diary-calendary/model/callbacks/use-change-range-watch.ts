@@ -7,10 +7,8 @@ import { useDiaryContext } from '../../context';
 import { diaryViewRangeMap } from '../constants';
 
 function useChangeRangeWatch() {
-  const { calendar } = useDiaryContext();
+  const { app } = useDiaryContext();
   const [diarySearch, setDiarySearch] = useDiaryUrl();
-
-  const app = calendar?.app;
 
   const diarySearchEvent = useEffectEvent(() => diarySearch);
 

@@ -17,11 +17,11 @@ import { useDiaryCalendarSearch } from './view-model';
 import './style.scss';
 
 function Component() {
-  const { calendar } = useDiaryContext();
+  const { app } = useDiaryContext();
   const calendarContainerRef = useRef<HTMLDivElement>(null);
   const calendarSearch = useDiaryCalendarSearch({ containerRef: calendarContainerRef });
 
-  useYearWorkaround({ calendar, containerRef: calendarContainerRef });
+  useYearWorkaround({ app, containerRef: calendarContainerRef });
 
   useGetTaskToDiaryEventsSync();
   useGetGroupsToDiaryCalendarsSync();
@@ -36,14 +36,14 @@ function Component() {
   );
   const renderYearViewModeTabs = useCallback(() => <YearViewModeTabs />, []);
   const renderEventContent = useCallback(
-    (props: EventContentSlotArgs) => <DiaryEventCard {...props} app={calendar.app} />,
-    [calendar.app],
+    (props: EventContentSlotArgs) => <DiaryEventCard {...props} app={app} />,
+    [app],
   );
 
   return (
     <div ref={calendarContainerRef} className="diary-calendar flex min-h-0 min-w-0 w-full grow p-2">
       <DayFlowCalendar
-        calendar={calendar}
+        calendar={app}
         eventContentAllDayDay={renderEventContent}
         eventContentAllDayMonth={renderEventContent}
         eventContentAllDayWeek={renderEventContent}

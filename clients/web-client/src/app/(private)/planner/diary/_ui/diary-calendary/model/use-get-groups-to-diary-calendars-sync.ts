@@ -5,8 +5,7 @@ import { useDiaryContext } from '../context';
 import { DiaryCalendarDomain } from './diary-calendar-domain';
 
 function useGetGroupsToDiaryCalendarsSync() {
-  const { calendar } = useDiaryContext();
-  const app = calendar.app;
+  const { app } = useDiaryContext();
 
   const { groups } = useGetDiaryGroupList<GroupId>();
 
